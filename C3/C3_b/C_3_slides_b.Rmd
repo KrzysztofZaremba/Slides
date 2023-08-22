@@ -1,0 +1,559 @@
+---
+title: 'Class 3a: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+---
+layout: false
+class: inverse, middle
+
+# Confidence Intervals
+
+---
+
+how certain are we that our estimate of mean price is close to the true one?
+Confidence intervals help to measure this
+
+---
+Let's look again at the sampling distribution (graph)
+
+- 95% of draws will be within this area. What is this area? it's ... show. 
+- What is this area? LEt's assume n>30 so it's normal distirbution
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+# plot the standard normal density on the interval [-4,4]
+curve(dnorm(x),
+      xlim = c(-3, 3),
+      main = "Sampling Distribution of Sample mean",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+
+# add x-axis
+axis(1, 
+     at = c(-1.96,  0,  1.96), 
+     padj = 0.75,
+     labels = c(expression(mu - 1.96*frac(sigma,sqrt(n))),
+                expression(mu),
+                expression(mu + 1.96*frac(sigma,sqrt(n)))))
+
+# add a vertical line at the mean (mu)
+
+transparent_color <- rgb(70, 130, 180, alpha = 50, maxColorValue = 255)
+
+# shade the middle 95% region
+polygon(x = c(-1.96, seq(-1.96, 1.96, 0.01), 1.96),
+        y = c(0, dnorm(seq(-1.96, 1.96, 0.01)), 0),
+        col = transparent_color )
+
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "95%" label
+text(0, 0.2, "95%", col = "black", cex = 1.5)
+
+```
+
+
+---
+- how do I get 1.96? Side note. 
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+
+curve(dnorm(x),
+      xlim = c(-3, 3),
+      main = "Standard normal",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-1.96, 0, 1.96), 
+     padj = 0.75,
+     labels = c(expression(-1.96),
+                expression(mu),
+                expression(1.96)))
+
+# shade the tails for the 2.5% regions
+polygon(x = c(-3, seq(-3, -1.96, 0.01), -1.96),
+        y = c(0, dnorm(seq(-3, -1.96, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+polygon(x = c(1.96, seq(1.96, 3, 0.01), 3),
+        y = c(0, dnorm(seq(1.96, 3, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "2.5%" labels on tails
+text(-2.2, 0.05, "2.5%", col = "black", cex = 1.5)
+text(2.2, 0.05, "2.5%", col = "black", cex = 1.5)
+
+```
+
+---
+- so 95% of the draws of sample means will be within "..." distance to the true population
+- There is only 5% chance that we have a sample weird enough that the mean is further from the population mean by more than...
+
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+curve(dnorm(x),
+      xlim = c(-4, 4),
+      main = "Sampling Distribution of Sample Mean",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-1.96, 0, 1.96), 
+     padj = 0.75,
+     labels = c(expression(mu - 1.96*frac(sigma, sqrt(n))),
+                expression(mu),
+                expression(mu + 1.96*frac(sigma, sqrt(n)))))
+
+# shade the tails for the 2.5% regions
+transparent_color <- rgb(70, 130, 180, alpha = 50, maxColorValue = 255)
+polygon(x = c(-1.96, seq(-1.96, 1.96, 0.01), 1.96),
+        y = c(0, dnorm(seq(-1.96, 1.96, 0.01)), 0),
+        col = transparent_color)
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# calculate the position halfway between the mean and the 95% confidence interval
+position <- (0 + 1.96) / 2
+
+# add a point for x̄ (sample mean)
+whisker_left <- -1.96 * 1 / sqrt(1)  # Adjust '1' if necessary
+whisker_right <- 1.96 * 1 / sqrt(1)   # Adjust '1' if necessary
+
+# add a point for x̄ (sample mean)
+points(position, 0.15, pch = 16, col = "red", cex = 2)
+
+# add whiskers for confidence bands
+segments(position + whisker_left, 0.15, position + whisker_right, 0.15, col = "red", lwd = 2)
+segments(position + whisker_left, 0.14, position + whisker_left, 0.16, col = "red", lwd = 2)
+segments(position + whisker_right, 0.14, position + whisker_right, 0.16, col = "red", lwd = 2)
+
+text(position + whisker_left + 0.05, .21, expression(bar(x) - 1.96*frac(sigma, sqrt(n))), col = "red", cex = 1)
+text(position + whisker_right - 0.05, .21, expression(bar(x) + 1.96*frac(sigma, sqrt(n))), col = "red", cex = 1)
+text(position, 0.21, expression(bar(x)), col = "red", cex = 1.2)
+
+```
+
+
+---
+
+-Suppose we for each draw of a sample mean we construct such intervals
+-95% of them will contain a true population mean!
+
+`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='480px')`
+.footmark[
+  Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
+]
+
+---
+
+Calculation procedure
+
+1. Take a random sample, iid sample, large enough
+2. Calculate mean $\bar{x}$ and standard deviation $s$
+3. Pick confidence level (usually 90,95, 99%)
+  - We typically denote the confidence level $1-\alpha$
+  - $\alpha$ is probability of making a Type 1 error (more about it later)
+4. Find the corresponding critical values $z_{\frac{\alpha}{2}}$
+  - critical values are such that P(-$z_{\frac{\alpha}{2}}$<Z<$z_{\frac{\alpha}{2}}$)=$1-\alpha$
+5. Calculate it as:
+$$\{\bar{x}- z_{\frac{\alpha}{2}}*{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*{s}{\sqrt n}\}$$
+
+
+---
+Identifying z
+
+(picture with 99) 
+$P(-$z_{\frac{\alpha}{2}}$<Z<$z_{\frac{\alpha}{2}}$)$
+
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+curve(dnorm(x),
+      xlim = c(-4, 4),
+      main = "Standard normal",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-2.58, 0, 2.58), 
+     padj = 0.75,
+     labels = c(expression(-z[0.005]),
+                expression(0),
+                expression(z_[0.005])))
+
+# shade the tails for the 2.5% regions
+polygon(x = c(-4, seq(-4, -2.58, 0.01), -2.58),
+        y = c(0, dnorm(seq(-4, -2.58, 0.01)), 0),
+        col = "steelblue")
+
+polygon(x = c(2.58, seq(2.58, 4, 0.01), 4),
+        y = c(0, dnorm(seq(2.58, 4, 0.01)), 0),
+        col = "steelblue")
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "2.5%" labels on tails
+text(-2.9, 0.05, "0.5%", col = "black", cex = 1.5)
+text(2.9, 0.05, "0.5%", col = "black", cex = 1.5)
+```
+
+
+---
+
+`r knitr::include_url('https://www.mathsisfun.com/data/standard-normal-distribution-table.html', height='480px')`
+.footmark[
+  Source: [https://www.mathsisfun.com/data/standard-normal-distribution-table.html)
+]
+
+
+
+---
+Identifying z
+
+(picture with 99) 
+$P(Z<z_{\frac{\alpha}{2}})=0.995$
+
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+curve(dnorm(x),
+      xlim = c(-4, 4),
+      main = "Standard normal",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-2.58, 0, 2.58), 
+     padj = 0.75,
+     labels = c(expression(-z[0.005]),
+                expression(0),
+                expression(z_[0.005])))
+
+# shade the tails for the 2.5% regions
+polygon(x = c(-4, seq(-4, 2.58, 0.01), 2.58),
+        y = c(0, dnorm(seq(-4, 2.58, 0.01)), 0),
+        col = "steelblue")
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "2.5%" labels on tails
+text(0, 0.2, "99.5%", col = "black", cex = 1.5)
+text(3.5, 0.1, "0.5%", col = "black", cex = 1.5)
+```
+<center>
+<img src=prob_table_normal.png width="800">
+</center>
+
+$P(Z<2.58})=0.995$
+
+
+---
+
+
+Example to calculate 
+
+- Calculating it for our listing price
+- Example to calculate 95% conf interval 
+  - $\alpha=0.05$, find $z_{\frac{0.05}{2}}$, that is 2.5% quantile of standard normal. 
+  - $z_{\frac{0.025}}$=1.96
+  - $$\{\bar{x}- z_{\frac{\alpha}{2}}*{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*{s}{\sqrt n}\}$$
+---
+Interpretation:
+
+- When we calculate we don't ktnow true variance... we use standard deviation (that only works when n is large!)
+We calculated the 95% confidence interval for the average price. 
+
+Suppose
+
+- Correct: 
+- we are 95% confident that the interval captures the true mean
+  - We are 95% confident mean price of such listings is between this and this 
+- Incorrect:
+  - With 95% probability the true mean is within the confidence interval
+    - These are all non-random values, not random variables. Mean is either in this interval or not. It's only befor drawing sample (when sample is a random variable) that we can make probabilitis statements. AFter we draw the samples, we don't talk about probabilities anymore.
+
+
+---
+
+
+--- 
+
+Wider vs tighter confidence intervals
+- 99%
+- 90%
+- Different n
+- Different sigma 
+
+`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='420px')`
+.footmark[
+  Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
+]
+
+---
+
+Exercise - Suppose we want to know what is average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be 23 and sample standard deviation to be 8. Calculate 99% confidence interval:
+
+--
+- Which is correct: we are 95% confident that the average commute of these 60 students is between  (20.3364, 25.6636)
+
+--
+
+- Which is correct: we are 95% confident that the average commute of all ITAM students is between (20.3364, 25.6636)
+--
+
+- Which is correct: we are 95% confidence interval would be wider
+
+--
+
+-95% of random soamples would have mean between (20.3364, 25.6636)
+--
+
+-With 95% probability true mean is between this and this (20.3364, 25.6636)
+--
+
+---
+confidence intervals with t distribution?
+
+What if we have fewer than 30 observations?
+- then distribution is not normal.
+  - If we don't know the distribution, we don't know critical values, we can't compute intervals.
+
+-Exception
+  -if the original variable is distributed as normal, then:
+    1) if you know standard deviation, you can use z. Why?
+    2) if you don't know the standard deviation, you can use t-statistic
+
+---
+
+If X1, X2, . . . , Xn are i.i.d. from N(µ, σ2), then
+$$T =\frac{\bar{X} − µ}{s/\sqrt n}$$
+
+can be shown to have a t distribution with n−1 degrees of freedom.
+What’s is a t-distribution?
+
+---
+
+- Bell shaped and Symmetric around 0 
+- more spread out - heavier tails, more uncertainty
+- Shape determined by degrees of freedom. As n increases, it tends to standard normal (as it should by CLT!)
+
+```{r abc, warning=FALSE, fig.height=2.5, out.width='100%'}
+# Parameters
+df_values <- c(3, 10, 30)  # Different degrees of freedom
+x_vals <- seq(-4, 4, length.out = 400)
+normal_density <- dnorm(x_vals)
+
+# Create a data frame for ggplot
+df <- data.frame(x = rep(x_vals, length(df_values) + 1),
+                 y = c(sapply(df_values, function(df) dt(x_vals, df)), normal_density),
+                 distribution = rep(c(paste("t-distribution (df =", df_values, ")"), "Normal distribution"), each = length(x_vals)))
+
+# Create ggplot object
+gg_plot <- ggplot(df, aes(x = x, y = y, color = distribution)) +
+  geom_line() +
+  labs(x = "x",
+       y = "Density") +
+  theme_minimal()
+
+# Convert to plotly object for interactivity
+ ggplotly(gg_plot,
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+
+```
+
+
+---
+
+Why more variability? because more uncertainty about standard deviation, but as we increase degrees of freedom, that additional uncertainty starts to vanish
+
+Finding critical values for t distribution
+1. Determine what is the right number of degrees of freedom!
+2. Determine what's your confidence level and your $(1-\alpha)$
+  - From this figure out $\alpha/2$
+on the graph and in the table
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+# Parameters
+n <- 10  # Sample size
+df <- n - 1  # Degrees of freedom for t-distribution
+mu <- 0    # Mean of the distribution
+sigma <- 1  # Standard deviation of the distribution
+
+# Create a sequence of x values
+x_vals <- seq(-4, 4, by = 0.01)
+
+# Calculate the density values for the t-distribution
+t_density <- dt(x_vals, df)
+
+# Plotting
+plot(x_vals, t_density, type = "l", xlim = c(-4, 4), ylim = c(0, 0.4),
+     main = "Student's t with 9df",
+     yaxs = "i", xlab = "t", ylab = "", lwd = 2, axes = "F")
+
+# Add x-axis
+axis(1, at = c(-2.62, 0, 2.62), padj = 0.75,
+     labels = c(expression(-t[frac(alpha,2)*","~df]),
+                0,
+                expression(t[frac(alpha,2)*","~df])))
+
+# Add a vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# Shade the middle 95% region
+transparent_color <- rgb(70, 130, 180, alpha = 50, maxColorValue = 255)
+polygon(x = c(-2.62, seq(-2.62, 2.62, 0.01), 2.62),
+        y = c(0, dt(seq(-2.62, 2.62, 0.01), df), 0),
+        col = transparent_color)
+
+# Add the "95%" label
+text(0, 0.2, "95%", col = "black", cex = 1.5)
+
+text(3, 0.05, "2.5%", col = "black", cex = 1.5)
+
+```
+
+
+---
+<center>
+<img src=t_student_table.png width="1000">
+</center>
+
+---
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+# Parameters
+n <- 10  # Sample size
+df <- n - 1  # Degrees of freedom for t-distribution
+mu <- 0    # Mean of the distribution
+sigma <- 1  # Standard deviation of the distribution
+
+# Create a sequence of x values
+x_vals <- seq(-4, 4, by = 0.01)
+
+# Calculate the density values for the t-distribution
+t_density <- dt(x_vals, df)
+
+# Plotting
+plot(x_vals, t_density, type = "l", xlim = c(-4, 4), ylim = c(0, 0.4),
+     main = "Student's t with 9df",
+     yaxs = "i", xlab = "t", ylab = "", lwd = 2, axes = "F")
+
+# Add x-axis
+axis(1, at = c(-2.62, 0, 2.62), padj = 0.75,
+     labels = c(expression(-2.62),
+                0,
+                expression(2.62)))
+
+# Add a vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# Shade the middle 95% region
+transparent_color <- rgb(70, 130, 180, alpha = 50, maxColorValue = 255)
+polygon(x = c(-2.62, seq(-2.62, 2.62, 0.01), 2.62),
+        y = c(0, dt(seq(-2.62, 2.62, 0.01), df), 0),
+        col = transparent_color)
+
+# Add the "95%" label
+text(0, 0.2, "95%", col = "black", cex = 1.5)
+
+text(3, 0.05, "2.5%", col = "black", cex = 1.5)
+
+```
+
+---
+Procedure 
+
+---
+Exercise
+
+Free shipping for a random group of customers some customers. Does it work? do they spend more?. You take a sample of them. They are normal variables. 
+This is the data: 
+$157.80, $192.45, $210.20, $175.60, $198.30, $180.90, $205.75, $185.20, $177.40, $195.60 
+
+
+a) calculate confidence 90 interval
+b) Average spending without free shipping is $182, can say anything about whether it increased with free shipping?
+
+---
+
+Remember, you use  t-distrubution when underlying is normal and you don't know true standard deviaton (you almost never know it)
+

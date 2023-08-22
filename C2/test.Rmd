@@ -1,0 +1,60 @@
+---
+title: 'Class 2a: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+set.seed(123)
+data <- data.frame(value = c(rnorm(1000), rnorm(100, 10, 2)))
+load("Data/Health_data.Rda")
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+

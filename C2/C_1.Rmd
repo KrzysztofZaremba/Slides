@@ -1,0 +1,394 @@
+---
+title: 'Class 1: Descriptive Analysis'
+author: "Krzysztof Zaremba"
+date: "2023-07-15"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(ggplot2)
+
+```
+
+
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+## Intro to Forecasting: 
+
+
+**Forecasting in Business: A Comprehensive Guide**
+
+Whatever you wanna do
+WHY YOU NEED THAT CLASS?
+
+Now it's your turn... so you tell me your names, what do you study, what do you wanna do in the future. 
+
+
+**What's Forecasting About and Why is it Useful?**
+
+Forecasting is the process of making predictions about future events based on historical data, patterns, and relevant information. In the context of business, forecasting is a powerful tool that allows organizations to anticipate demand, allocate resources efficiently, plan for contingencies, and make strategic decisions with confidence.
+
+**Scheduling and Acquiring Resources:**
+Let's consider a retail store as an example. The store needs to forecast how many cashiers to schedule at different times of the day. This decision directly impacts customer satisfaction and operational costs. By analyzing historical foot traffic and credit card transaction data, the store can predict peak hours and allocate sufficient cashiers to provide efficient service.
+
+Similarly, imagine a manufacturing company that produces consumer electronics. To ensure a smooth production process and meet demand, they need to predict the quantity of products needed in the future. By utilizing historical sales data, market trends, and economic indicators, the company can accurately forecast demand and plan the procurement of raw materials and workforce accordingly.
+
+**Forecasting Horizons**
+
+**1. Very Short Horizon:**
+High-Frequency Trading Forecasting:
+In the financial world, high-frequency trading involves executing a large number of trades within fractions of seconds to capitalize on even the smallest discrepancies in the markets. Traders need to predict price movements almost in real-time conditions to make split-second decisions. Advanced algorithms and historical market data are essential for successful high-frequency trading.
+
+Traffic Flow Management:
+Dynamic traffic signal control systems are another example of very short horizon forecasting. These systems use real-time data from cameras and sensors to optimize traffic flow and reduce congestion on the roads. By analyzing traffic patterns, the system can adjust signal timings dynamically, ensuring smoother traffic movements.
+
+**2. Short Horizon:**
+How Much Oxygen You Will Need in a Hospital:
+Forecasting oxygen demand in a hospital is essential for providing adequate care to patients without unnecessary waste. Hospital administrators need to strike a balance between immediate needs and cost efficiency. By analyzing historical patient admissions and oxygen usage data, hospitals can predict oxygen demand for different time periods, such as days or weeks.
+
+**3. Medium Horizon:**
+Inventory Planning for Retailers:
+Retailers must forecast demand for their products to avoid stockouts and excess inventory. Both situations can lead to financial losses. By analyzing historical sales data, seasonal trends, and external factors like promotions or economic conditions, retailers can determine how much inventory to order from suppliers.
+
+**4. Long Horizon:**
+Assessing the Feasibility of Business Moves:
+In the long horizon, forecasting becomes essential for strategic decision-making. For example, a pharmaceutical company might want to introduce a new obesity drug to the market. Forecasting will help estimate potential revenue from the drug, assess market competition, and decide whether the investment is worthwhile.
+
+**One Idea When Forecasting in Business Might Be Useful:**
+Consider a subscription-based online streaming platform. To reduce churn and retain customers, the platform can utilize forecasting to predict which customers are likely to cancel their subscriptions. By analyzing historical user data, watching habits, and engagement metrics, the platform can identify patterns that indicate potential churn, enabling them to take proactive measures to retain those customers.
+
+
+
+
+
+
+
+**Overview of Forecasting Techniques**
+
+**1. Qualitative Forecasting:**
+Qualitative forecasting relies on subjective judgment, expert opinions, and qualitative information rather than historical data. It is suitable when little or no quantitative data is available, or when dealing with unique situations or new markets.
+
+Examples of qualitative forecasting include:
+- Predicting how an increase in oil prices might affect consumption patterns and the overall economy.
+- Forecasting the political stability in a region before making an investment decision.
+- Assessing how climate change might impact employee productivity or crop yields in the agricultural sector.
+
+**2. Quantitative Forecasting:**
+Quantitative forecasting involves using historical data and numerical techniques to make predictions. This approach is appropriate when data is available and can be quantified, and when certain continuity assumptions hold true.
+
+To apply quantitative forecasting, the following conditions should be met:
+- Sufficient historical data is available to analyze past patterns and trends.
+- The data can be quantified, allowing for statistical analysis.
+- The assumption of continuity holds true, meaning that past trends are expected to continue into the future.
+
+**Time Series Forecasting:**
+Time series forecasting is a specific quantitative technique that focuses on identifying patterns and trends in historical data to predict future values. In this method, the data points are ordered chronologically, and the goal is to forecast values at future time points.
+
+For example, consider a ride-sharing company like Uber. They can use time series forecasting to predict the demand for rides in a specific city during a particular week. By analyzing historical ride data, seasonal trends, and events, they can anticipate increased demand during peak hours or holidays and optimize their driver allocation.
+
+**Explanatory Models:**
+Explanatory models assume that the forecasted variable exhibits an explanatory relationship with one or more independent variables. These models are often used to understand how various factors influence the outcome of interest.
+
+Examples of explanatory models in business include:
+- Estimating product demand based on advertising expenditure, weather conditions, and competitor's pricing.
+- Predicting the revenue of a hotel based on room rates, local events, and customer reviews.
+
+**Qualitative Forecasting:**
+Qualitative forecasting involves making predictions based on expert knowledge, intuition, and the expertise of trained individuals. It is commonly used for medium to long-range situations where quantitative data might be limited or uncertain.
+
+Examples of situations where qualitative forecasting is useful include:
+- Formulating business strategies and making long-term decisions about market entry or expansion.
+- Developing new products or services based on market trends and consumer preferences.
+
+Methods: 
+
+1. **Delphi Method:**
+The Delphi Method is a structured communication process designed to reach a consensus through a series of rounds of feedback. The name refers to the Oracle of Delphi, a priestess at a temple of Apollo in ancient Greece known for her prophecies. It involves a group of experts who anonymously respond to questionnaires and refine their answers based on the feedback received from others. The goal is to converge on a reliable and informed decision  - a consensus.
+• Adventages: no need to be all in the same spot, anonymity helps to value the feedback evenly, can rething and revise.
+• Dis - participants may drop out In the meantime
+
+Example: Determining Technological Trends
+A technology forecasting team wants to identify upcoming trends in the IT industry. They invite a panel of experts, including researchers, industry professionals, and academics, to participate in the Delphi Method. The team sends questionnaires to each expert, asking them to predict the key technological trends for the next decade. After each round, the experts receive a summary of the group's responses, allowing them to refine their predictions. Through multiple rounds, the team can identify the most probable technological trends.
+
+**2. Brainstorming:**
+Brainstorming is a creative and open-ended technique used to generate a large number of ideas quickly. It encourages participants to think freely, without judgment, and build upon each other's suggestions to explore various possibilities.
+
+
+Example: Brainstorming to Enhance Employee Engagement in a Tech Company
+
+Scenario:
+The HR department of a tech company has identified a decline in employee engagement and wants to address this issue. They believe that developing a mobile app to enhance employee engagement could be a viable solution. To brainstorm ideas for the app, the HR team organizes a session involving representatives from HR, IT, and employees from different departments.
+
+1. Understanding the Problem:
+The facilitator starts by outlining the problem of declining employee engagement in the company. They provide relevant data and insights to show the current engagement levels and the potential impact on productivity and employee satisfaction.
+
+2. Idea Generation:
+The team members begin generating ideas for the employee engagement app, focusing on features and functionalities that can motivate employees, improve communication, and create a positive work culture.
+
+Examples of Ideas Generated:
+
+a. Recognition and Rewards: The app can have a system where employees can recognize and reward each other for exceptional contributions or achievements.
+
+b. Employee Well-Being Support: A section in the app can offer resources and tips for physical and mental well-being, including yoga sessions, mindfulness exercises, and stress management techniques.
+
+c. Feedback Mechanism: The app can include a feedback mechanism to collect anonymous feedback from employees, allowing them to express concerns or share suggestions for improvement.
+
+d. Learning and Development: The app can offer personalized learning and development opportunities, allowing employees to access online courses, webinars, and workshops.
+
+e. Employee Social Network: The app can facilitate networking among employees, enabling them to connect with colleagues from different departments and locations.
+
+f. Virtual Events and Contests: The app can host virtual events, contests, and challenges to foster team spirit and friendly competition.
+
+3. Idea Elaboration:
+The team elaborates on each idea, discussing the potential impact, feasibility, and resources required to implement them. For example, they may explore different gamification techniques to make the app engaging or discuss how to integrate the app with existing HR systems.
+
+4. Group Discussion:
+The brainstorming session involves group discussions where team members share their perspectives on each idea. Employees provide valuable insights into what they believe will truly enhance their engagement and share their preferences regarding app features.
+
+5. Feasibility Assessment:
+The team evaluates the feasibility of implementing each idea. They consider factors such as development cost, technical expertise, compatibility with existing systems, and potential challenges.
+
+6. Prioritization and Action Plan:
+After the brainstorming session, the team collectively prioritizes the ideas based on their potential impact and feasibility. They create an action plan to develop the app, assigning responsibilities, setting deadlines, and defining key milestones.
+
+
+**3. Panel of Experts:**
+A Panel of Experts involves assembling a group of knowledgeable individuals in a specific domain to offer their insights and expertise on a particular topic. Their collective knowledge helps in making well-informed decisions.
+
+Example: Environmental Policy Formulation
+A government agency is crafting policies to address environmental challenges. They form a Panel of Experts comprising environmental scientists, economists, conservationists, and policymakers. The panel discusses various policy options, their potential impact, and the feasibility of implementation. The experts' collective knowledge allows the agency to create comprehensive and effective environmental policies.
+
+**4. Focus Groups:**
+Focus Groups involve bringing together a diverse group of participants to share their perceptions, attitudes, and opinions on a specific product, service, or concept. It provides valuable qualitative data and consumer insights.
+
+Example: Market Research for a New Beverage
+A beverage company plans to launch a new energy drink and wants to understand consumers' preferences and perceptions. They conduct focus groups with participants from various demographics, including different age groups and lifestyles. In the focus group sessions, participants taste the drink and share their thoughts, likes, and dislikes. The company gains valuable feedback that helps them fine-tune the product and its marketing strategy.
+
+
+**Steps of Forecasting**
+
+1. **Problem Definition:**
+Before diving into the forecasting process, it is crucial to define the forecasting objective clearly. For example, let's say Uber wants to forecast ride demand in a specific city during a holiday season to ensure they have enough drivers available to meet the surge in demand.
+
+2. **Gather Data:**
+The next step is to identify and collect the relevant data needed for the forecast. In Uber's case, they would need historical ride data, including the number of rides taken on previous holidays, as well as data on local events and holidays that might affect ride demand.
+
+3. **Preliminary Explanatory Analysis:**
+Once the data is gathered, a preliminary analysis is performed to understand the data's characteristics and relationships. In Uber's example, they would create graphs and plots to identify trends and patterns in ride demand during holidays. They might also look for any outliers or unusual events that could have influenced past ride demand.
+
+4. **Choosing and Fitting the Model:**
+Based on the preliminary analysis, the appropriate forecasting model is selected and fitted to the data. In Uber's case, they might use time series forecasting models like ARIMA or seasonal decomposition of time series (STL) to capture the seasonal patterns in ride demand.
+
+5. **Evaluating the Model:**
+After fitting the model, it is essential to evaluate its performance using historical data. In Uber's example, they would compare the model's predictions for past holidays with the actual ride demand during those periods. This evaluation helps determine the accuracy and reliability of the forecasting results.
+
+By following these steps, businesses like Uber can make data-driven decisions, optimize their operations, and stay one step ahead in the dynamic and competitive market landscape.
+
+In conclusion, forecasting is an indispensable tool for businesses of all sizes and industries. Whether it's predicting demand, allocating resources, or making strategic decisions, forecasting empowers organizations to navigate uncertainties and seize opportunities with confidence. As you venture into the world of business, embrace the power of forecasting and let data be your guide on the journey to success!
+
+
+
+## Parameters and Statistics
+  
+In business forecasting, we often work with data to make predictions and inform decision-making. Two key concepts in this field are parameters and statistics.
+
+### Parameters
+
+Parameters refer to numerical characteristics of a population. They are often represented by Greek letters. For example, the population mean is denoted by μ (mu) and the population standard deviation by σ (sigma).
+However, since it's usually impractical to collect data from an entire population, we often work with samples.
+
+
+### Statistics
+
+Statistics, on the other hand, are numerical characteristics of a sample. They estimate or describe the corresponding population parameters. Common statistics include the sample mean (x̄), sample standard deviation (s), and sample proportion (p̂).
+
+
+!!!!Come up with examples where we want to know some parameter, but we only know the statistics
+
+
+Make it a realistic example: choose some variable, add formulas
+
+
+```{r, show=FALSE, echo=FALSE}
+# UI for the interactive plot
+# UI for the interactive plot
+# UI for the interactive plot
+ui <- fluidPage(
+  titlePanel("Interactive Sampling from Normal Distribution"),
+  fluidRow(
+    column(2,
+      numericInput("mu", "Population Mean (mu)", value = 0),
+      numericInput("sigma", "Population Standard Deviation (sigma)", value = 1),
+      actionButton("draw", "Draw New Sample"),
+      verbatimTextOutput("stats")
+    ),
+    column(5, plotOutput("distPlot", height = "400px")),
+    column(5, plotOutput("histPlot", height = "400px"))
+  )
+)
+
+# Server function for the interactive plot
+server <- function(input, output) {
+  x <- seq(-4,4,length=1000)
+
+  # Function to update the normal distribution plot
+  observeEvent(c(input$mu, input$sigma), {
+    df <- data.frame(x = x, y = dnorm(x, mean=input$mu, sd=input$sigma))
+
+    output$distPlot <- renderPlot({
+      ggplot(df, aes(x, y)) +
+        geom_line() +
+        theme_minimal() +
+        xlim(-4, 4) +
+        ylim(0, max(df$y))
+    })
+  })
+  
+  # Function to draw a new sample and update the plot and statistics
+  observeEvent(input$draw, {
+    size_A <- 1000000
+    sample_size <- 100
+    Population_x <- rnorm(size_A, mean=input$mu, sd=input$sigma)
+    Population_y <-dnorm(Population_x, mean=input$mu, sd=input$sigma)
+    sample_x <- rnorm(sample_size, mean=input$mu, sd=input$sigma)
+    sample_y <-dnorm(sample_x, mean=input$mu, sd=input$sigma)
+
+    df_sample <- data.frame(x = sample_x, y = sample_y)
+    df_population <- data.frame(x = Population_x, y = Population_y)
+
+    output$distPlot <- renderPlot({
+      ggplot() +
+        geom_line(data = df_population, aes(x, y), color="grey") +
+        geom_point(data = df_sample, aes(x, y), color = "red") +
+        theme_minimal() +
+        xlim(-4, 4) +
+        ylim(0, max(df_sample$y))
+    })
+    
+    sample_mean <- mean(sample_x)
+    sample_sd <- sd(sample_x)
+    
+    output$histPlot <- renderPlot({
+      ggplot(df_sample, aes(x)) +
+        geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+        geom_vline(aes(xintercept = sample_mean), color = "red", linetype = "dashed") +
+        annotate("text", x = sample_mean, y = 15, label = paste("Mean =", round(sample_mean, 2)), hjust = -0.1) +
+        theme_minimal() +
+        xlim(-4, 4)
+    })
+
+
+
+    output$stats <- renderText({
+      paste("Sample Mean: ", round(sample_mean, 2), "\nSample Standard Deviation: ", round(sample_sd, 2))
+    })
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+
+EXAMPLE: sample from the above distribution, how the statistic and the parameter differ
+
+
+
+DATA EXAMPLE: 
+National Survey of Health and Nutrition
+La Encuesta se levantó durante el periodo del 30 de julio de 2018 al 28 de junio de 2019, y tiene como objetivo conocer el estado de salud y las condiciones nutricionales de diversos grupos de población en México.
+
+How do we calculate this statistics? mean is bla bla bla. How would we get the parameter? Is it possible? If yes, how?
+
+
+```{r, show=FALSE, echo=FALSE}
+load("Data/Data_health_survey.Rda")
+
+ sample_mean <- mean(Data_health_survey$what_is_your_usual_weight_without_clothes_and_shoes)
+sample_sd<- sd(Data_health_survey$what_is_your_usual_weight_without_clothes_and_shoes)
+ggplot(Data_health_survey, aes(what_is_your_usual_weight_without_clothes_and_shoes)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "black") +
+  geom_vline(aes(xintercept = sample_mean), color = "red", linetype = "dashed") +
+  annotate("text", x = sample_mean, y = 6000, label = paste("Mean =", round(sample_mean, 2)), hjust = -0.1) +
+  theme_minimal() +
+  ylab("Frequency")
+
+```
+
+
+To calculate the sample mean, denoted by \(\bar{x}\), using the summation sign, you can use the formula:
+
+\[
+\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+\]
+
+Here, \(x_i\) represents the individual values in the dataset, \(n\) is the sample size, and the summation symbol \(\sum\) denotes the sum of all the values.
+
+And similarly for standard deviation: 
+
+\[
+s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2}
+\]
+
+
+
+You want to target a particular health condition: we want to know the proportion of people with in mexico, bla bla bla. 
+What's the parameter? We could only know if we asked every single person in mexico (the whole population). Difficult to do, we only have a sample. We can calculate a statistic in this sample, which will approximate the value of the parameter.
+
+
+
+## Descriptive Statistical Analysis
+
+Descriptive statistical analysis helps us understand and summarize data. Let's explore different types of variables and scales of measurement, followed by univariate and bivariate descriptive analysis for qualitative and quantitative data.
+
+### Types of Variables and Scales of Measurement
+
+Variables can be classified into different types based on their nature and characteristics:
+  
+  1. Qualitative variables (Categorical variables): These variables represent characteristics or qualities that cannot be measured numerically. Examples include gender, marital status, and product categories.
+
+2. Quantitative variables (Numeric variables): These variables represent measurable quantities. They can be further classified into discrete and continuous variables.
+
+- Discrete variables: These variables take on whole numbers or countable values. Examples include the number of customers, the number of defects, and the number of products sold.
+
+- Continuous variables: These variables can take on any value within a given range. Examples include temperature, weight, and time.
+
+Scales of measurement determine the level of measurement for a variable:
+  
+  1. Nominal scale: Variables at the nominal scale are qualitative in nature, with no inherent order or numerical significance. Examples include the type of car (e.g., sedan, SUV, truck) or the names of employees in a company.
+
+2. Ordinal scale: Variables at the ordinal scale have categories with a natural order, but the differences between the categories may not be equal or meaningful. Examples include survey responses with options like "strongly disagree," "disagree," "neutral," "agree," and "strongly agree."
+
+3. Interval scale: Variables at the interval scale have categories with a natural order and equal intervals between them. However, they lack a meaningful zero point. Examples include temperature measured in Celsius or Fahrenheit.
+
+4. Ratio scale: Variables at the ratio scale have categories with a natural order, equal intervals, and a meaningful zero point. Ratios can be calculated between variables at this scale. Examples include height, weight, and sales revenue.
+
+
+SHOULD I TALK ABOUT LOGHARITMIC SCALE HERE? AND THIS KIND OF STUFF?
+
+### Univariate Descriptive Analysis
+
+Univariate descriptive analysis focuses on summarizing and analyzing a single variable. The techniques used depend on the scale and nature of the variable.
+
+For qualitative variables, we can examine the frequency and percentage distribution of each category. This helps us understand the distribution of the variable and identify dominant categories.
+
+For quantitative variables, we can calculate measures of central tendency (e.g., mean, median, mode) and measures of dispersion (e.g., range, variance, standard deviation). These statistics provide insights into the typical values and variability of the variable.
+
+### Bivariate and Higher Order Descriptive Analysis
+
+Bivariate and higher order descriptive analysis involve examining the relationship between two or more variables.
+
+For qualitative variables, we can create contingency tables or cross-tabulations to analyze the joint distribution of two variables. This helps us identify relationships and associations between the variables.
+
+For quantitative variables, we can calculate correlation coefficients to measure the strength and direction of the linear relationship between two variables. Scatter plots can also be used to visualize the relationship.
+
+In summary, understanding parameters and statistics is crucial in business forecasting. Descriptive statistical analysis helps us summarize and analyze data, considering different types of variables and scales of measurement. Univariate, bivariate, and higher order analysis techniques allow us to gain insights into the data and identify patterns and relationships that can aid in forecasting and decision-making.

@@ -1,0 +1,807 @@
+---
+title: 'Class 3a: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+library(MASS) # for truehist function
+load("sample_listing.Rda")
+
+```
+---
+## Roadmap
+
+### Last set of classess
+- Types of data
+- How to describe data
+  - With visualizations
+  - With summary statistics
+
+--
+
+### This set of classes
+- How to evaluate estimators
+- How to build confidence intervals
+- How to test hypothesis
+
+--
+
+### Why?
+- Which alternative performs better -> data driven optimal decision 
+
+---
+
+### Motivating Example
+
+1. You run a bunch of Airbnbs
+
+--
+2. Should you invest more in cleaning?
+
+--
+3. Can you get higher price if your cleanliness score exceeds 4.5?
+
+--
+4. Get a sample of listings and compare the price of 
+ - Those with cleanliness score below 4.5 (dirty) 
+ - and above 4.5 (clean)
+
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
+
+
+# Display the data table
+datatable(Sample_list,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+---
+ 
+### Motivating example
+
+In statistical language: 
+- .blue[Population]: Entire group we want to learn about, impossible to assess directly
+  - All listings of Airbnb in Mexico City
+  - Ideally we would like to know the entire distribution of prices
+- .blue[Parameters]: Number describing a characteristic of the population
+  - We want to know mean price of clean $\mu_c$ and dirty $\mu_d$ apartments 
+- .blue[Sample]: Part of the population we have data for
+  - We have a sample of 200 listings
+- .blue[Goal]: What we want to learn about the population?
+  - Is $\mu_c$ > $\mu_d$? If yes, by how much?
+
+---
+
+
+### Random sample properties
+
+- **At random:** A sample is random if each member of the population (each listing) has an equal chance of being selected.
+
+- **Random Variable: $P_i$:**
+  - RV describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
+  
+- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
+
+- **IID (Independent and Identically Distributed):**
+  - **Independent:** The selection of one unit ( $P_i$ ) doesn't affect the selection of another ( $P_j$ )
+  - **Identically Distributed:** All units $P_i$ come from the same distribution.
+  
+- **Observed Value: $p_i$:**
+  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+---
+
+### Estimators
+
+
+- **Estimator/Statistic:**
+  - A function of random variables in our sample $\hat\theta=f(P_1, P_2,...,P_n)$
+  - Given its random nature, we can analyze its statistical properties
+  - Examples we have seen: 
+      - $\hat{\mu_c}=\bar{P}=f(P_1, P_2,...,P_n)=\frac{\sum_n P_i}{n}$
+      - $s_c=g(P_1, P_2,...,P_n)=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(P_i-\bar{P})^2}$\
+    
+  -It cannot contain any unknown quantities (like $\sigma$ or $\mu_p$)  
+      
+- **Point Estimate:**
+  - A single number computed from the realized sample data $\{p_1,p_2,...p_n\}$
+      - $\bar{p}=f(p_1, p_2,...,p_n)=\frac{\sum_n p_i}{n}$
+      - No longer random
+
+---
+
+### Estimators 
+
+
+- The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),3), scientific=FALSE)` MXN
+- This is our point estimate
+- Can we evaluate how reliable is it?
+
+`r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='500px')`
+
+
+---
+### Estimators 
+
+- **Sampling distribution** is the distribution of a statistic calculated from multiple random samples drawn from the same population.
+- It is never actually observed (we only have one draw)
+- But knowing its properties can help us determine the accuracy of the mean we computed
+  - Let's start by determining the expectation and the variance of the statistic/estimator
+  
+---
+### Expectation of an estimator
+
+- A good estimator should be unbiased:
+$$E[\hat{\theta}]=\theta$$ 
+- This should be true for any value of $\theta$
+- The sampling distribution should be centered at the parameter's value
+- Intuitively, on average the estimator should give us the parameter's value
+$$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
+- Bias of an estimator is a difference between its expectation and the parameter
+- Lets look at a couple of estimators and check if they are biased or not
+
+---
+
+### Example 1: Estimator = 5
+#### Expectation
+- The estimator: $\hat{\theta}_1 = 5$
+
+--
+- Expected Value: $E(\hat{\theta}_1) = 5$
+
+--
+- Bias: $E(\hat{\theta}_1)-\mu\neq 0$ if $\mu \neq 5$ (biased)
+
+---
+
+### Example 2: Estimator = $X_i$
+#### Expectation
+- The estimator: $\hat{\theta}_2 = X_i$
+
+--
+- Expected Value: $E(\hat{\theta}_2) = E(X_i) = \mu$
+
+--
+- Bias: $E(\hat{\theta}_2) - \mu=0$ (unbiased)
+
+--
+- Is it a good estimator?
+---
+
+### Example 3: Estimator = $(3X_1 + X_2)/4$
+#### Expectation
+- The estimator: $\hat{\theta}_3 = \frac{2X_1 + X_2}{3}$
+
+--
+- Expected Value: $E(\hat{\theta}_3)= \frac{3}{4}E(X_1) + \frac{1}{4}E(X_2) = \frac{3}{4}\mu + \frac{1}{4}\mu = \mu$
+
+--
+- Bias: $E(\hat{\theta}_3) - \mu=0$ (unbiased)
+
+---
+### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
+#### Expectation
+- The estimator: $\hat{\theta}_4 = \frac{\sum_n{X_i}}{n}$
+
+--
+- Expected Value: $E(\hat{\theta}_4)=E(\frac{\sum_n{X_i}}{n})=\frac{\sum_n{E(X_i)}}{n}=\frac{\sum_n{E(\mu)}}{n} = \mu$
+
+--
+- Bias: $E(\hat{\theta}_4) - \mu=0$ (unbiased)
+
+---
+
+### Variance of the estimator
+
+- Good estimator is unbiased
+- But how do we choose among unbiased estimator?
+  - Suppose we sample from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
+  - Estimator 1:  $\small (3X_1 + X_2)/4$
+  - Estimator 2:  $\small (X_1 + X_2+X_3+X_4)/4$
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+library(ggplot2)
+
+set.seed(123)
+n <- 1000
+true_mean <- 10
+data <- matrix(rnorm(4 * n, mean = true_mean, sd = 10), ncol = 4)
+
+# Calculate estimators
+estimator_1 <- (3 * data[, 1] + 1*data[, 2] ) /4
+estimator_2 <- (data[, 1] + data[, 2] + data[, 3]+ data[, 4]) / 4
+
+# Create data frame for plotting
+plot_data <- data.frame(
+  estimator = c(estimator_1, estimator_2),
+  method = rep(c("Estimator 1", "Estimator 2"), each = n)
+)
+
+# Create plot using ggplot2
+p <- ggplot(plot_data, aes(x = estimator, fill = method)) +
+  geom_histogram(binwidth = 1, color = "black", alpha = 0.7) +
+  labs(x = "Estimator Value", y = "Frequency", fill = "Estimator") +
+  theme_xaringan() +
+  scale_fill_manual(values = c("Estimator 1" = "blue", "Estimator 2" = "green"))+
+  facet_wrap(~method)+
+  theme(legend.position = "none")
+
+print(p)
+
+
+```
+
+
+
+
+---
+### Variance of the estimator
+
+- Variance of an estimator is defined as:
+
+$$Var(\hat{\theta})=E[(\hat{\theta}-E[\theta])^2]$$
+- We want the estimator to have low  variance! 
+- Estimator with the lower variance is more efficient
+- In the example above
+
+$$var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})$$
+
+---
+
+### Variance of estimators
+
+####Example 1: Estimator = 5
+-  $\small Var(\hat{\theta}_1) = E[(\hat{\theta}_1 - E[\hat{\theta}_1])^2]=E[(5 - E[5])^2] = 0$
+
+--
+#### Example 2: Estimator = $X_i$
+- $\small  Var(\hat{\theta}_2) = E[(X_i - \mu)^2]=\sigma^2$
+
+--
+#### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
+- $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
+
+--
+#### Example 3: Estimator = $\frac{\sum{X_i}}{n}$
+- $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
+
+---
+
+### Biased Estimator = $s_b^2 = \frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}$
+- Consider the estimator: $\hat{\theta}_6 = s_b^2$
+- We are trying to estimate $\sigma^2$
+
+--
+$$E[\hat{\theta}_6] = E[s_b^2]= E[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n}]=\frac{(n - 1)\sigma^2}{n}$$
+
+--
+- So: 
+
+$$Bias(\hat{\theta}_6)=E[\hat{\theta}_6]-\sigma^2=-\frac{\sigma^2}{n}$$
+
+--
+- We are underestimating the variance
+
+--
+- The sample variance estimator (divided by $\frac{1}{n-1}$) is unbiased:
+
+$$E[\hat{\theta}_7] = E[s^2]= E[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}]=\frac{(n - 1)\sigma^2}{n-1}=\sigma^2$$
+
+
+
+
+
+
+
+
+
+
+
+---
+### Mean Squared Error
+
+***Mean Squared Error*** (MSE) is a summary measure of how good an estimator is:
+
+$$MSE(\hat{\theta})=E[(\hat{\theta}-\theta)^2]$$
+- The lower MSE, the better the estimator
+- It summarizes both the bias and the variance:
+
+\begin{align*}
+\small MSE(\hat{\theta})&=E[(\hat{\theta}-\theta)^2] \\
+& =E[(\hat{\theta}-E(\hat{\theta})+E(\hat{\theta})-\theta)^2]\\
+&= E[(\hat{\theta} - E(\hat{\theta}))^2 + 2(\hat{\theta} - E(\hat{\theta}))(E(\hat{\theta}) - \theta) + (E(\hat{\theta}) - \theta)^2] \\
+&= E[(\hat{\theta} - E(\hat{\theta}))^2] + E[2(\hat{\theta} - E(\hat{\theta}))(E(\hat{\theta}) - \theta)] + E[(E(\hat{\theta}) - \theta)^2] \\
+&= E[(\hat{\theta} - E(\hat{\theta}))^2] + 2(\underbrace{E[\hat{\theta} - E(\hat{\theta})]}_{=0})(E(\hat{\theta}) - \theta) + E[(E(\hat{\theta}) - \theta)^2] \\
+&= \text{var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2
+\end{align*}
+
+- If estimator is unbiased, then $$MSE(\hat{\theta})=\text{var}(\hat{\theta})$$
+---
+
+### Trading Bias for Variance
+
+- Suppose you want to estimate customer's income to know who to target.
+- Red line shows the true value
+- Which of the estimators would you prefer?
+
+```{r, warning=FALSE, fig.height=4.1, out.width='100%'}
+set.seed(123)
+n <- 1000
+true_mean <- 10
+data <- rnorm(n, mean = true_mean, sd = 2)
+
+# Define the number of bootstrap samples
+num_bootstrap <- 1000
+
+# Initialize vectors to store sample estimates
+estimates_efficient <- numeric(num_bootstrap)
+estimates_inefficient <- numeric(num_bootstrap)
+
+# Perform bootstrap to estimate the estimators
+for (i in 1:num_bootstrap) {
+  bootstrap_sample <- sample(data, replace = TRUE)
+  estimates_efficient[i] <- mean(bootstrap_sample) - 0.2+ rnorm(1, mean = 0, sd = 0.1)  # Biased and efficient
+  estimates_inefficient[i] <- mean(bootstrap_sample) + rnorm(1, mean = 0, sd = 1)  # Unbiased but less efficient
+}
+
+# Create data frames for plotting histograms
+hist_data_efficient <- data.frame(value = estimates_efficient, estimator = rep("Efficient Estimator", num_bootstrap))
+hist_data_inefficient <- data.frame(value = estimates_inefficient, estimator = rep("Inefficient Estimator", num_bootstrap))
+
+# Set common x-axis limits
+x_limits <- c(5, 15)
+
+# Create histogram plots using ggplot2
+binwidth <- 0.1
+
+p1 <- ggplot(hist_data_efficient, aes(x = value)) +
+  geom_histogram(binwidth = binwidth, color = "black", fill = "blue", alpha = 0.7) +
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size=2) +
+  labs(x = "Estimator Value", y = "Frequency") +
+  theme_xaringan() +
+  xlim(x_limits)
+
+p2 <- ggplot(hist_data_inefficient, aes(x = value)) +
+  geom_histogram(binwidth = binwidth, color = "black", fill = "purple", alpha = 0.7) +
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size=2) +
+  labs(x = "Estimator Value", y = "Frequency") +
+  theme_xaringan() +
+  xlim(x_limits)
+
+# Arrange plots in a 2x1 grid
+library(gridExtra)
+grid.arrange(p1, p2, ncol = 1)
+
+
+```
+
+
+---
+### Mean Squared Error of sample mean
+
+- How do we know that $\frac{3X_1 + X_2}{4}$ is worse then $\frac{X_1+X_2}{2}$?
+- Both estimators have the form of  $\hat{\theta}=\sum_n c_iX_i$ with $n=2$
+  - They have different weights $c_i$ or in vector form $\mathbf{c}=\{c_1,c_2,..c_n\}$, with $\sum_ic_i=1$
+- Sample mean is the best because for any n and $\mathbf{c}$ such that $\sum_ic_i=1$:
+$$argmin_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=\{\frac{1}{n},\frac{1}{n},..\frac{1}{n}\}$$
+
+And hence
+$$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_i}{n}-\mu)^2]$$
+- That is, for any estimator of $\mu$ of the form $\hat{\theta}=\sum_n c_iX_i$, sample mean has the lowest MSE!
+  - Having different $c_i$ than $\frac{1}{n}$ would increase the MSE
+  
+ 
+---
+### Sampling Distribution
+
+- We know how to determine the mean and the variance of the estimator
+- Can we say anything about the distribution of the estimator?
+- In case of sample mean, yes!
+- That's what **Central limit Theorem** is about, the most exciting theorem in statistcs!
+
+---
+
+### Central Limit Theorem 
+
+- Suppose $X_1,X_2,...,X_n$ are **i.i.d** variables drawn **at random** from a distribution with mean $\mu$ and standard deviation $\sigma$
+
+  - Let $S_n=\sum_nX_n$. Note that: $E[S_n]=n\mu$ and $var(S_n)=\sqrt{n}\sigma$
+  - Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ Note that: $E[\bar{X}_n]=mu$ and $var(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
+  - Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$ Note that: $E[Z_n]=0$ and $var(Z_n)=1$
+
+- **Central Limit Theorem** says that **for large n**:
+
+$$S_n \sim \mathcal{N}(\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \sim \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \sim \mathcal{N}(0,1)$$
+- For large samples ( $n>30$ ) sample mean is normally distributed with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$ 
+
+---
+### Central Limit Theorem 
+
+- The original distribution of $X_i$ does not matter
+- Larger **n**, tighter distribution around the mean 
+- Smaller ** $\sigma$ **, tighter distribution around the mean 
+`r knitr::include_url('https://seeing-theory.brown.edu/probability-distributions/index.html#section3', height='480px')`
+.footmark[
+  Source: [https://seeing-theory.brown.edu/probability-distributions/index.html#section3)
+]
+
+
+---
+What if it's a discrete variable?
+- Let $X_i\sim \text{Bernoulli}(p=0.5)$. Here is the distribution of $\bar{X}_n$:
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Set the number of repetitions and the sample sizes
+reps <- 10000
+sample.sizes <- c(5, 20, 75, 100)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Set smaller margin values to decrease space
+par(mfrow = c(2, 2), mar = c(3, 3, 2, 1))  # Set mar = c(bottom, left, top, right)
+
+# Outer loop (loop over the sample sizes)
+for (n in sample.sizes) {
+  
+  samplemean <- rep(0, reps) # Initialize the vector of sample means
+  stdsamplemean <- rep(0, reps) # Initialize the vector of standardized sample means
+
+  # Inner loop (loop over repetitions)
+  for (i in 1:reps) {
+    x <- rbinom(n, 1, 0.5)
+    samplemean[i] <- mean(x)
+    stdsamplemean[i] <- sqrt(n) * (mean(x) - 0.5) / 0.5
+  }
+
+  # Plot histogram and overlay the N(0,1) density in every iteration
+  hist(samplemean, 
+       col = "steelblue", 
+       freq = FALSE, 
+       breaks = 40,
+       xlim = c(0, 1), 
+       ylim = c(0, 10), 
+       xlab = paste("n =", n), 
+       main = "")
+}
+
+# Reset par to its default settings
+par(mfrow = c(1, 1))
+```
+- What is the variance?
+
+--
+- $var(\bar{X}_n)=\frac{\sigma}{\sqrt n}=\frac{\sqrt{p(1-p)}}{\sqrt n}=\frac{0.5}{\sqrt n}$
+---
+### Central Limit Theorem 
+What happens if some assumptions are not respected?
+- .blue[Random draws] means that each member of the population has equal chance of being selected 
+- Keep in mind that some values occur more often in the population than others
+- More members with this value - higher chance of this value being sampled
+
+--
+
+**Example**
+- Imagine you are evaluating a new skincare product to determine how people like it (on scale 1-5)
+- However, you can only access online reviews
+- The mean rating you calculated is 2.5
+- Is it low because people don't like or because of other reason?
+---
+### Central Limit Theorem 
+Suppose that this is the true distribution: 
+.pull-left[
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Set the number of repetitions and the sample sizes
+true_probabilities <- c(0.05, 0.1, 0.3, 0.3, 0.25)
+rating_levels <- 1:5
+true_mean <- sum(rating_levels * true_probabilities)
+# Create a bar plot for the true distribution of ratings
+ggplot(data.frame(Rating = factor(rating_levels), Probability = true_probabilities),
+       aes(x = Rating, y = Probability, fill = Rating))+
+  geom_bar(stat = "identity") +
+  labs(x = "Rating", y = "Frequency") +
+  theme_xaringan()+scale_xaringan_fill_discrete()+
+  theme(legend.position = "none")+
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size=2)
+```
+- But people who post online are more likely to be unhappy
+- Suppose you are twice more likely to post if your rating is 1 or 2
+- **Sample is not at random** from the population of customers
+- Sampling distribution of the mean would look like this:
+]
+
+.pull-right[
+```{r, warning=FALSE, fig.height=8, out.width='100%'}
+# Set the number of repetitions and the sample sizes
+# Set seed for reproducibility
+set.seed(123)
+
+# True distribution probabilities (increased likelihood of low ratings)
+true_probabilities <- c(0.2, 0.2, 0.3, 0.15, 0.15)
+rating_levels <- 1:5
+
+# Simulate online reviews (biased sampling)
+biased_reviews <- c(rep(sample(1:5, size = 300, replace = TRUE, prob = true_probabilities), 2),
+                    rep(sample(1:5, size = 100, replace = TRUE, prob = true_probabilities), 2))
+
+# Calculate mean for different sample sizes
+sample_sizes <- c(10, 100)
+means <- sapply(sample_sizes, function(n) replicate(10000, mean(sample(biased_reviews, size = n))))
+
+# Create plots for the sampling distribution of the mean
+plot_list <- lapply(1:2, function(i) {
+  ggplot(data.frame(SampleMean = means[, i]), aes(x = SampleMean)) +
+    geom_histogram(binwidth = 0.1, color = "black", fill = "blue", alpha = 0.7) +
+    labs(title = paste("Sampling Distribution (n =", sample_sizes[i], ")"),
+         x = "Sample Mean", y = "Frequency") +
+    theme_xaringan()+xlim(1,5)
+})
+
+# Display plots using cowplot package (install it if needed)
+if (!requireNamespace("cowplot", quietly = TRUE)) {
+  install.packages("cowplot")
+}
+library(cowplot)
+
+plot_grid(plotlist = plot_list, nrow = 2)
+```
+It's not centered at the correct value, no matter n !
+]
+
+---
+### Central Limit Theorem 
+Example 2 
+What happens if some assumptions are not respected?
+- .blue[IID] means one draw does not change likelihood of other draws
+
+**Example**
+- Suppose you want to learn what's an average speed of internet in CDMX
+- You choose at random the first apartment to measure the speed
+- For the rest of the observations, you stay in the same building and measure at neighbors apartments
+
+
+---
+### Central Limit Theorem 
+.pull-left[
+Suppose that this is the true distribution of speed: 
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Set the number of repetitions and the sample sizes
+true_speeds <- c(rnorm(500, mean = 10, sd = 2),rnorm(500, mean = 30, sd = 6))
+true_mean <- mean(true_speeds)
+# Create a histogram to show the distribution of speeds
+ggplot(data.frame(Speed = true_speeds), aes(x = Speed)) +
+  geom_density(color = "black", fill = "blue", alpha = 0.7) +
+  labs(x = "Internet Speed", y = "Density") +
+  theme_xaringan()+
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size = 2)
+
+```
+- Speed across neighbors in the same building is likely correlated
+- Observations are **not independent** 
+- Sampling distribution of the mean would look like this:
+]
+
+.pull-right[
+```{r, warning=FALSE, fig.height=8, out.width='100%'}
+# Set the number of repetitions and the sample sizes
+# Set seed for reproducibility
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Simulate potential true distribution of internet speeds in Mexico City
+true_speeds <- c(rnorm(500, mean = 10, sd = 2),rnorm(500, mean = 30, sd = 6))
+
+# Calculate the true mean
+true_mean <- mean(true_speeds)
+true_sd <- sd(true_speeds)
+
+cor_value=0.9
+num_vars=10
+# Custom function to generate correlated samples
+generate_correlated_samples <- function(n, num_vars, cor_value) {
+  cov_matrix <- matrix(cor_value, nrow = num_vars, ncol = num_vars)
+  diag(cov_matrix) <- 1
+  cov_matrix=true_sd*cov_matrix
+  correlated_samples <- MASS::mvrnorm(n, mu = rep(true_mean, num_vars), Sigma = cov_matrix)
+  col_means <- mean(correlated_samples)
+  col_means
+}
+
+# Simulate samples for n = 10
+n <- 1
+cor_values <- c(0.9, 0)  # Use 0 correlation for independent case
+num_samples <- 10000
+sample_means <- lapply(cor_values, function(cor_values) {
+  replicate(num_samples, generate_correlated_samples(n, num_vars, cor_values) )
+})
+
+# Combine both samples (correlated and independent)
+all_sample_means <- c(sample_means[[1]], sample_means[[2]])
+
+# Create a factor variable to distinguish between correlated and independent samples
+sample_type <- rep(c("Correlated", "Independent"), each = num_samples)
+
+# Create a data frame for plotting
+plot_data <- data.frame(SampleMean = unlist(all_sample_means), SampleType = sample_type)
+
+# Create a plot with density and histogram on the same graph
+ggplot(plot_data, aes(x = SampleMean, fill = SampleType)) +
+  geom_histogram(data = subset(plot_data, SampleType == "Correlated"),
+                 aes(y = ..density..),
+                 binwidth = 0.5, color = "black", alpha = 0.5, position = "identity") +
+  geom_density(data = subset(plot_data, SampleType == "Independent"),
+               aes(y = ..density.. ), color = "red") +
+  labs(x = "Sample Mean", y = "Density", fill = "Sample Type") +
+  scale_fill_manual(values = c("blue", "red")) +
+  theme_xaringan()+theme(legend.position = "bottom")
+```
+Variance is wider than implied by CLT!
+]
+
+
+---
+### Random Normal Distribution
+
+Consider the event that a customer who opened the DiDi app will call the car.  Suppose X and Y represent the events that a customer calls a car in Cancun (X) and Puerto Vallarta (Y) respectively. 
+- X and Y are Bernoulli variables with probabilities 0.4 and 0.6 respectively
+- Suppose you have a random (iid) sample  of 100 customers opening the app from Cancun and 80 from Puerto Vallarta. 
+- What is the probability that more than 100 people will call the car?
+
+**Reminders**
+
+$$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant, then } X + c \sim \mathcal{N}(\mu + c, \sigma)$$
+$$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant, then } cX \sim \mathcal{N}(c\mu, |c|\sigma)$$
+$$\text{If } X \sim \mathcal{N}(\mu_1, \sigma_1^2) \text{ and } Y \sim \mathcal{N}(\mu_2, \sigma_2^2), \text{ then } X + Y \sim \mathcal{N}(\mu_1 + \mu_2, \sqrt{\sigma_1^2 + \sigma_2^2})$$
+
+'s delve into the mathematical transformation and visualize how it unfolds.
+
+---
+
+## From Normal to Chi-Square
+- We start with the standard random normal distribution N(0, 1).
+- The transformation $\smallX = Z^2$ gives rise to the Chi-Square distribution with 1 degree of freedom $\small\chi^2(1)$.
+- The expectation of $\small\chi^2(1)$ is $\small E[X]=E[Z^2]=Var(Z)+E[Z]^2=Var(Z)=1$
+- The variance of $\small\chi^2(1)$ is $\small var(X)=2$
+
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
+library(ggplot2)
+
+# Generate random data from standard normal distribution
+set.seed(42)
+z <- rnorm(100000, mean = 0, sd = 1)
+
+# Calculate squared values
+x <- z^2
+
+# Create histogram
+# Create histogram
+p1 <- ggplot(data.frame(x), aes(x = x)) +
+  geom_density(fill = "blue", color = "black") +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  labs(x = "Value of X",
+       y = "Density")+
+  theme_xaringan()
+p1
+```
+
+
+
+---
+
+## Visualizing the Connection
+- The shaded areas represent probability that $X=Z^2>1$ 
+- Shaded areas are the same in both graphs
+
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Generate random data from standard normal distribution
+set.seed(42)
+z <- rnorm(100000, mean = 0, sd = 1)
+
+# Calculate squared values
+x <- z^2
+par(mfrow = c(1, 2))
+
+# Calculate histogram, but do not draw it
+my_hist=hist(z , breaks=200  , plot=F)
+my_hist$counts=my_hist$counts/sum(my_hist$counts)
+# Color vector
+my_color= ifelse(my_hist$breaks < -1, "purple", ifelse (my_hist$breaks >=1, "purple", rgb(0.2,0.2,0.2,0.2) ))
+# Final plot
+plot(my_hist, col=my_color , border=F , main="Standard Normal", ylab="Density" , xlim=c(-4,4))
+
+
+# Create plot for Chi-Square distribution
+my_hist=hist(x , breaks=200  , plot=F)
+my_hist$counts=my_hist$counts/sum(my_hist$counts)
+# Color vector
+my_color= ifelse(my_hist$breaks >1, "purple", rgb(0.2,0.2,0.2,0.2) )
+  # Final plot
+plot(my_hist, col=my_color , border=F , main="Chi(1)", ylab="Density" , xlim=c(0,6))
+
+par(mfrow = c(1, 1))
+```
+
+
+---
+
+## Chi-Square and the Sum of Random Normals
+- More generally, sum of n iid squared standard normal variables is distributed as Chi-Square with n degrees of freedom
+- $\small \sum_n{Z^2}\sim \chi^2(n)$
+- The expectation of $\small\chi^2(n)$ is $\small E[X(n)]=E[\sum_n Z_i^2]=\sum_n Var(Z_i)=n$
+- The variance of $\small\chi^2(n)$ is $\small var(X)=2n$
+<center>
+<img src=chi_sq.png width="400">
+</center>
+
+--
+- Why the shapes converges to normal with large n? 
+
+--
+- Because of CLT - it's sum of random variables

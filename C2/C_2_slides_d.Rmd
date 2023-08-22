@@ -1,0 +1,773 @@
+---
+title: 'Class 2d: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncremdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==entalSlides: true
+      fig.retina: 2
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(reshape2)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+library(patchwork)
+options(scipen = 999)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+load("Data/Health_data.Rda")
+
+```
+
+---
+
+layout: false
+class: inverse, middle
+
+
+# Summarizing Data 
+## Comparisions and Associations
+
+
+
+---
+
+##Comparisions
+
+- Descriptive and visual comparisons
+
+--
+- NOT declaring statistically significant differences, just eyeballing
+
+--
+- That's coming next
+
+
+---
+
+###Comparing categorical variables
+
+####Does mother's diabetes predict diabetes?
+
+- We have two categorical variables
+- We can use frequency table to see how diabetes is distributed among groups with healthy vs diabetic mother
+
+```{r 1, out.width='100%', fig.height=3, warning=FALSE}
+
+Health_data$diabetes <- factor(Health_data$diabetes, levels = c(0, 1), labels = c("No", "Yes"))
+Health_data$Mother_diabetes <- factor(Health_data$Mother_diabetes, levels = c(0, 1), labels = c("No", "Yes"))
+
+# Create a frequency table
+frequency_table <- table( Health_data$Mother_diabetes,Health_data$diabetes)
+
+# Add variable names to row and column names
+col_names <- c( "No Diabetes","Has Diabetes")
+row_names <- c( "Mother No Diabetes","Mother Has Diabetes")
+rownames(frequency_table) <- row_names
+colnames(frequency_table) <- col_names
+
+
+table_output <- kable(frequency_table, format = "html", caption = "") %>%
+  kable_styling("striped", full_width = FALSE) 
+
+table_output 
+```
+
+---
+###Comparing categorical variables
+
+####Does mother's diabetes predict diabetes?
+
+- Are relative frequencies more helpful?
+- Share of each subgroup within the sample
+
+```{r 2, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE, results = 'hide'}
+
+relative_frequency_table = round(frequency_table/nrow(Health_data),2)
+
+# Add row and column margins to the relative frequency table
+relative_frequency_table_with_margins <- addmargins(relative_frequency_table, FUN = list("Total" = sum))
+
+
+# Use kable() to create a table with relative frequencies and margins
+table_output <- kable(relative_frequency_table_with_margins, format = "html", caption = "", digits=2) %>%
+  kable_styling("striped", full_width = FALSE)
+
+
+```
+
+```{r 2a, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+table_output
+```
+
+--
+
+- Can we compare numbers in the *Has Diabetes* column?
+
+--
+- **Marginal frequencies** are total probabilities by group
+
+
+---
+
+
+#### Table of frequency
+
+
+- We want to compare whether someone with diabetic mother is more likely to have diabetes than someone with healthy mother
+
+--
+- So we want to see whether: $$ \scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)>P(Diabetes_i=1|\text{Mother has diabetes}_i=0)$$
+
+--
+- We want to look at the **relative conditional frequencies**
+- They are usually in **contingency tables**
+  - Share with diabetes within group of people whose mothers have diabetes
+  - Share with diabetes within group of people whose mothers are healthy
+
+
+--
+```{r 2c, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+frequency_table <- table( Health_data$Mother_diabetes,Health_data$diabetes)
+
+# Add variable names to row and column names
+col_names <- c( "No Diabetes","Has Diabetes")
+row_names <- c( "Mother No Diabetes","Mother Has Diabetes")
+rownames(frequency_table) <- row_names
+colnames(frequency_table) <- col_names
+
+# Calculate relative frequencies
+total_rows <- rowSums(frequency_table)
+prop_table <- frequency_table / total_rows
+
+table_output <-kable(prop_table, format = "html", caption = "", digits=2) %>%
+  kable_styling("striped", full_width = FALSE)
+table_output
+```
+
+
+
+--
+- What about marginal frequencies here?
+  - Row sums should add up to 1
+      - $\scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)+P(Diabetes_i=0|\text{Mother has diabetes}_i=1)$
+  - Column sums are meaningless
+      - $\scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)+P(Diabetes_i=1|\text{Mother has diabetes}_i=0)$
+
+
+
+---
+- We can visualize it on a barplot
+
+.center[
+```{r 2d, out.width='100%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
+
+summary_table <- table(Health_data$Mother_diabetes, Health_data$diabetes)
+prop_table <- prop.table(summary_table, margin = 1)
+prop_df <- as.data.frame(prop_table)
+
+# Renaming columns for better labels
+colnames(prop_df) <- c("Mother Has Diabetes", "Has Diabetes", "Proportion")
+
+
+# Reshaping the dataframe for plotting
+
+
+
+# Creating the bar plot using ggplot2
+p=ggplot(prop_df, aes(x = `Has Diabetes`, y = Proportion, fill = `Mother Has Diabetes`)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Has Diabetes", y = "Proportion", fill = "Mother has Diabetes") +
+  theme(legend.position = "top")+
+  theme_xaringan()+scale_xaringan_fill_discrete()
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+```
+]
+---
+
+- Or better on a **stacked barplot**
+
+.center[
+```{r 2e, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+summary_table <- table(Health_data$Mother_diabetes, Health_data$diabetes)
+prop_table <- prop.table(summary_table, margin = 1)
+prop_df <- as.data.frame(prop_table)
+
+# Renaming columns for better labels
+colnames(prop_df) <- c("Mother Has Diabetes", "Has Diabetes", "Proportion")
+
+
+# Reshaping the dataframe for plotting
+
+
+
+# Creating the bar plot using ggplot2
+p=ggplot(prop_df, aes(fill = `Has Diabetes`, y = Proportion, x = `Mother Has Diabetes`)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Mother has Diabetes", y = "Proportion", fill = "Has Diabetes") +
+  theme(legend.position = "top")+
+  theme_xaringan()+scale_xaringan_fill_discrete()
+
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+```
+]
+
+- *Stacked barplot* clearly shows the distribution of diabetes within each group
+
+- Does it mean that having diabetic mother **causes** higher change of having diebetes?
+---
+
+### Comparing quantitative variables
+#### Discrete variables
+
+
+- For quantitative variables we can compare some summary statistics
+ - *Example* means in two subpopulations
+ - Are people older with diabetes older than people without it?
+
+
+--
+```{r 2f, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+mean_age_by_location <- Health_data %>%
+  group_by(diabetes) %>%
+  summarize(mean_age = mean(age))
+
+# Reshaping the dataframe for plotting
+
+
+
+# Creating the bar plot using ggplot2
+p=ggplot(mean_age_by_location, aes(x = diabetes, y = mean_age, fill = diabetes)) +
+  geom_bar(stat = "identity") +
+  labs(title = "",
+       x = "Diabetes",
+       y = "Mean Age") +
+  theme_xaringan()+scale_xaringan_fill_discrete()
+
+ggplotly(p,
+        width = 600,   # Adjust the width according to your preference
+        height = 400)
+```
+
+---
+
+### Comparing quantitative variables
+#### Discrete variables
+
+- Or we can do Box and Whiskers plots as before
+- Or we can compare the whole distributions of frequencies
+
+```{r 2g, out.width='100%', fig.height=3.8, warning=FALSE, echo=FALSE, message=FALSE}
+
+ggplot(Health_data, aes(x = age, fill = factor(diabetes))) +
+  geom_bar() +
+  facet_wrap(~ diabetes, ncol = 1, 
+             labeller = labeller(diabetes = c("No" = "No Diabetes", "Yes" = "Diabetes")),
+             scales = "free_y") +
+  labs(x = "Age",
+       y = "Frequency") +
+  theme_xaringan()+scale_xaringan_fill_discrete()+theme(legend.position="none")
+```
+
+---
+#### Continous variables
+- For continuous variables we can use the same methods (except frequency distribution) 
+- Instead, we can compare densities or histograms
+- Are men heavier than women?
+
+--
+.center[
+```{r 2ha, out.width='100%', fig.height=3.8, warning=FALSE, echo=FALSE, message=FALSE}
+
+ggplot(Health_data, aes(x = weight, fill=gender)) +
+  geom_histogram(binwidth = 3, position = "identity", alpha = 0.7) +
+  facet_wrap(~ gender, ncol = 1,
+             scales = "free_y") +
+  labs(
+       x = "Age",
+       y = "Count") +
+  theme_xaringan()+scale_xaringan_fill_discrete()+theme(legend.position="none")
+
+
+```
+]
+
+
+---
+## Association
+
+
+- Likely people would subscribe to the website to lose weight
+
+--
+
+- But do these people have resources?
+
+--
+
+- What is the relationship between Body Mass Index (BMI) and Income?
+
+--
+
+- More generally, how to measure .blue[association between two quantitative variables]
+
+--
+
+- Association between qualitative variables is measured with contingency tables 
+
+```{r 2k, out.width='100%', fig.height=3.8, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Load required library
+# Load required library
+set.seed(123)
+
+# Number of observations per city
+n <- 200
+
+# Create data for Mexico City
+mexico_city <- data.frame(
+  City = rep("Mexico City", n),
+  BMI = round(rnorm(n, mean = 24, sd = 8),2),   # Mean BMI around 25, SD = 3
+  Education = round(rnorm(n, mean = 12, sd = 2.5),1),  # Mean Education around 12 years, SD = 2
+  Income = round(rnorm(n, mean = 180000, sd = 10000),2)  # Mean Income around 40000, SD = 10000
+)
+
+# Create data for Guadalajara
+guadalajara <- data.frame(
+  City = rep("Guadalajara", n),
+  BMI = round(rnorm(n, mean = 26, sd = 8),2),   # Mean BMI around 25, SD = 3
+  Education = round(rnorm(n, mean = 12, sd = 2.5),1),  # Mean Education around 12 years, SD = 2
+  Income = round(rnorm(n, mean = 120000, sd = 8000),2)  # Mean Income around 60000, SD = 8000
+)
+
+
+# Add some positive correlation to the Income and Education variables in Guadalajara
+guadalajara$Income <- guadalajara$Income - 5000 * guadalajara$BMI + 16000 * guadalajara$Education
+mexico_city$Income <- mexico_city$Income - 2000 * mexico_city$BMI + 16000 * mexico_city$Education
+
+
+
+# Combine the updated Guadalajara data with Mexico City data
+dataset <- rbind(mexico_city, guadalajara)
+
+
+```
+
+---
+### Associations
+
+- Suppose we surveyed people from Guadalajara and CDMX about their .blue[BMI], .blue[education] and .blue[income]. 
+- Scatter plots show associations between two quantitative variables
+  - We put variables of interest (*example*: Y and X) on the axis
+  - We place observation on the cartesian plane using their values of variable X and Y: $\{(x_1,y_1),(x_2,y_2)..\}$
+- In our case: 
+    - X axis is BMI
+    - Y axis is Income
+    - An individual $i$ is placed on these axis based on $(BMI_i, Income_i)$
+
+
+```{r 2l, out.width='95%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+datatable(dataset,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 4,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+
+---
+
+```{r 2z, out.width='90%', fig.height=8, warning=FALSE, echo=FALSE, message=FALSE}
+p=ggplot(data = dataset, aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI", y = "Income",
+       color = "City") +
+  theme_xaringan()+
+   geom_segment(data = dataset[100, ],
+               aes(xend = BMI, yend = Income, x = BMI, y = 0), 
+               linetype = "dashed", color = "blue") +
+  geom_segment(data = dataset[100, ],
+               aes(xend = BMI, yend = Income, x = 0, y = Income), 
+               linetype = "dashed", color = "blue") +
+  geom_point(data = dataset[100, ],
+             aes(x = BMI, y = Income), color = "red", size = 3) +
+  geom_text(data = dataset[100, ],
+            aes(label = paste("(", BMI, ",", Income, ")")), 
+            vjust = -1, size=7) +
+  theme(legend.position = "none")
+
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 700)
+
+```
+
+---
+### Assocations
+
+- Would you say that the relationship is stronger in Guadalajara or in Mexico City?
+
+```{r 2h, out.width='80%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
+ggplot(data = dataset, aes(x = BMI, y = Income, color = City)) +
+  geom_point() +
+  labs(x = "BMI", y = "Income",
+       color = "City") +
+  theme_xaringan()+
+  facet_wrap(~City)+
+  theme(legend.position = "none")
+```
+
+- How to measure the strength of the relationship?
+
+---
+### Associations
+#### Covariance
+
+- **Covariance** measures the strength of the relationship between two variables. 
+
+$$\text{Cov}(X, Y) = \frac{1}{N} \sum_{i=1}^{N} (x_i - \mu_X)(y_i - \mu_Y)$$
+
+And it's sample equivalent is: 
+
+$$\hat{\text{Cov}}(X, Y) = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})$$
+--
+- Covariance whether the two variables move together
+
+--
+- Covariance increases when:
+  - The relationship is stronger
+  - The deviations of variables are larger
+
+
+---
+
+`r knitr::include_url('https://shiny.rit.albany.edu/stat/rectangles/', height='550px')`
+
+.footmark[
+  Source: [https://shiny.rit.albany.edu/stat/rectangles/](https://shiny.rit.albany.edu/stat/rectangles/)
+]
+
+---
+### Covariance
+
+```{r 2zz, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Calculate covariances for each city
+cov_mexico <- cov(dataset$BMI[dataset$City == "Mexico City"], dataset$Income[dataset$City == "Mexico City"])
+cov_guadalajara <- cov(dataset$BMI[dataset$City == "Guadalajara"], dataset$Income[dataset$City == "Guadalajara"])
+
+# Create individual plots with annotations
+plot_mexico <- ggplot(data = subset(dataset, City == "Mexico City"), aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI CDMX", y = "Income") +
+  annotate("text", x = 27, y = 0, label = paste("Cov:", round(cov_mexico, 2)), color = "blue")+
+  theme_xaringan()+
+  xlim(0,50)+ylim(-100000,400000)
+  
+
+plot_guadalajara <- ggplot(data = subset(dataset, City == "Guadalajara"), aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI GDL", y = "") +
+  annotate("text", x = 27, y = 0, label = paste("Cov:", round(cov_guadalajara, 2)), color = "red")+
+  theme_xaringan()+
+  xlim(0,50)+ylim(-100000,400000)
+
+# Combine the plots using patchwork
+combined_plot <- plot_mexico + plot_guadalajara +
+  plot_layout(ncol = 2, widths = c(1, 1.2))
+
+# Display the combined plot
+print(combined_plot)
+```
+
+---
+### Covariance
+
+- What has stronger relationship with Income: BMI or Years of Education?
+
+```{r 2zzza, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Calculate covariances for each city
+cov_mexico <- cov(dataset$Education, dataset$Income)
+cov_guadalajara <- cov(dataset$BMI, dataset$Income)
+
+# Create individual plots with annotations for covariances
+plot_education <- ggplot(data = dataset, aes(x = Education, y = Income)) +
+  geom_point() +
+  labs(x = "Yrs of Educ.", y = "Income") +
+  geom_text(data = data.frame(x = 30, y = 0, label = paste("Cov (Education):", round(cov_mexico, 2))), aes(x, y, label = label), color = "blue") +
+  theme_xaringan()+
+  xlim(0,50)
+
+plot_bmi <- ggplot(data = dataset, aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI", y = "") +
+  geom_text(data = data.frame(x = 30, y = 0, label = paste("Cov (BMI):", round(cov_guadalajara, 2))), aes(x, y, label = label), color = "red")+
+  theme_xaringan()+
+  xlim(0,50)
+
+# Combine the plots using patchwork
+combined_plot <- plot_education + plot_bmi +
+  plot_layout(ncol = 2, widths = c(1, 1))
+
+# Display the combined plot
+print(combined_plot)
+
+```
+
+- BMI has larger covariance
+
+--
+- But we can't compare covariances of different variables
+
+--
+- Covariance depends on the scales (or units) of the variable
+
+--
+- All else equal, larger standard deviation implies larger covariance
+  - The squares are just bigger
+
+---
+
+### Correlation
+
+- **Correlation measures** the strength of a linear relationship between two variables.
+- It ranges between -1 and 1 
+
+**Population Correlation coefficient**:
+$$\rho(X, Y) = \frac{\text{Cov}(X, Y)}{\sigma_X \cdot \sigma_Y}$$
+
+
+**Sample Correlation coefficient**:
+
+$$\hat{\rho}(X, Y) = \frac{\hat{\text{Cov}}(X, Y)}{s_X \cdot s_Y}$$
+Where $s_X = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2}$
+
+
+---
+### Correlation
+
+- Correlation is preferred over covariance because it's **scale-independent** and easier to interpret.
+- Suppose that instead of measuring income (Y variable) in MXN , we measure it in Dollars. 
+ - $Z$ income in dollars $Z=\frac{Y}{16}$
+ 
+--
+- Is $Cov(X,Z)=Cov(X,Y)$?
+
+\begin{align*}
+cov(X,Z) &=\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu_X)(z_i - \mu_Z) \\
+&=\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu_X)(\frac{y_i}{16}- \frac{\mu_Y}{16}) \\
+&=\frac{1}{16}\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu_X)(y_i- \mu_Y) \\
+& \neq cov(X,Y)
+\end{align*}
+
+
+---
+### Correlation
+
+- Correlation is preferred over covariance because it's **scale-independent** and easier to interpret.
+
+- Suppose that instead of measuring income (Y variable) in MXN , we measure it in Dollars. 
+ - $Z$ income in dollars $Z=\frac{Y}{16}$
+ 
+--
+- Is $\rho(X,Z)=\rho(X,Y)$?
+
+
+
+\begin{align*}
+\rho(X,Z) &=\frac{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu_X)(z_i - \mu_Z))}{\sqrt{\sum_{i=1}^{N} (x_i - \mu_X)^2} \cdot \sqrt{\sum_{i=1}^{N} (z_i - \mu_Z)^2}} \\
+&=\frac{\frac{1}{N} \sum_{i=1}^{N} \sum_{i=1}^{N} (x_i - \mu_X)(\frac{y_i}{16}- \frac{\mu_Y}{16})}{\sqrt{\sum_{i=1}^{N} (x_i - \mu_X)^2} \cdot \sqrt{\sum_{i=1}^{N} (\frac{y_i}{16} - \frac{\mu_Y}{16})^2}} \\
+&=\frac{\frac{1}{16} \frac{1}{N} \sum_{i=1}^{N} \sum_{i=1}^{N} (x_i - \mu_X)(y_i- \mu_Y)}{\frac{1}{16} \sqrt{\sum_{i=1}^{N} (x_i - \mu_X)^2} \cdot \sqrt{\sum_{i=1}^{N} (y_i - \mu_Y)^2}} \\
+& = \rho(X,Y)
+\end{align*}
+
+
+---
+### Correlation
+
+- Correlation with education is actually stronger
+
+```{r 2zzz, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+# Calculate covariances for each city
+cov_mexico <- cor(dataset$Education, dataset$Income)
+cov_guadalajara <- cor(dataset$BMI, dataset$Income)
+
+# Create individual plots with annotations for covariances
+plot_education <- ggplot(data = dataset, aes(x = Education, y = Income)) +
+  geom_point() +
+  labs(x = "Yrs of Educ.", y = "Income") +
+  geom_text(data = data.frame(x = 30, y = -100000, label = paste("Cor (Education):", round(cov_mexico, 2))), aes(x, y, label = label), color = "blue") +
+  theme_xaringan()+
+  xlim(0,50)
+
+plot_bmi <- ggplot(data = dataset, aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI", y = "") +
+  geom_text(data = data.frame(x = 30, y = -100000, label = paste("Cor (BMI):", round(cov_guadalajara, 2))), aes(x, y, label = label), color = "red")+
+  theme_xaringan()+
+  xlim(0,50)
+
+# Combine the plots using patchwork
+combined_plot <- plot_education + plot_bmi +
+  plot_layout(ncol = 2, widths = c(1, 1))
+
+# Display the combined plot
+print(combined_plot)
+
+```
+
+
+
+---
+```{r 2zzzz, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+library(plotly)
+
+# Set random seed for reproducibility
+set.seed(123)
+
+# Generate data
+n <- 100
+
+xlim <- c(-4, 4)
+ylim <- c(-8, 8)
+
+# Positive correlation
+x1 <- rnorm(n)
+y1 <- x1 + rnorm(n)
+plot1 <- plot_ly(x = x1, y = y1, text = paste("correlation:",round(cor(x1, y1), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+# Negative correlation
+x2 <- rnorm(n)
+y2 <- -x2 + rnorm(n)
+plot2 <- plot_ly(x = x2, y = y2, text = paste("correlation:", round(cor(x2, y2), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+# No correlation
+x3 <- rnorm(n)
+y3 <- rnorm(n)
+plot3 <- plot_ly(x = x3, y = y3, text = paste("correlation:",round(cor(x3, y3), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+x_base <- rnorm(n)
+y_base <- x_base + rnorm(n)
+
+cor_base <- cor(x_base, y_base)
+
+# Create the first plot with slope 2 by scaling the base relationship
+x4 <- x_base
+y4 <- 2 * y_base
+plot4 <- plot_ly(x = x4, y = y4, text = paste("correlation:",round(cor(x4, y4), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+# Create the second plot with slope 0.5 by scaling the base relationship
+x5 <- 2 * x_base
+y5 <- y_base
+plot5 <- plot_ly(x = x5, y = y5, text = paste("correlation:",round(cor(x5, y5), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+# Non-linear relationship with near zero correlation
+x6 <- seq(-2*pi, 2*pi, length.out = n)
+y6 <- sin(x6) + rnorm(n, sd=0.5)
+plot6 <- plot_ly(x = x6, y = y6, text = paste("correlation:",round(cor(x6, y6), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+
+# Negative correlation
+
+# Combine plots into a single plot with multiple subplots (in 2 rows)
+subplot(plot1, plot2, plot3, plot4, plot5, plot6, nrows = 2, margin = 0.02)
+
+```
+
+---
+### Correlation
+
+1. Correlation is a value between -1 and 1: $-1 \leq \rho(X, Y) \leq 1$.
+
+--
+2. Perfect positive correlation: $\rho = 1$. Perfect negative correlation: $\rho = -1$.
+
+--
+3. No linear correlation: $\rho = 0$, but this doesn't imply independence.
+
+--
+4. Correlation measures **linear** relationships; nonlinear relationships might not be accurately captured.
+
+--
+5. Correlation doesn't imply causation; a relationship could be coincidental.
+

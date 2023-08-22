@@ -1,0 +1,965 @@
+---
+title: 'Class 2c: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncremdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==entalSlides: true
+      fig.retina: 2
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(gridExtra)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(ggdist)
+library(readr)
+library(ggplot2)
+library(tidyverse)
+library(cowplot)
+library(dplyr)
+library(xaringan)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+load("Data/Health_data.Rda")
+
+```
+
+---
+
+layout: false
+class: inverse, middle
+
+
+# Summarizing Data 
+## Summary Statistics
+
+
+---
+# Measures of Dispersion
+
+- How much variation there is in the data?
+
+## Range
+
+- **Range** the difference between minimum and maximum value in the data 
+
+
+$$R=x_{max}-x_{min}$$
+
+
+--
+
+- What is the difference between the oldest and the youngest person with diabetes? 
+- **R**=`r max(Health_data[Health_data$diabetes==1,]$age)-min(Health_data[Health_data$diabetes==1,]$age)`=`r format(round(max(Health_data[Health_data$diabetes==1,]$age),2))`-`r format(round(min(Health_data[Health_data$diabetes==1,]$age),2))`
+
+
+---
+- Very sensitive to outliers
+
+
+```{r 11, out.width='100%', fig.height=5, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
+
+# Generate normal distributed data with mean 40 and sd 10
+set.seed(123)  # for reproducibility
+num_values <- 50
+values <- rnorm(num_values, mean = 40, sd = 10)
+data_initial <- data.frame(Values = values)
+
+# Calculate range for initial dataset
+range_initial <- range(values)
+
+plot_initial <-  ggplot(data_initial, aes(x = Values)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = range_initial[1], y = 0.7, x = range_initial[2], yend = 0.7), color = "blue", size = 1.5) +
+  geom_text(aes(x = round(c(range_initial[2] - range_initial[1]),2), y = 0.75, label = paste("Range: ", round(c(range_initial[2] - range_initial[1]),2))), 
+            color = "blue", size = 6, vjust = -1) +
+  labs(title = "", x = "Values", y = "Density")+theme_xaringan()+
+  xlim(0,110)
+
+# Modify one observation
+modified_values <- c(values[-which.max(values)], 100)  # Replace last value with an outlier
+data_modified <- data.frame(Values = modified_values)
+
+# Calculate range for modified dataset
+range_modified <- range(modified_values)
+
+plot_modified <-  ggplot(data_modified, aes(x = Values)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = range_modified[1], y = 0.7, x = range_modified[2], yend = 0.7), color = "blue", size = 1.5) +
+  geom_text(aes(x = round(range_modified[2] - range_modified[1],2)), y = 0.75, label = paste("Range: ", round(range_modified[2] - range_modified[1],2)), 
+            color = "blue", size = 6, vjust = -1) +
+  labs(title = "", x = "Values", y = "Density")+theme_xaringan()+
+  xlim(0,110)
+
+
+combined_plot <- plot_grid(plot_initial, plot_modified, labels = c("A", "B"), nrow = 2)
+
+# Print the combined plot
+print(combined_plot)
+
+
+```
+
+---
+## Interquartile Range
+- **Interquartile range** is the difference between the first and the third quartile of the data:
+$$IQR=q_3-q_1$$
+- What is the IQR of age in people with diabetes? 
+- **IQR**=`r quantile(Health_data[Health_data$diabetes==1,]$age,0.75)-quantile(Health_data[Health_data$diabetes==1,]$age, 0.25)`=`r format(round(quantile(Health_data[Health_data$diabetes==1,]$age, 0.75),2))`-`r format(round(quantile(Health_data[Health_data$diabetes==1,]$age, 0.25),2))`
+
+--
+- 50% of the sample is between $q_3$ and $q_1$
+
+--
+```{r 2, out.width='100%', fig.height=3, warning=FALSE}
+### Show two dotplots which have same mean/median but different interquartile ranges 
+
+diabetes_data <- Health_data[Health_data$diabetes == 1, ]
+
+# Calculate range and interquartile range (IQR)
+range_diabetes <- range(diabetes_data$age)
+iqr_diabetes <- IQR(diabetes_data$age)
+
+plot_diabetes <- ggplot(diabetes_data, aes(x = age)) +
+  geom_histogram(binwidth = 5, fill = "lightblue", color = "black", show.legend = FALSE) +
+  geom_segment(aes(xend = range_diabetes[1], y = 8, x = range_diabetes[2], yend = 8), color = "blue", size = 1.5) +
+  geom_text(aes(x = mean(range_diabetes), y = 9, label = paste("Range: ", round(range_diabetes[2] - range_diabetes[1], 2))), 
+            color = "blue", size = 6, vjust = -1) +
+  geom_segment(aes(xend = quantile(diabetes_data$age, 0.25), y = 300, x = quantile(diabetes_data$age, 0.75), yend = 300), color = "red", size = 1.5) +
+  geom_text(aes(x = quantile(diabetes_data$age, 0.5), y = 301, label = paste("IQR: ", round(iqr_diabetes, 2))), 
+            color = "red", size = 6, vjust = -1) +
+  labs(title = "", x = "Age", y = "Frequency") + 
+  theme_xaringan() + xlim(0, max(diabetes_data$age) + 10)
+
+# Print the plot
+print(plot_diabetes)
+
+
+
+
+```
+
+
+
+
+---
+- Is it more or less sensitive to outliers than range?
+
+```{r 1, out.width='100%', fig.height=5, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
+
+
+# Generate normal distributed data with mean 40 and sd 10
+set.seed(123)  # for reproducibility
+num_values <- 50
+values <- rnorm(num_values, mean = 40, sd = 10)
+data_initial <- data.frame(Values = values)
+
+# Calculate interquartile range (IQR) for initial dataset
+iqr_initial <- IQR(values)
+
+plot_initial <-  ggplot(data_initial, aes(x = Values)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = quantile(values, 0.25), y = 0.7, x = quantile(values, 0.75), yend = 0.7), color = "blue", size = 1.5) +
+  geom_text(aes(x = quantile(values, 0.5), y = 0.75, label = paste("IQR: ", round(iqr_initial, 2))), 
+            color = "blue", size = 6, vjust = -1) +
+  labs(title = "", x = "Values", y = "Density") + theme_xaringan() +
+  xlim(0, 110)
+
+# Modify one observation
+modified_values <- c(values[-which.max(values)], 100)  # Replace last value with an outlier
+data_modified <- data.frame(Values = modified_values)
+
+# Calculate interquartile range (IQR) for modified dataset
+iqr_modified <- IQR(modified_values)
+
+plot_modified <-  ggplot(data_modified, aes(x = Values)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = quantile(modified_values, 0.25), y = 0.7, x = quantile(modified_values, 0.75), yend = 0.7), color = "blue", size = 1.5) +
+  geom_text(aes(x = quantile(modified_values, 0.5), y = 0.75, label = paste("IQR: ", round(iqr_modified, 2))), 
+            color = "blue", size = 6, vjust = -1) +
+  labs(title = "", x = "Values", y = "Density") + theme_xaringan() +
+  xlim(0, 110)
+
+combined_plot <- plot_grid(plot_initial, plot_modified, labels = c("A", "B"), nrow = 2)
+
+# Print the combined plot
+print(combined_plot)
+
+```
+
+---
+### Interquartile Range 
+
+---
+
+
+### Example with data
+
+- What is the IQR?
+
+```{r, out.width='100%', fig.height=4, warning=FALSE}
+# Set the seed for reproducibility
+set.seed(42)
+
+# Number of observations
+num_observations <- 20
+
+# Generate synthetic data for views (lognormal distribution with long right tail)
+views <- round(rlnorm(num_observations, meanlog = 3, sdlog = 0.3))
+
+# Generate video names
+video_names <- paste("TikTok Video", 1:num_observations)
+
+# Create the dataset
+tiktok_dataset <- data.frame(VideoTitle = video_names, Views = views)
+datatable(tiktok_dataset,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 4,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE)
+
+```
+
+
+
+---
+
+### Example with data
+
+Here is a (smaller) data on distribution of how many views have various tik-tok videos. 
+- Suppose that all views triples and 1000 additional people viewed them as well
+$$y_i=3x_i+1000$$
+- What is new IQR?
+```{r, out.width='100%', fig.height=4, warning=FALSE}
+# Set the seed for reproducibility
+# Create the dataset
+tiktok_dataset <- data.frame(VideoTitle = video_names, OldViews = views, NewViews=views*3+1000)
+datatable(tiktok_dataset,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 4,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE)
+
+```
+
+---
+### IQR
+
+
+- Order of observations was not affected, so same observations correspond to the first and the third quartile
+
+$$q^{New}_{1}=3q^{Old}_1+1000$$
+$$q^{New}_{3}=3q^{Old}_3+1000$$
+
+--
+- And more generally, for $$y_i=bx_i+a$$
+
+$$v^y_p=bv^{x}_p+a$$
+
+
+--
+- So what does it mean for IQR?
+
+$$IQR^{New}=q^{New}_{3}-q^{New}_{1}=3q^{Old}_3-3q^{Old}_1=3*IQR^{Old}$$
+
+---
+
+
+```{r 5aa, out.width='100%', fig.height=5, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
+
+
+# Generate normal distributed data with mean 40 and sd 10
+
+data_initial <- data.frame(VideoTitle = video_names, OldViews = views, NewViews=views*3+1000)
+
+# Calculate interquartile range (IQR) for initial dataset
+iqr_initial <- IQR(data_initial$OldViews)
+
+plot_initial <-  ggplot(data_initial, aes(x = OldViews)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = quantile(data_initial$OldViews, 0.25), y = 0.35, x = quantile(data_initial$OldViews, 0.75), yend = 0.35), color = "blue", size = 1.5) +
+  labs(title = "", x = "Values", y = "Density") + theme_xaringan() +
+  xlim(0,125)
+
+# Calculate interquartile range (IQR) for modified dataset
+iqr_modified <- IQR(data_initial$NewViews)
+
+plot_modified <-  ggplot(data_initial, aes(x = NewViews)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  geom_segment(aes(xend = quantile(data_initial$NewViews, 0.25), y = 0.35, x = quantile(data_initial$NewViews, 0.75), yend = 0.35), color = "blue", size = 1.5) +
+  labs(title = "", x = "Values", y = "Density") + theme_xaringan()+
+  xlim(1000,1125)
+
+combined_plot <- plot_grid(plot_initial, plot_modified, labels = c("A", "B"), nrow = 2)
+
+# Print the combined plot
+print(combined_plot)
+
+```
+
+
+---
+
+### Variance & Standard Deviation
+
+**Variance** measures how much observations deviate from the mean:
+
+- **Population variance**: 
+$$\sigma^2=E[(X-\mu)^2]=\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2$$
+
+--
+- But this does not have the right units...
+
+--
+- **Population standard deviation** deviation:
+
+$$\sigma=\sqrt{\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2}$$
+--
+- Why do we first take squares and then take square root? 
+
+--
+- Can't we just do $\frac{1}{N}\sum^N_{i=1}(x_i-\mu)$?
+
+--
+- NO! Because $\sum^N_{i=1}(x_i-\mu)=0$
+
+
+---
+
+```{r 3, out.width='100%', fig.height=5, warning=FALSE}
+### Show three histograms with different level of variances: one symmetric, one symmetric with wider tail, and other one bimodal with much mass on both ends of the distribution. note how different is the variance. Annotate each with the standard deviation. 
+library(ggplot2)
+
+# Generate data for the histograms
+set.seed(123)
+data_symmetric <- rnorm(1000, mean = 0, sd = 1)
+data_wide_tail <- rnorm(1000, mean = 0, sd = 2)
+data_bimodal <- c(rnorm(500, mean = -2, sd = 0.5), rnorm(500, mean = 2, sd = 0.5))
+
+# Create a data frame for plotting
+df <- data.frame(
+  Category = rep(c("Bimodal","Wide Tail", "Symmetric" ), each = 1000),
+  Value = c(data_bimodal,data_wide_tail, data_symmetric )
+)
+
+means <- c(mean(data_symmetric), mean(data_wide_tail), mean(data_bimodal))
+sds <- c(sd(data_symmetric), sd(data_wide_tail), sd(data_bimodal))
+
+
+# Create histograms with annotations
+p <- ggplot(df, aes(x = Value, fill = Category)) +
+  geom_histogram(binwidth = 0.5, position = "identity", alpha = 0.6) +
+  facet_grid(~ Category) +
+  labs(x = "Value", y = "Frequency", fill = "Distribution Type") +
+  theme_xaringan() +
+  theme(legend.position = "none") +
+ geom_vline(
+    data = data.frame(Category = c("Symmetric", "Wide Tail", "Bimodal"),
+                      Mean = means),
+    aes(xintercept = Mean),
+    linetype = "dashed",
+    color = "red"
+  ) 
+
+print(p)
+
+
+```
+
+---
+
+```{r 3b, out.width='100%', fig.height=5, warning=FALSE}
+### Show three histograms with different level of variances: one symmetric, one symmetric with wider tail, and other one bimodal with much mass on both ends of the distribution. note how different is the variance. Annotate each with the standard deviation. 
+library(ggplot2)
+
+# Generate data for the histograms
+set.seed(123)
+data_symmetric <- rnorm(1000, mean = 0, sd = 1)
+data_wide_tail <- rnorm(1000, mean = 0, sd = 2)
+data_bimodal <- c(rnorm(500, mean = -2, sd = 0.5), rnorm(500, mean = 2, sd = 0.5))
+
+# Create a data frame for plotting
+df <- data.frame(
+  Category = rep(c("Bimodal","Wide Tail", "Symmetric" ), each = 1000),
+  Value = c(data_bimodal,data_wide_tail, data_symmetric )
+)
+
+means <- c(mean(data_symmetric), mean(data_wide_tail), mean(data_bimodal))
+sds <- c(sd(data_symmetric), sd(data_wide_tail), sd(data_bimodal))
+
+
+# Create histograms with annotations
+p <- ggplot(df, aes(x = Value, fill = Category)) +
+  geom_histogram(binwidth = 0.5, position = "identity", alpha = 0.6) +
+  facet_grid(~ Category) +
+  labs(x = "Value", y = "Frequency", fill = "Distribution Type") +
+  theme_xaringan() +
+  theme(legend.position = "none") +
+  geom_text(
+    data = data.frame(Category = c("Symmetric", "Wide Tail", "Bimodal"),
+                      SD = c(sd(data_symmetric), sd(data_wide_tail), sd(data_bimodal))),
+    aes(x = 0, y = 30, label = paste("SD =", round(SD, 2))),
+    hjust = 0, vjust = 0,
+    size = 5
+  )+  geom_vline(
+    data = data.frame(Category = c("Symmetric", "Wide Tail", "Bimodal"),
+                      Mean = means),
+    aes(xintercept = Mean),
+    linetype = "dashed",
+    color = "red"
+  ) 
+
+print(p)
+
+
+```
+
+---
+
+### Sample equivalents
+
+- **Sample variance**: 
+$$s^2=\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2$$
+--
+- **Sample standard deviation** deviation:
+
+$$s=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2}$$
+--
+- Why we divide by $n-1$ rather than $n$?
+
+--
+
+
+---
+- **Intuition** - observed values usually fall closer to the sample mean than to the population mean
+
+```{r 4, out.width='100%', fig.height=5, warning=FALSE}
+### Show a vizualization illustrating this, population curve on the top (with mean marked), and below it three samples with their means marked 
+
+
+# Generate data for the population
+set.seed(123)
+population_data <- rnorm(10000, mean = 0, sd = 1)
+
+# Create data frame for plotting
+population_df <- data.frame(Value = population_data)
+
+# Calculate population mean
+population_mean <- mean(population_data)
+
+# Create the visualization
+population_plot <- ggplot(population_df, aes(x = Value)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  geom_vline(xintercept = population_mean, linetype = "dashed", color = "black", linewidth=1.3) +
+  labs(x = "Value", y = "Density") +
+  theme_minimal()
+
+
+# Generate samples from the population
+num_samples <- 3
+sample_size <- 20
+samples <- lapply(1:num_samples, function(i) {
+  sample_data <- sample(population_data, sample_size, replace = TRUE)
+  data.frame(Sample = paste("Sample", i), Value = sample_data)
+})
+
+
+i=1
+# Create a list of dotplot layers for the samples
+dotplot_layers <- lapply(1:num_samples, function(i) {
+  ggplot(samples[[i]], aes(x = Value)) +
+    geom_dotplot(binwidth = 0.01, stackdir = "center",  dotsize = 10, alpha=0.7) +
+    geom_vline(xintercept = mean(samples[[i]]$Value), linetype = "dashed", color = "red") +
+    labs(x = NULL, y = NULL) +
+    theme_minimal() +
+    theme(legend.position = "none")+xlim(-4,4)
+})
+
+dotplot_layers_1=c(list(population_plot),dotplot_layers )
+
+
+# Combine the population plot and the dotplot layers for the samples
+
+
+arranged_plots <- grid.arrange(grobs = dotplot_layers_1, ncol = 1)
+
+
+```
+
+---
+### Sample equivalents
+
+- So the deviations from the sample mean underestimate the population standard deviation
+
+--
+
+- So we divide by a smaller number to correct for it
+
+--
+
+- In big sample $\frac{1}{n}$ and $\frac{1}{n-1}$ are similar, so correction doesn't matter as much
+
+
+
+---
+- **Intuition** - in big samples, our estimate of the population mean is already good, no need to correct
+
+```{r 4b, out.width='100%', fig.height=5, warning=FALSE}
+### Show a vizualization illustrating this, population curve on the top (with mean marked), and below it three samples with their means marked 
+
+
+# Generate data for the population
+set.seed(123)
+population_data <- rnorm(10000, mean = 0, sd = 1)
+
+# Create data frame for plotting
+population_df <- data.frame(Value = population_data)
+
+# Calculate population mean
+population_mean <- mean(population_data)
+
+# Create the visualization
+population_plot <- ggplot(population_df, aes(x = Value)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  geom_vline(xintercept = population_mean, linetype = "dashed", color = "black", linewidth=1.3) +
+  labs(x = "Value", y = "Density") +
+  theme_minimal()
+
+
+# Generate samples from the population
+num_samples <- 3
+sample_size <- 200
+samples <- lapply(1:num_samples, function(i) {
+  sample_data <- sample(population_data, sample_size, replace = TRUE)
+  data.frame(Sample = paste("Sample", i), Value = sample_data)
+})
+
+
+i=1
+# Create a list of dotplot layers for the samples
+dotplot_layers <- lapply(1:num_samples, function(i) {
+  ggplot(samples[[i]], aes(x = Value)) +
+    geom_dotplot(binwidth = 0.01, stackdir = "center",  dotsize = 10, alpha=0.7) +
+    geom_vline(xintercept = mean(samples[[i]]$Value), linetype = "dashed", color = "red") +
+    labs(x = NULL, y = NULL) +
+    theme_minimal() +
+    theme(legend.position = "none")+xlim(-4,4)
+})
+
+dotplot_layers_1=c(list(population_plot),dotplot_layers )
+
+
+# Combine the population plot and the dotplot layers for the samples
+
+
+arranged_plots <- grid.arrange(grobs = dotplot_layers_1, ncol = 1)
+
+
+```
+
+---
+
+
+### Sample equivalents
+
+Are they robust to outliers?
+
+- Very sensitive because squaring deviation amplifies large deviation more than small deviations. 
+
+
+```{r 5, out.width='100%', fig.height=3.5 , warning=FALSE}
+### Illustration of how variance is sensitive to outliers because squaring amplifies large deviation more than small deviations
+
+library(ggplot2)
+
+# Create a function to calculate squared deviations
+calculate_squared_deviations <- function(data, mean_value) {
+  deviations <- data - mean_value
+  squared_deviations <- deviations^2
+  return(squared_deviations)
+}
+
+# Create a dataset with more data and an outlier
+num_samples <- 1
+data_with_outlier <- c(70, 75, 80, 85, 88, 90, 92, 150)
+outlier_mean <- mean(data_with_outlier)
+outlier_squared_deviations <- calculate_squared_deviations(data_with_outlier, outlier_mean)
+
+# Create a dotplot with data and an outlier
+dotplot <- ggplot(data.frame(Value = data_with_outlier), aes(x = Value)) +
+  geom_dotplot(binwidth = 1, stackdir = "center", dotsize = 0.5) +
+  geom_vline(aes(xintercept = outlier_mean), linetype = "dashed", color = "red") +
+  labs(x = NULL, y = NULL) +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+scatter_plot_data <- data.frame(
+  Value = data_with_outlier,
+  SquaredDeviation = outlier_squared_deviations
+)
+
+# Create a dotplot for squared deviations
+scatter_plot <- ggplot(scatter_plot_data, aes(x = Value, y = SquaredDeviation)) +
+  geom_point() +
+  labs(x = "Observation Value", y = "Sq. Dev.") +
+  theme_xaringan()
+
+# Arrange the plots using cowplot
+library(cowplot)
+plot_grid(scatter_plot, dotplot, ncol = 1)
+
+
+```
+
+---
+
+### Variance in the aggregated data
+
+Can we calculate standard variation in the population from aggregate data?
+
+.pull-left[
+```{r 5a, out.width='100%', fig.height=3, warning=FALSE}
+### table with income by neighborhood
+# Create a data frame for the example
+neighborhoods <- c("Polanco", "Condesa", "Roma", "Tepito", "Coyoacán", "Santa Fe", "Zona Rosa", "Iztapalapa", "Tacubaya", "San Miguel", "Chalco", "Tláhuac")
+average_income <- c(60000, 45000, 35000, 15000, 30000, 25000, 40000, 12000, 18000, 9000, 10000, 12000)
+population <- c(10000, 20000, 30000, 5000, 25000, 18000, 12000, 40000, 15000, 8000, 60000, 45000)
+
+
+# Calculate the unweighted average income
+unweighted_mean <- mean(average_income)
+
+# Calculate the weighted average income
+weighted_mean <- sum(average_income * population) / sum(population)
+df <- data.frame(Neighborhood = neighborhoods,
+                 Average_Income = average_income,
+                 Population = population)
+# Create a data frame for the table
+
+datatable(df,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+
+.pull-right[
+
+$$\frac{\sum_{z}{N_z} (\bar{x}_z - \mu)^2}{\sum_z N_z} \neq \sigma^2 $$ 
+- **Intuition:** we are missing the variation within the neighborhoods
+]
+
+---
+
+### Variance in the aggregated data
+
+- We can't do it if there is variation within groups
+- But we can if there is no variation within groups
+  - *Example*: frequency distribution of discrete variables
+
+.pull-left[
+```{r 5b, out.width='100%', fig.height=3, warning=FALSE}
+### table with income by neighborhood
+frequency_table <- table(Health_data[Health_data$diabetes==1,]$age)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Age', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+
+
+datatable(frequency_table,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+
+.pull-right[
+
+- For simplicity, assume we have data on all population: 
+
+\begin{align}
+\tiny
+   \sigma^2 &=\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2 \\
+    &= \frac{(20-\mu)^2+(20-\mu)^2+(20-\mu)^2+...}{N}  \\
+    &=  \frac{4\cdot(20-\mu)^2+2 \cdot(21-\mu)^2+...}{N} \\
+    &= \frac{\sum_{a}{N_a} (\bar{x}_a - \mu)^2}{\sum_a N_a}
+\end{align}
+
+- Where $N_a$ is number of people with age $a$
+
+
+
+]
+
+
+---
+
+### Coefficient of Variation
+
+**Coefficient of Variation** divides the standard deviation by the mean. 
+
+$$C.V.=\frac{\sigma}{|\mu|}$$
+
+And sample eqiuvalent
+$$c.v.=\frac{s}{|\bar{x}|}$$
+--
+
+- Why?
+  - It expresses standard deviation as proportion of the mean
+      - Small value means variation is low compared to the mean
+  - It is unit free
+  - You can compare it across variables with different units/magnitudes
+
+---
+
+### Coefficient of Variation
+
+**Example** - variation of stocks in different currencies 
+
+.pull-left[
+```{r 6, out.width='100%', fig.height=3, warning=FALSE}
+### Table with stocks in Pesos vs some Stock in Dollars 
+
+library(dplyr)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Generate date sequence
+start_date <- as.Date("2023-07-01")
+dates <- seq(start_date, by = "day", length.out = 20)
+
+# Generate data for MXN and USD stocks
+data <- data.frame(
+  Date = dates,
+  MXN_Stock = round(rnorm(20, mean = 100, sd = 15),2),
+  USD_Stock = round(rnorm(20, mean = 1.2, sd = 0.18),2)
+)
+
+datatable(data,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+
+
+```
+]
+
+.pull-right[
+- **Standard deviation**:
+  - USD: 0.149
+  - MXN: 14.59
+
+
+- **Coefficient of variation**:
+  - USD: 0.12
+  - MXN: 0.14
+]
+---
+
+### Coefficient of Variation
+
+So more generally, if $y_i=bx_i$, then
+
+$$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x|}=C.V._x$$
+What if $y_i=bx_i+a$?
+
+--
+Then 
+
+$$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x+a|} \neq C.V._x$$
+---
+
+### Box and Whiskers plot 
+
+- Helps to see the distribution of the data
+- Helps to see to see the outliers
+  - Outliers are useful to see anomalies and potential errors in data colection
+
+```{r 7a, out.width='100%', fig.height=3, warning=FALSE}
+### Box and whiskers plot for weight (using ggdist)
+
+set.seed(123)
+data <- data.frame(values = rnorm(1000))
+
+combined_plot <- ggplot(data, aes(y=values)) +
+  
+  # Rotated and mirrored histogram on the left
+  geom_histogram(aes(x = -..density.. * 0.5), bins=30, fill="skyblue", orientation="y") +
+  
+  # Boxplot on the right, slightly further from the histogram
+  geom_boxplot(aes(x=0.1), fill="pink", width=0.05) +
+  
+  # Annotations for the boxplot closer to the box
+  annotate("text", x = -0.04, y = quantile(data$values, 0.25), label = "Q1", hjust=0) +
+  annotate("text", x = -0.04, y = median(data$values), label = "Median", hjust=0) +
+  annotate("text", x = -0.04, y = quantile(data$values, 0.75), label = "Q3", hjust=0) +
+  annotate("text", x = -0.04, y = max(data$values[data$values < (quantile(data$values, 0.75) + 1.5 * IQR(data$values))]), 
+           label = expression(paste("Upper Whisker: Q3 + 1.5 * IQR")), hjust=0) +
+  annotate("text", x = -0.04, y = min(data$values[data$values > (quantile(data$values, 0.25) - 1.5 * IQR(data$values))]), 
+           label = expression(paste("Lower Whisker: Q1 - 1.5 * IQR")), hjust=0) +
+  
+  # Aesthetics and labels
+  theme_minimal() +
+  theme(axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  labs(title = "")
+
+# Displaying the plot
+print(combined_plot)
+
+
+```
+
+
+
+
+---
+### Box and Whiskers plot 
+
+**Dataset comparisons**
+- They summarize data very well
+```{r 8a, out.width='100%', fig.height=4.5, warning=FALSE}
+### Box and whiskiers plot for two different distributions, with different amount of variation and different amount of outliers
+### wages in food sector vs wages in accounting sector 
+
+Health_data %>% 
+  ggplot(aes(x = factor(diabetes), y = age, fill = factor(diabetes))) +
+  # add half-violin from {ggdist} package
+  geom_boxplot(
+    width = 0.12,
+    # purple outlier points
+    outlier.color = "purple",
+    alpha = 0.5)+
+  # boxplot
+  coord_flip()+
+  theme_xaringan()+
+  theme(legend.position = "none")
+
+```
+
+---
+
+### Box and Whiskers plot 
+
+**Dataset comparisons**
+- They summarize data very well
+```{r 8b, out.width='100%', fig.height=4.5, warning=FALSE}
+### Box and whiskiers plot for two different distributions, with different amount of variation and different amount of outliers
+### wages in food sector vs wages in accounting sector 
+
+Health_data %>% 
+  ggplot(aes(x = factor(diabetes), y = age, fill = factor(diabetes))) +
+  # add half-violin from {ggdist} package
+  geom_boxplot(
+    width = 0.12,
+    # purple outlier points
+    outlier.color = "purple",
+    alpha = 0.5)+
+  stat_halfeye(
+    # adjust bandwidth
+    adjust = 0.5,
+    # move to the right
+    justification = -0.2,
+    # remove the slab interval
+    .width = 0,
+    point_colour = NA) +
+  # boxplot
+  coord_flip()+
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+```
