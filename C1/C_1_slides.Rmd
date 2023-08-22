@@ -1,0 +1,629 @@
+---
+title: 'Class 1: Introduction to Business Forecasting'
+author: "Krzysztof Zaremba"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+## Who am I?
+
+
+
+  - Krzysztof Zaremba
+  
+--
+  - **Research focus**: Applied Econometrics, Health Economics
+  
+--
+  - **Email:** .blue[krzysztof.zaremba@itam.mx]
+  
+--
+  - **Office:** In Santa Teresa Campus
+  
+--
+  - **Office hours:** Calendly, virtual or in person, Wednesday 9-10am
+  
+---
+
+## Who are you?
+
+<center>
+<img src=qr-code.png width="500">
+</center>
+
+---
+
+
+
+### What Is This Class About? 
+**Forecasting** involves making predictions about future events based on historical data and relevant information
+
+  
+---
+1. **Weather Forecasting**
+   - Predicting hurricanes &rarr; timely reactions and preparations.
+   
+
+<center>
+<img src="https://ral.ucar.edu/sites/default/files/public/images/features/hfip1.png" />
+</center>
+---
+
+2. **Epidemic Forecasting**
+   - Predicting disease outbreaks &rarr; effective public health responses.
+   
+<center>
+<img src=https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/RA3SMOZBVRAKREEJ7HBLLRITEI.png&w=1440 width="600">
+</center>
+---
+
+
+3. **Criminal Activity Forecasting**
+   - Identifying crime hot-spots &rarr; increase the number of patrols.
+   - Identifying individuals at risk of committing crimes &rarr; sending warning letters.
+
+<center>
+<img src=Crime_prediction.png width="600">
+</center>
+
+
+
+---
+### What Is This Class About? 
+
+#### Forecasting in Business
+
+- Improve decision making 
+- With increasing availability of data, firms rely on almost scientific methods to make decisions
+
+--
+#### Applications
+
+1. **Pricing**: Optimize pricing (Example: Health Insurance, Uber)
+
+--
+2. **Employee Churn**: Identify factors predicting employees leaving the company and implement measures to retain valuable talent (Example: EC)
+
+--
+3. **Anticipating Demand**: Adjust inventory management to minimize waste and meet customer needs effectively (Example: Meal Kits)
+
+--
+4. **Strategic Investment Decisions**: Forecast market trends to predict suitability for investments (Example: Electric Cars)
+
+--
+
+---
+
+### Your turn
+
+- Get in pairs
+- Consider your past employment or your future employment
+- Think about how forecasting could solve some problems in the context of industry you are considering
+- (5 min)
+
+---
+
+
+### What will you learn?
+
+1. Getting Business Information from the Data
+   - Analyze data, evidence, and arguments to make reasoned judgments
+--
+
+2. Problem Solving and Forecasting
+   - Formulate, evaluate, and implement statistical models for business forecasting.
+   - Interpret the results and validate assumptions
+   - Key technical skill very valuable on the job market!
+--
+
+3. Decision Making and Communication
+   - Choose optimal options to achieve objectives.
+   - Communicate findings, conclusions, and recommendations effectively to business professionals
+
+---
+
+### Organization
+
+- **Schedule**: 
+  - Tuesday 10:00-12:00 Room: RH SA4
+  - Thursday 10:00-11:30 Room: RH SA4
+
+
+- **Textbooks**: 
+  - Makridakis, Wheelwright, Hyndman: *Forecasting methods and applications*
+  - Montgomery, Peck, Vining: *Introduction to Linear Regression Analysis*
+  - [https://www.econometrics-with-r.org/](https://www.econometrics-with-r.org/)
+  
+### Grading
+
+- 20% 2x Midterms 
+- 30% Final Exam
+- 15% Quizzes (Every 3-4 weeks, with 1 week notice, in-class)
+- 15% Final Project (In groups of 3)
+- 0% Homeworks
+
+---
+
+### Pre-requisites
+
+- Mathematics III or Linear Algebra I
+- Statistics II or Statistical Inference
+--
+
+### Language
+- Class is in English
+
+--
+- But your English is not evaluated
+
+--
+- I will understand your English
+
+--
+- Great occasion to learn vocabulary useful for interviews
+
+
+---
+### Software - R
+
+**Performing actual forecasts with data**
+
+- Widely Used: R is a popular language for data analysis and statistical computing
+- Open-Source: R is free!
+- Community Support: You can easily find plenty of tutorials and help
+- Data Visualization: Amazing vizualizations and ways to communicate your findings
+
+
+
+
+---
+### Public Wifi Antennas in Mexico City
+
+
+
+```{r mexico_city_map, echo=FALSE, fig.height=8, fig.width=10, warning=FALSE, show=FALSE}
+
+# Read CSV file
+file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
+wifi_data <- read_csv(file_url,show_col_types = FALSE)
+
+
+# Create a Leaflet map with clustering
+wifi_map <- leaflet(wifi_data) %>%
+  addTiles() %>%
+  addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
+  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
+  addLayersControl(
+    baseGroups = c("Greyscale"),
+    options = layersControlOptions(collapsed = FALSE)
+  ) %>%
+  setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE), 
+          lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
+
+# Print the map
+wifi_map
+```
+
+
+
+
+---
+### Life expectation vs GDP per Capita
+
+
+```{r Sales_forecast, echo=FALSE, show=FALSE, warning=FALSE, fig.width=10, fig.height=7}
+
+data <- gapminder %>% filter(year=="2007") %>% dplyr::select(-year)
+
+# Most basic bubble plot
+data=data %>%
+  arrange(desc(pop)) %>%
+  mutate(country = factor(country, country))
+         
+a <- ggplot(data=data, aes(x=gdpPercap, y=lifeExp, size=pop, fill=continent, text=country)) +
+    geom_point(alpha=0.5, shape=21, color="black") +
+    scale_size(range = c(.1, 24), name="Population (M)") +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+   theme(legend.position="bottom",
+          axis.title.x = element_text(size = 16), # Increase x-axis label font size
+          axis.title.y = element_text(size = 16), # Increase y-axis label font size
+          legend.text = element_text(size = 14)) + # Increase legend text font size
+    ylab("Life Expectancy") +
+    xlab("Gdp per Capita") +
+    theme(legend.position = "none")
+
+ggplotly(a, tooltip="text")
+  
+```
+
+
+
+---
+### Bitcoin price in time
+
+```{r Sales_forecas_1, echo=FALSE, show=FALSE, warning=FALSE, fig.width=10, fig.height=7}
+
+library(ggplot2)
+library(dplyr)
+library(plotly)
+library(hrbrthemes)
+
+# Load dataset from github
+data <- read.table("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered.csv", header=T)
+data$date <- as.Date(data$date)
+
+# Usual area chart
+p <- data %>%
+  ggplot( aes(x=date, y=value)) +
+    geom_area(fill="#69b3a2", alpha=0.5) +
+    geom_line(color="#69b3a2") +
+    ylab("bitcoin price ($)") +
+    theme_ipsum()+
+   theme(legend.position="bottom",
+          axis.title.x = element_text(size = 16), # Increase x-axis label font size
+          axis.title.y = element_text(size = 16), # Increase y-axis label font size
+          legend.text = element_text(size = 14)) # Increase legend text font size
+
+# Turn it interactive with ggplotly
+p <- ggplotly(p)
+p
+```
+
+
+---
+  
+  ### Remarks
+  - We will use it for practical exercises with data
+  - We will learn it together during labs
+  - You won't be evaluated on it
+  - Chatgpt is your friend
+
+
+---
+
+### Introduction to Forecasting
+
+Tools will often depend on the horizon and data availability
+
+--
+
+#### Forecasting Horizons
+- .blue[Very Short Horizon:]
+  - High-Frequency Trading: Real-time price predictions for financial trading
+  - Traffic Flow Management: Optimizing traffic signals based on real-time data
+--
+
+- .blue[Short Horizon]:
+  - Retail Store: Forecasting cashier scheduling based on historical foot traffic and transaction data
+  - Public bikes: Predict the availability of bikes at bike station and adjust the number
+--
+
+- .blue[Long Horizon]:
+  - New obesity drug: Forecasting number of potential patients and their resources
+  - Investing in new country: Forecasting political stability
+---
+
+### Overview of Forecasting Techniques
+
+1. Qualitative Forecasting
+   - Based on subjective judgment and expert opinions
+   - Suitable for unique situations or new markets
+   - Examples: Predicting economic impacts of oil price changes or political stability in a region
+
+--
+2. Quantitative Forecasting
+   - Uses historical data and numerical techniques
+   - Suitable when data is available and continuity assumptions hold true
+      - *Continuity assumption*: past trends continue in the future
+      
+---
+layout: false
+class: inverse, middle
+# Methods of Quantitative Forecasting
+
+---
+
+## Time Series Forecasting
+
+.pull-left[
+
+- .blue[Time series data]: collection of data points on a single subject ordered chronologically.
+- .blue[Time series forecasting]: identifying patterns and trends in historical data to predict future values
+]
+.pull-right[
+```{r Sales_forecast_3, echo=FALSE, show=FALSE, warning=FALSE}
+
+
+df <- data.frame(
+  Year = c(2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027),
+  GDP = c(
+    9400, 10342, 10376, 10866, 11076, 9753, 8875, 9434, 9857, 10145, 8655, 10046, NA, NA, NA, NA, NA, NA
+  )
+)
+
+datatable(df,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+
+```
+
+]
+
+
+--
+#### In simple terms:
+- We don't care about what causes what
+- We just hope that past values of the variable and its historical behavior can predict its future values
+
+---
+
+## Example: Forecasting of GDP
+- Time series forecasting can help predict a country's Gross Domestic Product.
+![](https://www.statista.com/graphic/1/263597/gross-domestic-product-gdp-per-capita-in-mexico.jpg)
+
+
+
+---
+
+## Explanatory Models
+- We have data on both the variable of interest and other variables related to it
+- We consider how other variables impact the outcome of interest
+- We use these relationships to make forecasts
+
+---
+
+
+.pull-left[## Example: Sales at a new location
+
+- Should we open a new Starbucks at ITAM?
+
+
+
+- Using existing locations, analyze impact of:
+   - Foot traffic
+   - Neighborhood income
+   - Competitors' stores
+
+
+
+- Given these relationships, what would be sales at ITAM?
+]
+.pull-right[
+ .white[a]
+```{r Sales_forecast_2, echo=FALSE, show=FALSE, warning=FALSE}
+
+# Create the DataFrame (you can remove this part since you already created it above)
+starbucks_df <- data.frame(
+  S_ID = 1:10,
+  Address = c("123 Main St", "456 Oak Ave", "789 Elm Rd", "321 Maple Ln", "543 Birch St",
+              "876 Pine Ave", "987 Cedar Rd", "654 Walnut Ln", "234 Spruce St", "ITAM"),
+  F_Traffic = c(100, 150, 80, 120, 200, 90, 180, 110, 140, 170),
+  N_Income = c(60000, 75000, 55000, 80000, 70000, 60000, 90000, 85000, 75000, 65000),
+  C_Stores = c(2, 1, 3, 2, 1, 3, 2, 1, 2, 1)
+)
+starbucks_df$Sales <- c(5000, 6000, 4500, 7000, 8000, 5500, 9000, 7500, 6500, NA)
+
+# Highlight the last row in green (HTML table row style)
+last_row_index <- nrow(starbucks_df)
+green_row_style <- 'style="background-color: #C8E6C9;"'
+
+# Create a function to apply the green style to the last row
+apply_green_style <- function(row_index, green_style) {
+  if (row_index == last_row_index) {
+    green_style
+  } else {
+    ""
+  }
+}
+
+datatable(
+  starbucks_df,
+  fillContainer = FALSE,
+  options = list(
+    pageLength = 10,
+    searching = FALSE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().container()).css({'font-size': '9px'});",
+      "}"
+    ),
+    rowCallback = JS(
+      "function(row, data, index) {",
+      "  var api = this.api();",
+      "  var rowCount = api.rows().count();",
+      "  if (index === rowCount - 1) {",
+      "    $(row).css('background-color', 'yellow');",
+      "    $(row).css('font-weight', 'bold');",
+      "  }",
+      "}"
+    )
+  ),
+  rownames = FALSE
+)
+```
+
+]
+---
+
+
+# Steps of Forecasting
+
+1. **Problem Definition**
+   - Clearly define the forecasting objective.
+   - Example: Forecasting ride demand during holidays for Uber.
+2. **Gather Data**
+   - Identify and collect relevant data.
+   - Example: Historical ride data and local event information.
+3. **Preliminary Explanatory Analysis**
+   - Understand data characteristics and relationships.
+   - Example: Analyzing trends and patterns in ride demand during holidays.
+4. **Choosing and Fitting the Model**
+   - Select and fit the appropriate forecasting model.
+   - Example: Estimate multiple linear regression or time series forecasting.
+5. **Evaluating the Model**
+   - Assess the model's performance using historical data.
+   - Example: Comparing model predictions with actual ride demand during past holidays.
+
+---
+
+
+
+layout: false
+class: inverse, middle
+# Methods of Qualitative Forecasting
+
+---
+### Delphi Method
+- A structured communication process to reach a consensus.
+- Experts respond anonymously to questionnaires.
+- Refine answers based on feedback.
+- Goal: Converge on a reliable decision.
+
+
+--
+#### Example: Determining Technological Trends
+- Technology forecasting team.
+- Panel of experts from academia and industry.
+- Predict key technological trends for the next decade.
+- Identify the most probable trends.
+
+---
+
+### Brainstorming
+- Creative technique for generating ideas.
+- Encourages free thinking and building on suggestions.
+- Appropriate for exploring possibilities.
+
+--
+#### Example: Enhancing Employee Engagement
+- Tech company's HR department.
+- Representatives from HR, IT, and different departments.
+- Generate ideas for a mobile app to enhance employee engagement.
+
+---
+
+### Panel of Experts
+- Assemble knowledgeable individuals.
+- Offer insights and expertise.
+- Aid in well-informed decisions.
+
+
+--
+#### Example: Environmental Policy Formulation
+- Government agency.
+- Environmental scientists, economists, conservationists, and policymakers.
+- Discuss policy options.
+- Create comprehensive environmental policies.
+
+---
+
+### Focus Groups
+- Gather diverse participants.
+- Share perceptions, attitudes, and opinions.
+- Provide qualitative data and consumer insights.
+
+
+--
+#### Example: Market Research for a New Beverage
+- Beverage company.
+- Participants from various demographics.
+- Understand consumers' preferences and perceptions about a new energy drink.
+- Fine-tune the product and marketing strategy.
+
+---
+
+
+
+### Remainder of the course
+
+#### Quantatitve Forecasting
+
+0. Ungraded quiz on Thursday 
+--
+
+1. Review of Statistics *(Midterm 1: 13th September)*
+--
+   
+2. Simple linear regression *(Midterm 2: 18th October)*
+--
+
+3. Multiple linear regression
+--
+
+4. Time Series *(Final: December)*
+
+--
+
+**Fundamental tools to:**
+- Make predictions, 
+- Quantify uncertainty, 
+- Intepret it and communicate it
+
+
+---
+
+
+
+
+
+# Questions?
