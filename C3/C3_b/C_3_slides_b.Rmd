@@ -53,6 +53,7 @@ colors = c(
   blue = "#1E90FF",
   white = "#FFFFFF"
 ))
+load("sample_listing.Rda")
 ```
 
 
@@ -63,15 +64,21 @@ class: inverse, middle
 # Confidence Intervals
 
 ---
+### Confidence Intervals
 
-how certain are we that our estimate of mean price is close to the true one?
-Confidence intervals help to measure this
+- We calculated the mean price in our sample
+
+- How confident are we that our estimates close to the parameter's value?
+
+- Confidence intervals measure uncertainty around the estimate
 
 ---
-Let's look again at the sampling distribution (graph)
+### Sampling distribution
 
-- 95% of draws will be within this area. What is this area? it's ... show. 
-- What is this area? LEt's assume n>30 so it's normal distirbution
+- Consider a hypothetical sampling distribution of a sample mean
+  - Again, this is never actually observed in practice
+- If we draw samples repeatedly, 95% of their means will be within the shaded area 
+- Why 1.96?
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 # plot the standard normal density on the interval [-4,4]
@@ -111,9 +118,27 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 
 ---
-- how do I get 1.96? Side note. 
+### Sampling distribution
 
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+- Assume we have $n>30$
+  - CLT applies and $\bar{X} \sim N(\mu_X, \frac{\sigma_X}{n})$ 
+
+--
+- We want to find $k_1$ and $k_2$, such that:
+  - $P(k_1<\bar{X}<k_2)=0.95$, so
+  
+--
+  - $P(\bar{X}<k_1)=0.025$ and $P(\bar{X}>k_2)=0.025$  (or  $P(\bar{X}<k_2)=0.975$)
+  
+--
+- Trick is to standardize the variable:
+  
+$$P(\bar{X}<k_2)=P(\bar{X}-\mu_X<k_2-\mu_X)=P(\underbrace{\frac{\bar{X}-\mu_X}{ \frac{\sigma_X}{n}}}_{Z \sim N(0,1)}<\underbrace{\frac{k_2-\mu_X}{ \frac{\sigma_X}{n}}}_{k_2'})$$
+--
+In probability tables, we can find $k_2'$, such that $P(Z<k_2')=0.975$ 
+
+---
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 
 curve(dnorm(x),
       xlim = c(-3, 3),
@@ -145,15 +170,73 @@ polygon(x = c(1.96, seq(1.96, 3, 0.01), 3),
 abline(v = 0, col = "red", lwd = 2)
 
 # add the "2.5%" labels on tails
-text(-2.2, 0.05, "2.5%", col = "black", cex = 1.5)
-text(2.2, 0.05, "2.5%", col = "black", cex = 1.5)
+text(-2.2, 0.1, "2.5%", col = "black", cex = 1.5)
+text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 
 ```
 
----
-- so 95% of the draws of sample means will be within "..." distance to the true population
-- There is only 5% chance that we have a sample weird enough that the mean is further from the population mean by more than...
+- It's 97.5% quantile of standard normal: $k_2'=v_{0.975}^Z=1.96$. $P(Z<v_{0.975})=P(Z<1.96)=0.975$
 
+--
+- Let's go back to $k_2'=\frac{k_2-\mu_X}{ \frac{\sigma_X}{n}}$, from which we can back-out $k_2$
+
+--
+  - $k_2=\mu_X+\frac{\sigma_X}{n} k_2'=\mu_X+1.96\frac{\sigma_X}{n}$
+
+--
+- By symmetry of normal, $k'_1=-k'_2$, so $k_1=\mu_X+\frac{\sigma_X}{n} k_1'=\mu_X-1.96\frac{\sigma_X}{n}$
+
+
+---
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+
+curve(dnorm(x),
+      xlim = c(-3, 3),
+      main = "Standard normal",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-1.96, 0, 1.96), 
+     padj = 0.75,
+     labels = c(expression(-1.96),
+                expression(mu),
+                expression(1.96)))
+
+# shade the tails for the 2.5% regions
+polygon(x = c(-3, seq(-3, -1.96, 0.01), -1.96),
+        y = c(0, dnorm(seq(-3, -1.96, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+polygon(x = c(1.96, seq(1.96, 3, 0.01), 3),
+        y = c(0, dnorm(seq(1.96, 3, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "2.5%" labels on tails
+text(-2.2, 0.1, "2.5%", col = "black", cex = 1.5)
+text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
+
+```
+
+- Another way to see it: 
+  - Our variable is a linear transformation of a standard normal: $\bar{X}=\mu_X+\frac{\sigma_X}{n} Z$
+  
+--
+  - So its percentiles are linear transformation of st.nor. quantiles:  $v_{0.975}^\bar{X}=\mu_X+\frac{\sigma_X}{n}v_{0.975}^Z$
+---
+
+### Sampling distribution
+
+- Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{n}$ to the true parameter
+- There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{n}$
+- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{n}$
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 curve(dnorm(x),
@@ -205,38 +288,53 @@ text(position, 0.21, expression(bar(x)), col = "red", cex = 1.2)
 
 
 ---
+### Sampling distribution
 
--Suppose we for each draw of a sample mean we construct such intervals
--95% of them will contain a true population mean!
+- Suppose we draw many samples from the same distribution
+- For each sample we compute the sample mean and we construct the interval
+- 95% of them will cover the true population mean!
 
-`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='480px')`
+`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='400px')`
 .footmark[
   Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
 ]
 
 ---
 
-Calculation procedure
+### Calculation Procedure
 
-1. Take a random sample, iid sample, large enough
+Use this procedure if $n>30$
+
+1. Take an IID sample
+
+--
 2. Calculate mean $\bar{x}$ and standard deviation $s$
-3. Pick confidence level (usually 90,95, 99%)
+
+--
+3. Pick confidence level (usually 90,95,99%)
   - We typically denote the confidence level $1-\alpha$
   - $\alpha$ is probability of making a Type 1 error (more about it later)
+  - .blue[Example]: if confidence level is 95%, $\alpha=0.05$
+  
+--
+
 4. Find the corresponding critical values $z_{\frac{\alpha}{2}}$
-  - critical values are such that P(-$z_{\frac{\alpha}{2}}$<Z<$z_{\frac{\alpha}{2}}$)=$1-\alpha$
-5. Calculate it as:
-$$\{\bar{x}- z_{\frac{\alpha}{2}}*{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*{s}{\sqrt n}\}$$
+  - Critical values are such that $P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=1-\alpha$
+  - .blue[Example]: if confidence level is 95%, $z_\frac{\alpha}{2}=z_{0.025}=1.96$
+--
+
+5. Construct the confidence interval as:
+$$\{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
 
 
 ---
-Identifying z
+### Finding Critical Values
 
-(picture with 99) 
-$P(-$z_{\frac{\alpha}{2}}$<Z<$z_{\frac{\alpha}{2}}$)$
-
-
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+- Suppose confidence interval is 99%. 
+- Then $\alpha=0.01$
+- We are looking for $z_{\frac{\alpha}{2}}$ such that:
+$$P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=0.99$$
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
       xlim = c(-4, 4),
       main = "Standard normal",
@@ -271,7 +369,8 @@ text(-2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 text(2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 ```
 
-
+--
+$$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995 $$
 ---
 
 `r knitr::include_url('https://www.mathsisfun.com/data/standard-normal-distribution-table.html', height='480px')`
@@ -282,12 +381,10 @@ text(2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 
 
 ---
-Identifying z
+### Finding Critical Values
 
-(picture with 99) 
-$P(Z<z_{\frac{\alpha}{2}})=0.995$
-
-
+$P(Z<z_{\frac{\alpha}{2}})=0.995$ 
+$z_{\frac{\alpha}{2}}$, is 99.5% quantile of standard normal $\rightarrow$ $z_{\frac{\alpha}{2}}=2.58$
 ```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 curve(dnorm(x),
       xlim = c(-4, 4),
@@ -322,98 +419,152 @@ text(3.5, 0.1, "0.5%", col = "black", cex = 1.5)
 <img src=prob_table_normal.png width="800">
 </center>
 
-$P(Z<2.58})=0.995$
+
+---
+### Constructing CI: example
+Let's calculate 90% CI for average price of listing with grade>4.5
+
+1. Take an IID sample 
+  - $n=100$ $\checkmark$
+
+--
+2. Calculate mean $\bar{x}$ and standard deviation $s$
+  - $\bar{x}=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),2), scientific=FALSE)` and $s=$ `r format(round(sd(Sample_list[Sample_list$clean==TRUE,]$price),2), scientific=FALSE)`
+
+--
+3. Pick confidence level
+  - We pick 90%, so $\alpha=0.1$
+  
+--
+
+4. Find the corresponding critical values $z_{\frac{\alpha}{2}}$
+  - Find $z_\frac{\alpha}{2}$ such that $P(Z>z_{\frac{\alpha}{2}})=0.05$ (or $P(Z<z_{\frac{\alpha}{2}})=0.95$)
+  - $z_{0.05}=1.65$
+--
+
+5. Construct the confidence interval as:
+$$\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
+$$\small \{1245.43- 1.65\frac{961.9}{\sqrt{100}}, 1245.43+ 1.65\frac{961.9}{\sqrt 100}\}$$
+
+---
+### Interpreting confidence intervals
+
+$$\small CI_{90}=\{1086.64, 1404.22\}$$
+
+How do we interpret a 90% confidence interval we computed?
+
+- **Correct Interpretation**
+  - We are 90% confident that the interval captures the true mean
+  - We are 90% confident that the true mean price of listings with grade>4.5 is between 1086.64 and 1404.22
+  
+--
+
+- **Incorrect**
+  - With 90% probability the true mean is between 1086.64 and 1404.22
+      - Computed interval is not-random and true mean is not random, so can't make probabilistic statements.
+      - Interval is a function of random variables only **before** we draw a sample and make any computation.
+      - After we have a sample, nothing is random. The true mean is either between 1086.64 and 1404.22 or not.
 
 
 ---
 
+### Shape of confidence intervals
 
-Example to calculate 
-
-- Calculating it for our listing price
-- Example to calculate 95% conf interval 
-  - $\alpha=0.05$, find $z_{\frac{0.05}{2}}$, that is 2.5% quantile of standard normal. 
-  - $z_{\frac{0.025}}$=1.96
-  - $$\{\bar{x}- z_{\frac{\alpha}{2}}*{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*{s}{\sqrt n}\}$$
----
-Interpretation:
-
-- When we calculate we don't ktnow true variance... we use standard deviation (that only works when n is large!)
-We calculated the 95% confidence interval for the average price. 
-
-Suppose
-
-- Correct: 
-- we are 95% confident that the interval captures the true mean
-  - We are 95% confident mean price of such listings is between this and this 
-- Incorrect:
-  - With 95% probability the true mean is within the confidence interval
-    - These are all non-random values, not random variables. Mean is either in this interval or not. It's only befor drawing sample (when sample is a random variable) that we can make probabilitis statements. AFter we draw the samples, we don't talk about probabilities anymore.
-
-
----
-
-
---- 
-
-Wider vs tighter confidence intervals
-- 99%
-- 90%
-- Different n
-- Different sigma 
+Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$ are wider when: 
+- Confidence level is higher (99% is wider than 90%)
+- When $n$ is small
+- When $\sigma$ is large
 
 `r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='420px')`
-.footmark[
-  Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
-]
+
 
 ---
+### Practice
 
-Exercise - Suppose we want to know what is average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be 23 and sample standard deviation to be 8. Calculate 99% confidence interval:
-
---
-- Which is correct: we are 95% confident that the average commute of these 60 students is between  (20.3364, 25.6636)
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $s=8$. Calculate 99% confidence interval and say whether interpratation is correct:
 
 --
-
-- Which is correct: we are 95% confident that the average commute of all ITAM students is between (20.3364, 25.6636)
---
-
-- Which is correct: we are 95% confidence interval would be wider
+- We are 99% confident that the average commute of these 60 students is between  (20.3364, 25.6636)
 
 --
-
--95% of random soamples would have mean between (20.3364, 25.6636)
+  - .red[False]
 --
 
--With 95% probability true mean is between this and this (20.3364, 25.6636)
+- We are 99% confident that the average commute of all ITAM students is between (20.3364, 25.6636)
+
 --
+  - .green[True]
+--
+
+-  A 95% cofidence interval would be wider
+
+--
+  - .red[False]
+--
+
+- 95% of random samples would have mean between (20.3364, 25.6636)
+
+--
+  - .red[False]
+--
+
+- 95% of random samples would capture the true mean
+
+--
+  - .green[True]
+--
+
+- With 95% probability true mean is between this and this (20.3364, 25.6636)
+
+--
+  - .red[False]
+---
+
+### What critical values?
+
+When should we use critical values from Normal Distribution?
+
+
+1. Original distribution (of $X$) is not normal: 
+
+  - If $n>30$ - you can use critical values from normal distribution
+  
+  - If $n<30$ - you are screwed
+
+
+--
+2. Original distribution (of $X$) is normal: 
+
+  - If you know $\sigma$, you can use critical values from normal ( $n$ doesn't matter)
+      - If $X$ is normal, then use $\sigma$ instead of $s$ and $\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt n}} \sim N(0,1)$ 
+
+  - If you don't know $\sigma$ but $n>30$, you can use critical values from normal
+      - CLT kicks in
+
+  - If you don't know $\sigma$ and $n<30$, you use critical values from .blue[student's t].
+      - $\frac{\bar{X}-\mu}{\frac{s}{\sqrt n}}$ is not normal. $s$ is not a good approx. of $\sigma$ when $n$ is low
+    
+
 
 ---
-confidence intervals with t distribution?
+### What's  Student's t?
 
-What if we have fewer than 30 observations?
-- then distribution is not normal.
-  - If we don't know the distribution, we don't know critical values, we can't compute intervals.
-
--Exception
-  -if the original variable is distributed as normal, then:
-    1) if you know standard deviation, you can use z. Why?
-    2) if you don't know the standard deviation, you can use t-statistic
-
----
-
-If X1, X2, . . . , Xn are i.i.d. from N(µ, σ2), then
+If $X_1$, $X_2$, . . . , $X_n$ are i.i.d. from $N(µ, σ)$, then
 $$T =\frac{\bar{X} − µ}{s/\sqrt n}$$
+Where $s$ is sample standard deviation. 
 
-can be shown to have a t distribution with n−1 degrees of freedom.
-What’s is a t-distribution?
+T has a student's t distribution with n−1 degrees of freedom
+$$T \sim t_{n-1}$$
+
 
 ---
+### What's  Student's t?
 
-- Bell shaped and Symmetric around 0 
-- more spread out - heavier tails, more uncertainty
-- Shape determined by degrees of freedom. As n increases, it tends to standard normal (as it should by CLT!)
+- Bell shaped and symmetric around 0 
+- More spread out - heavier tails, more uncertainty (because we don't know standard deviation)
+- Shape determined by the degrees of freedom. 
+  - As n increases (and hence degrees of freedom), it tends to standard normal (as it should by CLT!)
+  - Less uncertainty because we are better at estimating standard deviation
 
 ```{r abc, warning=FALSE, fig.height=2.5, out.width='100%'}
 # Parameters
@@ -436,22 +587,25 @@ gg_plot <- ggplot(df, aes(x = x, y = y, color = distribution)) +
 # Convert to plotly object for interactivity
  ggplotly(gg_plot,
         width = 800,   # Adjust the width according to your preference
-        height = 400)
+        height = 300)
 
 ```
 
 
 ---
+### Student's t critical values
 
-Why more variability? because more uncertainty about standard deviation, but as we increase degrees of freedom, that additional uncertainty starts to vanish
+Finding critical values for student's t distribution:
 
-Finding critical values for t distribution
-1. Determine what is the right number of degrees of freedom!
+1. Determine what is the right number of degrees of freedom ( $n-1$ )!
 2. Determine what's your confidence level and your $(1-\alpha)$
   - From this figure out $\alpha/2$
-on the graph and in the table
+  
+3. Find the percentile such that 
 
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+$$P(T>t_{\frac{\alpha}{2},\underbrace{n-1}_{d.f.}})=\frac{\alpha}{2} \qquad\text{or}\qquad P(T<t_{\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$$
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 # Parameters
 n <- 10  # Sample size
 df <- n - 1  # Degrees of freedom for t-distribution
@@ -487,17 +641,25 @@ polygon(x = c(-2.62, seq(-2.62, 2.62, 0.01), 2.62),
 # Add the "95%" label
 text(0, 0.2, "95%", col = "black", cex = 1.5)
 
-text(3, 0.05, "2.5%", col = "black", cex = 1.5)
+text(3, 0.2, "2.5%", col = "black", cex = 1.5)
 
 ```
 
 
 ---
+### Example
+
+- $n=10 \rightarrow df=9$
+- Confidence level is 95% $\rightarrow1-\alpha=0.95$ and $\frac{\alpha}{2}=0.025$
+- What's $t_{0.025,9}$ such that $P(T<t_{0.025,9})=0.975$
 <center>
 <img src=t_student_table.png width="1000">
 </center>
 
 ---
+- $n=10 \rightarrow df=9$
+- Confidence level is 95% $\rightarrow1-\alpha=0.95$ and $\frac{\alpha}{2}=0.025$
+- What's $t_{0.025,9}$ such that $P(T<t_{0.025,9})=0.975$
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 # Parameters
@@ -538,22 +700,29 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 text(3, 0.05, "2.5%", col = "black", cex = 1.5)
 
 ```
+- Once we have critical value, we construct the CI as before:
+
+$$\small \{\bar{x}- t_{\frac{\alpha}{2},n-1}*\frac{s}{\sqrt n}, \bar{x}+ t_{\frac{\alpha}{2},n-1}*\frac{s}{\sqrt n}\}$$
+
+
 
 ---
-Procedure 
+### Practice:
 
----
-Exercise
+Your company implemented free shipping for a random group of customers. They want to know whether it increased spending.
+Here is your data:
 
-Free shipping for a random group of customers some customers. Does it work? do they spend more?. You take a sample of them. They are normal variables. 
-This is the data: 
 $157.80, $192.45, $210.20, $175.60, $198.30, $180.90, $205.75, $185.20, $177.40, $195.60 
 
 
-a) calculate confidence 90 interval
-b) Average spending without free shipping is $182, can say anything about whether it increased with free shipping?
+a) Calculate 90% confidence interval. What assumptions you need?
 
----
+--
 
-Remember, you use  t-distrubution when underlying is normal and you don't know true standard deviaton (you almost never know it)
+- Hint 1: $\sum_ix_i=1869.80$
+- Hint 2: $\sum_ix_i^2=361752.55$
+
+--
+b) Average spending without free shipping is $182, can say anything about whether free shipping increased spending?
+
 
