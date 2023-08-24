@@ -34,6 +34,8 @@ library(ggplot2)
 library(gridExtra)
 library(dplyr)
 library(hrbrthemes)
+library(gridExtra)
+library(cowplot)
 library(viridis)
 library(gapminder)
 library(knitr)
@@ -129,12 +131,27 @@ datatable(Sample_list,
 
 In statistical language: 
 - .blue[Population]: Entire group we want to learn about, impossible to assess directly
+
+--
   - All listings of Airbnb in Mexico City
   - Ideally we would like to know the entire distribution of prices
+  
+--
+
 - .blue[Parameters]: Number describing a characteristic of the population
+
+--
   - We want to know mean price of clean $\mu_c$ and dirty $\mu_d$ apartments 
+  
+--
+
 - .blue[Sample]: Part of the population we have data for
+
+--
   - We have a sample of 200 listings
+  
+--
+
 - .blue[Goal]: What we want to learn about the population?
   - Is $\mu_c$ > $\mu_d$? If yes, by how much?
 
@@ -145,15 +162,23 @@ In statistical language:
 
 - **At random:** A sample is random if each member of the population (each listing) has an equal chance of being selected.
 
+--
 - **Random Variable: $P_i$:**
   - RV describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
-  
+
+--
 - **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
 
+--
 - **IID (Independent and Identically Distributed):**
+
+--
   - **Independent:** The selection of one unit ( $P_i$ ) doesn't affect the selection of another ( $P_j$ )
-  - **Identically Distributed:** All units $P_i$ come from the same distribution.
   
+--
+  - **Identically Distributed:** All units $P_i$ come from the same distribution.
+
+--
 - **Observed Value: $p_i$:**
   - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
 ---
@@ -161,15 +186,18 @@ In statistical language:
 ### Estimators
 
 
-- **Estimator/Statistic:**
+- **Estimator:**
   - A function of random variables in our sample $\hat\theta=f(P_1, P_2,...,P_n)$
   - Given its random nature, we can analyze its statistical properties
   - Examples we have seen: 
       - $\hat{\mu_c}=\bar{P}=f(P_1, P_2,...,P_n)=\frac{\sum_n P_i}{n}$
-      - $s_c=g(P_1, P_2,...,P_n)=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(P_i-\bar{P})^2}$\
-    
-  -It cannot contain any unknown quantities (like $\sigma$ or $\mu_p$)  
-      
+      - $s_c=g(P_1, P_2,...,P_n)=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(P_i-\bar{P})^2}$
+
+--
+  - It cannot contain any unknown quantities (like $\sigma$ or $\mu_p$)  
+  
+--
+
 - **Point Estimate:**
   - A single number computed from the realized sample data $\{p_1,p_2,...p_n\}$
       - $\bar{p}=f(p_1, p_2,...,p_n)=\frac{\sum_n p_i}{n}$
@@ -182,6 +210,8 @@ In statistical language:
 
 - The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),3), scientific=FALSE)` MXN
 - This is our point estimate
+
+--
 - Can we evaluate how reliable is it?
 
 `r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='500px')`
@@ -191,7 +221,11 @@ In statistical language:
 ### Estimators 
 
 - **Sampling distribution** is the distribution of a statistic calculated from multiple random samples drawn from the same population.
+
+--
 - It is never actually observed (we only have one draw)
+
+--
 - But knowing its properties can help us determine the accuracy of the mean we computed
   - Let's start by determining the expectation and the variance of the statistic/estimator
   
@@ -200,9 +234,13 @@ In statistical language:
 
 - A good estimator should be unbiased:
 $$E[\hat{\theta}]=\theta$$ 
+- Where $\theta$ is some parameter and $\hat{\theta}$ is its estimator
 - This should be true for any value of $\theta$
 - The sampling distribution should be centered at the parameter's value
 - Intuitively, on average the estimator should give us the parameter's value
+
+
+--
 $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - Bias of an estimator is a difference between its expectation and the parameter
 - Lets look at a couple of estimators and check if they are biased or not
@@ -237,7 +275,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 
 ### Example 3: Estimator = $(3X_1 + X_2)/4$
 #### Expectation
-- The estimator: $\hat{\theta}_3 = \frac{2X_1 + X_2}{3}$
+- The estimator: $\hat{\theta}_3 = \frac{3X_1 + X_2}{4}$
 
 --
 - Expected Value: $E(\hat{\theta}_3)= \frac{3}{4}E(X_1) + \frac{1}{4}E(X_2) = \frac{3}{4}\mu + \frac{1}{4}\mu = \mu$
@@ -262,6 +300,8 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 
 - Good estimator is unbiased
 - But how do we choose among unbiased estimator?
+
+--
   - Suppose we sample from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
   - Estimator 1:  $\small (3X_1 + X_2)/4$
   - Estimator 2:  $\small (X_1 + X_2+X_3+X_4)/4$
@@ -329,8 +369,8 @@ $$var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})$$
 - $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
 
 --
-#### Example 3: Estimator = $\frac{\sum{X_i}}{n}$
-- $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
+#### Example 3: Estimator = $\frac{3X_1 + X_2}{4}$
+- $\small  Var(\hat{\theta}_4) = E\left[\left((3X_1 + X_2)/4 - \mu\right)^2\right]=\frac{10\sigma^2}{16}$
 
 ---
 
@@ -371,6 +411,9 @@ $$E[\hat{\theta}_7] = E[s^2]= E[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}]=\fra
 
 $$MSE(\hat{\theta})=E[(\hat{\theta}-\theta)^2]$$
 - The lower MSE, the better the estimator
+
+
+--
 - It summarizes both the bias and the variance:
 
 \begin{align*}
@@ -382,6 +425,8 @@ $$MSE(\hat{\theta})=E[(\hat{\theta}-\theta)^2]$$
 &= \text{var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2
 \end{align*}
 
+
+--
 - If estimator is unbiased, then $$MSE(\hat{\theta})=\text{var}(\hat{\theta})$$
 ---
 
@@ -436,7 +481,7 @@ p2 <- ggplot(hist_data_inefficient, aes(x = value)) +
   xlim(x_limits)
 
 # Arrange plots in a 2x1 grid
-library(gridExtra)
+
 grid.arrange(p1, p2, ncol = 1)
 
 
@@ -446,11 +491,21 @@ grid.arrange(p1, p2, ncol = 1)
 ---
 ### Mean Squared Error of sample mean
 
-- How do we know that $\frac{3X_1 + X_2}{4}$ is worse then $\frac{X_1+X_2}{2}$?
+-  $\frac{3X_1 + X_2}{4}$ is worse than $\frac{X_1+X_2}{2}$?
+
+--
 - Both estimators have the form of  $\hat{\theta}=\sum_n c_iX_i$ with $n=2$
   - They have different weights $c_i$ or in vector form $\mathbf{c}=\{c_1,c_2,..c_n\}$, with $\sum_ic_i=1$
+  
+--
 - Sample mean is the best because for any n and $\mathbf{c}$ such that $\sum_ic_i=1$:
 $$argmin_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=\{\frac{1}{n},\frac{1}{n},..\frac{1}{n}\}$$
+
+
+---
+
+### Mean Squared Error of sample mean
+
 
 And hence
 $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_i}{n}-\mu)^2]$$
@@ -463,8 +518,12 @@ $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_
 
 - We know how to determine the mean and the variance of the estimator
 - Can we say anything about the distribution of the estimator?
+
+--
 - In case of sample mean, yes!
-- That's what **Central limit Theorem** is about, the most exciting theorem in statistcs!
+
+--
+- That's what **Central Limit Theorem** is about, the most exciting theorem in statistcs!
 
 ---
 
@@ -472,10 +531,24 @@ $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_
 
 - Suppose $X_1,X_2,...,X_n$ are **i.i.d** variables drawn **at random** from a distribution with mean $\mu$ and standard deviation $\sigma$
 
-  - Let $S_n=\sum_nX_n$. Note that: $E[S_n]=n\mu$ and $var(S_n)=\sqrt{n}\sigma$
-  - Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ Note that: $E[\bar{X}_n]=mu$ and $var(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
-  - Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$ Note that: $E[Z_n]=0$ and $var(Z_n)=1$
+  - Let $S_n=\sum_nX_n$. 
+  
+--
+      - Note that: $E[S_n]=n\mu$ and $var(S_n)=\sqrt{n}\sigma$
 
+--
+  - Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ 
+
+--
+    - Note that: $E[\bar{X}_n]=mu$ and $var(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
+    
+--
+  - Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$ 
+  
+--
+    - Note that: $E[Z_n]=0$ and $var(Z_n)=1$
+
+--
 - **Central Limit Theorem** says that **for large n**:
 
 $$S_n \sim \mathcal{N}(\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \sim \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \sim \mathcal{N}(0,1)$$
@@ -534,10 +607,10 @@ for (n in sample.sizes) {
 # Reset par to its default settings
 par(mfrow = c(1, 1))
 ```
-- What is the variance?
+- What is the standard deviation?
 
 --
-- $var(\bar{X}_n)=\frac{\sigma}{\sqrt n}=\frac{\sqrt{p(1-p)}}{\sqrt n}=\frac{0.5}{\sqrt n}$
+- $\sigma_{\bar{X}}=\sqrt{var(\bar{X}_n)}=\frac{\sigma_X}{\sqrt n}=\frac{\sqrt{p(1-p)}}{\sqrt n}=\frac{0.5}{\sqrt n}$
 ---
 ### Central Limit Theorem 
 What happens if some assumptions are not respected?
@@ -607,7 +680,7 @@ plot_list <- lapply(1:2, function(i) {
 if (!requireNamespace("cowplot", quietly = TRUE)) {
   install.packages("cowplot")
 }
-library(cowplot)
+
 
 plot_grid(plotlist = plot_list, nrow = 2)
 ```
@@ -718,17 +791,17 @@ Consider the event that a customer who opened the DiDi app will call the car.  S
 
 $$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant, then } X + c \sim \mathcal{N}(\mu + c, \sigma)$$
 $$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant, then } cX \sim \mathcal{N}(c\mu, |c|\sigma)$$
-$$\text{If } X \sim \mathcal{N}(\mu_1, \sigma_1^2) \text{ and } Y \sim \mathcal{N}(\mu_2, \sigma_2^2), \text{ then } X + Y \sim \mathcal{N}(\mu_1 + \mu_2, \sqrt{\sigma_1^2 + \sigma_2^2})$$
-
-'s delve into the mathematical transformation and visualize how it unfolds.
+$$\text{If } X \sim \mathcal{N}(\mu_1, \sigma_1) \text{ and } Y \sim \mathcal{N}(\mu_2, \sigma_2), \text{ then } X + Y \sim \mathcal{N}(\mu_1 + \mu_2, \sqrt{\sigma_1^2 + \sigma_2^2})$$
 
 ---
 
 ## From Normal to Chi-Square
 - We start with the standard random normal distribution N(0, 1).
-- The transformation $\smallX = Z^2$ gives rise to the Chi-Square distribution with 1 degree of freedom $\small\chi^2(1)$.
-- The expectation of $\small\chi^2(1)$ is $\small E[X]=E[Z^2]=Var(Z)+E[Z]^2=Var(Z)=1$
-- The variance of $\small\chi^2(1)$ is $\small var(X)=2$
+- The transformation $\small X = Z^2$ gives rise to the Chi-Square distribution with 1 degree of freedom $\small  \chi^2(1)$.
+
+--
+- The expectation of $\small \chi^2(1)$ is $\small E[X]=E[Z^2]=Var(Z)+E[Z]^2=Var(Z)=1$
+- The variance of $\small \chi^2(1)$ is $\small var(X)=2$
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%'}
 library(ggplot2)
@@ -757,6 +830,7 @@ p1
 
 ## Visualizing the Connection
 - The shaded areas represent probability that $X=Z^2>1$ 
+- Where $X \sim \chi^2(1)$ and $Z \sim N(0,1)$
 - Shaded areas are the same in both graphs
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
@@ -793,7 +867,9 @@ par(mfrow = c(1, 1))
 
 ## Chi-Square and the Sum of Random Normals
 - More generally, sum of n iid squared standard normal variables is distributed as Chi-Square with n degrees of freedom
-- $\small \sum_n{Z^2}\sim \chi^2(n)$
+- $\small \sum_nZ^2\sim \chi^2(n)$
+
+--
 - The expectation of $\small\chi^2(n)$ is $\small E[X(n)]=E[\sum_n Z_i^2]=\sum_n Var(Z_i)=n$
 - The variance of $\small\chi^2(n)$ is $\small var(X)=2n$
 <center>
@@ -805,3 +881,7 @@ par(mfrow = c(1, 1))
 
 --
 - Because of CLT - it's sum of random variables
+
+---
+
+### Distribution of sample variance
