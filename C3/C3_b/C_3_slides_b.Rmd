@@ -1,5 +1,5 @@
 ---
-title: 'Class 3a: Review of concepts in Probability and Statistics'
+title: 'Class 3b: Review of concepts in Probability and Statistics'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
@@ -232,6 +232,20 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
   - So its percentiles are linear transformation of st.nor. quantiles:  $v_{0.975}^\bar{X}=\mu_X+\frac{\sigma_X}{n}v_{0.975}^Z$
 ---
 
+### Yet another way to see it
+
+
+\begin{align*}
+0.95&= P(z_{-\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
+&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{s/sqrt n}<z_{\frac{\alpha}{2}}) \\
+&= P(z_{-\frac{\alpha}{2}}s/sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}s/sqrt n) \\
+&= P(z_{-\bar{X}-\frac{\alpha}{2}}s/sqrt n< -\mu <-\bar{X}+z_{\frac{\alpha}{2}}s/sqrt n) \\
+&= P(z_{\bar{X}+\frac{\alpha}{2}}s/sqrt n> \mu >\bar{X}-z_{\frac{\alpha}{2}}s/sqrt n) \\
+\end{align*}
+
+
+---
+
 ### Sampling distribution
 
 - Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{n}$ to the true parameter
@@ -308,7 +322,8 @@ Use this procedure if $n>30$
 1. Take an IID sample
 
 --
-2. Calculate mean $\bar{x}$ and standard deviation $s$
+2. Calculate mean $\bar{x}$ and standard deviation $s$ in your sample
+  - Standard Error is standard deviation of the estimator $SE=\frac{s}{\sqrt n}$
 
 --
 3. Pick confidence level (usually 90,95,99%)
@@ -324,7 +339,7 @@ Use this procedure if $n>30$
 --
 
 5. Construct the confidence interval as:
-$$\{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
+$$\{\bar{x}- z_{\frac{\alpha}{2}}*\underbrace{\frac{s}{\sqrt n}}_{SE}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
 
 
 ---
@@ -726,3 +741,74 @@ a) Calculate 90% confidence interval. What assumptions you need?
 b) Average spending without free shipping is $182, can say anything about whether free shipping increased spending?
 
 
+---
+### Confidence Intervals for Variance
+
+- Suppose $X_1, X_2, ...X_n$ come from normal distribution
+- The sampling distribution of the sample variance is $S^2=\frac{\sum_i(X_i-\bar{X})^2}{n-1}$ is: 
+
+$$\small \frac{(n-1)S^2}{\sigma^2}\sim\chi_{n-1}$$
+--
+- We will use the fact that:  
+$$\small P(\chi_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi_{0.975,n-1})=0.95$$
+
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
+df <- 9  # Degrees of freedom for chi-square distribution
+
+# Create a sequence of x values
+x_vals <- seq(0, 25, by =0.01)
+
+# Calculate the density values for the chi-square distribution
+chi_density <- dchisq(x_vals, df)
+
+# Plotting
+plot(x_vals, chi_density, type = "l", xlim = c(0, 25), ylim = c(0, 0.2),
+     main = "Chi-Square with 9df",
+     yaxs = "i", xlab = "x", ylab = "", lwd = 2, axes = FALSE)
+
+# Add x-axis
+
+
+# Add a vertical line at the mean (mu)
+abline(v = 9, col = "red", lwd = 2)
+
+# Calculate quantiles for shading
+q_lower <- qchisq(0.025, df)
+q_upper <- qchisq(1 - 0.025, df)
+
+# Shade the middle 95% region
+polygon(x = c(0, seq(0, q_lower, by =0.01), q_lower, q_upper, seq(q_upper, 25, by=0.01), 25),
+        y = c(0, dchisq(seq(0, q_lower, by =0.01), df), 0, 0, dchisq(seq(q_upper, 25, by =0.01), df), 0),
+        col = transparent_color)
+
+# Add the "95%" labels
+text(q_lower -0.5, 0.05, "2.5%", col = "black", cex = 1.5)
+text(q_upper +0.5, 0.05, "2.5%", col = "black", cex = 1.5)
+
+axis(1, at = c(0, q_lower, 9,q_upper, 25), padj = 0.75,
+     labels = c(0,expression(chi[0.025]), 9,expression(chi[0.975]), 25))
+
+```
+
+---
+### Confidence Intervals for Variance
+
+How we use it to construct the confidence interval?
+
+\begin{align*}
+0.95&= P(\chi_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi_{0.975,n-1}) \\
+&= P(\frac{1}{\chi_{0.975,n-1}} < \frac{\sigma^2}{(n-1)S^2} < \frac{1}{\chi_{0.025,n-1}}) \\
+&= P(\frac{(n-1)S^2}{\chi_{0.975,n-1}} < \sigma^2 < \frac{(n-1)S^2}{\chi_{0.025,n-1}})
+\end{align*}
+
+--
+So more generally, the confidence interval for the sample variance is 
+
+$$CI_{1-\alpha}=\{\frac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2},n-1}}, \frac{(n-1)S^2}{\chi_{\frac{\alpha}{2},n-1}}\}$$
+- Where $\chi_{1-\frac{\alpha}{2},n-1}$ and $\chi_{\frac{\alpha}{2},n-1}$ are quantiles of $\chi_{n-1}$ distribution, such that $P(X<\chi_{1-\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$ and $P(X<\chi_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$
+- You can read them off the tables
+
+---
+### Practice
+
+Suppose you produce sausages. As a quality control, you measure the level of fat in your sausages. You take a random sample of 12 sausages and you find the variance of 20  ( $grams^2$ ). Find 99% confidence interval for the variance. What assumptions you need?

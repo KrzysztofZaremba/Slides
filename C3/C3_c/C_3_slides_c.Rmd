@@ -1,0 +1,764 @@
+---
+title: 'Class 3b: Review of concepts in Probability and Statistics'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+load("sample_listing.Rda")
+```
+
+
+---
+layout: false
+class: inverse, middle
+
+# Hypothesis Testing
+
+---
+# Hypothesis Testing
+
+Let's go back to our question. Can we get a higher price if cleanliness level 4.5?
+
+
+This type of questions can be answered with hypothesis testing where we try to see which one of competing hypothesis is more likely to be true. .blue[Hypothesis] is a claim about a parameter or a distribution. 
+
+1. **$H_0$ Null Hypothesis**: 
+  - Claim to be tested, skeptical perspective
+      - Prices of clean and dirty apartments are equal 
+      - $H_0: \mu_c=\mu_d$
+    
+2. **$H_A$ Alternative Hypothesis**:
+  - An alternative idea under consideration
+      - Prices of clean apartments are higher than prices of dirty apartments
+       - $H_0: \mu_c>\mu_d$
+       
+       
+Goal is to see if there is enough of data to reject the null in favor of the alternative.
+---
+# Hypothesis Testing
+
+Some examples of hypotheses testing:
+
+1. As a producer of a new weight-loss drug, you want to test if it is more efficient than competitor's drug
+
+--
+  - $H_0$: Average weight after 3 months for your patients is larger or equal to competitor's patients 
+      - $H_0: \mu_y ???\leq  \mu_c$
+  - $H_A$: Average weight after 3 months for your patients is smaller than competitor's patients
+      - $H_A: \mu_y > \mu_c$
+
+--
+2. You released a new promotion to some customers (10% off) and you want to test if people who got the promotion spend different amount of money than those who didn't
+  - $H_0$: People who got promotion spend the same as people who didn't get promotion
+      - $H_0: \mu_p =  \mu_n$
+  - $H_A$: People who got the promotion spend more than people who didn't get the promotion
+      - $H_A: \mu_p \neq \mu_n$
+  
+--
+3. You designed a new healthy snack and want to test whether it needs "excessive sugar" sticker. It gets the sticker if it exceeds 100 this much of sugar. You take a sample and test 
+  - $H_0$: The average sugar content is 100 or less
+      - $H_0: \mu_s =  100$
+  - $H_A$: The average sugar content is more than 100
+      - $H_A: \mu_n \geq  100$
+
+---
+
+We either reject H_0, or fail to reject
+
+Why we need to test? Why can't we just measure it directly? 
+Because we only have samples
+
+Note, hypothesis are always about parameters! Never about sample statistics/point estimates
+
+---
+
+Test procedure
+ rule based on a sample data whether to reject the null or not
+ 
+ two elements
+ - Test statistics - function of sample data on which we base the decision, summary of the data which reflects evidence against or for (for example sample mean, or difference between sample means)
+ - Rejection region - values of test statistics such that we would reject the null if we observe them
+ 
+
+---
+Example
+
+The one with sugar. You take a sample and calculate mean sugar content - that's your test statistic
+
+Suppose some packages have it's higher than 100 just by chance, so you don't want to reject anything which above 100. YOu need enough of evidence! So say you reject the null if $\bar{x}>105$. So your rejection region is $\{105,\infinity\}$
+
+- So usually the rule would be something like 
+-reject H_0 if test statistic> k 
+where k is some cutoff 
+
+
+MAKE A SIMPLE ONE DIMENSIONAL PLOT, with rejection region and to the left one thing and to the right against hypothesis
+
+
+---
+
+### Decision errors
+
+Suppose that (null is true) and on average it's 100 , but it has standard deviation of 20. You take a sample of 36. But you were very unlucky in your sampling, so you actually got a sample with those rare packages which have more sugar than 100 by chnace. So you conclude null is false. You make an error. 
+
+What's the probability of making such error with rejection region being 
+
+$\alpha=P(\text{Type 1 error})=P_{H_0}(\bar{X}>105)=1-\underbrace{F^{H_o}_{\bar{X}}(105)}_{\text{CDF of }\bar{X} \text{under } H_0}$
+
+Make a graph - such that it shades values larger than 105, says rejection region, and shows it's 
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+
+curve(dnorm(x, 100, 20/6),
+      xlim = c(90, 110),
+      yaxs = "i",
+      xlab = "Mean sugar content in the sample if null is true",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(95,100, 105), 
+     padj = 0.75,
+     labels = c(95,expression(100),
+                expression(105)))
+
+
+polygon(x = c(105, seq(105, 110, 0.01), 110),
+        y = c(0, dnorm(seq(105, 110, 0.01), 100, 20/6), 0),
+        col = "steelblue")
+
+# add vertical line at the mean (mu)
+abline(v = 105, col = "red", lwd = 2)
+
+
+text(108.1, 0.06, "Rejection \n region", col = "black", cex = 1.5)
+text(107, 0.02, expression(alpha), col = "white", cex = 1.5)
+
+```
+
+
+###
+
+Test conclusion
+| | do not reject $H_0$ | reject $H_0$ in favor of $H_A$|
+|$H_0$ true | okay | Type 1 Error|
+Truth| $H_A$ true | Type 2 Error | okay|
+
+Meme with the doctor
+
+- Type 1 error: reject null when $H_0$ is true
+  - Conclude that people spend more when they got free shipping, while in reality they spend the same as those who didn't
+
+- Type 2 error: don't reject null when $H_A$ is true
+  - Conclude that people who got free shipping spend the same as those without free shipping, while those with free shipping spend more
+  
+Suppose $H_0$ is innocent, and $H_1$ is guilty. describe error type 1 and 2 in these scenarios
+
+How can we try to minimize error type 1 in this context?
+
+To lower the Type 1 Error rate, we might raise our standard for conviction from “beyond a reasonable
+doubt” to “beyond a conceivable doubt” so fewer people would be wrongly convicted. However, this
+would also make it more difficult to convict the people who are actually guilty, so we would make
+more Type 2 Errors
+
+prob of making type 1, is $\alpha$, size, of significance level of the test
+
+---
+Idea is to design a test such that we reject the null if there is enough statistical evidence:
+  - So basically we want to have low probability of type 1 error
+  - We will often say that we don't want to incorrectly reject null more than 5% of times. 
+
+probability 
+
+TRADEOFF between type 1 and 2 errors.  
+
+Suppose that true sugar content is 110. 
+
+
+Show what's type two error and power of the test
+
+---
+
+HERE I COULD USE ONE OF THE WEBSITES TO SHOW IT INTERACTIVELY!
+
+
+---
+
+Link between tests and intervals
+
+- Note that if we test hypothesis the rejection region is equivalent to area outside of confidence interval
+- so look at interval around $\mu=v$. If we get a sample which is outside of this interval, its in the rejection region for a test $H_0: \mu  = v$. vs $H_A: \mu  \neq v$. 
+- It means that the confidence interval around this sample mean does not contain $v$
+- So if 95% confidence interval does not contain a mu, a 95% test with $H_0: \mu=v$ $H_1: \mu_v \neq v$ would be rejected. 
+
+
+(again one dimensional graph here)
+
+
+  
+--- 
+
+p-values
+
+The p-value is the probability of observing data at least as favorable to the alternative hypothesis as our current data set, if the null hypothesis were true.
+
+The P-value is the probability, calculated assuming that the null hypothesis is
+true, of obtaining a value of the test statistic at least as contradictory to H0 as
+the value calculated from the available sample. 
+
+- H_0 your coin is fair
+- H_A your coin is not fair. 
+
+You throw it 10 times and you get (F,B,B,F,B,F,B,F,F,F). P-value is the probability that this sequence would arise under the null. 
+
+Q: suppose you get 10 times F. What is the probability this would arise under the null? That's your p-value!
+Low p-value, low probability of this happening under the null, more likely to reject!
+
+
+---
+Some interactive vizualization of p-values? maybe in see theory
+
+
+---
+
+More formally
+
+$p=P_{H_0}(\text{test statistic}>\text{value of test statistic in our sample})$
+Another example:
+
+go back to sugar. Suppose we have a sample of 36 and find mean 103. It's equivalent to what p value?
+
+$p=P_{H_0}(\bar{X}>103)=P(\frac{\bar{X}-100}{20/\sqrt{36}}>\frac{102-100}{20/\sqrt{36}})=P(Z>0.9)$
+
+now suppose we found 107. 
+
+$p=P_{H_0}(\bar{X}>107)=P(\frac{\bar{X}-100}{20/\sqrt{36}}>\frac{107-100}{20/\sqrt{36}})=P(Z>2.1)$
+
+What is the p-value now?
+
+Illustrate it with graphs!
+
+How can you relate p-value to alpha?
+
+
+---
+
+Question
+
+5. [8 puntos] Considere las siguientes afirmaciones en el contexto de pruebas de hip´otesis:
+A) Si en una prueba se rechaza la hip´otesis nula con una significancia de 0.06, entonces se puede inferir
+que el valor−p asociado al estad´ıstico observado es menor al 6 %.
+B) Si se rechaza la hip´otesis nula considerando un nivel de significancia α = 0.05, luego, no es adecuado
+concluir que con un nivel de confianza del 95 % se rechaza la hip´otesis nula.
+
+
+---
+
+More generally:
+
+Select a significance level a (as before, the desired type I error probability).
+Then do not reject H0 if P-value . a
+
+---
+The P-value is the smallest significance level α at which the H0
+can be rejected
+
+Again show the graph (or maybe interactive thing?)
+ 
+---
+
+How you calculate p values?
+
+case 1: large population, each type of hypothesis
+case 2: normal population, known variance
+case 3: normal population, unnkown variance, samll sample
+
+---
+
+
+
+General procedure:
+1. Identify the parameter of interest and describe it in the context of the problem situation.
+2. Determine the null value and state the null hypothesis.
+3. State the appropriate alternative hypothesis.
+4. Collect your data- sample need to be independent!
+4. Give the formula for the computed value of the test statistic (substituting the null
+value and the known values of any other parameters, but not those of any samplebased quantities).
+5. State the rejection region for the selected significance level a.
+6. Compute any necessary sample quantities, substitute into the formula for the test
+statistic value, and compute that value.
+7. Decide whether H0 should be rejected, and state this conclusion in the problem
+context.
+---
+
+That's the general framework. Now let's move to specific tests 
+
+
+---
+layout: false
+class: inverse, middle
+
+# Hypothesis Testing: Single sample
+
+---
+
+Single population tests for sample mean(so type it's equal to a value....)
+
+
+General idea:
+
+Test statistic:
+we will rely on normalized sample mean 
+
+$Z=\frac{\bar{X}-\mu_0}{SE}$
+
+Where standard error is the standard deviation of the mean. 
+
+Generally, depending on the hypothesis we will pick a threshold and reject if Z is beyond it. 
+
+But Choosing critical levels and estimating standard variance will depends on cases
+  - how big is the sample
+  - what's the underlying distribution
+
+
+
+
+
+
+---
+
+Case 1: 
+
+- large sample (more than 30), any distribution, doesn't matter if we know sigma
+
+Suppose we want to have a test of significance level $\alpha$
+  - this means we don't want to commit type 1 error more times than $\alpha$
+      - Example: for significance level 5%, probability of making type one error is 5%.
+
+- Because CLT, we can use normal, even if we estimate the variance. 
+
+
+---
+
+
+### One sided test
+
+
+$H_0: \mu=\mu_0$
+$H_A: \mu > \mu_0$
+
+This includes any null hypothesis like $\mu \leq \mu_0$
+
+For test of size/significance level $\alpha$, reject if 
+
+$$\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha$$
+
+Where 
+- SE in this case is: $SE=\frac{s}{\sqrt n}$
+- $z_\alpha$ is $1-\alpha$ quantile of standard normal and is defined as $P(Z>z_{\alpha})=\alpha$
+  - For instance: if $\alpha$=0.05, then $z_{0.05}$ is 0.95 quantile of standard normal with $P(Z>{z_{0.05}})=P(Z>1.65)=0.05$ 
+
+- .blue[Intuition]: 
+  -  We never reject $H_0$ if $\bar{X} \leq \mu_0$.
+  -  We reject $H_0$ if $\bar{X}$ is sufficiently larger than $\mu_0$
+  -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
+$$P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
+
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+
+curve(dnorm(x, 100, 20/6),
+      xlim = c(90, 110),
+      yaxs = "i",
+      xlab = "Standard Normal",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(100, 105), 
+     padj = 0.75,
+     labels = c(0,
+                expression(z[alpha])))
+
+
+polygon(x = c(105, seq(105, 110, 0.01), 110),
+        y = c(0, dnorm(seq(105, 110, 0.01), 100, 20/6), 0),
+        col = "steelblue")
+
+# add vertical line at the mean (mu)
+abline(v = 105, col = "red", lwd = 2)
+
+
+text(108.1, 0.06, "Rejection \n region", col = "black", cex = 1.5)
+text(107, 0.02, expression(alpha), col = "white", cex = 1.5)
+
+```
+
+
+---
+
+### One sided test
+
+$H_0: \mu=\mu_0$
+$H_A: \mu < \mu_0$
+
+This includes any null hypothesis like $\mu \geq \mu_0$
+
+For test of size/significance level $\alpha$, reject if 
+
+$$\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha$$
+
+Where 
+- SE in this case is: $SE=\frac{s}{\sqrt n}$
+- $-z_\alpha$ is $\alpha$ quantile of standard normal and is defined as $P(Z<-z_{\alpha})=\alpha$
+- Normal is symmetric, that's why 
+  - For instance: if $\alpha$=0.05, then $-z_{0.05}$ is 0.05 quantile of standard normal with $P(Z>{-z_{0.05}})=P(Z<-1.65)=0.05$ 
+
+- .blue[Intuition]: 
+  -  We never reject $H_0$ if $\bar{X} \geq \mu_0$.
+  -  We reject $H_0$ if $\bar{X}$ is sufficiently smaller than $\mu_0$
+  -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
+$$P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+
+curve(dnorm(x, 100, 20/6),
+      xlim = c(90, 110),
+      yaxs = "i",
+      xlab = "Standard Normal",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(95,100), 
+     padj = 0.75,
+     labels = c(expression(-z[alpha]),
+                0))
+
+
+polygon(x = c(90, seq(90, 95, 0.01), 95),
+        y = c(0, dnorm(seq(90, 95, 0.01), 100, 20/6), 0),
+        col = "steelblue")
+
+# add vertical line at the mean (mu)
+abline(v = 95, col = "red", lwd = 2)
+
+
+text(92.1, 0.06, "Rejection \n region", col = "black", cex = 1.5)
+text(93, 0.02, expression(alpha), col = "white", cex = 1.5)
+
+```
+
+
+
+
+IMAGE
+---
+
+Two sided test:
+
+$H_0: \mu=\mu_0$
+$H_A: \mu \neq \mu_0$
+
+For test of size/significance level $\alpha$, reject if 
+
+$$-z_{\alpha/2}>\frac{\bar{X}-\mu_0}{s/\sqrt n} \qquad\text{or}\qquad \frac{\bar{X}-\mu_0}{s/\sqrt n}>z_{\alpha/2}$$ 
+
+Where $z_{\alpha/2}$ is such that $P(Z>z_{\alpha/2})=\alpha/2$.
+So for 95% confidence, we have $P(Z>z_{0.025})=P(Z>1.96)=0.025$:
+hence our rejection region would be below -1.96 and above 1.96
+ 
+
+Comments: 
+Under the null, probability of making the error is still $\alpha$
+But now we have two rejection regions, so $\alpha$ is distributed equally among them
+
+Consider a 95% test and our test statistic is 1.8
+Would we reject it in two sided test?
+What about one sided test? What direction of hypotheses?
+
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
+
+
+curve(dnorm(x),
+      xlim = c(-4, 4),
+      main = "Standard normal",
+      yaxs = "i",
+      xlab = "z",
+      ylab = "",
+      lwd = 2,
+      axes = "F")
+
+# add x-axis
+axis(1, 
+     at = c(-1.96, 0, 1.96), 
+     padj = 0.75,
+     labels = c(expression(-z[alpha/2]),
+                expression(0),
+                expression(z[alpha/2])))
+
+# shade the tails for the 2.5% regions
+polygon(x = c(-4, seq(-4, -1.96, 0.01), -1.96),
+        y = c(0, dnorm(seq(-4, -1.96, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+polygon(x = c(1.96, seq(1.96, 4, 0.01), 4),
+        y = c(0, dnorm(seq(1.96, 4, 0.01)), 0),
+        col = "steelblue", alpha = 0.2)
+
+# add vertical line at the mean (mu)
+abline(v = 0, col = "red", lwd = 2)
+
+# add the "2.5%" labels on tails
+text(-3, 0.05, expression(alpha/2), col = "steelblue", cex = 1.5)
+text(3,  0.05, expression(alpha/2), col = "steelblue", cex = 1.5)
+
+text(-3.1, 0.2, "Rejection \n region", col = "black", cex = 1.5)
+text(3.2, 0.2, "Rejection \n region", col = "black", cex = 1.5)
+
+
+```
+---
+
+
+
+
+test statistic is typically standardized value of the sample mean Z
+
+-> go one by one with 3 types of hypotheses and corresponding images
+
+- show interactively as well, what happens to the tests when I manipulate various parts and summarize it. 
+
+- normal population with known sigma
+
+-> just show what's the test statistic and rejection regions for each type of hypothesis
+
+- small sample with normal population with unknown sigma
+
+-> just show what's the test statistic and rejection region
+
+---
+
+exercise: 
+1. [32 puntos] El gerente de una agencia de venta de autom´oviles est´a evaluando un nuevo plan de
+bonificaciones con el objetivo de incrementar el volumen de ventas mensual por vendedor.
+Actualmente, se tiene conocimiento de que para un mes dado, el volumen medio es de 14 autom´oviles
+por vendedor. El gerente desea realizar un estudio para ver si el nuevo plan de bonificaciones realmente
+incrementa el volumen de ventas. Para lo anterior, selecciona una muestra aleatoria de 41 vendedores
+quienes vender´an durante un mes bajo el nuevo plan de bonificaciones.
+a) [4 puntos] Establezca la hip´otesis nula m´as adecuada si se quisiera hacer una prueba de hip´otesis
+para este estudio.
+b) [6 puntos] Si se realizara la prueba de hip´otesis, comente la conclusi´on resultante, en t´erminos de
+la decisi´on de negocios, que se tendr´ıa en el caso hipot´etico de que H0 no sea rechazada.
+c) [8 puntos] Al cabo de un mes, el promedio de ventas para la muestra de vendedores seleccionada fue
+de 15.122 autom´oviles por vendedor, con una varianza muestral de 16. Con base en los resultados
+del estudio, estime mediante un intervalo al 95 % de confianza el valor medio del volumen de
+ventas mensual bajo el nuevo plan de bonificaciones. Haga expl´ıcitos los supuestos en los que basa
+su desarrollo.
+d) [6 puntos] Dad
+
+
+---
+Exercise- what sampe size should I use to get the highest power - minimize type 2 error
+
+---
+Testing for variance
+
+suppose we want to test for whether variance is larger than some value
+
+1. La dise˜nadora de una marca especialista en zapatos de tac´on alto ha decidido incursionar en zapatos
+de tac´on de altura media. Pero ella asegura que la variabilidad en la longitud X de los tacones
+suministrados por su actual proveedor, medida como la desviaci´on est´andar es mayor que 2 mm., en
+contra de lo que las especificaciones que sus dise˜nos indican. El gerente de compras afirma lo contrario.
+Para decidir cambiar o no de proveedor ambos acuerdan contrastar las siguientes hip´otesis
+H0 : σX ≤ 2 vs. Ha : σX > 2
+donde σX es la desviaci´on est´andar de X. Suponga ahora que se tom´o una muestra aleatoria de
+15 zapatos y se obtuvo media y desviaci´on est´andar muestrales de ¯x = 45 mm. y sX = 2.5 mm.,
+respectivamente. Responda las siguientes preguntas:
+a) Construya un intervalo del 98 % de confianza para µX, la longitud media del tac´on.
+b) En el contexto del problema, explique cu´al ser´ıa el error tipo I y cu´al el tipo II.
+c) ¿A qui´en le dar´ıa usted la raz´on? Justifique su respuesta con base en el valor-p.
+d) Indique claramente los supuestos en los que se bas´o para el desarrollo del inciso anterior.
+e) ¿Cu´al ser´ıa su conclusi´on si la prueba se lleva a cabo con una significancia del 5 %?
+
+
+---
+layout: false
+class: inverse, middle
+
+# Hypothesis Testing: Two samples
+
+---
+
+Example: compare means in the two samples
+
+Larger price in one group than another. So hypothesis is $\mu_c>\mu_d$  $\mu_c-\mu_d>0$
+
+Let's calculate it in our sample
+Go through that test together. Do we reject it? Do we accept it?
+
+Suppose we might think they come from different distributions
+
+-What are hypothesis
+
+-What are test statistics 
+
+-How we calculate the standard error (importance of the independence assumption!)
+
+- case 1: 
+  test for large population with unknown variance
+  -discuss all possible cases (tails)
+  -show graph
+
+- case 2: 
+  test for normal populations with known variance
+
+- case 3: 
+  test for small sample normal, with uknown variance
+  - the difference doesn't really have t distribution..., but it can be approximated
+  - calculation of the degrees of freedom (see slides 21)
+  
+  
+  
+---
+### What if we know that variances are the same? -OPTIONAL?
+- we can design a slightly more efficient test - pooled test
+- more efficient because we don't have to estimate two variances
+which is specifically called the pooled two-sample t-statistic.
+• It has an exact t-distribution with m + n − 2 degrees of
+freedom when the two populations are normal.
+• It is approximately t(m+n−2) for non-normal population w/ equal
+SDs as long as the sample size m, n is not too small.
+• The degrees of freedom, m + n − 2 is greater than the df of
+two-sample t -statistic when σ1 , σ2 (both software formula or
+the simple formula)
+
+generally safer to use method with unpooled 
+---
+
+### comparing two populatioin variances -OPTIONAL?
+- F-stat
+
+---
+
+Going back to our initial question, let's answer it! We have two independent samples. Larger than 100, we don't know true variance and can't assume it's the same in both (you almost never can)
+
+
+
+---
+layout: false
+class: inverse, middle
+
+# Hypothesis Testing: paired data
+
+---
+
+Paired sample
+
+- one set of individuals, two observations each. 
+- Example: They sometimes work at home, sometimes work at the office. You measure their productivity by looking at the hours necessary to complete a project. You want to test which one 
+
+What's the null
+What's the alternative
+
+
+---
+Each data consist of indepently chosen pairs, but within pairs y and x can be correlated (which matters for variance and that's why we can't use unpaired test)
+test statistic is differences within pairs (standarized)
+standard error is  whatever.
+
+So general form is:
+
+For each hypothesis
+
+---
+
+how to estimate variance and choose critical levels?, number of degrees of freedom?
+
+usual cases
+
+
+In each of the following scenarios, determine if the data are paired?
+1. We would like to know if Intel’s stock and Southwest Airlines’
+stock have similar rates of return. To find out, we take a
+random sample of 50 days, and record Intel’s and Southwest’s
+stock on those same days. ⇒ paired
+2. We randomly sample 50 items from Target stores and note
+the price for each. Then we visit Walmart and collect the price
+for each of those same 50 items. ⇒ paired
+3. A school board would like to determine whether there is a
+difference in average SAT scores for students at one high
+school versus another high school in the district. To check,
+they take a simple random sample of 100 students from each
+high school. ⇒ not paired
+---
+exercise: Suponga que un psic´ologo piensa que la edad influye en el coeficiente intelectual. Se toma una muestra
+aleatoria de 100 personas de mediana edad, de quienes se desconoce su C.I. a la edad de 16 a˜nos y
+actualmente. Si al restar los coeficientes de su juventud con los actuales, se obtuvo una diferencia
+promedio de 6 puntos, con una desviaci´on est´andar muestral de 7 puntos.
+Utilice α = 0.01 para probar la hip´otesis de que el C.I. aumenta con la edad.
+
+---
+Hypothesis testing for correlation
+
+6. Una muestra aleatoria de tama˜no 27 de una distribuci´on normal bivariada, produjo un coeficiente de
+correlaci´on muestral ˆρ = −0.45. ¿La hip´otesis nula ρ = 0 puede ser rechazada a favor de la hip´otesis
+alternativa ρ 6= 0 con un nivel de significancia de α = 0.05.
+
