@@ -121,7 +121,7 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 ### Sampling distribution
 
 - Assume we have $n>30$
-  - CLT applies and $\bar{X} \sim N(\mu_X, \frac{\sigma_X}{n})$ 
+  - CLT applies and $\bar{X} \sim N(\mu_X, \frac{\sigma_X}{\sqrt n})$ 
 
 --
 - We want to find $k_1$ and $k_2$, such that:
@@ -133,7 +133,7 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 --
 - Trick is to standardize the variable:
   
-$$P(\bar{X}<k_2)=P(\bar{X}-\mu_X<k_2-\mu_X)=P(\underbrace{\frac{\bar{X}-\mu_X}{ \frac{\sigma_X}{n}}}_{Z \sim N(0,1)}<\underbrace{\frac{k_2-\mu_X}{ \frac{\sigma_X}{n}}}_{k_2'})$$
+$$P(\bar{X}<k_2)=P(\bar{X}-\mu_X<k_2-\mu_X)=P(\underbrace{\frac{\bar{X}-\mu_X}{ \frac{\sigma_X}{\sqrt n}}}_{Z \sim N(0,1)}<\underbrace{\frac{k_2-\mu_X}{ \frac{\sigma_X}{\sqrt  n}}}_{k_2'})$$
 --
 In probability tables, we can find $k_2'$, such that $P(Z<k_2')=0.975$ 
 
@@ -178,13 +178,13 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 - It's 97.5% quantile of standard normal: $k_2'=v_{0.975}^Z=1.96$. $P(Z<v_{0.975})=P(Z<1.96)=0.975$
 
 --
-- Let's go back to $k_2'=\frac{k_2-\mu_X}{ \frac{\sigma_X}{n}}$, from which we can back-out $k_2$
+- Let's go back to $k_2'=\frac{k_2-\mu_X}{ \frac{\sigma_X}{\sqrt n}}$, from which we can back-out $k_2$
 
 --
-  - $k_2=\mu_X+\frac{\sigma_X}{n} k_2'=\mu_X+1.96\frac{\sigma_X}{n}$
+  - $k_2=\mu_X+k_2'\frac{\sigma_X}{\sqrt n} =\mu_X+1.96\frac{\sigma_X}{\sqrt n}$
 
 --
-- By symmetry of normal, $k'_1=-k'_2$, so $k_1=\mu_X+\frac{\sigma_X}{n} k_1'=\mu_X-1.96\frac{\sigma_X}{n}$
+- By symmetry of normal, $k'_1=-k'_2$, so $k_1=\mu_X+\frac{\sigma_X}{\sqrt n} k_1'=\mu_X-1.96\frac{\sigma_X}{\sqrt n}$
 
 
 ---
@@ -226,21 +226,21 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 ```
 
 - Another way to see it: 
-  - Our variable is a linear transformation of a standard normal: $\bar{X}=\mu_X+\frac{\sigma_X}{n} Z$
+  - Our variable is a linear transformation of a standard normal: $\bar{X}=\mu_X+\frac{\sigma_X}{ \sqrt  n} Z$
   
 --
-  - So its percentiles are linear transformation of st.nor. quantiles:  $v_{0.975}^\bar{X}=\mu_X+\frac{\sigma_X}{n}v_{0.975}^Z$
+  - So its percentiles are linear transformation of st.nor. quantiles:  $v_{0.975}^\bar{X}=\mu_X+\frac{\sigma_X}{\sqrt  n}v_{0.975}^Z$
 ---
 
 ### Yet another way to see it
 
 
 \begin{align*}
-0.95&= P(z_{-\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{s/sqrt n}<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}s/sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}s/sqrt n) \\
-&= P(z_{-\bar{X}-\frac{\alpha}{2}}s/sqrt n< -\mu <-\bar{X}+z_{\frac{\alpha}{2}}s/sqrt n) \\
-&= P(z_{\bar{X}+\frac{\alpha}{2}}s/sqrt n> \mu >\bar{X}-z_{\frac{\alpha}{2}}s/sqrt n) \\
+0.95&= P(-1.96<Z<1.96) \\
+&= P(z_{-\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
+&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{s/\sqrt  n}<z_{\frac{\alpha}{2}}) \\
+&= P(z_{-\frac{\alpha}{2}}s/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}s/\sqrt  n) \\
+&= P(\mu-z_{-\frac{\alpha}{2}}s/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}s/\sqrt  n) \\
 \end{align*}
 
 
@@ -250,7 +250,7 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 
 - Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{n}$ to the true parameter
 - There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{n}$
-- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{n}$
+- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt  n}$
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 curve(dnorm(x),
@@ -309,37 +309,36 @@ text(position, 0.21, expression(bar(x)), col = "red", cex = 1.2)
 - 95% of them will cover the true population mean!
 
 `r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='400px')`
-.footmark[
+
   Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
-]
+
 
 ---
 
 ### Calculation Procedure
 
 Use this procedure if $n>30$
-
 1. Take an IID sample
 
 --
 2. Calculate mean $\bar{x}$ and standard deviation $s$ in your sample
-  - Standard Error is standard deviation of the estimator $SE=\frac{s}{\sqrt n}$
+  - Standard Error is standard deviation of the estimator $\small SE=\frac{s}{\sqrt n}$
 
 --
 3. Pick confidence level (usually 90,95,99%)
   - We typically denote the confidence level $1-\alpha$
   - $\alpha$ is probability of making a Type 1 error (more about it later)
-  - .blue[Example]: if confidence level is 95%, $\alpha=0.05$
+  - .blue[Example]: if confidence level is 95%, $\small \alpha=0.05$
   
 --
 
-4. Find the corresponding critical values $z_{\frac{\alpha}{2}}$
-  - Critical values are such that $P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=1-\alpha$
-  - .blue[Example]: if confidence level is 95%, $z_\frac{\alpha}{2}=z_{0.025}=1.96$
+4. Find the corresponding critical values $\small z_{\frac{\alpha}{2}}$
+  - Critical values are such that $\small P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=1-\alpha$
+  - .blue[Example]: if confidence level is 95%, $\small z_\frac{\alpha}{2}=z_{0.025}=1.96$
 --
 
 5. Construct the confidence interval as:
-$$\{\bar{x}- z_{\frac{\alpha}{2}}*\underbrace{\frac{s}{\sqrt n}}_{SE}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
+$$\small \{\bar{x}- z_{\frac{\alpha}{2}}*\underbrace{\frac{s}{\sqrt n}}_{SE}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
 
 
 ---
@@ -385,13 +384,12 @@ text(2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 ```
 
 --
-$$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995 $$
+$$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995$$
 ---
 
 `r knitr::include_url('https://www.mathsisfun.com/data/standard-normal-distribution-table.html', height='480px')`
-.footmark[
   Source: [https://www.mathsisfun.com/data/standard-normal-distribution-table.html)
-]
+
 
 
 
@@ -738,6 +736,7 @@ a) Calculate 90% confidence interval. What assumptions you need?
 - Hint 2: $\sum_ix_i^2=361752.55$
 
 --
+
 b) Average spending without free shipping is $182, can say anything about whether free shipping increased spending?
 
 

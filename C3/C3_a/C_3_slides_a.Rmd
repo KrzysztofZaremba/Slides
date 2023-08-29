@@ -16,6 +16,7 @@ output:
     font-size: 20px;
 }
 
+
 </style>
 
 ```{r setup, include=FALSE}
@@ -489,7 +490,7 @@ grid.arrange(p1, p2, ncol = 1)
 
 
 ---
-### Mean Squared Error of sample mean
+### Mean Squared Error of sample mean (optional)
 
 -  $\frac{3X_1 + X_2}{4}$ is worse than $\frac{X_1+X_2}{2}$?
 
@@ -504,7 +505,7 @@ $$argmin_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=\{\frac{1}{n},\
 
 ---
 
-### Mean Squared Error of sample mean
+### Mean Squared Error of sample mean (optional)
 
 
 And hence
@@ -531,39 +532,35 @@ $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_
 
 - Suppose $X_1,X_2,...,X_n$ are **i.i.d** variables drawn **at random** from a distribution with mean $\mu$ and standard deviation $\sigma$
 
-  - Let $S_n=\sum_nX_n$. 
+- Let $S_n=\sum_nX_n$. 
   
 --
-      - Note that: $E[S_n]=n\mu$ and $var(S_n)=\sqrt{n}\sigma$
+  - Note that: $E[S_n]=n\mu$ and $st.dev.(S_n)=\sqrt{n}\sigma$
 
 --
-  - Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ 
+- Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ 
 
 --
-    - Note that: $E[\bar{X}_n]=mu$ and $var(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
-    
+  - Note that: $E[\bar{X}_n]=mu$ and $st.dev.(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
+
 --
-  - Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$ 
+- Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$
   
 --
-    - Note that: $E[Z_n]=0$ and $var(Z_n)=1$
+  - Note that: $E[Z_n]=0$ and $st.dev.(Z_n)=1$
 
 --
 - **Central Limit Theorem** says that **for large n**:
 
 $$S_n \sim \mathcal{N}(\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \sim \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \sim \mathcal{N}(0,1)$$
-- For large samples ( $n>30$ ) sample mean is normally distributed with mean $\mu$ and standard deviation $\frac{\sigma}{\sqrt{n}}$ 
+- In large samples, sample mean is normally distributed with mean $\mu$ and st. dev. $\frac{\sigma}{\sqrt{n}}$ 
 
 ---
-### Central Limit Theorem 
-
-- The original distribution of $X_i$ does not matter
+- The original distribution of $X_i$ does not matter (but outliers make convergence longer)
 - Larger **n**, tighter distribution around the mean 
 - Smaller ** $\sigma$ **, tighter distribution around the mean 
-`r knitr::include_url('https://seeing-theory.brown.edu/probability-distributions/index.html#section3', height='480px')`
-.footmark[
-  Source: [https://seeing-theory.brown.edu/probability-distributions/index.html#section3)
-]
+`r knitr::include_url('https://seeing-theory.brown.edu/probability-distributions/index.html#section3', height='450px')`
+Source: [https://seeing-theory.brown.edu/probability-distributions/index.html#section3)
 
 
 ---
@@ -780,7 +777,7 @@ Variance is wider than implied by CLT!
 
 
 ---
-### Random Normal Distribution
+### Normal Distribution
 
 Consider the event that a customer who opened the DiDi app will call the car.  Suppose X and Y represent the events that a customer calls a car in Cancun (X) and Puerto Vallarta (Y) respectively. 
 - X and Y are Bernoulli variables with probabilities 0.4 and 0.6 respectively
