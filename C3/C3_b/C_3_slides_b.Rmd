@@ -515,19 +515,19 @@ Suppose we want to know what is the average commute time for ITAM students. We t
   - .red[False]
 --
 
-- 95% of random samples would have mean between (20.3364, 25.6636)
+- 99% of random samples would have mean between (20.3364, 25.6636)
 
 --
   - .red[False]
 --
 
-- 95% of random samples would capture the true mean
+- 99% of random samples would capture the true mean
 
 --
   - .green[True]
 --
 
-- With 95% probability true mean is between this and this (20.3364, 25.6636)
+- With 99% probability true mean is between this and this (20.3364, 25.6636)
 
 --
   - .red[False]

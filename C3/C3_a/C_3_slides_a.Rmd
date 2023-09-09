@@ -541,7 +541,7 @@ $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_
 - Let $\bar{X}_n=\frac{\sum_nX_n}{n}$ 
 
 --
-  - Note that: $E[\bar{X}_n]=mu$ and $st.dev.(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
+  - Note that: $E[\bar{X}_n]=\mu$ and $st.dev.(\bar{X}_n)=\frac{\sigma}{\sqrt{n}}$
 
 --
 - Let $Z_n=\frac{\bar{X}_n-\mu}{\frac{\sigma}{\sqrt{n}}}$
@@ -552,7 +552,7 @@ $$min_{\mathbf{c}}\underbrace{E[(\sum_n c_iX_i-\mu)^2]}_{MSE}=E[(\frac{\sum_n X_
 --
 - **Central Limit Theorem** says that **for large n**:
 
-$$S_n \sim \mathcal{N}(\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \sim \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \sim \mathcal{N}(0,1)$$
+$$S_n \sim \mathcal{N}(n\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \sim \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \sim \mathcal{N}(0,1)$$
 - In large samples, sample mean is normally distributed with mean $\mu$ and st. dev. $\frac{\sigma}{\sqrt{n}}$ 
 
 ---
