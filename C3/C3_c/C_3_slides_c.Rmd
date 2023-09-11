@@ -463,7 +463,7 @@ $H_A: \mu \neq \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance
+- If large sample or known variance or normal
 $$\small \frac{\bar{X}-\mu_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>z_\frac{\alpha}{2}$$
 --
 
@@ -535,7 +535,7 @@ $H_A: \mu < \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance
+- If large sample or known variance or normal
 $$\small \frac{\bar{X}-\mu_0}{SE}<-z_\alpha$$
 --
 
@@ -611,7 +611,7 @@ $H_A: \mu > \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance
+- If large sample or known variance or normal
 $$\small \frac{\bar{X}-\mu_0}{SE}>z_\alpha$$
 --
 
@@ -666,7 +666,7 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
   -  We never reject $H_0$ if $\bar{X} \leq \mu_0$.
   -  We reject $H_0$ if $\bar{X}$ is sufficiently larger than $\mu_0$
   -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 
 ---
@@ -785,58 +785,87 @@ class: inverse, middle
 ---
 
 ### Two Samples for the Difference in Means
+We have iid samples .red[independent] of each other from two populations $X_1,X_2,..,X_n$ and $Y_1,Y_2,..,Y_m$.
 
 **General idea:** 
 - We test the difference between .blue[population means] in two populations
-  - Ex: $H_0: \mu_1-\mu_2=100$ vs $H_A: \mu_1-\mu_2 \neq 100 $
-  - Ex: $H_0: \mu_1=\mu_2 \rightarrow \mu_1-\mu_2=0$ vs $H_0: \mu_1>\mu_2 \rightarrow \mu_1-\mu_2>0$
+  - Ex: $H_0: \mu_X-\mu_Y=100$ vs $H_A: \mu_X-\mu_Y \neq 100$
+  - Ex: $H_0: \mu_X-\mu_Y=0$ vs $H_0: \mu_X-\mu_Y>0$
+  
 --
   - Test for no difference:
-      - Ex: $H_0: \mu_1=\mu_2 \rightarrow \mu_1-\mu_2=0$ vs $H_0: \mu_1 \neq \mu_2 \rightarrow \mu_1-\mu_2 \neq 0$
+      - Ex: $H_0: \mu_X-\mu_Y=0$ vs $H_0: \mu_X-\mu_Y \neq 0$
 
 --
-- .blue[Test statistic]: normalized sample mean
-
-$$\text{test statistic}=\frac{\bar{X}-\mu_0}{SE}$$
+- .blue[Test statistic]: normalized difference in sample means
+$$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^{\Delta_0}}{SE}=\frac{\bar{X}-\bar{Y}-\Delta_0}{SE}$$
  
-  - Where SE is standard error and depends on estimate of standard deviation
-      - If standard deviation known: $\small SE=\frac{\sigma}{\sqrt n}$
-      - If standard deviation not known: $\small SE=\frac{s}{\sqrt n}$
+---
+  - Where SE is standard error and depends on the estimate of standard deviation
+      - If standard deviation known: $\small SE=\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}$
+          - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X}{n}+\frac{\sigma_Y}{m}$
+      - If standard deviation not known: $\small SE=\sqrt{\frac{s_X^2}{n}+\frac{s_Y^2}{m}}$
+
 
 --
+
 - .blue[Rejection region]: depends on the distribution 
-  - If large sample or known variance $\small \text{test statistic}=Z_{test} \sim N(0,1)$
+  - If large sample or known variance from normal $\small \text{test statistic}=Z_{test} \sim N(0,1)$
       - Critical values come from standard normal distribution
-  - If small sample with knormal distribution $\small \text{test statistic}=T_{test} \sim t(n-1)$
-      - Critical values come from student t with n-1 degrees of freedom
+  - If small sample with normal distribution $\small \text{test statistic}=T_{test} \sim t(v)$
+      - Critical values come from student t with v degrees of freedom
 
-
-
-
-
--
 ---
-### Single Sample - Mean - Two Sided Test
+
+**Side note on the number of degrees of freedom for difference in means**
+
+Two ways to do it:
+
+--
+1. Proper, complex (and annoying):
+
+$$\frac{\left(\frac{s_X^2}{n}+\frac{s_Y^2}{m}\right)^2}{ \left(\frac{s_X^2}{n} \right)^2/(n-1)+ \left(\frac{s_Y^2}{m} \right)^2/(m-1)}$$
+Round down to nearest integer
+
+--  
+2. Simple, approximate shortcut:
+
+$$v=min(n-1,m-1) $$
+
+
+---
+### Difference in means - Two Sided Test
 
 **Hypothesis:**
-$H_0: \mu=\mu_0$  and 
-$H_A: \mu \neq \mu_0$
+$H_0: \mu_x-\mu_Y=\Delta_0$  and 
+$H_A: \mu_x-\mu_Y \neq \Delta_0$
 
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance
-$$\small \frac{\bar{X}-\mu_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>z_\frac{\alpha}{2}$$
+- If large sample or known variance from normal
+$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>z_\frac{\alpha}{2}$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-t_{(n-1),\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),\frac{\alpha}{2}}$$
+$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<-t_{v,\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>t_{v,\frac{\alpha}{2}}$$
 --
 Where 
-- $z_\frac{\alpha}{2}$ and $t_{(n-1),\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and t-students with n-1 degrees of freedom
+- $z_\frac{\alpha}{2}$ and $t_{v,\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and t-students with v degrees of freedom
 
 ---
-### Single Sample - Mean - Two Sided Test
+### Difference in means - Two Sided Test
+
+If CLT kicks in, the distributions are:
+
+$$\bar{X} \sim N(\mu_X, \sigma_X/\sqrt n) \qquad and \qquad \bar{Y} \sim N(\mu_Y, \sigma_Y/\sqrt m)$$
+The difference of two normal (independent) distributions under: 
+
+$$\bar{X}-\bar{Y} \sim N(\mu_X-\mu_Y, \sqrt{\sigma_X^2/n+\sigma_Y^2/m})$$ 
+So if null is true, then standardized statistic:
+
+$$\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}~N(0,1)$$
+---
 
 .center[
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
@@ -884,110 +913,34 @@ text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 ### Single Sample - Mean - One sided - Case 1
 
 **Hypothesis:**
-$H_0: \mu=\mu_0$ and 
-$H_A: \mu < \mu_0$
+$H_0: \mu_X-\mu_Y=\Delta_0$ and 
+$H_A: \mu_X-\mu_Y<\Delta_0$
 
-- This includes any null hypothesis like $\mu \geq \mu_0$. Why?
+- This includes any null hypothesis like $\mu_X-\mu_Y \geq \Delta_0$. Why?
 
 --
-- If you rejected $\mu_0$ at $\alpha$, you would reject for sure anything larger than $\mu_0$
+- If you rejected $\mu_X-\mu_Y=\Delta_0$ at $\alpha$, you would reject for sure anything larger than $\Delta_0$
 
 
 --
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance
-$$\small \frac{\bar{X}-\mu_0}{SE}<-z_\alpha$$
+- If large sample or known variance from  normal
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<-z_\alpha$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-t_{(n-1),\alpha}$$
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<-t_{v,\alpha}$$
 --
 Where 
-- $z_\alpha$ and $t_{(n-1),\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with n-1 degrees of freedom
+- $-z_\alpha$ and $-t_{v,\alpha}$ are  $\small \alpha$ quantiles of standard normal and t-students with v degrees of freedom
 
 ---
 ### Single Sample - Mean - One sided - Case 1
 
 .center[
-```{r, warning=FALSE, fig.height=3, out.width='100%'}
-# plot the standard normal density on the interval [-4,4]
-curve(dnorm(x),
-      xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
-      yaxs = "i",
-      xlab = "Test Statistic",
-      ylab = "",
-      lwd = 2,
-      axes = "F")
-
-
-# add x-axis
-axis(1, 
-     at = c(-1.645,  0 ,1.645), 
-     padj = 0.75,
-     labels = c(expression(-z[alpha]),
-                expression(0),
-                expression(z[alpha])))
-
-# add a vertical line at the mean (mu)
-
-# shade the tails for the 2.5% regions
-polygon(x = c(-3, seq(-3, -1.645, 0.01), -1.645),
-        y = c(0, dnorm(seq(-3, -1.645, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
-
-
-# add vertical line at the mean (mu)
-abline(v = 0, col = "red", lwd = 2)
-
-# add the "2.5%" labels on tails
-text(-2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
-
-```
-]
-
-- .blue[Intuition]: 
-  -  We never reject $H_0$ if $\bar{X} \geq \mu_0$.
-  -  We reject $H_0$ if $\bar{X}$ is sufficiently smaller than $\mu_0$
-  -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
-
-
----
-
-### Single Sample - Mean - One sided - Case 2
-
-**Hypothesis:**
-$H_0: \mu=\mu_0$ and 
-$H_A: \mu > \mu_0$
-
-- This includes any null hypothesis like $\mu \leq \mu_0$. Why?
-
---
-- If you rejected $\mu_0$ at $\alpha$, you would reject for sure anything smaller than $\mu_0$
-
-
---
-**Rejection Region:**
-For a test of significance level $\alpha$, reject
-
-- If large sample or known variance
-$$\small \frac{\bar{X}-\mu_0}{SE}>z_\alpha$$
---
-
-- If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),\alpha}$$
---
-Where 
-- $z_\alpha$ and $t_{(n-1),\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with n-1 degrees of freedom
-
----
-### Single Sample - Mean - One sided - Case 2
-
-.center[
-```{r, warning=FALSE, fig.height=3, out.width='100%'}
+```{r, warning=FALSE, fig.height=2.7, out.width='100%'}
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
@@ -1025,179 +978,145 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 ]
 
 - .blue[Intuition]: 
-  -  We never reject $H_0$ if $\bar{X} \leq \mu_0$.
-  -  We reject $H_0$ if $\bar{X}$ is sufficiently larger than $\mu_0$
-  -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+  -  We never reject $H_0$ if $\bar{X}-\bar{Y} \geq \Delta_0$.
+  -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently smaller than $\Delta_0$
+  -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ n}}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
 
 
 ---
 
-Problem: our initial question! Is price of clean apartments higher than the price of dirty apartments?
+### Single Sample - Mean - One sided - Case 2
+
+**Hypothesis:**
+$H_0: \mu_X-\mu_Y=\Delta_0$ and 
+$H_A: \mu_X-\mu_Y>\Delta_0$
+
+- This includes any null hypothesis like $\mu_X-\mu_Y \leq \Delta_0$. Why?
+
+--
+- If you rejected $\mu_X-\mu_Y=\Delta_0$ at $\alpha$, you would reject for sure anything smaller than $\Delta_0$
 
 
+--
+**Rejection Region:**
+For a test of significance level $\alpha$, reject
+
+- If large sample or known variance with normal
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>z_\alpha$$
+--
+
+- If small sample from normal
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>t_{v,\alpha}$$
+--
+Where 
+- $z_\alpha$ and $t_{v,\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with v degrees of freedom
 
 ---
+### Single Sample - Mean - One sided - Case 2
 
-
-
-ASLO TALK ABOUT mu1-mu2=m not only 0
-
-
-Two sided test:
-
-$H_0: \mu=\mu_0$
-$H_A: \mu \neq \mu_0$
-
-For test of size/significance level $\alpha$, reject if 
-
-$$-z_{\alpha/2}>\frac{\bar{X}-\mu_0}{s/\sqrt n} \qquad\text{or}\qquad \frac{\bar{X}-\mu_0}{s/\sqrt n}>z_{\alpha/2}$$ 
-
-Where $z_{\alpha/2}$ is such that $P(Z>z_{\alpha/2})=\alpha/2$.
-So for 95% confidence, we have $P(Z>z_{0.025})=P(Z>1.96)=0.025$:
-hence our rejection region would be below -1.96 and above 1.96
- 
-
-Comments: 
-Under the null, probability of making the error is still $\alpha$
-But now we have two rejection regions, so $\alpha$ is distributed equally among them
-
-Consider a 95% test and our test statistic is 1.8
-Would we reject it in two sided test?
-What about one sided test? What direction of hypotheses?
-
-
-```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
-
-
+.center[
+```{r, warning=FALSE, fig.height=2.7, out.width='100%'}
+# plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
-      xlim = c(-4, 4),
-      main = "Standard normal",
+      xlim = c(-3, 3),
+      main = "Distribution of the statistic under the null (standard normal case)",
       yaxs = "i",
-      xlab = "z",
+      xlab = "Test Statistic",
       ylab = "",
       lwd = 2,
       axes = "F")
 
+
 # add x-axis
 axis(1, 
-     at = c(-1.96, 0, 1.96), 
+     at = c(-1.645,  0 ,1.645), 
      padj = 0.75,
-     labels = c(expression(-z[alpha/2]),
+     labels = c(expression(-z[alpha]),
                 expression(0),
-                expression(z[alpha/2])))
+                expression(z[alpha])))
+
+# add a vertical line at the mean (mu)
 
 # shade the tails for the 2.5% regions
-polygon(x = c(-4, seq(-4, -1.96, 0.01), -1.96),
-        y = c(0, dnorm(seq(-4, -1.96, 0.01)), 0),
+polygon(x = c(1.645, seq(1.645, 3, 0.01), 3),
+        y = c(0, dnorm(seq(1.645, 3, 0.01)), 0),
         col = "steelblue", alpha = 0.2)
 
-polygon(x = c(1.96, seq(1.96, 4, 0.01), 4),
-        y = c(0, dnorm(seq(1.96, 4, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
 
 # add vertical line at the mean (mu)
 abline(v = 0, col = "red", lwd = 2)
 
 # add the "2.5%" labels on tails
-text(-3, 0.05, expression(alpha/2), col = "steelblue", cex = 1.5)
-text(3,  0.05, expression(alpha/2), col = "steelblue", cex = 1.5)
-
-text(-3.1, 0.2, "Rejection \n region", col = "black", cex = 1.5)
-text(3.2, 0.2, "Rejection \n region", col = "black", cex = 1.5)
-
+text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 
 ```
----
+]
 
-
-
-
-test statistic is typically standardized value of the sample mean Z
-
--> go one by one with 3 types of hypotheses and corresponding images
-
-- show interactively as well, what happens to the tests when I manipulate various parts and summarize it. 
-
-- normal population with known sigma
-
--> just show what's the test statistic and rejection regions for each type of hypothesis
-
-- small sample with normal population with unknown sigma
-
--> just show what's the test statistic and rejection region
-
----
-
-exercise: 
-1. [32 puntos] El gerente de una agencia de venta de autom´oviles est´a evaluando un nuevo plan de
-bonificaciones con el objetivo de incrementar el volumen de ventas mensual por vendedor.
-Actualmente, se tiene conocimiento de que para un mes dado, el volumen medio es de 14 autom´oviles
-por vendedor. El gerente desea realizar un estudio para ver si el nuevo plan de bonificaciones realmente
-incrementa el volumen de ventas. Para lo anterior, selecciona una muestra aleatoria de 41 vendedores
-quienes vender´an durante un mes bajo el nuevo plan de bonificaciones.
-a) [4 puntos] Establezca la hip´otesis nula m´as adecuada si se quisiera hacer una prueba de hip´otesis
-para este estudio.
-b) [6 puntos] Si se realizara la prueba de hip´otesis, comente la conclusi´on resultante, en t´erminos de
-la decisi´on de negocios, que se tendr´ıa en el caso hipot´etico de que H0 no sea rechazada.
-c) [8 puntos] Al cabo de un mes, el promedio de ventas para la muestra de vendedores seleccionada fue
-de 15.122 autom´oviles por vendedor, con una varianza muestral de 16. Con base en los resultados
-del estudio, estime mediante un intervalo al 95 % de confianza el valor medio del volumen de
-ventas mensual bajo el nuevo plan de bonificaciones. Haga expl´ıcitos los supuestos en los que basa
-su desarrollo.
-d) [6 puntos] Dad
+- .blue[Intuition]: 
+  -  We never reject $H_0$ if $\bar{X}-\bar{Y} \leq \Delta_0$.
+  -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently larger than $\Delta_0$
+  -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ n}}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 
 ---
-Exercise- what sample size should I use to get the highest power - minimize type 2 error
+Is the price in dirty apartments the same as price in clean apartments?
+
+|   Sample   |    n    | Sample Mean | Sample Standard Deviation |
+|------------|---------|-------------|---------------------------|
+|   Clean    |   100   |    1245     |            962            |
+|   Dirty    |   100   |    869      |            693            |
+
+```{r abd, warning=FALSE, fig.height=2.7, out.width='100%'}
+ggplot(data = Sample_list, aes(x = clean, y = price)) +
+  geom_boxplot() +
+  labs(x = "Clean",
+       y = "Price")+
+  coord_flip()+
+  theme_xaringan()
+```
 
 
+- State the null and alternative hypothesis
+
+--
+- Calculate the value of the test statistic
+
+--
+- Calculate the p value
+
+--
+- At which $\alpha$ we reject the null?
 
 
-Example: compare means in the two samples
-
-Larger price in one group than another. So hypothesis is $\mu_c>\mu_d$  $\mu_c-\mu_d>0$
-
-Let's calculate it in our sample
-Go through that test together. Do we reject it? Do we accept it?
-
-Suppose we might think they come from different distributions
-
--What are hypothesis
-
--What are test statistics 
-
--How we calculate the standard error (importance of the independence assumption!)
-
-- case 1: 
-  test for large population with unknown variance
-  -discuss all possible cases (tails)
-  -show graph
-
-- case 2: 
-  test for normal populations with known variance
-
-- case 3: 
-  test for small sample normal, with uknown variance
-  - the difference doesn't really have t distribution..., but it can be approximated
-  - calculation of the degrees of freedom (see slides 21)
-  
-  
-  
 ---
-### What if we know that variances are the same? -OPTIONAL?
-- we can design a slightly more efficient test - pooled test
-- more efficient because we don't have to estimate two variances
-which is specifically called the pooled two-sample t-statistic.
-• It has an exact t-distribution with m + n − 2 degrees of
-freedom when the two populations are normal.
-• It is approximately t(m+n−2) for non-normal population w/ equal
-SDs as long as the sample size m, n is not too small.
-• The degrees of freedom, m + n − 2 is greater than the df of
-two-sample t -statistic when σ1 , σ2 (both software formula or
-the simple formula)
+We suspect Burger King might larger caloric content for kids' meal. Let's test it.
 
-generally safer to use method with unpooled 
+|   Sample   |    n    | Sample Mean | Sample Standard Deviation |
+|------------|---------|-------------|---------------------------|
+|   McDonald    |   9    |    475     |           230            |
+|   Burger King    |   16    |    520      |            180            |
+
+
+
+- State the null and alternative hypothesis
+
+--
+- Calculate the value of the test statistic
+
+--
+- Determine the appropriate number of degrees of freedom
+
+--
+
+- Calculate the p value
+
+--
+- At which $\alpha$ we reject the null?
+
+
+
 ---
 
 ### Comparing variances in two samples
@@ -1247,34 +1166,29 @@ Where:
 If $X_1$ and $X_2$ are chi-square distributed and independent, then the ratio of $X_1$ by its degrees of freedom to $X_2$ by its degrees of freedom is distributed as F. 
 
 $$F=\frac{X1/v_1}{X2/v_2} \sim F_{v1,v2}$$
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+```{r abc, warning=FALSE, fig.height=3.5, out.width='100%'}
 df_values <- c(3, 10, 100)  # Different degrees of freedom
 x_vals <- seq(0, 5, length.out = 400)
 
 # Create a data frame for ggplot
-library(ggplot2)
-
 df1 <- data.frame(x = rep(x_vals, length(df_values)),
-                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 10))),  # Fix df2 at 10
+                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 10))),  
                  distribution = rep(paste("F-distribution (df1 =", df_values, ", df2 = 10)"), each = length(x_vals)))
 
 df2 <- data.frame(x = rep(x_vals, length(df_values)),
-                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 3))),  # Fix df2 at 10
+                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 3))), 
                  distribution = rep(paste("F-distribution (df1 =", df_values, ", df2 = 3)"), each = length(x_vals)))
 
 df=rbind(df1,df2)
 
 # Create ggplot object
-gg_plot <- ggplot(df, aes(x = x, y = y, color = distribution)) +
+gg_plot2 <- ggplot(df, aes(x = x, y = y, color = distribution)) +
   geom_line() +
   labs(x = "x",
        y = "Density") +
-  theme_minimal()
+  theme_xaringan()
 
-# Convert to plotly object for interactivity
-library(plotly)
-
-plotly_object <- ggplotly(gg_plot,
+plotly_object <- ggplotly(gg_plot2,
                           width = 800,   # Adjust the width according to your preference
                           height = 400)  # Adjust the height according to your preference
 
@@ -1314,11 +1228,11 @@ Let's test the equality of variances of clean and dirty apartments.
 
 --
 
-$F_test=\frac{s^2_c}{s^2_d}=\frac{925255.5}{480681.9}=1.924$
+$F_{test}=\frac{s^2_c}{s^2_d}=\frac{925255.5}{480681.9}=1.924$
 
 --
 
-Critical regioins at 5% are:
+Critical regions at 5% are:
 - $\small F_{\frac{\alpha}{2},n-1,m-1}=F_{0.025,99,99}=0.67284$
 - $\small F_{1-\frac{\alpha}{2},n-1,m-1}=F_{0.975,99,99}=1.48623$
 
@@ -1330,61 +1244,119 @@ Critical regioins at 5% are:
 layout: false
 class: inverse, middle
 
-# Hypothesis Testing: paired data
+# Hypothesis Testing: Paired Data
 
 ---
 
-Paired sample
+### Paired Data
 
-- one set of individuals, two observations each. 
-- Example: They sometimes work at home, sometimes work at the office. You measure their productivity by looking at the hours necessary to complete a project. You want to test which one 
+- Sometimes we have only one set of individuals or objects, but two (or more) observations per each. 
 
-What's the null
-What's the alternative
+- .blue[Example]: We look at employees productivity. For each employee we have two observations: their productivity when working from home and their productivity when working from the office. 
 
-
----
-Each data consist of indepently chosen pairs, but within pairs y and x can be correlated (which matters for variance and that's why we can't use unpaired test)
-test statistic is differences within pairs (standarized)
-standard error is  whatever.
-
-So general form is:
-
-For each hypothesis
+- .blue[Example]: We look at sales at Walmart and Soriana in each neighborhood. We have two observations per neighborhood: sales at local Walmart and sales at local Soriana
 
 ---
+### Paired Data
 
-how to estimate variance and choose critical levels?, number of degrees of freedom?
+We have a set of independent pairs of data $(X_1,Y_1),(X_2,Y_2),..., (X_n,Y_n)$
 
-usual cases
+--
+Observation within the pair are not necessarily independent!
+- Some productive workers are productive both in the office and at home, some unproductive are unproductive both in the office and at home.
 
 
-In each of the following scenarios, determine if the data are paired?
+--
+
+- We are interested in the difference between $X$ and $Y$. We observe that difference for each individual in the sample: $X_i-Y_i=d_i$
+
+
+- We want to look at the population value of that difference: $\mu_X-\mu_Y=\Delta$
+  - We can check if the means are the same: $\Delta=0$
+      - No difference in productivity between work at home and at the office
+  - Or mean $X$ is bigger than mean $Y$:  $\Delta>0$
+
+---
+### Paired Data
+
+Null hypothesis: $H_0: \Delta=\Delta_0$
+
+**Test Statistic** is:
+
+$$\text{test statistic}=\frac{\overbrace{\bar{X}-\bar{Y}}^{\bar{d}}-\Delta_0}{SE}=\frac{\bar{d}-\Delta_0}{SE}$$ 
+
+--
+- Note on the Standard Error - it's not the same formula as for the two independent samples:
+$Var(X_i-Y_i) \neq Var(X_i)+Var(Y_i)$
+
+- We just calculate it from the differences. 
+  - If we know the variance, $SE=\frac{\sqrt{var(d_i)}}{\sqrt n}=\frac{\sigma_d}{\sqrt n}$
+  - If we don't: $SE=\frac{s_d}{\sqrt n}$
+
+---
+### Paired Data
+
+**Rejection Region:**
+For a test of significance level $\alpha$:
+
+- If large sample or known variance with normal distribution:
+
+- for $H_A: \bar{d} \neq \Delta_0$, reject if:
+$$\small \frac{\bar{d}-\Delta_0}{SE}<-z_\frac{\alpha}{2} \qquad or \qquad  \frac{\bar{d}-\Delta_0}{SE}>z_\frac{\alpha}{2}$$
+--
+
+- for $H_A: \bar{d} > \Delta_0$, reject if:
+$$\small \frac{\bar{d}-\Delta_0}{SE}>z_\alpha$$
+--
+
+- for $H_A: \bar{d} < \Delta_0$, reject if:
+$$\small \frac{\bar{d}-\Delta_0}{SE}<-z_\alpha$$
+--
+
+
+- If small sample from normal, replace critical values with .blue[t-distribution with n-1 degrees of freedom] 
+
+---
+### Paired or Unpaired Data?
+
+
 1. We would like to know if Intel’s stock and Southwest Airlines’
 stock have similar rates of return. To find out, we take a
 random sample of 50 days, and record Intel’s and Southwest’s
-stock on those same days. ⇒ paired
+stock on those same days
+
+--
+- Paired
+
+--
 2. We randomly sample 50 items from Target stores and note
 the price for each. Then we visit Walmart and collect the price
 for each of those same 50 items. ⇒ paired
+
+--
+- Paired
+
+--
 3. A school board would like to determine whether there is a
 difference in average SAT scores for students at one high
 school versus another high school in the district. To check,
 they take a simple random sample of 100 students from each
-high school. ⇒ not paired
+high school
+
+--
+- Not paired
+
+
 ---
-exercise: Suponga que un psic´ologo piensa que la edad influye en el coeficiente intelectual. Se toma una muestra
-aleatoria de 100 personas de mediana edad, de quienes se desconoce su C.I. a la edad de 16 a˜nos y
-actualmente. Si al restar los coeficientes de su juventud con los actuales, se obtuvo una diferencia
-promedio de 6 puntos, con una desviaci´on est´andar muestral de 7 puntos.
-Utilice α = 0.01 para probar la hip´otesis de que el C.I. aumenta con la edad.
+
+A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using $\alpha=0.01$ test the hypothesis that IQ decreases with age. 
 
 ---
 #### Hypothesis Testing for Correlation
 
 .blue[Example]: are cleanliness and score (C) and price (P) correlated in the population?
 
-Assume you have **normally distributed variables** in **independent pairs**. \{(C_1,P_1), (C_2, P_2),...\} 
+Assume you have **normally distributed variables** in **independent pairs**. $\{(C_1,P_1), (C_2, P_2),...\}$
 
 .blue[Null hypothesis]: $H_0: \rho(C,P)=0$
 
