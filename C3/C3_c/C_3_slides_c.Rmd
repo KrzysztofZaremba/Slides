@@ -66,7 +66,7 @@ class: inverse, middle
 ---
 ### Hypothesis Testing
 
-Let's go back to our question. Can we get a higher price if cleanliness level 4.5?
+Let's go back to our question. Can we get a higher price if cleanliness level is above 4.5?
 
 
 This type of questions can be answered with hypothesis testing where we try to see which one of competing hypothesis is more likely to be true. 
@@ -103,12 +103,12 @@ Some examples of hypotheses testing:
 --
   - $H_0$: People who got the promotion spend the same as people who didn't get the promotion
       - $H_0: \mu_p =  \mu_n$
-  - $H_A$: People who got the promotion spend more than people who didn't get the promotion
+  - $H_A$: People who got the promotion spend different amount than people who didn't get the promotion
       - $H_A: \mu_p \neq \mu_n$
 
 --
 
-- You designed a new healthy snack and want to test whether it needs "excessive sugar" sticker. It gets the sticker if it exceeds 100 this much of sugar. You take a sample and test
+- You designed a new healthy snack and want to test whether it needs "excessive sugar" sticker. It gets the sticker if it exceeds 100g of sugar. You take a sample and test.
 
 --
   - $H_0$: The average sugar content is 100 or less
@@ -119,7 +119,7 @@ Some examples of hypotheses testing:
 ---
 ### Hypothesis Testing
 
-- Suppose we calculated the sample mean sugar content. It's either below or above 100
+- Suppose we calculated the sample mean for sugar content. It's either below or above 100g
 
 --
 
@@ -146,7 +146,7 @@ It usually relies on two elements:
  - .blue[Rejection region] 
   - Values of the test statistics such that we would reject the null if we observe them
   - Typically threshold based:
-  - Such as reject $H_0$ if the test statistic > k, where k is some threshold
+  - Such as: reject $H_0$ if the test statistic > k, where k is some threshold
  
 
 ---
@@ -182,7 +182,7 @@ magick::image_read_pdf("Rejection.pdf",
 
 --
 
-- Why don't we reject even if $\bar{x}=103$
+- Why don't we reject even if $\bar{x}=103$?
 
 --
 
@@ -218,38 +218,38 @@ $$\alpha=P(\text{Type 1 error})=\underbrace{P_{H_0}(\bar{X}>105.483)}_{\text{Pr.
 
 ```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 
-curve(dnorm(x, 100, 20/6),
-      xlim = c(90, 110),
+curve(dnorm(x, 0, 1),
+      xlim = c(-3, 3),
       yaxs = "i",
-      xlab = "Mean sugar content in the sample if null is true",
+      xlab = "Value of test statistic",
       ylab = "",
       lwd = 2,
       axes = "F")
 
 # add x-axis
 axis(1, 
-     at = c(95,100, 105.483), 
+     at = c(-1.645, 0, 1.645), 
      padj = 0.75,
-     labels = c(95,expression(100),
-                expression(105.483)))
+     labels = c(-1.645,expression(0),
+                expression(1.645)))
 
 
-polygon(x = c(105.483, seq(105.483, 110, 0.01), 110),
-        y = c(0, dnorm(seq(105.483, 110, 0.01), 100, 20/6), 0),
+polygon(x = c(1.645, seq(1.645, 3, 0.01), 3),
+        y = c(0, dnorm(seq(1.645,3, 0.01), 0, 1), 0),
         col = "steelblue")
 
 # add vertical line at the mean (mu)
-abline(v = 105.483, col = "red", lwd = 2)
+abline(v = 1.645, col = "red", lwd = 2)
 
 
-text(108.1, 0.075, "Rejection \n region", col = "black", cex = 1.5)
-text(106, 0.015, expression(alpha), col = "white", cex = 1.5)
+text(2.5, 0.2, "Rejection \n region", col = "black", cex = 1.5)
+text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 
 ```
 
 ---
 
-### Decision Errors
+### Decision errors
 
 
 |             | Do not reject $H_0$ | Reject $H_0$ in favor of $H_A$ |
@@ -265,7 +265,7 @@ text(106, 0.015, expression(alpha), col = "white", cex = 1.5)
 <img src="pregnancy.jpg" style="width:50%">
 ]
 ---
-### Decision Errors
+### Decision errors
 
 - .blue[Type 1 error]: reject null when $H_0$ is true
   - Conclude that people spend more when they got free shipping, while in reality they spend the same as those who didn't
@@ -315,6 +315,8 @@ Source: https://shiny.rit.albany.edu/stat/betaprob/
 - Let's go back to sugar example. Our rule was reject $H_0$ if $z>1.645$. 
 - Suppose $\mu_s=110$ and $\sigma=20$. Let's calculate power of the test:
 
+--
+
 $$\scriptsize P_{H_A}(Z_{test}>1.645)=P_{H_A}(\frac{\bar{X}-100}{\underbrace{ \sigma_x/ \sqrt 36}_{SE}}>1.645)=P_{H_A}(\frac{\bar{X}-\mu_0}{\underbrace{ \sigma_x/ \sqrt n}_{SE}}>z_{\alpha})=P_{H_A}(\bar{X}>\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n})=P_{H_A}(\bar{X}>105.483)$$
 --
 
@@ -344,7 +346,7 @@ Imagine a test for a parameter $\mu$ with hypothesis $H_0=4$ and $H_A \neq 4$.
 --
 - We can also calculate the 95% confidence interval for our sample mean:
 
-$$\small \{3-1.96\frac{1}{\sqrt 49}, 3+1.96\frac{1}{\sqrt 49}\}=\{2.16, 3.84\}$$
+$$\small \{3-1.96\frac{3}{\sqrt 49}, 3+1.96\frac{3}{\sqrt 49}\}=\{2.16, 3.84\}$$
 - It does not contain the null hypothesis
 
 
@@ -353,7 +355,9 @@ $$\small \{3-1.96\frac{1}{\sqrt 49}, 3+1.96\frac{1}{\sqrt 49}\}=\{2.16, 3.84\}$$
 
 - More generally: the $1-\alpha$ confidence interval doesn't contain null = null would be rejected with a test of significance $\alpha$
 
--Mathematically: 
+
+--
+- Mathematically: 
 
   - Let $\mu_0$ be the null hypothesis. We reject (in two sided test) the null at $\alpha$ if 
   $$\scriptsize \left| \small \frac{\bar{X}-\mu_0}{ s/ \sqrt n} \right|>z_{\frac{\alpha}{2}}$$
@@ -363,12 +367,7 @@ $$\small \{3-1.96\frac{1}{\sqrt 49}, 3+1.96\frac{1}{\sqrt 49}\}=\{2.16, 3.84\}$$
   $$\scriptsize  \mu_0<\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
 
   
----
 
-Q if it's rejected at two sided test, then it would be also rejected at one sided test 
-
-
-  
 ---
 
 ### General procedure:
@@ -445,7 +444,7 @@ $$\text{test statistic}=\frac{\bar{X}-\mu_0}{SE}$$
 - .blue[Rejection region]: depends on the distribution 
   - If large sample or known variance $\small \text{test statistic}=Z_{test} \sim N(0,1)$
       - Critical values come from standard normal distribution
-  - If small sample with knormal distribution $\small \text{test statistic}=T_{test} \sim t(n-1)$
+  - If small sample with normal distribution $\small \text{test statistic}=T_{test} \sim t(n-1)$
       - Critical values come from student t with n-1 degrees of freedom
 
 
@@ -463,7 +462,7 @@ $H_A: \mu \neq \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance or normal
+- If large sample or known variance from normal
 $$\small \frac{\bar{X}-\mu_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>z_\frac{\alpha}{2}$$
 --
 
@@ -535,7 +534,7 @@ $H_A: \mu < \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance or normal
+- If large sample or known variance from normal
 $$\small \frac{\bar{X}-\mu_0}{SE}<-z_\alpha$$
 --
 
@@ -611,7 +610,7 @@ $H_A: \mu > \mu_0$
 **Rejection Region:**
 For a test of significance level $\alpha$, reject
 
-- If large sample or known variance or normal
+- If large sample or known variance from normal
 $$\small \frac{\bar{X}-\mu_0}{SE}>z_\alpha$$
 --
 
@@ -702,14 +701,13 @@ Where:
 
 **Exercise**
 
-Suppose you are a ham producer. As you need to stick to the nutritional guidelines, the standard deviation of the fat content in your product needs to be less than 0.1. You take a sample of 16 hams and you want to test this. 
+Suppose you are a ham producer. As you need to stick to the nutritional guidelines, the standard deviation of the fat content in your product needs cannot be larger than 0.1. You take a sample of 16 hams and you want to test this. 
 
 --
 1. Write down the hypotheses of the test
 
 --
 - Remember test statistic is about variance
-- Pay attention to which direction you test! You can't confirm the null with a test. 
 
 --
 2. What is type 1 and type 2 error in this context
@@ -732,20 +730,17 @@ Depends on:
 - Your hypothesis
 - Calculated test statistic
 
-- Suppose the test statistic under $H_0$ is N(0,1)
+--
+- Suppose the test statistic under $H_0$ $z_{test} \sim N(0,1)$
 - One sided tests:
   - For  $H_A: \mu>\mu_0$ $p-value=P(Z_{Test}>(computed-test-statistic))$
   - For  $H_A: \mu<\mu_0$ $p-value=P(Z_{Test}<(computed-test-statistic))$
 - Two sided test:
   - For  $H_A: \mu \neq\mu_0$ $p-value=2P(Z_{Test}>|(computed-test-statistic)|)$
-
---
-- If the test statistic under $H_0$ is distributed student's t, find appropriate probability in the student's t table. 
-
 ---
 **Example**: 
 - We test for $H_0: \mu=5$ and $H_A: \mu>5$ 
-- Suppose in sample of 36 we have $\x=5.5$ and $s=2$. 
+- Suppose in sample of 36 we have $\bar{x}=5.5$ and $s=2$. 
 - Test statistic in this case is distributed normally
 $$p-value=P(Z>\frac{5.5-5}{2/6})=P(Z>1.5)=0.066$$
 
@@ -764,7 +759,7 @@ Source: https://rpsychologist.com/pvalue/
 ---
 ### P-Values and test significance
 
-- In our example we calculated the p-value of 0.06.
+- In our example we calculated the p-value of 0.066
 - Would the test at $\alpha=0.05$ reject the null?
 
 --
@@ -785,7 +780,7 @@ class: inverse, middle
 ---
 
 ### Two Samples for the Difference in Means
-We have iid samples .red[independent] of each other from two populations $X_1,X_2,..,X_n$ and $Y_1,Y_2,..,Y_m$.
+We have 2 iid samples .red[independent] of each other from two populations $X_1,X_2,..,X_n$ and $Y_1,Y_2,..,Y_m$.
 
 **General idea:** 
 - We test the difference between .blue[population means] in two populations
@@ -827,7 +822,7 @@ Two ways to do it:
 $$\frac{\left(\frac{s_X^2}{n}+\frac{s_Y^2}{m}\right)^2}{ \left(\frac{s_X^2}{n} \right)^2/(n-1)+ \left(\frac{s_Y^2}{m} \right)^2/(m-1)}$$
 Round down to nearest integer
 
---  
+--
 2. Simple, approximate shortcut:
 
 $$v=min(n-1,m-1) $$
@@ -1091,7 +1086,7 @@ ggplot(data = Sample_list, aes(x = clean, y = price)) +
 
 
 ---
-We suspect Burger King might larger caloric content for kids' meal. Let's test it.
+We suspect Burger King might have larger caloric content for kids' meal. Let's test it.
 
 |   Sample   |    n    | Sample Mean | Sample Standard Deviation |
 |------------|---------|-------------|---------------------------|
@@ -1109,7 +1104,6 @@ We suspect Burger King might larger caloric content for kids' meal. Let's test i
 - Determine the appropriate number of degrees of freedom
 
 --
-
 - Calculate the p value
 
 --
@@ -1123,7 +1117,7 @@ We suspect Burger King might larger caloric content for kids' meal. Let's test i
 
 **Example Problem 1:** is price dispersion the same in clean or dirty apartments?
 
-**Example Problem 2:** is variance of of prices of two stocks the same?
+**Example Problem 2:** is variance of prices of two stocks the same?
 
 We need a test for variances in two different samples.
 
