@@ -1,0 +1,815 @@
+---
+title: 'Class 4a: Simple Linear Regression'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(gridExtra)
+library(cowplot)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+library(MASS) # for truehist function
+load("Daily_CMX_means2.Rda")
+
+```
+---
+## Roadmap
+
+
+### This set of classes
+- What is a simple linear regression?
+- How to estimate it?
+- How to test hypothesis in the regression?
+
+---
+
+### Motivation
+
+1. Suppose you are a consultant working for Ecobici
+
+--
+2. Your boss is worried about the impact of global warming on bike use
+
+--
+3. She wants to know: how the bike use will change when the temperature increases by 1 degreee
+
+--
+4. This is exactly what the linear regression will tell us!
+
+---
+### Simple linear regression
+
+1. Suppose you have paired data: $\{(x_1,y_1),(x_2,y_2),...(x_n,y_n)\}$ 
+
+
+--
+2. In the population, there exists a linear relationship between $x_i$ and $y_i$ of the form:
+
+$$y_i=\beta_0+\beta_1x_i+u_i$$
+Where:
+  - $y_i$ is a dependent variable  
+  - $x_i$ is a independent variable, or regressor, or predictor 
+      - (suppose non-random)
+  - $\beta_0$ and $\beta_1$ are parameters
+  - $\beta_1$ tells you how $y_i$ changes (on average) when we change $x_i$ by one
+  - $\beta_0$ is intercept, where the line cuts y axis
+  - $u_i$ is a random error term
+
+
+---
+### Assumptions
+
+$$y_i=\beta_0+\beta_1x_i+u_i$$
+
+Assumptions: 
+0. Model is linear in the parameter and with additive error term
+1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+beta_1x_0$
+2. $E(u_i|x)=0$
+3. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
+4. $cov(u_i,u_j)=0$
+
+---
+
+### Model is linear in the parameter and with additive error term
+
+- Linear models
+  - $y_i=\beta_0+\beta_1x_i+e_i$
+  - $y_i=\beta_0+\beta_1x^2_i+e_i$
+  - $y_i=\beta_0+\beta_1log(x)_i+e_i$
+  - $y_i=\beta_0+\beta_1c^{x_i}+e_i$
+
+- Not linear models
+  - $y_i=(\beta_0+\beta_1x_i)*e_i$
+  - $y_i=\beta_0+x^\beta_1_i+e_i$
+  - $y_i=log(\beta_0+\beta_1x_i+e_i)$
+  - $y_i=\beta_0+(\beta_1x_i+e_i)^2$
+
+
+
+---
+
+1 & 2 are in the app
+
+
+---
+### $Var(u_i)=\sigma^2$
+
+What happens if this is not true?
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+library(ggplot2)
+
+# Simulate data with increasing variance of residuals
+set.seed(123)
+x <- seq(1, 200, by = 1)  # Predictor variable
+y <- 2 * x + rnorm(200, mean = 0, sd = 0.5 * x)  # Response variable with increasing variance
+
+# Fit a linear regression model
+model <- lm(y ~ x)
+
+# Create a data frame with the data
+data_df <- data.frame(
+  x = x,
+  y = y
+)
+
+# Create a data frame with predicted values from the model
+predicted_df <- data.frame(
+  x = x,
+  y_pred = predict(model)
+)
+
+# Create a scatterplot of the data points
+# Add the regression line and dashed lines to show deviations
+ggplot(data_df, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, formula = y ~ x, color = "blue") +
+  geom_segment(data = predicted_df, aes(xend = x, yend = y_pred), linetype = "dashed", color = "gray", alpha=0.7) +
+  labs(
+    title = "Scatterplot of Data with Increasing Residual Variance",
+    x = "Predictor Variable (x)",
+    y = "Response Variable (y)"
+  ) +
+  theme_xaringan()
+
+```
+
+
+
+
+---
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+# Generate some sample data
+set.seed(123)
+x <- rnorm(100)
+y <- 2 + 3 * x + rnorm(100, sd=3)
+
+# Create a data frame
+data <- data.frame(x, y)
+
+# Fit a linear regression model
+model <- lm(y ~ x, data)
+
+# Create a scatter plot with the best fit line and deviations
+gg <- ggplot(data, aes(x = x, y = y)) +
+  geom_point(color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
+  labs(x = "X",
+       y = "Y") +
+  theme_xaringan() +
+  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
+  geom_vline(xintercept = 0, color = "black") 
+
+print(gg)
+
+```
+
+
+---
+We want to estimate the parameters in this linear relationship based on our sample.
+
+Once estimated, we can write $y_i$ as
+
+$$y_i=\hat{\beta}_0+\hat{\beta}_1x_i+e_i$$
+
+--
+
+Error term here reflects both uncertainy about parameters and the random part present in population model
+
+--
+
+We can predict $y_i$ for any $x_i$ using our estimates
+
+$$\hat{y_i}=\hat{\beta}_0+\hat{\beta}_1x_i$$
+
+
+---
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+# Generate some sample data
+set.seed(123)
+x <- rnorm(100)
+y <- 2 + 3 * x + rnorm(100, sd=3)
+
+# Create a data frame
+data <- data.frame(x, y)
+
+# Fit a linear regression model
+model <- lm(y ~ x, data)
+
+# Create a scatter plot with the best fit line and deviations
+gg <- ggplot(data, aes(x = x, y = y)) +
+  geom_point(color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
+  labs(x = "X",
+       y = "Y") +
+  theme_xaringan() +
+  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
+  geom_vline(xintercept = 0, color = "black") 
+
+print(gg)
+
+```
+
+
+---
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+# Generate some sample data
+
+# Generate some sample data
+set.seed(123)
+x <- rnorm(100)
+y <- 2 + 3 * x + rnorm(100, sd=3)
+
+# Create a data frame
+data <- data.frame(x, y)
+
+# Fit a linear regression model on the full dataset
+full_model <- lm(y ~ x, data)
+
+# Create a scatter plot with the best fit line and deviations
+gg <- ggplot(data, aes(x = x, y = y)) +
+  geom_point(color = "lightgray", alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
+  labs(x = "X",
+       y = "Y") +
+  theme_xaringan() +
+  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
+  geom_vline(xintercept = 0, color = "black") 
+
+# Create a filtered dataset for the sample (e.g., the first 40 points)
+sample_size <- 40
+sample_data <- data[1:sample_size, ]
+
+# Fit a new linear regression model on the sample
+sample_model <- lm(y ~ x, sample_data)
+
+# Add the new best fit line for the sample
+gg <- gg +
+  geom_point(data = sample_data, color = "black")
+print(gg)
+
+```
+
+---
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+# Generate some sample data
+
+# Generate some sample data
+set.seed(123)
+x <- rnorm(100)
+y <- 2 + 3 * x + rnorm(100, sd=3)
+
+# Create a data frame
+data <- data.frame(x, y)
+
+# Fit a linear regression model on the full dataset
+full_model <- lm(y ~ x, data)
+
+# Create a scatter plot with the best fit line and deviations
+gg <- ggplot(data, aes(x = x, y = y)) +
+  geom_point(color = "lightgray", alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
+  labs(x = "X",
+       y = "Y") +
+  theme_xaringan() +
+  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
+  geom_vline(xintercept = 0, color = "black") 
+
+# Create a filtered dataset for the sample (e.g., the first 40 points)
+sample_size <- 40
+sample_data <- data[1:sample_size, ]
+
+# Fit a new linear regression model on the sample
+sample_model <- lm(y ~ x, sample_data)
+
+# Add the new best fit line for the sample
+gg <- gg +
+  geom_point(data = sample_data, color = "black") +
+  geom_smooth(data = sample_data, aes(x = x, y = y), method = "lm", se = FALSE, color = "green") +
+  geom_segment(data = sample_data, aes(xend = x, yend = predict(sample_model, sample_data)), color = "black", alpha = 0.2, linetype = "dashed")
+
+print(gg)
+
+```
+
+--
+
+But how do we find $\hat{\beta}_0$ and $\hat{\beta}_1$?
+
+---
+
+### Best fit line
+
+The best fitting line will minimize the sum of squared residuals $SSE=\sum^n_ie_i^2$
+
+$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_ie_i^2$$
+--
+$$\begin{align*}
+SSE &= \sum_{i=1}^{n} e_i^2 \\
+&= \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 \\
+&= \sum_{i=1}^{n} \left( y_i - (b_0 + b_1 x_i) \right)^2
+\end{align*}$$
+
+--
+So effectively we are minimizing: 
+
+$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
+
+---
+
+###OLS 
+
+We called this estimator **OLS** - .blue[ordinary least squares]
+
+$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
+---
+### Best fit line 1
+
+To find the minimum of SSE, we take partial derivatives with respect to $\beta_0$ and $\beta_1$ and set them equal to zero:
+
+Partial derivative with respect to $\beta_0$:
+
+$$\frac{\partial SSE}{\partial \hat{\beta}_0} = -2\sum_{i=1}^{n} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right)$$
+
+Setting this derivative to zero:
+
+$$-2\sum_{i=1}^{n} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right) = 0$$
+$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=y_i$$
+
+---
+
+### Best fit line 2
+
+Partial derivative with respect to \(\hat{\beta}_1\):
+
+$$\frac{\partial SSE}{\partial \hat{\beta}_1} = 2\sum_{i=1}^{n} x_i\left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right)$$
+
+Setting this derivative to zero:
+
+$$2\sum_{i=1}^{n} x_i\left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right) = 0$$
+$$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
+---
+
+### Best fit line 
+
+Putting it all together:
+
+$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=y_i$$
+
+$$\hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}+\hat{\beta_1}\bar{x}$$
+
+--
+And plugging this here:
+
+
+$$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
+
+We get: 
+$$\hat{\beta}_1=\frac{\sum x_iy_i-\frac{\sum x_i\sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}=\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}=\frac{cov(x_i,y_i)}{var(x_i)}$$
+---
+
+`r knitr::include_url('https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression', height='450px')`
+Source: [https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression)
+
+
+
+
+---
+### Back to Motivating example
+
+
+.pull-left[
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
+
+
+# Display the data table
+datatable(Data_BP[,c("fecha_retiro","Trips","TMP","PM2.5")],
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 7,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+.pull-right[
+```{r, warning=FALSE,message=FALSE,fig.height=5.5, out.width='80%'}
+
+# Create plot using ggplot2
+p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Trips") +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+print(p)
+
+
+```
+]
+
+We want to estimate the following relationship: 
+
+$$Trips_i=\beta_0+\beta_1Temperature_i+u_i$$
+
+---
+### Best Fit Line 
+```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
+
+# Create plot using ggplot2
+p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
+  labs(x = "Temperature", y = "Trips") +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+print(p)
+
+```
+
+---
+### Regression output in R
+
+```{verbatim}
+lm_model <- lm(Trips ~ TMP, data = Data_BP)
+````
+
+```{r, warning=FALSE, fig.height=6, out.width='80%'}
+
+# Fit a linear regression model
+lm_model <- lm(Trips ~ TMP, data = Data_BP)
+
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+---
+### Properties of this estimator
+
+Here is a couple of cool useful properties of OLS. Let's derive them:
+
+- $\sum e_i=\sum(y_i-\hat{y_i})=0$
+- $\sum y_i=\sum\hat{y_i}$
+- $\hat{y_i}(x_i=0)=0*\hat{\beta_1}+\hat{\beta_0}=\hat{\beta_0}$
+- $\sum x_ie_i=0$
+- $\sum \hat y_i e_i=0$
+- $var(e_i)=\frac{(y_i-\hat{y_i})^2}{n-2}=\frac{SSE}{n-2}$
+
+
+---
+### Fit of linear regression
+
+```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
+
+library(ggplot2)
+
+# Set a seed for reproducibility
+set.seed(123)
+
+# Create a function to generate random data with specified slope and variability
+generate_data <- function(slope, variability, n = 50) {
+  x <- rnorm(n, mean = 0, sd = 10)
+  y <- slope * x + rnorm(n, mean = 0, sd = variability)
+  data.frame(x, y)
+}
+
+# Create datasets for the three scenarios
+dataset_1 <- generate_data(0, 2)
+dataset_2 <- generate_data(0.5, 1)
+dataset_3 <- generate_data(0.5, 5)
+
+# Create ggplot for each dataset and its R-squared value
+plots <- lapply(
+  list(dataset_1 = dataset_1, dataset_2 = dataset_2, dataset_3 = dataset_3),
+  function(data) {
+    lm_model <- lm(y ~ x, data = data)
+    r_squared <- summary(lm_model)$r.squared
+    ggplot(data, aes(x = x, y = y)) +
+      geom_point() +
+      geom_smooth(method = "lm", se = FALSE, color = "blue") +
+      labs(
+        x = "X", y = "Y")+
+      theme_minimal() +
+      ylim(-10,10) +
+      xlim(-20,20)
+  }
+)
+
+# Combine and arrange the three plots
+library(gridExtra)
+grid.arrange(grobs = plots, ncol = 3)
+```
+
+
+
+
+---
+
+### Measure of fit - R squared
+How much we managed to explain with our regression? 
+
+SST= total sum of squares = $S_{yy}=\sum(y_i-\bar{y})^2=\sum y_i^2-n\bar{y}^2$
+
+Measure of fit is:
+
+$$R^2=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
+Intuition: 
+- How much more variation in $y$ can we explain with our model
+- It is always between 0 and 1
+  - In fact $SST=SSR+SSE=\sum(y_i-\hat{y})^2+\sum(\hat{y}_i-\bar{y})^2$
+- SSE/SST is proportion that cannot be explained with the model
+- so 1-SSE/SST is the variation that we can explain with the model
+
+---
+### Illustration in the app
+
+---
+
+### Measure of fit: R squared
+
+If we have just one regressor, the $R^2$ is related to correlation between x and y.
+
+$$R^2=(\rho(x,y))^2$$
+Moreover, we can show that: 
+
+$$R^2=(\rho(x,y))^2=\beta^2_1\frac{S_{xx}}{S_{yy}}=\beta^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
+
+
+---
+
+#### How much of bike usage does the temperature explains?
+
+- $\beta_1=723.55$
+- $S_{xx}=var(x)*(n-1)=4043.965$ 
+- $S_{yy}=var(y)*(n-1)=24012556582$
+
+```{r, warning=FALSE, fig.height=6, out.width='80%'}
+
+# Fit a linear regression model
+lm_model <- lm(Trips ~ TMP, data = Data_BP)
+
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+
+---
+### Scaling of variables:
+
+Suppose that we used $x$ and $y$ in our sample to estimate $\hat{\beta}_1$ and $\hat{\beta}_0$.
+
+- Let's say that the scale of x changed. New $z=\alpha x+ c$. 
+  - How do $\hat{\beta}_1$ and $\hat{\beta}_0$ change?
+
+- Let's say that the scale of y changed. New $w=\alpha y+ c$. 
+  - How do $\hat{\beta}_1$ and $\hat{\beta}_0$ change?
+  
+---
+### Regression through the origin 
+
+Suppose the following model:
+
+$$y_i=\beta_1x_i+u_i$$
+- What is the least square estimator for $\beta_1$?
+
+--
+
+- What happens if we use this estimator when it's not going throuth the origin?
+
+
+---
+### Regression with a categorical variable
+
+- What if $x_i$ is a categorical variable?
+
+- .blue[Example:] $x_i=1$ if female, $x_i=0$ if male
+
+- We called it a binary variable, or a dummy variable
+
+--
+
+$$\hat{\beta}_0=\bar{y}_{x_i=0}$$
+and 
+
+$$\hat{\beta}_1=\bar{y}_{x_i=1}-\bar{y}_{x_i=0}$$
+
+---
+layout: false
+class: inverse, middle
+
+# Statistical Properties of OLS
+
+---
+Remember, we only have samples, and yet we want to learn something about the population parameters!
+
+Graph with different samples being taken
+
+
+---
+
+\beta itself is a random variable
+- so we have an estimator
+
+---
+linear relationsihp!
+
+
+-given our assumptions
+
+
+-gauss markow
+-unbiased and minimum variance
+
+0. Relationship is linear in parameters with linear disturbance
+1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+beta_1x_0$
+2. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
+3. $cov(u_i,u_j)=0$
+4. $E(u_i|x)=0$
+
+---
+
+Estimating the variance 
+
+
+
+
+--- 
+Distribution of beta?
+
+We need normality of errors only now!
+
+
+---
+Illustrate distribution of beta 
+
+---
+Hypothesis testing
+
+slope/intercept
+
+
+---
+
+slope - show with graph the alternative and the null
+
+---
+p-value
+
+
+---
+How do we use hypothesis testing:
+-give examples of actual questions we can test 
+
+
+---
+calculate for our example
+- p value in our example
+
+Alternatively, we can calculate the p-value that accompanies our test statistic, which effectively gives us the probability of seeing our test statistic or a more extreme test statistic if the null hypothesis were true
+
+Very small p-values (generally < 0.05) mean that it would be unlikely to see our results if the null hyopthesis were really true—we tend to reject the null for p-values below 0.05.
+
+---
+Confidence intervals
+
+- for beta_0 and beta_1
+
+---
+
+calculate for our example
+
+
+---
+
+- average response - derive variance
+- for prediction for new one - derive variance
+
+
+---
+
+for errors variance
+
+---
+
+Calculate for our example
+
+
+---
+12. Muestre que el supuesto del m´etodo de estimaci´on de m´ınimos cuadrados E[i
+|Xi
+] = 0 implica que
+E[Yi
+|Xi
+] = β0 + β1Xi
+
+---
+
+Considere el modelo donde la variable dependiente es el n´umero de hijos que tiene una mujer y la
+variable independiente es una variable que mide el n´umero de a˜nos que estudi´o la misma mujer. Se
+puede decir que el modelo pretende establecer cierta relaci´on entre la fertilidad y la educaci´on de la
+madre.
+a) Comente acerca del tipo de factores que aparecen en el t´ermino estoc´astico.
+b) Determine si estos factores est´an correlacionados con el nivel de educaci´on.
+c) Establezca si los estimadores que obtendr´ıa de esta estimaci´on son insesgados y de varianza
+m´ınima.
+
+
+---
+Sum up what assumptions we need for what 
+
+
+---
+checking normality
+
+6. [5 puntos] Usted y su compa˜nero ajustan un modelo de regresi´on lineal de la forma
+yi = β0 + β1xi + i
+; i = 1, .., 22.
+donde i es el termino de error aleatorio con los supuestos usuales. Para verifcar el supuesto de
+normalidad, su compa˜nero propone llevar a cabo una prueba de hip´otesis de Jarque Bera mientras
+que usted propone validar el supuesto mediante una gr´afica cuantil-cuantil. Luego,
+a) su compa˜nero tiene raz´on y usted est´a equivocado.
+b) su compa˜nero est´a equivocado y usted tiene raz´on.
+c) Los dos, tanto usted como su compa˜nero, est´an equivocados.
+d) Los dos, tanto usted como su compa˜nero, tienen raz´on.
+
+
+---
+Examples:
+
+calculate interval for a coefficient
+
+---
+Calculate interval for a prediction

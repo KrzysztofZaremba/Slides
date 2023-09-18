@@ -172,7 +172,8 @@ cov(df$C_y,df$C_w)
 
 # Section 6: Importing Data ---------
 
-listings <- read.csv("C:/Users/kzysi/Dropbox/Itam_teaching/Markdowns/Intro_to_r/listings.csv", comment.char="#")
+##replace with your path!
+listings <- read.csv("C:/Users/Intro_to_r/listings.csv", comment.char="#")
 
 # how many columns we have?
 nrow(listings)
@@ -209,7 +210,7 @@ worst_listing=listings[listings$number_of_reviews>10 & listings$review_scores_ra
 
 
 ###there are usually multiple ways to do the same thing as there are multiple functions
-install.package(tidyverse)##this is how you install libraries - collection of functions
+install.packages("tidyverse")##this is how you install libraries - collection of functions
 library(tidyverse)
 
 worst_listing=listings%>%
@@ -230,7 +231,7 @@ barplot(table(listings$neighbourhood_cleansed))
 
 barplot(table(listings$neighbourhood_cleansed), las=2)
 
-install.packages(ggplot2)
+install.packages("ggplot2")
 library(ggplot2)
 
 
@@ -339,10 +340,17 @@ sd(listings$price, na.rm=TRUE)
 sample <- listings %>%
   sample_n(500, replace = FALSE)
 m=mean(sample$price, na.rm=TRUE)
-sdev=sd(listings$price, na.rm=TRUE)
+sdev=sd(sample$price, na.rm=TRUE)
 CI95_lower=m-sdev*1.96/sqrt(500)
 CI95_upper=m+sdev*1.96/sqrt(500)
 
+### I just remember that 1.96 is a 97.5% quantile. If I dont, I would do the following: 
+qnorm(0.975,mean=0,sd=1) #normal
+qt(0.975,df=10) #student t
+
+## Simpler method to get confidence interval
+t.test(sample$price)
+t.test(sample$price, conf.level = 0.99)
 
 #Step 2. Repeat the sampling procedure 1000 times, save mean and confidence intervals for each - this will create a sampling distribution of the sample mean
 
@@ -353,20 +361,59 @@ for (i in 1:10){
   print(i+10)
 }
 
+m=0
+CI95_lower=0
+CI95_upper=0
+
+###Without outliers
 
 ##loop for us
-for (i in 1:500){
-  sample <- listings %>%
+for (i in 1:3000){
+  sample <- listings_no_outliers %>%
     sample_n(500, replace = FALSE)
   m[i]=mean(sample$price, na.rm=TRUE)
-  sdev[i]=sd(listings$price, na.rm=TRUE)
+  sdev[i]=sd(sample$price, na.rm=TRUE)
   CI95_lower[i]=m[i]-sdev[i]*1.96/sqrt(500)
   CI95_upper[i]=m[i]+sdev[i]*1.96/sqrt(500)
 }
 
+
 ##put them together in a dataframe
 sampling_distribution=data.frame(m,CI95_lower,CI95_upper)
 
+#Step 3. Visualize the sampling distribution. Check the expectation and variance. 
+ggplot(sampling_distribution, aes(x=m)) +
+  geom_histogram(bins=50)+
+  theme_minimal()
+
+mean(sampling_distribution$m)
+sd(sampling_distribution$m)
+
+#Step 4. Check what share of confidence intervals cover the true mean. 
+true_mean=mean(listings_no_outliers$price, na.rm=TRUE)
+true_mean
+
+mean_check=sampling_distribution$CI95_lower<true_mean & sampling_distribution$CI95_upper>true_mean # it will give true only if two conditions are true
+
+sum(mean_check)/3000
+
+
+
+###With outliers
+
+##loop for us
+for (i in 1:2000){
+  sample <- listings %>%
+    sample_n(500, replace = FALSE)
+  m[i]=mean(sample$price, na.rm=TRUE)
+  sdev[i]=sd(sample$price, na.rm=TRUE)
+  CI95_lower[i]=m[i]-sdev[i]*1.96/sqrt(500)
+  CI95_upper[i]=m[i]+sdev[i]*1.96/sqrt(500)
+}
+
+
+##put them together in a dataframe
+sampling_distribution=data.frame(m,CI95_lower,CI95_upper)
 
 #Step 3. Visualize the sampling distribution. Check the expectation and variance. 
 ggplot(sampling_distribution, aes(x=m)) +
@@ -381,4 +428,4 @@ true_mean=mean(listings$price, na.rm=TRUE)
 
 mean_check=sampling_distribution$CI95_lower<true_mean & sampling_distribution$CI95_upper>true_mean # it will give true only if two conditions are true
 
-sum(mean_check)/500
+sum(mean_check)/2000
