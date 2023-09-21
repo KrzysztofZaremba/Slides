@@ -1431,5 +1431,9 @@ ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
 
 Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending.  You calculated the correlation coefficient of $\hat{\rho}=-0.45$. Can you reject null of $\rho=0$ in favor of alternative $\rho \neq 0$ at 5% significance level?
 
+```{r pdf, include=FALSE, warning=FALSE}
 
+xaringan::decktape("https://slides.yihui.org/xaringan", "xaringan.pdf", docker = FALSE)
+
+```
 
