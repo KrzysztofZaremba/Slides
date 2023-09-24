@@ -701,7 +701,7 @@ Where:
 
 **Exercise**
 
-Suppose you are a ham producer. As you need to stick to the nutritional guidelines, the standard deviation of the fat content in your product needs cannot be larger than 0.1. You take a sample of 16 hams and you want to test this. 
+Suppose you are a ham producer. As you need to stick to the nutritional guidelines, the standard deviation of the fat content in your product needs cannot be larger than 0.1. You take a sample of 16 hams and you want to test this. Suppose $s=0.2$ and $\alpha=0.05$
 
 --
 1. Write down the hypotheses of the test
