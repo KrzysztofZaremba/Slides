@@ -731,16 +731,19 @@ Depends on:
 - Calculated test statistic
 
 --
-- Suppose the test statistic under $H_0$ $z_{test} \sim N(0,1)$
+- Suppose the test statistic under $H_0$ $Z_{test} \sim N(0,1)$
 - One sided tests:
-  - For  $H_A: \mu>\mu_0$ $p-value=P(Z_{Test}>(computed-test-statistic))$
-  - For  $H_A: \mu<\mu_0$ $p-value=P(Z_{Test}<(computed-test-statistic))$
+  - For  $H_A: \mu>\mu_0$ $p-value=P(Z_{Test} \geq (computed-test-statistic))$
+  - For  $H_A: \mu<\mu_0$ $p-value=P(Z_{Test} \leq (computed-test-statistic))$
 - Two sided test:
-  - For  $H_A: \mu \neq\mu_0$ $p-value=2P(Z_{Test}>|(computed-test-statistic)|)$
+  - For  $H_A: \mu \neq\mu_0$ $p-value=2P(Z_{Test} \geq |(computed-test-statistic)|)$
 ---
 **Example**: 
 - We test for $H_0: \mu=5$ and $H_A: \mu>5$ 
-- Suppose in sample of 36 we have $\bar{x}=5.5$ and $s=2$. 
+- Suppose in sample a of 36 we have $\bar{x}=5.5$ and $s=2$. 
+
+
+--
 - Test statistic in this case is distributed normally
 $$p-value=P(Z>\frac{5.5-5}{2/6})=P(Z>1.5)=0.066$$
 
@@ -798,8 +801,11 @@ $$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^
 ---
   - Where SE is standard error and depends on the estimate of standard deviation
       - If standard deviation known: $\small SE=\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}$
-          - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X}{n}+\frac{\sigma_Y}{m}$
-      - If standard deviation not known: $\small SE=\sqrt{\frac{s_X^2}{n}+\frac{s_Y^2}{m}}$
+
+--
+
+  - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X}{n}+\frac{\sigma_Y}{m}$
+  - If standard deviation not known: $\small SE=\sqrt{\frac{s_X^2}{n}+\frac{s_Y^2}{m}}$
 
 
 --
@@ -859,7 +865,7 @@ The difference of two normal (independent) distributions under:
 $$\bar{X}-\bar{Y} \sim N(\mu_X-\mu_Y, \sqrt{\sigma_X^2/n+\sigma_Y^2/m})$$ 
 So if null is true, then standardized statistic:
 
-$$\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}~N(0,1)$$
+$$\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}} \sim N(0,1)$$
 ---
 
 .center[
@@ -958,8 +964,8 @@ axis(1,
 # add a vertical line at the mean (mu)
 
 # shade the tails for the 2.5% regions
-polygon(x = c(1.645, seq(1.645, 3, 0.01), 3),
-        y = c(0, dnorm(seq(1.645, 3, 0.01)), 0),
+polygon(x = c(-3, seq(-3, -1.645, 0.01), -1.645),
+        y = c(0, dnorm(seq(-3, -1.645, 0.01)), 0),
         col = "steelblue", alpha = 0.2)
 
 
@@ -967,7 +973,7 @@ polygon(x = c(1.645, seq(1.645, 3, 0.01), 3),
 abline(v = 0, col = "red", lwd = 2)
 
 # add the "2.5%" labels on tails
-text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
+text(-2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 
 ```
 ]
@@ -976,7 +982,7 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \geq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently smaller than $\Delta_0$
   -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ n}}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
 
 
 ---
@@ -1052,7 +1058,7 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \leq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently larger than $\Delta_0$
   -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ n}}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 
 ---
