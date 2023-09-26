@@ -1,5 +1,5 @@
 ---
-title: 'Class 3b: Review of concepts in Probability and Statistics'
+title: 'Class 3c: Review of concepts in Probability and Statistics'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
