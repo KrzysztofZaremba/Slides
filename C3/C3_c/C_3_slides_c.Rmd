@@ -1331,7 +1331,7 @@ stock on those same days
 --
 2. We randomly sample 50 items from Target stores and note
 the price for each. Then we visit Walmart and collect the price
-for each of those same 50 items. ⇒ paired
+for each of those same 50 items. 
 
 --
 - Paired
@@ -1354,15 +1354,15 @@ A psychologist thinks that age influences IQ. They take a random sample of 100 p
 ---
 #### Hypothesis Testing for Correlation
 
-.blue[Example]: are cleanliness and score (C) and price (P) correlated in the population?
+.blue[Example]: are cleanliness score (C) and price (P) correlated in the population?
 
 Assume you have **normally distributed variables** in **independent pairs**. $\{(C_1,P_1), (C_2, P_2),...\}$
 
-.blue[Null hypothesis]: $H_0: \rho(C,P)=0$
+.blue[Null hypothesis]: $H_0: \rho(C,P)=\rho_0$
 
 **Test statistic** and its distribution under the null:
 
-$$\small T_{test}=\frac{\hat{\rho}(C,P)\sqrt {(n-2)}}{\sqrt{1-\hat{\rho}(C,P)^2}} \sim t_{n-2}$$
+$$\small T_{test}=\frac{\hat{\rho}(C,P)-\rho_0}{\sqrt{\frac{1-\hat{\rho}(C,P)^2}{n-2}}} \sim t_{n-2}$$
 
 where $\hat{\rho}(C,P)$ is sample correlation coefficient
 
@@ -1375,11 +1375,11 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
 ---
 ### Correlation test
 
-- Suppose we test $H_0: \rho(C,P)=0$ vs $\rho(C,P)>0$
+- Suppose we test $H_0: \rho(C,P)=0$ vs $\rho(C,P)>0$ in our Airbnb Data (clean score vs price)
 
 --
 
-- We assume that:
+- We **assume** that:
   - The variables are normally distributed
   - Pairs are independent
   - Relationship would be linear
@@ -1406,7 +1406,7 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
 ---
 ### Correlation Test 
 
-```{r, warning=FALSE, fig.height=5, out.width='100%'}
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 ggplot(data=Sample_list, aes(review_scores_cleanliness))+
   geom_histogram()+
   theme_xaringan()
@@ -1422,7 +1422,7 @@ ggplot(data=Sample_list, aes(price))+
 ---
 ### Correlation Test 
 
-```{r, warning=FALSE, fig.height=5, out.width='100%'}
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
   geom_point() +

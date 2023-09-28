@@ -1,5 +1,5 @@
 ---
-title: 'Class 4b: Simple Linear Regression'
+title: 'Class 4b: Simple Linear Regression diagnostics'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
@@ -31,6 +31,7 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
+library(LaplacesDemon)
 library(ggplot2)
 library(gridExtra)
 library(dplyr)
@@ -79,25 +80,43 @@ load("Daily_CMX_means2.Rda")
   - Normality
   
 ---
-Intro:
-
-what are the main assumptions
 
 
-Additional assumption
--normality
+Let's revisit the assumptions behind linear model:
 
 
-How can we test them?
-formal ways plus eyeballing
+0. Model is linear in the parameter and with additive error term
+1. $E(u_i)=0$
+2. $E(u_i|x)=0$
+3. $Var(u_i)=\sigma^2$
+4. $cov(u_i,u_j)=0$
+
+Additional assumption needed for hypothesis testing and confidence intervals:
+
+5. $u_i \sim N(0,\sigma)$
+
+
 
 ---
-1. Assumptions behind residuals
+### Assumptions
 
 
-- plotting residuals vs fitted values
+Visualizing residuals, we can test: 
+- Linearity
+- Constant Variance (homoskedasticity)
+- Uncorrelated errors
 
 ---
+
+With vizuale and numerical tests we can analyze:
+- Normality
+
+---
+
+### Linearity diagnostic
+
+1. Plot residuals against fitted values of y $\hat{y}$
+2. Check if residuals have systematic non-linear pattern
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
 # Generate sample data for a linear relationship
@@ -139,15 +158,9 @@ grid.arrange(gg1, gg2, ncol = 2)
 
 ```
 
-- Non linearity:
-1. graph fittted line to quadratic equation
-2. Resulting residuals
-
- (vs linear one)
- 
  
 ---
-
+### Linearity diagnostic
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
 # Generate sample data for a linear relationship
@@ -190,8 +203,11 @@ grid.arrange(gg1, gg2, ncol = 2)
 ```
 
 ---
+### Constant variance (homoskedasticity)  diagnostic
 
-- heteroskedasticity (why we need this assumption)
+
+1. Plot residuals against fitted values of y $\hat{y}$
+2. Check if variance changes as $\hat{y}$ changes (heteroskedasticity)
 
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
@@ -232,8 +248,7 @@ grid.arrange(gg1, gg2, ncol = 2)
 ```
 
 ---
-
-- heteroskedasticity (why we need this assumption)
+### Constant variance (homoskedasticity) diagnostic
 
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
@@ -272,68 +287,13 @@ gg2 <- ggplot(data.frame(Fitted = fitted_values_linear, Residuals = residuals_li
 grid.arrange(gg1, gg2, ncol = 2)
 
 ```
-2 plots, homoskedastic vs heteroskedastic
 
 
 ---
+What goes wrong here?
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
 # Generate sample data for a linear relationship
-# Generate sample data for a linear relationship
-set.seed(123)
-x <- seq(-5, 5, length.out = 70)
-y <- 2 + 2 * x +x^2+ rnorm(70, sd = 3)  # Linear relationship
-
-# Create a data frame
-data <- data.frame(x, y)
-
-# Fit a simple linear regression model in x
-linear_model <- lm(y ~ x, data)
-
-# Create a scatter plot with the linear regression line and residuals
-gg1 <- ggplot(data, aes(x = x, y = y)) +
-  geom_point(color = "black") +
-  geom_smooth(method = "lm", se = FALSE, color = "blue", formula = y ~ x) +
-  geom_segment(aes(xend = x, yend = predict(linear_model, data), x = x, y = y), color = "red", alpha = 0.2, linetype = "dashed") +
-  labs(x = "X", y = "Y") +
-  theme_minimal() +
-  geom_hline(yintercept = 0, color = "black") +
-  geom_vline(xintercept = 0, color = "black")
-
-# Create a residuals vs. fitted values plot for the linear model
-fitted_values_linear <- predict(linear_model, data)
-residuals_linear <- residuals(linear_model)
-gg2 <- ggplot(data.frame(Fitted = fitted_values_linear, Residuals = residuals_linear), aes(x = Fitted, y = Residuals)) +
-  geom_point(color = "black") +
-  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
-  geom_segment(aes(xend = Fitted, yend = 0, x = Fitted, y = Residuals), color = "blue", alpha = 0.2, linetype = "dashed") +
-  labs(x = "Fitted Values", y = "Residuals") +
-  theme_minimal()
-
-# Combine the two plots side by side
-
-grid.arrange(gg1, gg2, ncol = 2)
-```
-- plitting residuals vs residuals - correlation (dependence)
-
-- one plot with dependence, one without
-
-- not a problem for E(), problem for variance 
-
----
-
-outlier - interactive one from seeing theory
-how to detect it
-
----
-Couple of examples of stuff to test their knowledge
-
-
-heteroskecasticity - od lewej i prawej higher (albo lower)
-
-linearity - maybe something with logharitm or exp or 1/x
----
-```{r, warning=FALSE, fig.height=4, out.width='100%'}
 # Generate sample data for a linear relationship
 set.seed(123)
 x <- seq(0.1, 5, length.out = 100)  # Avoid x = 0 for division
@@ -358,6 +318,165 @@ gg2 <- ggplot(data.frame(Fitted = fitted_values_linear, Residuals = residuals_li
 gg2
 ```
 ---
+
+What goes wrong here?
+
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Generate sample data with changing variance
+set.seed(123)
+n <- 100
+x <- seq(-5, 5, length.out = n)
+y <- 2 + 2 * x + rnorm(n, sd = 1 + abs(x))  # Increasing and then decreasing residual variance
+
+# Create a data frame
+data <- data.frame(x, y)
+
+# Fit a linear regression model
+linear_model <- lm(y ~ x, data)
+
+# Create a scatter plot with the linear regression line and residuals
+
+# Create a residuals vs. fitted values plot for the linear model
+fitted_values_linear <- predict(linear_model, data)
+residuals_linear <- residuals(linear_model)
+gg2 <- ggplot(data.frame(Fitted = fitted_values_linear, Residuals = residuals_linear), aes(x = Fitted, y = Residuals)) +
+  geom_point(color = "black") +
+  geom_hline(yintercept = 0, color = "red", linetype = "dashed") +
+  geom_segment(aes(xend = Fitted, yend = 0, x = Fitted, y = Residuals), color = "blue", alpha = 0.2, linetype = "dashed") +
+  labs(x = "Fitted Values", y = "Residuals") +
+  theme_minimal()
+
+# Combine the two plots side by side
+gg2
+```
+
+
+---
+### Correlation of error terms
+
+1. Plot fitted residuals vs their value in previous observation $e_i$ vs $e_{i-1}$
+2. So $e_2$ vs $e_1$, $e_5$ vs $e_4$ etc
+
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of observations
+n <- 100
+
+# Generate data with correlated residuals
+correlation_values <- c(0.8, 0.6, 0.4, 0.2, 0)  # Decreasing correlation values
+scatterplot_list <- list()
+
+# Initialize a list to store autocorrelation coefficients
+autocorrelation_coefficients <- list()
+ggplot_list <-vector("list", length = 5)
+lag=2
+# Create scatterplots for residual vs. lagged residuals
+
+plot_data_column = function (lag) {  # Lag from 1 to 5
+  # Create correlated residuals with decreasing correlation
+  correlation <- correlation_values[lag]
+  cov_matrix <- matrix(c(1, correlation, correlation, 1), ncol = 2)
+  correlated_residuals <- mvrnorm(n, c(0, 0), cov_matrix)
+  
+  # Create a data frame for correlated residuals
+  data1 <- data.frame(Residual_i = correlated_residuals[, 1])
+  data1[[paste0("Residual_i-", lag)]] <- correlated_residuals[, 2]
+  
+  autocorr_coeff <- cor(data1$Residual_i, data1[[paste0("Residual_i-", lag)]])
+
+  
+ggplot(data=data1, aes(x = Residual_i, y = data1[[paste0("Residual_i-", lag)]])) +
+    geom_point(color = "blue") +
+    labs(x = "Residual i", y = paste0("Residual_i-", lag)) +
+    theme_minimal() +
+    ggtitle(paste("Lag:", lag)) +
+  geom_text(
+    x =-2,  # Adjust the x-coordinate as needed
+    y = 2.8,  # Adjust the y-coordinate as needed
+    label = paste("AC:", round(autocorr_coeff, 2)),
+    hjust = 0,  # Horizontal justification (0 for left-aligned)
+    vjust = 1,  # Vertical justification (1 for top-aligned)
+    color = "red",  # Text color
+    size = 4  # Text size
+  )+xlim(-3,3)+ylim(-3,3)
+}
+
+
+plot_data_column(1)
+```
+
+
+---
+### Correlation of error terms
+
+1. We can also calculate the correlation with other lags
+  - Example: $e_i$ vs $e_{i-3}$ 
+  - Note down correlation at each lag: $\small \rho(e_i,e_{i-1})$, $\small  \rho(e_i,e_{i-2})$, $\small  \rho(e_i,e_{i-3})$
+
+```{r, warning=FALSE, fig.height=4, out.width='100%'}
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of observations
+n <- 100
+
+# Generate data with correlated residuals
+correlation_values <- c(0.8, 0.6, 0.4, 0.2, 0)  # Decreasing correlation values
+scatterplot_list <- list()
+
+# Initialize a list to store autocorrelation coefficients
+autocorrelation_coefficients <- list()
+ggplot_list <- vector("list", length = 5)
+
+# Create scatterplots for residual vs. lagged residuals
+# Generate data with correlated residuals
+correlation_values <- c(0.8, 0.6, 0.4, 0.2, 0)  # Decreasing correlation values
+scatterplot_list <- list()
+
+# Initialize a list to store autocorrelation coefficients
+autocorrelation_coefficients <- list()
+
+autocor = function (lag) {  # Lag from 1 to 5
+  # Create correlated residuals with decreasing correlation
+  correlation <- correlation_values[lag]
+  cov_matrix <- matrix(c(1, correlation, correlation, 1), ncol = 2)
+  correlated_residuals <- mvrnorm(n, c(0, 0), cov_matrix)
+  
+  # Create a data frame for correlated residuals
+  data1 <- data.frame(Residual_i = correlated_residuals[, 1])
+  data1[[paste0("Residual_i-", lag)]] <- correlated_residuals[, 2]
+  
+  autocorr_coeff <- cor(data1$Residual_i, data1[[paste0("Residual_i-", lag)]])
+}
+
+# Create scatterplots and collect autocorrelation coefficients
+autocorrelation_coefficients=lapply(1:5, autocor)
+
+# Create a bar graph of autocorrelation coefficients
+bar_data <- data.frame(Lag = 1:5, Autocorrelation = unlist(autocorrelation_coefficients))
+bar_plot <- ggplot(bar_data, aes(x = factor(Lag), y = Autocorrelation)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Lag", y = "Autocorrelation") +
+  theme_xaringan()
+
+ggplot_list <- lapply(1:5, plot_data_column)
+# Arrange the scatterplots and bar graph side by side
+grid.arrange(
+  arrangeGrob(grobs = ggplot_list , ncol = 5),
+  bar_plot,
+  ncol = 1,
+  heights = c(3, 3)  # Adjust the height ratio as needed
+)
+```
+---
+
+### Normality
+
+We can start by looking at histograms
+- Some are obvious
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
 # Function to generate data with specified residual distribution and plot
@@ -384,7 +503,7 @@ generate_and_plot_data <- function(residual_dist, df = 100) {
     geom_point(color = "black") +
     geom_smooth(method = "lm", se = FALSE, color = "blue") +
     labs(x = "X", y = "Y") +
-    theme_minimal()
+    theme_xaringan()
   
   # Calculate residuals
   residuals <- resid(model)
@@ -393,7 +512,7 @@ generate_and_plot_data <- function(residual_dist, df = 100) {
   histogram <- ggplot(data.frame(Residuals = residuals), aes(x = Residuals)) +
     geom_histogram(binwidth = 0.5, fill = "green", color = "black", alpha = 0.7) +
     labs(x = "Residuals", y = "Frequency") +
-    theme_minimal()
+    theme_xaringan()
   
   # Arrange the scatterplot and histogram side by side
   grid.arrange(scatterplot, histogram, ncol = 2)
@@ -405,6 +524,10 @@ generate_and_plot_data("normal")
 ```
 
 ---
+### Normality
+We can start by looking at histograms
+- Some are obvious
+
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
 generate_and_plot_data("exponential")
@@ -412,19 +535,48 @@ generate_and_plot_data("exponential")
 ```
 
 ---
+### Normality
+We can start by looking at histograms
+- Some are **NOT** obvious
+- Then we need a different test
+
+
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
 generate_and_plot_data("t", df = 3)
 ```
 
 ---
-We will compare the quantiles of residuals to quantiles of normal!
+### Normality
 
 
+**Q-Q Plot**: Quantlie-Quantile Plot
+
+- Comparing quantiles of our data to what they should be if they come from normal distribution
+
+
+- Procedure:
+  - Standardize residuals
+
+--
+  - Sort them
+
+--
+  - Check which quantile they represent
+    - This is equivalent to checking cumulative probability: $CP_i=\frac{Index}{n+1}$
+    - Where index is the number of observation if we sort if from smallest to  largest 
+        - 1 is the smallest, 2 is the second smallest, ..., n is the largest
+    - In other words, what share of data is smaller than this observation
+
+--
+  - Compare them to quantiles from standard normal
+
+--
+  - If our distribution is normal, the quantiles should be similar
 
 ---
+### Q-Q plot
 
-- histogram of residuals
 ```{r, echo=FALSE, results='asis'}
 # Create a data frame for the table
 # Set the seed for reproducibility
@@ -449,7 +601,7 @@ data_df$Quantile_Normal <- round(qnorm(data_df$Cumulative_Probability),3)
 datatable(data_df,
           fillContainer = FALSE,
           options = list(
-            pageLength = 6,
+            pageLength = 10,
             searching = FALSE,
             initComplete = JS(
               "function(settings, json) {",
@@ -461,43 +613,433 @@ datatable(data_df,
 )
 ```
 ---
-d
-- quantile quantile plot
+### Q-Q plot
 
--lighter tail/ heavier tail
+- Next, we plot the sample quantiles vs the standard normal quantiles
+- If they are similar, they should be on the straight line
 
-```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+### Q-Q plot
+.pull-left[
+```{r,include=FALSE,  warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+# Set the seed for reproducibility
+# Create a histogram plot with ggplot2
+histogram_plot <- ggplot(data_df, aes(x = scale(Residuals))) +
+  geom_histogram(binwidth = 0.4, aes(y = after_stat(density)), fill = "green", color = "black", alpha = 0.7) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "blue") +  # Add standard normal density
+  labs(x = "Standardized Residuals", y = "Density") +
+  theme_minimal()+
+  xlim(-3,3)
+
+# Create a QQ plot with ggplot2
+
+# Convert both plots to plotly objects
+histogram_plot <- ggplotly(histogram_plot, tooltip = "y",
+        width = 400,   # Adjust the width according to your preference
+        height = 350)
+```
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%', message=FALSE}
+histogram_plot
+
+```
+]
+.pull-right[
+```{r, include=FALSE, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
 qq_plot <- ggplot(data_df) +
-  geom_qq(aes(sample = Standardized_Residuals)) +
+  geom_qq(aes(sample = scale(Residuals))) +
   geom_abline(color = "red") +
   coord_fixed() +
-  theme_xaringan()
+  theme_minimal() +
+  xlim(-3, 3) +
+  ylim(-3, 3)  # Set y-axis limits to show cumulative probability
 
-# Create a histogram with the density of the standard normal distribution overlaid
-histogram_plot <- ggplot(data_df, aes(x = Standardized_Residuals)) +
-  geom_histogram(binwidth = 0.5, aes(y = after_stat(density)), fill = "green", color = "black", alpha = 0.7) +
-  geom_density(color = "blue") +
+
+
+
+qq_plot=ggplotly(qq_plot,
+                    width = 400,   # Adjust the width according to your preference
+                    height = 350)
+
+data_df$Index <- rank(data_df$Residuals)
+data_df$Cumulative_Probability <- round(data_df$Index / (nrow(data_df) + 1),3)
+data_df <- data_df[order(data_df$Residuals), ]
+qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability)
+
+```
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%', message=FALSE}
+qq_plot
+```
+]
+
+
+
+---
+### Q-Q plot
+.pull-left[
+```{r,include=FALSE,  warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+# Set the seed for reproducibility
+library(plotly)
+
+# Generate chi-square distributed residuals with 3 degrees of freedom
+residuals <- rchisq(100, df = 3)
+
+# Create a data frame with the residuals
+data_df <- data.frame(Residuals = scale(residuals))
+
+# Create a histogram plot with ggplot2
+histogram_plot <- ggplot(data_df, aes(x = scale(Residuals))) +
+  geom_histogram(binwidth = 0.4, aes(y = after_stat(density)), fill = "green", color = "black", alpha = 0.7) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "blue") +  # Add standard normal density
   labs(x = "Standardized Residuals", y = "Density") +
-  theme_xaringan()
+  theme_minimal()+
+  xlim(-3,3)
 
-# Arrange the QQ plot and histogram side by side
-grid.arrange(qq_plot, histogram_plot, ncol = 2)
+# Create a QQ plot with ggplot2
+
+# Convert both plots to plotly objects
+histogram_plot <- ggplotly(histogram_plot, tooltip = "y",
+        width = 400,   # Adjust the width according to your preference
+        height = 350)
+```
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%', message=FALSE}
+histogram_plot
+
+```
+]
+.pull-right[
+```{r, include=FALSE, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+data_df <- data.frame(Residuals = scale(residuals))
+qq_plot <- ggplot(data_df) +
+  geom_qq(aes(sample = Residuals)) +
+  geom_abline(color = "red") +
+  coord_fixed() +
+  theme_minimal() +
+  xlim(-3, 3) +
+  ylim(-3, 3)  # Set y-axis limits to show cumulative probability
+
+
+
+
+qq_plot=ggplotly(qq_plot,
+                    width = 400,   # Adjust the width according to your preference
+                    height = 350)
+
+data_df$Index <- rank(data_df$Residuals)
+data_df$Cumulative_Probability <- round(data_df$Index / (nrow(data_df) + 1),3)
+data_df <- data_df[order(data_df$Residuals), ]
+qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability)
+
+```
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+qq_plot
+```
+]
+
+
+---
+### Q-Q plot
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+
+# Define the number of data points
+num_data_points <- 100
+
+# Generate uniform random residuals between -1 and 1
+uniform_residuals <- runif(num_data_points, min = -2, max = 2)
+
+# Create independent variable (predictor)
+x <- rnorm(num_data_points)
+
+# Create dependent variable (response) with a linear relationship and added residuals
+y <- -2 * x + 3 + uniform_residuals
+
+# Create a data frame with predictor and response variables
+data_df <- data.frame(x, y)
+
+residuals=uniform_residuals
+
+# Create a fitted regression plot
+regression_plot <- ggplot(data_df, aes(x = x, y = y)) +
+  geom_point(color = "black") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(x = "X", y = "Y") +
+  theme_minimal()
+
+# Create a histogram of standardized residuals
+histogram_plot <- ggplot(data_df, aes(x = scale(residuals))) +
+  geom_histogram(binwidth = 0.4, aes(y = after_stat(density)), fill = "green", color = "black", alpha = 0.7) +
+ stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "blue") +
+  labs(x = "Standardized Residuals", y = "Density") +
+  theme_minimal()+
+  xlim(-3,3)
+
+# Create a QQ plot
+qq_plot <- ggplot(data_df) +
+  geom_qq(aes(sample = scale(residuals))) +
+  geom_abline(color = "red") +
+  coord_fixed() +
+  theme_minimal()+
+  xlim(-3,3)+
+  ylim(-3,3)
+
+# Arrange the three plots side by side
+grid.arrange(regression_plot, histogram_plot, qq_plot, ncol = 3)
+
 ```
 
 
+---
+### Jarque-Bera Test
+
+- We can also use the **Jarque-Bera Test** to see whether sample comes from a normal distribution
+
+**Intuition**
+- Skeweness of normal distribution is 0 (it's symmetric)
+
+$$S = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{\frac{3}{2}}}$$
 
 ---
 
-- Jarque Bera's normality test for stochastic error
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+
+# Set the seed for reproducibility
+set.seed(123)
+
+# Generate data with skewness = 0 (normally distributed)
+data_0_skew <- rnorm(1000)
+
+# Generate data with positive skewness
+data_pos_skew <- c(rnorm(800), rnorm(200, mean = 3, sd = 1))
+
+# Create a data frame for each dataset
+df_0_skew <- data.frame(Data = data_0_skew, Group = "Skewness = 0")
+df_pos_skew <- data.frame(Data = data_pos_skew, Group = "Positive Skewness")
+
+# Combine the data frames
+combined_df <- rbind(df_0_skew, df_pos_skew)
+
+# Create a density plot for each dataset without legends
+density_plot_0_skew <- ggplot(df_0_skew, aes(x = Data)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot (Skewness = 0)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+density_plot_pos_skew <- ggplot(df_pos_skew, aes(x = Data)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot (Positive Skewness)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# Determine the common x-axis limits
+x_limits <- range(combined_df$Data)
+
+# Arrange the density plots side by side with equal x scales
+grid.arrange(
+  density_plot_0_skew + xlim(-6,6),
+  density_plot_pos_skew + xlim(-6,6),
+  ncol = 2
+)
+```
+
+---
+### Jarque-Bera Test
+
+- We can also use the **Jarque-Bera Test** to see whether sample comes from a normal distribution
+
+**Intuition**
+- Skeweness of normal distribution is 0 (it's symmetric)
+
+$$S = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{\frac{3}{2}}}$$
+
+
+- Kurtosis of normal distribution is 3 
+- Excess kurtosis is 0
+
+$$EK = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^4}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{2}} - 3$$
+
 
 ---
 
 
-WHAT TO DO?
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+
+# Set the seed for reproducibility
+set.seed(123)
+
+generate_data <- function(n, kurtosis) {
+  if (kurtosis == 3) {
+    # Generate normally distributed data
+    data <- rnorm(n)
+  } else if (kurtosis < 3) {
+    # Generate data with specified kurtosis using the PDF f(x) = 6x(1 - x)
+    mu <- 0
+    b <- 0.6
+    data <- rlaplace(n, mu, b)
+  } else {
+    # Generate data with specified kurtosis using the PDF f(x) = 1/(πx(1 - x))√
+    u <- runif(n)
+    data <- sqrt(6 * (kurtosis - 3)) * tan(pi * (u - 0.5))
+  }
+  return(data)
+}
+
+# Generate data with different kurtosis values
+n <- 10000
+data_kurtosis_less_3 <- generate_data(n, kurtosis = 2.3)
+data_kurtosis_3 <- generate_data(n, kurtosis = 3)
+data_kurtosis_greater_3 <- generate_data(n, kurtosis = 5)
+
+# Create data frames for each dataset
+df_kurtosis_less_3 <- data.frame(Data = data_kurtosis_less_3, Group = "Kurtosis < 3")
+df_kurtosis_3 <- data.frame(Data = data_kurtosis_3, Group = "Kurtosis = 3")
+df_kurtosis_greater_3 <- data.frame(Data = data_kurtosis_greater_3, Group = "Kurtosis > 3")
+
+# Combine the data frames
+combined_df <- rbind(df_kurtosis_less_3, df_kurtosis_3, df_kurtosis_greater_3)
+
+# Create density plots for each dataset without legends
+density_plot_kurtosis_less_3 <- ggplot(df_kurtosis_less_3, aes(x = Data)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Kurtosis < 3") +
+  theme_minimal() +
+  theme(legend.position = "none")+
+  xlim(-10,10)+
+  geom_density(data = data.frame(Data = rnorm(10000, 0, 1)), aes(x = Data), color = "blue")
+
+
+density_plot_kurtosis_3 <- ggplot(df_kurtosis_3, aes(x = Data)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Kurtosis = 3") +
+  theme_minimal() +
+  theme(legend.position = "none")+
+  xlim(-10,10)
+
+density_plot_kurtosis_greater_3 <- ggplot(df_kurtosis_greater_3, aes(x = Data)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Kurtosis > 3") +
+  theme_minimal() +
+  theme(legend.position = "none")+
+  xlim(-10,10)+
+  geom_density(data = data.frame(Data = rnorm(10000, 0, 1)), aes(x = Data), color = "blue")
+
+
+# Determine the common x-axis limits
+x_limits <- range(combined_df$Data)
+
+# Arrange the density plots side by side with equal x scales
+grid.arrange(
+  density_plot_kurtosis_less_3 + xlim(-10,10)+ ylim(0,0.8),
+  density_plot_kurtosis_3 + xlim(-10,10)+ylim(0,0.8),
+  density_plot_kurtosis_greater_3 + xlim(-10,10)+ylim(0,0.8),
+  ncol = 3
+)
+```
+
 
 ---
+### Jarque-Bera Test
 
-Couple of examples to test their knowledge
+- We can also use the **Jarque-Bera Test** to see whether sample comes from a normal distribution
+
+**Intuition**
+- Skeweness of normal distribution is 0 (it's symmetric)
+
+$$S = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{\frac{3}{2}}}$$
 
 
+- Kurtosis of normal distribution is 3 
+- Excess kurtosis is 0
 
+$$EK = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^4}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{2}} - 3$$
+
+
+- We will test, whether our sample has (more or less)
+  - Skewenss of 0
+  - Kurtosis of 3
+
+---
+### Jarque-Bera Test
+
+
+The test statistic for our test is:
+
+$$JB = \frac{n}{6} \left(\frac{S^2}{2} + \frac{EK^2}{4}\right)$$
+
+- Its value will be high if:
+  - Skeweness deviates significantly from 0
+  - Kurtosis deviates significantly from 3
+
+--
+
+- If the data really comes from normal (that's our null hypothesis), then:
+
+$$JB \sim  \chi_2$$
+- It follows the Chi-squared distribution with 2 degrees of freedom. 
+
+---
+### Jarque-Bera Test
+
+So in our usual testing setting:
+
+- $H_0: e_i$ comes from normal (JB is small)
+- $H_A: e_i$ Does not come from normal (JB is large)
+
+- It's a one sided test, so we reject at $\alpha$ if 
+
+$$JB_{test}>\chi_{1-\alpha,2}$$
+---
+### Jarque-Bera Test
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+
+# Generate a sample of 100 values from a normal distribution with mean 0 and standard deviation 1
+sample_data <- rnorm(200, mean = 10, sd = 2)
+
+# Create a histogram using ggplot2
+ggplot(data = data.frame(x = sample_data), aes(x = x)) +
+  geom_histogram(binwidth = 0.3, color="white") +
+  labs(x = "Values",
+       y = "Frequency")+
+  theme_xaringan()
+
+
+```
+
+```{r, echo=TRUE, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+
+library(tseries)
+jarque.bera.test(sample_data)
+```
+
+---
+### Jarque-Bera Test
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+
+# Generate a sample of 100 values from a normal distribution with mean 0 and standard deviation 1
+sample_data_exponential <- rexp(200, rate = 1)
+sample_data=scale(sample_data_exponential)
+
+# Create a histogram using ggplot2
+ggplot(data = data.frame(x = sample_data), aes(x = x)) +
+  geom_histogram(binwidth = 0.3, color="white") +
+  labs(x = "Values",
+       y = "Frequency")+
+  theme_xaringan()
+
+
+```
+
+```{r, echo=TRUE, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+
+library(tseries)
+jarque.bera.test(sample_data)
+```
+
+---
