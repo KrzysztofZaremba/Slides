@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Class 4c: Simple OLS: ANOVA and F-test</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Business Forecasting" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Class 4c: Simple OLS: ANOVA and F-test
+]
+.author[
+### Business Forecasting
+]
+
+---
+
+&lt;style type="text/css"&gt;
+.remark-slide-content {
+    font-size: 20px;
+}
+
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+## Roadmap
+
+
+### This class
+- Testing assumptions behind residuals
+  - Linearity
+  - Constant Variance
+  - Uncorrelated Residuals
+  - Normality
+  
+---
+### ANOVA
+
+**ANOVA** stands for the .blue[AN]alysis .blue[O]f .blue[V]ariance
+
+- We only look at it in the context of the regression
+- It helps us to determine wheather our regression is helpful
+  - It tests whether our regression model can explain variation in y
+  
+---
+### ANOVA
+
+How do we measure explained variation?
+
+`$$\small \underbrace{y_i-\bar{y}}_{\substack{Total \\ deviation}}=\underbrace{(\hat{y_i}-\bar{y})}_{\substack{Explained \\ deviation}}+\underbrace{(y_i-\hat{y_i})}_{\substack{Unexplained \\ deviation}}$$`
+where `\(\small \hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_i\)`
+
+
+&lt;img src="C_4_slides_a_files/figure-html/unnamed-chunk-1-1.png" width="100%" /&gt;
+
+---
+### ANOVA
+Let's move from a single deviation to sum of squared deviations:
+
+From here:
+`$$y_i-\bar{y}=(\hat{y_i}-\bar{y})+(y_i-\hat{y_i})$$`
+To here:
+
+`$$\sum_i(y_i-\bar{y})^2=\sum_i(\hat{y_i}-\bar{y})^2+\sum_i(y_i-\hat{y_i})^2$$`
+
+**Decomposition of variance**
+
+`$$SS_T=SS_R+SS_E$$`
+- `\(SS_T\)` is total sum of squares `\(\sum_i(y_i-\bar{y})^2\)`, .blue[1 DoF]
+- `\(SS_R\)` is regression sum of squares `\(\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1S_{XY}\)`, .blue[n-2 DoF]
+- `\(SS_E\)` is residual error sum of squares `\(\sum_i(y_i-\hat{y_i})^2\)`, .blue[n-1 DoF]
+
+---
+### ANOVA
+
+- Good model explains a lot of variation in `\(y\)`
+- Bad model explains little variation in `\(y\)`
+
+&lt;img src="C_4_slides_a_files/figure-html/unnamed-chunk-2-1.png" width="100%" /&gt;
+
+---
+We usually write them in a table. Here is how it looks like for our ecobici data:
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class="header"&gt;
+&lt;th style="text-align: left;"&gt;Source&lt;/th&gt;
+&lt;th style="text-align: center;"&gt;Sum of Squares&lt;/th&gt;
+&lt;th style="text-align: center;"&gt;Degrees of Freedom&lt;/th&gt;
+&lt;th style="text-align: center;"&gt;DoF&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class="odd"&gt;
+&lt;td style="text-align: left;"&gt;Regression&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;2117100000&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;1&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class="even"&gt;
+&lt;td style="text-align: left;"&gt;Residual Error&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;21895000000&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;779&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;n-2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class="odd"&gt;
+&lt;td style="text-align: left;"&gt;Total&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;24012100000&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;780&lt;/td&gt;
+&lt;td style="text-align: center;"&gt;n-1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+Or in R:
+
+```r
+model=lm(Trips ~ TMP, data = Data_BP)
+anova(model)
+```
+
+```
+## Analysis of Variance Table
+## 
+## Response: Trips
+##            Df     Sum Sq    Mean Sq F value    Pr(&gt;F)    
+## TMP         1 2.1171e+09 2117129482  75.324 &lt; 2.2e-16 ***
+## Residuals 779 2.1895e+10   28107095                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+### ANOVA
+
+- But how do we use it as a formal test?
+
+--
+- If our model (our predictor) is not helpful in explaining the `\(y\)`, then likely `\(\beta_1=0\)`
+
+--
+- We can use the sum of squares to test:
+  - `\(H_0:\beta_1=0\)`
+  - `\(H_A:\beta_1 \neq 0\)`
+
+--
+- **Test statistic** is:
+
+`$$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}$$`
+Where 
+- `\(SS_R\)` has 1 degree of freedom `\(df_R=1\)`
+- `\(SS_E\)` has n-2 degree of freedom `\(df_E=n-2\)`
+
+--
+- Under the null:
+
+`$$F_{test} \sim F_{1,n-2}$$`
+And we reject if `\(F_{test}&gt;F_{1-\alpha,1,n-2}\)` (when `\(F_{test}\)` is large)
+
+---
+### ANOVA
+Whether `\(\beta_1=0\)` or `\(\beta_1 \neq 0\)`:
+
+`$$E(\frac{SS_E}{df_E})=E(\frac{\sum e^2}{n-2})=\sigma^2$$`
+And it's distributed as:
+`$$\frac{SS_E}{σ^2} \sim \chi_{n-2}$$`
+
+Only if null is true ( `\(\beta_1=0\)` ), then: 
+
+`$$E(\frac{SS_R}{df_R})=E(\frac{\sum(\hat{y}-\bar{y})^2}{1})=\sigma^2$$`
+And it's distributed as:
+`$$\frac{SS_R}{σ^2}  \sim \chi_{1}$$`
+
+---
+### ANOVA
+
+Hence, under the null:
+
+`$$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}\sim F_{1,n-2}$$`
+--
+
+But if the alternative is true, then:
+
+`$$E(SS_R)=\sigma^2+\beta_1^2S_{xx}$$`
+So typically, when null is not true, nominator will be larger than the denominator
+- Hence the `\(F_{Stat}\)` would be large
+
+--
+Intuition:
+  - When model is good at explaining `\(y\)` the explained part is larger than the unexplained part
+
+--
+- We can calculate p-value in the usual way:
+
+`$$p-value=P(F_{1,n-2} \geq F_{test})$$`
+---
+### F-test
+
+I will not discuss an alternative way to interpret this test, which we will use in other tests
+
+- Let's rewrite the **F-test** in the following way:
+
+`$$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}=\frac{\frac{SS_T-SS_E}{df_T-df_E}}{\frac{SS_E}{df_E}}$$`
+--
+
+Think about two models trying to explain `\(y\)`
+- Our model with `\(x_i\)` `\(\hat{y_i}=\hat{\beta_0}+\hat{\beta_1} x_i\)` (call it .blue[full model])
+  - The unexplained part is measured by `\(SS_E=\sum(y_i-\hat{y_i})\)`
+
+--
+- Just intercept model `\(\hat{y_i}=\hat{\beta_0}=\bar{y}\)` (call it .blue[restricted model])
+  - The unexplained part is measured by `\(SS_T=\sum(y_i-\bar{y_i})\)`
+
+--
+- Hence `\(\frac{SS_T-SS_E}{df_T-df_E}\)` measures by how much we decrease the unexplained part going from the reduced model to the full model
+  - If it's big, it means the full model is good, and we would reject the restricted model
+
+---
+
+### F-test
+
+- With one regressor, comparing model with regressor to model with just intercept is equivalent to ANOVA
+
+
+--
+- In this special case, `\(F_{test}=T_{test}^2\)`,  where `\(T_{test}\)` is test for the null that the `\(\beta_1=0\)`. 
+
+--
+- With more than one regressor, we will see later, we can test whether adding predictors is helpful in explaining the variation in `\(y\)`
+
+
+---
+
+### Exercise:
+
+From the ANOVA table of a simple linear regression model fitted with 15 observations,
+we recovered the sums of squares of the residuals and the total sum of squares; namely, `\(SS_E\)` = 52 and `\(SS_T\)` = 152.
+Using the F-test statistic, validate the significance of the regression at the 5% level. Make
+The entire test approach is made explicit: hypothesis, rejection region, test statistic and its
+conclusion. Use 4 decimal places.
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

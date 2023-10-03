@@ -108,7 +108,7 @@ Where:
   - $\beta_0$ and $\beta_1$ are parameters
   - $\beta_1$ tells you how $y_i$ changes (on average) when we change $x_i$ by one unit
   - $\beta_0$ is intercept, where the line cuts y axis
-  - $u_i$ is a random error term
+  - $u_i$ is a random error term (unknown)
 
 ---
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
@@ -150,7 +150,7 @@ $$y_i=\beta_0+\beta_1x_i+u_i$$
 
 Assumptions: 
 0. Model is linear in the parameter and with additive error term
-1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+beta_1x_0$
+1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+\beta_1x_0$
 2. $E(u_i|x)=0$
 3. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
 4. $cov(u_i,u_j)=0$
@@ -544,7 +544,7 @@ Here is a couple of cool useful properties of OLS. Let's derive them:
 
 - $\sum e_i=\sum(y_i-\hat{y_i})=0$
 - $\sum y_i=\sum\hat{y_i}$
-- $\hat{y_i}(x_i=0)=0*\hat{\beta_1}+\hat{\beta_0}=\hat{\beta_0}$
+- $\hat{y_i}|(x_i=0)=0*\hat{\beta_1}+\hat{\beta_0}=\hat{\beta_0}$
 - $\sum x_ie_i=0$
 - $\sum \hat y_i e_i=0$
 - $var(e_i)=\frac{(y_i-\hat{y_i})^2}{n-2}=\frac{SSE}{n-2}$

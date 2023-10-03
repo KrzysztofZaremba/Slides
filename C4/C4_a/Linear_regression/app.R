@@ -26,19 +26,16 @@ server <- function(input, output) {
     y <- 3 + x * input$slope + input$variance * rnorm(length(x))
     data.frame(x, y)
   })
-  
   output$regressionPlot <- renderPlotly({
+    fit <- lm(y ~ x, data = data())  # Find the least squares line
+    data <- data()
     
-    
-    fit <- lm(y ~ x, data=data())  # Find the least squares line
-    data=data()  
     # Calculate axis limits
     max_range <- max(range(data$x, data$y))
     x_limits <- c(-10, 10)
     y_limits <- c(-15, 20)
     aspect_ratio <- diff(y_limits) / diff(x_limits)
     
-    data=data()  
     # Create the plot for SSE
     p <- plot_ly(data(), x = ~x, y = ~y, type = "scatter", mode = "markers", marker = list(size = 8, opacity = 0.8)) %>%
       add_trace(x = data$x, y = predict(fit), type = "scatter", mode = "lines", line = list(color = "blue")) %>%
@@ -79,11 +76,13 @@ server <- function(input, output) {
       deviation
     })
     
-    # Calculate and add the sum of squares to the plot
+    # Calculate and add the sum of squares and R-squared to the plot
     sse <- sum(fit$residuals^2)
+    rsquared <- 1 - (sse / sum((data$y - mean(data$y))^2))  # Calculate R-squared
+    
     p <- p %>% layout(shapes = c(squares, deviations)) %>%
       add_text(
-        text = paste("SSE:", round(sse, 2)),
+        text = paste("SSE:", round(sse, 2), "<br>R-squared:", round(rsquared, 2)),
         x = -8,
         y = 18,
         showarrow = FALSE,
@@ -158,7 +157,7 @@ server <- function(input, output) {
   })
 }
 
-?add_text()
+
 
 # Run the Shiny app
 shinyApp(ui = ui, server = server)

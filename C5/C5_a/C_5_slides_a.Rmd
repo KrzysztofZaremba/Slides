@@ -1,0 +1,262 @@
+---
+title: 'Class 4a: Simple Linear Regression'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(dplyr)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(hrbrthemes)
+library(gridExtra)
+library(cowplot)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(kableExtra)
+library(DT)
+
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+library(MASS) # for truehist function
+```
+---
+## Roadmap
+
+
+### This set of classes
+- What is a multiple linear regression
+
+
+---
+
+Motivation example
+
+
+AGE
+ (clave de edad)
+GENDER
+Hora_ingreso?
+MOTATE 0 motivo de urgencia
+Number of other people at the urent care at the same facility
+
+Outcome - tiempo estancia
+
+
+show how the data looks like
+
+---
+
+Then show the equation and explains how it relates to the example
+
+-interpretation - holding x2 constant!
+
+---
+
+Give another example on what could be the equation - or ask them.
+
+Show an estimated example 
+
+
+
+---
+
+simulate data with 2 variables and one outcome
+
+plot it on the 3d graphs (or do an app where they have to guess again)
+
+
+---
+
+
+Now imagine many more variable 
+- can't vizualize it on the plot like that, but there will be other ways to do it. 
+
+
+
+---
+
+How do we estimate the parameters?
+
+The same idea, we fit the line
+
+We want to choose them so to minimize the estimation error
+
+
+---
+ 
+Minimization problem 
+
+and solviing multiple equations
+
+---
+
+Easier to solve in a matrix form
+
+Show in the matrix form
+
+I give you x'x and x'y and calculate beta 
+
+---
+
+error estimation
+hat matrix, error matrix
+
+
+---
+
+tos] Sea el modelo de regresi´on lineal m´ultiple dado por
+y = Xβ + 
+con los supuestos de de Gauss-Markov, entonces muestre que
+yˆ
+0
+yˆ = βˆ0X0
+y
+
+
+---
+
+Show with an example how it works, matrix by matrix 
+
+---
+
+or just plug into R
+
+
+---
+
+
+geometrical interpration
+
+
+---
+
+---
+
+properties of oLS
+
+unbiased, variance, covariance
+
+---
+
+INdicator dummy, categorical variables
+
+- interpretation!
+
+13. Para analizar la discriminaci´on salarial en una empresa se estim´o el siguiente modelo con 42 observaciones:
+ln(SALi) = 1.5 − 0.08ln(EDi) − 0.05ln(EXi) + 0.03Hi + 0.02Pi + 0.03HiPi
+donde SALi es el salario del trabajador, EDi y EXi su educaci´on y experiencia en a˜nos, respectivamente,
+Hi una variable dicot´omica que toma el valor de 1 si el individuo es hombre y 0 si es mujer, y Pi una
+variable dicot´omica que toma el valor de 1 si el individuo posee un posgrado y 0 si no.
+a) Si adem´as se sabe que todos los coeficientes estimados son estad´ısticamente distintos de cero,
+interprete el ajuste en t´erminos de si existe presencia de discriminaci´on salarial por g´enero al
+tener distintos grados de estudio.
+b) Determine el nivel de salario medio que esperar´a que tenga una mujer con 10 a˜nos de educaci´on,
+5 de experiencia y que no posee un posgrado.
+
+
+
+---
+
+Interactions?
+
+---
+
+Model with squared variable (and powers)
+
+---
+
+It's all about partial correlation, ou cannot look at correlations separately!
+  - correlation with the error, controlling for something and its effect
+
+So for instance salary on some correlated variables. Once I keep constant one of them, the second one is not going to change much! 
+
+
+---
+
+
+r squared
+
+
+---
+
+Hypothesis testing/confidence intervals, same as before. easy once we know variance and expectation
+
+
+
+---
+test for single coefficient
+
+
+---
+
+test for significance of the regression
+F-test or ANOVa... does it include beta0 or not?
+
+testing (subsets) multiple linear restrictions
+
+example
+
+
+---
+
+testing equality of coefficients
+- can't be multicolinear
+
+---
+
+CI for regression coefficients
+
+
+CI for mean response
+
+CI for prediction of new observations
+
+---
+Comparing coefficients - standarized regression coefficients
+

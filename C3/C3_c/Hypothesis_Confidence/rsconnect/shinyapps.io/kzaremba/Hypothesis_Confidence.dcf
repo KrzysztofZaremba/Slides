@@ -1,0 +1,12 @@
+name: Hypothesis_Confidence
+title: Hypothesis_Confidence
+username: kzaremba
+account: kzaremba
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10028517
+bundleId: 7745064
+url: https://kzaremba.shinyapps.io/Hypothesis_Confidence/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

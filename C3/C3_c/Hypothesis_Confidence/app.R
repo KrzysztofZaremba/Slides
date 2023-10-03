@@ -1,0 +1,107 @@
+library(shiny)
+
+
+ui <- fluidPage(
+  
+  titlePanel("Significance, Test Statistic, and Confidence Intervals"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("alpha", "Significance Level of the test:", min = 0.01, max = 0.10, value = 0.05, step = 0.01),
+      sliderInput("confidence", "Confidence Level of Confidence Interval:", min = 0.7, max = 0.99, value = 0.95, step = 0.01),
+      sliderInput("mean", "Sample Mean:", min = 5, max = 9, value = 7, step = 0.1),
+      sliderInput("sigma", "Sigma (Standard Deviation):", min = 1, max = 10, value = 5),
+      sliderInput("n", "Sample Size (n):", min = 10, max = 1000, value = 100, step = 10),
+      
+      # Description of how the app works
+      htmlOutput("app_description")
+    ),
+    
+    mainPanel(
+      HTML("Suppose that we are testing <h4>H<sub>0</sub>: μ = 7 vs H<sub>a</sub>: μ ≠ 7</h4>"),
+      plotOutput("plot1", height = "300px"),
+      plotOutput("plot2", height = "300px"),
+      plotOutput("plot3", height = "200px"),
+      HTML("Note that when Confidence Level of confidence interval is 1-α, then the distance between
+           sample mean and the interval is the same as the distance between μ under null and critical region. 
+           So if mean is in the rejection region for test α, the confidence interval of this mean (with confidence 1-α)
+           will not contain the null hypothesis.")
+    )
+  )
+)
+
+
+
+server <- function(input, output) {
+  mu_null <- 7
+  
+  output$app_description <- renderUI({
+    HTML("<p>This Shiny app allows you to explore the significance, test statistic, and confidence intervals in hypothesis testing.</p>
+          <p>Adjust the sliders to set the significance level, confidence level, sample mean, standard deviation, and sample size.</p>
+          <p>The app will visualize the distribution of the test statistic under the null hypothesis, the distribution of the sample mean under the null hypothesis, and the confidence interval for the sample mean.</p>
+          <p>Observe how the test statistic relates to the significance level and how the confidence interval is constructed based on your input parameters.</p>")
+  })
+  
+  output$plot1 <- renderPlot({
+    curve(dnorm(x), xlim = c(-4, 4), main = "Distribution of the Test Statistic under Null", yaxs = "i", xlab = "Test Statistic", ylab = "", lwd = 2, axes = F)
+    
+    z_alpha_2 <- qnorm(1 - input$alpha/2)
+    axis(1, at = c(-z_alpha_2, 0, z_alpha_2), padj = 0.75, labels = c(round(-z_alpha_2, 3), 0, round(z_alpha_2, 3)))
+    
+    polygon(x = c(z_alpha_2, seq(z_alpha_2, 4, 0.01), 4),
+            y = c(0, dnorm(seq(z_alpha_2, 4, 0.01)), 0), col = "steelblue", border = NA)
+    polygon(x = c(-4, seq(-4, -z_alpha_2, 0.01), -z_alpha_2),
+            y = c(0, dnorm(seq(-4, -z_alpha_2, 0.01)), 0), col = "steelblue", border = NA)
+    
+    test_statistic <- (input$mean - mu_null) / (input$sigma / sqrt(input$n))
+    abline(v = test_statistic, col = "red", lwd = 2)
+    text(test_statistic, 0.3, labels = round(test_statistic, 2), pos = 4)
+  })
+  
+  
+
+  
+  output$plot2 <- renderPlot({
+    sigma <- input$sigma / sqrt(input$n)
+    curve(dnorm(x, mean = mu_null, sd = sigma), xlim = c(5, 9), main = "Distribution of Sample Mean under Null", yaxs = "i", xlab = "Sample Mean", ylab = "", lwd = 2, axes = F)
+    z_alpha_2 <- qnorm(1 - input$alpha/2)
+    z_alpha_2 <- round(z_alpha_2, 3)
+    label1 <- paste0("7 - ", z_alpha_2, " * ", "sigma/sqrt(n)")
+    label2 <- paste0("7 + ", z_alpha_2, " * ", "sigma/sqrt(n)")
+    
+    axis(1, 
+         at = c(7-z_alpha_2*sigma, 7, 7+z_alpha_2*sigma), 
+         padj = 0.75, 
+         labels = c(parse(text=label1), 7, parse(text=label2))
+    )
+    
+    polygon(x = c(mu_null + z_alpha_2 * sigma, seq(mu_null + z_alpha_2 * sigma, 9, 0.01), 9),
+            y = c(0, dnorm(seq(mu_null + z_alpha_2 * sigma, 9, 0.01), mean = mu_null, sd = sigma), 0), col = "steelblue", border = NA)
+    polygon(x = c(mu_null - z_alpha_2 * sigma, seq(mu_null - z_alpha_2 * sigma, 5, -0.01), 5),
+            y = c(0, dnorm(seq(mu_null - z_alpha_2 * sigma, 5, -0.01), mean = mu_null, sd = sigma), 0), col = "steelblue", border = NA)
+    
+    abline(v = input$mean, col = "red", lwd = 2)
+    text(input$mean, 0.3, labels = round(input$mean, 2), pos = 4)
+  })
+  
+  
+  output$plot3 <- renderPlot({
+    lower_bound <- input$mean - qnorm((1 + input$confidence)/2) * input$sigma/sqrt(input$n)
+    upper_bound <- input$mean + qnorm((1 + input$confidence)/2) * input$sigma/sqrt(input$n)
+    
+    color <- ifelse(lower_bound <= mu_null & upper_bound >= mu_null, "green", "red")  # Determine the color based on the confidence interval
+    
+    plot(1, xlim = c(5, 9), ylim = c(0, 1), type = "n", axes = F, ann = F)
+    segments(lower_bound, 0.5, upper_bound, 0.5, col = color, lwd = 2)  # Apply the color here
+    points(c(lower_bound, upper_bound), rep(0.5, 2), pch = 19, cex = 1.5, col = color)  # Apply the color here
+    points(c(input$mean), 0.5, pch = 15, cex = 2)
+    
+    distance_left <- input$mean - lower_bound
+    distance_right <- upper_bound - input$mean
+    text(input$mean - distance_left/2, 0.6, labels = bquote(.(round(qnorm((1 + input$confidence)/2), 3)) * sigma/sqrt(n)), cex = 1.2)
+    text(input$mean + distance_right/2, 0.6, labels = bquote(.(round(qnorm((1 + input$confidence)/2), 3)) * sigma/sqrt(n)), cex = 1.2)
+  })
+  
+}
+
+shinyApp(ui = ui, server = server)

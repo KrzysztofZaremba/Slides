@@ -1368,9 +1368,9 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
 
 
 .blue[Alternative hypothesis] and their **rejection regions**:
-- $\small H_A: \rho(C,P) \neq 0$ - reject $\small H_0$ if $\small t_{test}>t_{\frac{\alpha}{2},n-2}$ or $\small t_{test}<-t_{\frac{\alpha}{2},n-2}$
-- $\small H_A: \rho(C,P)>0$  - reject $\small H_0$ if $\small t_{test}>t_{\alpha,n-2}$
-- $\small H_A: \rho(C,P)<0$  - reject $\small H_0$ if $\small t_{test}<t_{\alpha,n-2}$
+- $\small H_A: \rho(C,P) \neq \rho_0$ - reject $\small H_0$ if $\small t_{test}>t_{\frac{\alpha}{2},n-2}$ or $\small t_{test}<-t_{\frac{\alpha}{2},n-2}$
+- $\small H_A: \rho(C,P)>\rho_0$  - reject $\small H_0$ if $\small t_{test}>t_{\alpha,n-2}$
+- $\small H_A: \rho(C,P)<\rho_0$  - reject $\small H_0$ if $\small t_{test}<-t_{\alpha,n-2}$
 
 ---
 ### Correlation test

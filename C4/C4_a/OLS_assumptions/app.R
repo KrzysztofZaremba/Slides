@@ -2,14 +2,15 @@ library(shiny)
 library(ggplot2)
 
 ui <- fluidPage(
-  titlePanel("Linear Regression with Error Terms"),
+  titlePanel("Linear Regression with Error Terms and OLS Assumptions"),
   tabsetPanel(
     tabPanel("Uncorrelated Errors",
              sidebarLayout(
                sidebarPanel(
-                 actionButton("add_errors", "Add 100 Error Terms"),
+                 actionButton("add_errors", "Add 100 Uncorrelated Errors"),
                  actionButton("reset_errors", "Reset"),
-                 textOutput("regression_formula")
+                 textOutput("regression_formula"),
+                 helpText("This tab demonstrates linear regression with uncorrelated errors, which is consistent with the OLS assumptions. In OLS, we assume that errors are uncorrelated with x and have a mean of zero. Click 'Add Errors' to add 100 uncorrelated errors.")
                ),
                mainPanel(
                  plotOutput("regression_plot"),
@@ -18,12 +19,13 @@ ui <- fluidPage(
                )
              )
     ),
-    tabPanel("Uncorrelated Errors - non - 0 expectations",
+    tabPanel("Uncorrelated Errors - Non-zero Expectations",
              sidebarLayout(
                sidebarPanel(
-                 actionButton("add_errors2", "Add 100 Error Terms "),
+                 actionButton("add_errors2", "Add 100 Uncorrelated Errors with Non-zero Expectations"),
                  actionButton("reset_errors2", "Reset"),
-                 textOutput("regression_formula2")
+                 textOutput("regression_formula2"),
+                 helpText("This tab demonstrates linear regression with uncorrelated errors and non-zero expectations. The errors are still uncorrelated with x but are generated with non-zero means. In OLS, we assume that errors have a mean of zero. Click 'Add Errors' to add 100 such errors.")
                ),
                mainPanel(
                  plotOutput("regression_plot2"),
@@ -35,9 +37,10 @@ ui <- fluidPage(
     tabPanel("Correlated Errors",
              sidebarLayout(
                sidebarPanel(
-                 actionButton("add_correlated_errors", "Add 100 Error Terms"),
+                 actionButton("add_correlated_errors", "Add 100 Correlated Errors"),
                  actionButton("reset_correlated_errors", "Reset"),
-                 textOutput("correlated_regression_formula")
+                 textOutput("correlated_regression_formula"),
+                 helpText("This tab demonstrates linear regression with correlated errors. The errors are generated with a positive correlation with the predictor variable 'x.' This violates the OLS assumption. In OLS, we assume that errors are independent of X. Click 'Add Errors' to add 100 correlated errors.")
                ),
                mainPanel(
                  plotOutput("correlated_regression_plot"),
@@ -54,15 +57,12 @@ server <- function(input, output, session) {
   data_df <- data.frame(x = seq(-120, 120), y = 0.5 * seq(-120, 120))
   
   # Initialize reactiveValues for uncorrelated errors
-  rv_uncor <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)),
-                             )
+  rv_uncor <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)))
   
-  rv_uncor2 <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)),
-  )
+  rv_uncor2 <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)))
   
   # Initialize reactiveValues for correlated errors
-  rv_cor <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)),
-                          )
+  rv_cor <- reactiveValues(error_terms = data.frame(x = numeric(0), y = numeric(0), error = numeric(0)))
   
   # Function to calculate regression formula
   calculate_regression_formula <- function(data_df, errors) {
@@ -73,20 +73,20 @@ server <- function(input, output, session) {
   observeEvent(input$add_errors, {
     # Generate 100 uncorrelated error terms with a normal distribution (mean = 0, sd = 10)
     new_errors <- data.frame(x = rnorm(241, mean = 0, sd = 10), y = rnorm(241, mean = 0, sd = 10))
-
+    
     # Calculate the error as y - 0.5x
     new_errors$error <- new_errors$y 
-
+    
     # Add the error terms to the regression line to create new x-values
     new_x <- data_df$x + new_errors$x
     new_data <- data.frame(x = new_x, y = data_df$y + new_errors$error, error = new_errors$error)
-   
+    
     # Combine new_derrorta with existing error_terms
     rv_uncor$error_terms <- rbind(rv_uncor$error_terms, new_data)
     
     avg_error <- mean(rv_uncor$error_terms$error)
     # Calculate and accumulate the average of errors
-
+    
     # Update the scatterplot
     output$regression_plot <- renderPlot({
       plot <- ggplot() +
@@ -121,7 +121,7 @@ server <- function(input, output, session) {
     # Display regression formula
     output$regression_formula <- renderText({
       coef <- calculate_regression_formula(data_df, rv_uncor$error_terms$error)
-      paste("Regression Formula: y =b0+b1*x + e")
+      paste("Regression Formula: y = b0 + b1 * x + e")
     })
   })
   
@@ -176,7 +176,7 @@ server <- function(input, output, session) {
     # Display regression formula
     output$regression_formula2 <- renderText({
       coef <- calculate_regression_formula(data_df, rv_uncor2$error_terms$error)
-      paste("Regression Formula: y =b0+b1*x + e")
+      paste("Regression Formula: y = b0 + b1 * x + e")
     })
   })
   
@@ -230,7 +230,7 @@ server <- function(input, output, session) {
     })
     
     # Calculate and display the average of errors
-   
+    
     output$correlated_avg_errors <- renderText({
       paste("Average Error:", round(avg_error, 3))
     })
@@ -238,7 +238,7 @@ server <- function(input, output, session) {
     # Display regression formula
     output$correlated_regression_formula <- renderText({
       coef <- calculate_regression_formula(data_df, rv_cor$error_terms$error)
-      paste("Regression Formula: y =b0+b1* x + e")
+      paste("Regression Formula: y = b0 + b1 * x + e")
     })
   })
   
@@ -250,4 +250,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-
