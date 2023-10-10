@@ -547,7 +547,7 @@ Here is a couple of cool useful properties of OLS. Let's derive them:
 - $\hat{y_i}|(x_i=0)=0*\hat{\beta_1}+\hat{\beta_0}=\hat{\beta_0}$
 - $\sum x_ie_i=0$
 - $\sum \hat y_i e_i=0$
-- $var(e_i)=\frac{(y_i-\hat{y_i})^2}{n-2}=\frac{SSE}{n-2}$
+- $var(e_i)=\frac{\sum_i(y_i-\hat{y_i})^2}{n-2}=\frac{SSE}{n-2}$
 
 
 ---
@@ -1054,7 +1054,7 @@ cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i
 ---
 ### Uncertainty in the Estimate
 
-- $\beta_0$ and $\beta_1$ are estimators
+- $\hat{\beta}_0$ and $\hat{\beta}_1$ are estimators
 
 --
 
@@ -1107,7 +1107,7 @@ Because $x_i$ don't change: $var(y_i)=var(\beta_0+\beta_1x_i+u_i)=var(u_i)=\sigm
 And:
 
 $$\begin{align*}
-\text{Var}(\hat{\beta}_0) & =\text{Var}(\bar{y}-\beta_1\bar{x})=\text{Var}(\bar{y})+\bar{x}^2\text{Var}(\hat{\beta}_1)-2\bar{x}\underbrace{cov(\bar{y},\hat{\beta}_1)}_{0} \\
+\text{Var}(\hat{\beta}_0) & =\text{Var}(\bar{y}-\hat{\beta}_1\bar{x})=\text{Var}(\bar{y})+\bar{x}^2\text{Var}(\hat{\beta}_1)-2\bar{x}\underbrace{cov(\bar{y},\hat{\beta}_1)}_{0} \\
 &=\frac{\sigma^2}{n}+\bar{x}^2\frac{\sigma^2}{S_{xx}}=\sigma^2({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})
 \end{align*}$$
 
@@ -1278,7 +1278,7 @@ Given that
   
 We can derive the following distributions: 
 
-$$\hat{\beta_1} \sim N\left(\beta_1,\frac{\sigma^2}{S_{xx}}\right) \qquad and  \qquad \hat{\beta_0} \sim N\left(\beta_0,\sigma^2({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})\right)$$
+$$\hat{\beta_1} \sim N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right) \qquad and  \qquad \hat{\beta_0} \sim N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
 --
 
 Furthermore:
@@ -1430,7 +1430,7 @@ summary(lm_model)
 ### Confidence Intervals
 
 **Average response**:
-What would be average number of rides on days with temperatyre of 30C?
+What would be average number of rides on days with temperature of 30C?
 $$ (\bar{y}|x=x_0)=\hat{\beta_0}+\hat{\beta_1}x $$
 --
 What's the expectation?
@@ -1490,7 +1490,7 @@ predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.
 
 $$\text{Number of hairs/}cm^2=\hat{\beta}_0+\hat{\beta}_1\text{Amount of drug in mg}$$
 - For now, you were only giving doses between 1-25mg. You want to increase dosage to 30mg.
-- You can have to types of confidence intervals
+- You can have two types of confidence intervals
 
 
 

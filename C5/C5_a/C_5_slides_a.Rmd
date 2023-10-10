@@ -1,5 +1,5 @@
 ---
-title: 'Class 4a: Simple Linear Regression'
+title: 'Class 5a: Multiple Linear Regression'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
@@ -64,6 +64,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(ggplot2)
 library(dplyr)
 library(MASS) # for truehist function
+load("URG_Sample.Rda")
 ```
 ---
 ## Roadmap
@@ -74,148 +75,1042 @@ library(MASS) # for truehist function
 
 
 ---
+### Motivation
 
-Motivation example
+- Suppose that you are administering a hospital
+- You need to know how many doctors, nurses and beds you need
+- So you want to predict how long a patient will stay at the urgent care
+
+--
+- You collect the data on 
+    - The Duration of the visit
+    - The type of patient
+    - How many other people there are currently at urgent care
+    - What kind of problem they came with
+    - What type of bed they got
+
+--
+- If we know these factors, can we predict how long patient will stay?
+
+---
+### Data
 
 
-AGE
- (clave de edad)
-GENDER
-Hora_ingreso?
-MOTATE 0 motivo de urgencia
-Number of other people at the urent care at the same facility
-
-Outcome - tiempo estancia
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
 
 
-show how the data looks like
+# Display the data table
+datatable(Sample_urg,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 10,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
 
 ---
 
-Then show the equation and explains how it relates to the example
+### Multiple linear regression
 
--interpretation - holding x2 constant!
+Suppose that the outcome $y_i$ (duration) is a linear function of $x_1$ (occupancy) and $x_2$ (age)
+
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+u_i$$
+- $\beta_0$ represents the value of $y_i$ when $x_1$ and $x_2$ are 0. 
+- $\beta_1$ represents the change in $y_i$ while changing $x_1$ by one unit and keeping $x_2$ constant
+- $\beta_2$ represents the change in $y_i$ while changing $x_2$ by one unit and keeping $x_1$ constant
+
+---
+### Multiple linear regression
+
+100 observations simulated from an a regression line:
+$$y_i=5+2x_{i1}+1x_{i2}+u_i$$
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='80%'}
+
+library(plotly)
+library(reshape2)
+
+# Simulate your data
+set.seed(123)
+n <- 100
+x1 <- rnorm(n)
+x2 <- rnorm(n)
+u <- rnorm(n)
+y <- 5 + 2 * x1 + x2 + u
+my_df <- data.frame(x1 = x1, x2 = x2, y = y)
+
+# Fit a multiple linear regression model
+# Load the necessary packages for 3D plotting
+lm_model <- lm(y ~ x1 + x2, data = my_df)
+
+# Create a grid of values for x1 and x2
+x1_grid <- seq(min(my_df$x1), max(my_df$x1), length.out = 50)
+x2_grid <- seq(min(my_df$x2), max(my_df$x2), length.out = 50)
+grid_data <- expand.grid(x1 = x1_grid, x2 = x2_grid)
+
+# Predict y values using the regression model
+grid_data$y_pred <- predict(lm_model, newdata = grid_data)
+
+# Convert the grid data to a matrix for persp plot
+z_matrix <- matrix(grid_data$y_pred, nrow = length(x1_grid), ncol = length(x2_grid), byrow = TRUE)
+
+# Create the base 3D scatter plot (points)
+plot_ly(my_df, x = ~x1, y = ~x2, z = ~y, text = ~paste("x1:", round(x1,2), "<br>x2:", round(x2,2), "<br>y:", round(y,2)),
+        hoverinfo = 'text',
+        type = "scatter3d", mode = "markers", height = 400) %>%
+  layout(scene = list(aspectmode = "cube")) %>%
+
+# Add the surface using persp
+  add_surface(z = ~z_matrix, x = x1_grid, y = x2_grid, 
+        hoverinfo = 'text',
+        type = "surface", opacity = 0.6, text = ~paste("x1:", x1_grid, "<br>x2:", x2_grid, "<br>y_pred:", z_matrix))
+```
+
+
+---
+### Multiple linear regression
+
+100 observations simulated from an a regression line: $$y_i=5+2x_{i}-1x_i^2+u_i$$
+```{r, warning=FALSE,message=FALSE,fig.height=4, out.width='100%'}
+set.seed(123)
+
+# Number of data points
+n <- 100
+
+# Generate random values for x1, x, and u
+x1 <- rnorm(n)
+x <- rnorm(n, mean=1, s=3)
+u <- rnorm(n, s=10)
+
+# Generate y using the given equation
+y <- 5 + 2 * x1 - x^2 + u
+
+# Create a data frame
+data <- data.frame(y, x1, x)
+
+# Perform linear regression
+lm_model <- lm(y ~ x1 + I(x^2), data=data)
+
+# Print the summary of the regression
+
+# Load the ggplot2 library
+library(ggplot2)
+
+# Create a scatter plot with regression line
+ggplot(data, aes(x = x, y = y)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), se = FALSE, color = "blue") +
+  theme_xaringan()
+
+```
+
+
+---
+### Multiple linear regression
+
+Suppose that: 
+$$x_1 = \begin{cases}
+    1 & \text{if female} \\
+    0 & \text{if male}
+\end{cases}$$
+
+100 observations simulated from an a regression line: $$y_i=5+2x_{i1}-1x_{i2}+u_i$$
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='100%'}
+set.seed(123)
+
+# Number of data points
+n <- 100
+
+# Generate random values for x1, x2, and u
+x1 <- sample(c(0, 1), n, replace = TRUE)  # Binary variable (0 or 1)
+x2 <- rnorm(n)
+u <- rnorm(n)
+
+# Generate y using the given equation
+y <- 5 + 2 * x1 - x2 + u
+
+# Create a data frame
+data <- data.frame(y, x1, x2)
+
+# Load the ggplot2 library
+library(ggplot2)
+
+# Separate data for males and females
+data_male <- subset(data, x1 == 0)
+data_female <- subset(data, x1 == 1)
+
+# Create a scatter plot with parallel regression lines for males and females
+plot <- ggplot(data, aes(x = x2, y = y, color = factor(x1))) +
+  geom_point() +
+  labs( x = "x2",
+       y = "y",
+       color = "x1") +
+  scale_color_manual(values = c("0" = "blue", "1" = "red")) +
+  
+  # Add parallel regression lines for males and females
+  geom_line(data = data, aes(x = x2, y = 5 + 2 * 0 - x2), color = "blue") +
+  geom_line(data = data, aes(x = x2, y = 5 + 2 * 1 - x2), color = "red")+
+  theme_xaringan()
+
+  
+  plot
+```
+
+
+
+---
+### Multiple linear regression
+
+
+Now imagine a regression with k variables:
+
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_kx_{ik}+u_i$$
+- Maybe you are trying to predict customer spending based on what they looked at and $x_{ij}$ represent how long customer $i$ looked at item $j$
+
+--
+- Maybe you are trying to predict sales in a store $i$, and $x_{ij}$ represent prices of the products, their competitors' products, how many people live around and how rich are they etc...
+
+--
+- We can no longer visualize it (because we can't visualize more than 3 dimensions) 
+
+---
+### Multiple linear regression
+
+We can also write it in the vector form:
+
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_k,x_{ik}+u_i$$
+In vector form is: 
+
+
+
+$$\mathbf{y}=\mathbf{X\beta}+\mathbf{u}$$
+
+<div class="math">
+\[
+\underbrace{\begin{bmatrix}
+y_1 \\
+y_2 \\
+\vdots \\
+y_n \\ \end{bmatrix}}_{\substack{\mathbf{y} \\ n \times 1}}
+=
+\underbrace{\begin{bmatrix}
+1 & x_{11} & x_{12} & ... & x_{1k} \\
+1 & x_{21} & x_{22} & ... & x_{2k}  \\
+\vdots & \vdots & \vdots & ....& \vdots \\
+1 & x_{n1} & x_{n2} & ... & x_{nk}  &  \end{bmatrix}}_{\substack{\mathbf{X} \\ n \times (k+1)}}
+
+\underbrace{\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\vdots \\
+\beta_k  \\ \end{bmatrix}}_{\substack{\mathbf{\beta} \\ (k+1) \times 1}}
++
+\underbrace{\begin{bmatrix}
+u_1 \\
+u_2 \\
+\vdots \\
+u_n  \\ \end{bmatrix}}_{\substack{\mathbf{u} \\ n \times 1}}
+\]
+</div>
+
+---
+### Full Rank
+
+Important Assumption: **X is full rank** 
+- Has same rank as the number of parameters: $p=k+1$
+- Also known as: no perfect multicolinearity
+
+--
+- .blue[Technically]: columns of X should be linearly independent
+
+--
+- .blue[Intuitively]: none of the variables are perfectly correlated. If they are perfectly correlated, then we don't need one of the columns because we can perfectly predict one column with information from another column.
+
+- Suppose that one column is income in USD, and the second one is income measured in Pesos. They are perfectly correlated. Once we know income in USD, income in Pesos does not bring any additional information. We would not be able to estimate the effect of both income in USD and income in Pesos at the same time. 
+
+<div class="math">
+\[
+\begin{array}{cc}
+\text{Full Rank Matrix:} & \text{Matrix Not of Full Rank:} \\
+\left[\begin{array}{ccc}
+1 & 2 & 3 \\
+4 & 5 & 6 \\
+7 & 8 & 9
+\end{array}\right]
+&
+\left[\begin{array}{ccc}
+1 & 2 & 4 \\
+4 & 5 & 10 \\
+7 & 8 & 16
+\end{array}\right]
+\end{array}
+\]
+</div>
+
+
+
+---
+### Multiple linear regression
+
+**Goal:**
+- Estimate the vector of parameters $\mathbf{\beta}$
+
+
+
+
+**Procedure**
+- Find 
+<div class="math">
+\[
+\mathbf{b}=\begin{bmatrix}
+b_0 \\
+b_1 \\
+\vdots \\
+b_k  \\ \end{bmatrix}
+\]
+</div>
+
+- Which minimizes the squared errors in the problem: 
+
+$$y_i=b_0+b_1x_{i1}+b_2x_{i2}+...+b_kx_{ik}+e_i$$
+- That is minimize 
+
+$$SSE=\sum_ie_i^2=\sum_i(y_i-\hat{y}_i)^2=\mathbf{e}'\mathbf{e}=(\mathbf{y-\hat{y}})'(\mathbf{y-\hat{y}})=(\mathbf{y-X\hat{\beta}})'(\mathbf{y-X\hat{\beta}})$$
+---
+### Multiple linear regression
+
+- We can do it with scalars
+
+$$\begin{align*}
+\frac{\partial SSE}{\partial \hat{\beta}_0} & = -2\sum_{i=1}^{n} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
+\frac{\partial SSE}{\partial \hat{\beta}_1} & = -2\sum_{i=1}^{n} x_{i1} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
+\vdots \\
+\frac{\partial SSE}{\partial \hat{\beta}_k} & = -2\sum_{i=1}^{n} x_{ik} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
+\end{align*}$$
+
+--
+- We have $k$ equations with $k$ unknowns. 
+
+---
+### Multiple linear regression
+
+- Or we can do it with vectors
+
+--
+- First rewrite the sum of squares:
+$$SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}$$
+
+--
+- Then minimize it with respect to $\mathbf{b}$
+
+$$\frac{\partial}{\partial \mathbf{b}}\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}=\mathbf{-2X'y}+\mathbf{2X'Xb}$$
+
+--
+- $\hat{\beta}$ is the solution of such minimization (our OLS estimator)
+
+$$\begin{align*} 
+\mathbf{-2X'y}+\mathbf{2X'X\hat{\beta}}&=0 \\
+\mathbf{X'X\hat{\beta}} & =\mathbf{X'y} \\
+\mathbf{\hat{\beta}} & =\mathbf{(X'X)^{-1}X'y}
+\end{align*}$$
+
+
+---
+### Multiple linear regression
+
+Looking more closely at the **first order condition**:
+
+<div class="math">
+\[
+\underbrace{\begin{bmatrix}
+n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
+\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2 & \ldots & \sum_{i=1}^{n} x_{i1}x_{ik} \\
+\vdots & \vdots & \ddots & \vdots \\
+\sum_{i=1}^{n} x_{ik}& \sum_{i=1}^{n} x_{ik}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik}^2\end{bmatrix}}_{\mathbf{X'X}}
+\underbrace{\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1 \\
+\vdots \\
+\hat{\beta}_k\end{bmatrix}}_{\hat{\beta}}
+=
+\underbrace{\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_{i1}y_i \\
+\vdots \\
+\sum_{i=1}^{n}x_{ik}y_i\end{bmatrix}}_{\mathbf{X'y}}
+\]
+</div>
+
+Looking more closely and it's **solution**:
+
+
+<div class="math">
+\[\underbrace{\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1 \\
+\vdots \\
+\hat{\beta}_k\end{bmatrix}}_{\hat{\beta}}
+=
+\underbrace{\begin{bmatrix}
+n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
+\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2 & \ldots & \sum_{i=1}^{n} x_{i1}x_{ik} \\
+\vdots & \vdots & \ddots & \vdots \\
+\sum_{i=1}^{n} x_{ik}& \sum_{i=1}^{n} x_{ik}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik}^2\end{bmatrix}^{-1}}_{\mathbf{(X'X)}^{-1}}
+
+\underbrace{\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_{i1}y_i \\
+\vdots \\
+\sum_{i=1}^{n}x_{ik}y_i\end{bmatrix}}_{\mathbf{X'y}}
+\]
+</div>
 
 ---
 
-Give another example on what could be the equation - or ask them.
+### Special Case: k=1
 
-Show an estimated example 
+What if we have just one $x$?
+
+<div class="math">
+\[\underbrace{\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1 \end{bmatrix}}_{\hat{\beta}}
+=
+\underbrace{\begin{bmatrix}
+n & \sum_{i=1}^{n}x_{i1} \\
+\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2\end{bmatrix}^{-1}}_{\mathbf{(X'X)}^{-1}}
 
 
+\underbrace{\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_{i1}y_i \end{bmatrix}}_{\mathbf{X'y}}
+\]
+</div>
+
+--
+<div class="math">
+\[
+\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1\end{bmatrix}
+=
+\begin{bmatrix}
+\frac{\sum^n_{i=1}x_{i1}^2}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} & \frac{-\sum_{i=1}^{n} x_{i1}}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} \\
+\frac{-\sum_{i=1}^{n} x_{i1}}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} & \frac{n}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2}\end{bmatrix}
+\begin{bmatrix}
+\sum_{i=1}^{n}y_i \\
+\sum_{i=1}^{n}x_{i1}y_i \end{bmatrix}
+\]
+</div>
+
+--
+which gives:
+
+<div class="math">
+\[
+\begin{bmatrix}
+\hat{\beta}_0 \\
+\hat{\beta}_1\end{bmatrix}
+=
+\begin{bmatrix} \bar{y}-\bar{x}_1\frac{\sum(x^2_{1i}-n\bar{y}\bar{x}_1)}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2} \\
+\frac{\sum_ix_iy_i-n\bar{x}_{1}\bar{y}}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2}\end{bmatrix}
+\]
+</div>
 
 ---
-
-simulate data with 2 variables and one outcome
-
-plot it on the 3d graphs (or do an app where they have to guess again)
-
-
----
-
-
-Now imagine many more variable 
-- can't vizualize it on the plot like that, but there will be other ways to do it. 
-
-
-
----
-
-How do we estimate the parameters?
-
-The same idea, we fit the line
-
-We want to choose them so to minimize the estimation error
-
-
----
+### Predictions
  
-Minimization problem 
+To make predictions based on the estimated regressors we use:
 
-and solviing multiple equations
+$$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_{i1}+\hat{\beta}_2x_{i2}+...+\hat{\beta}_kx_{ik}$$ 
+Or in the vector form:
+
+
+$$\mathbf{\hat{y}}=\mathbf{X\hat{\beta}}=\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{Hy}$$
+
+Where $\mathbf{H}=\mathbf{X(X'X)}^{-1}\mathbf{X}$ is called a hat matrix. 
+
+---
+### Residuals
+
+To get residuals, we calculate: 
+
+$$e_i=y_i-\hat{y}_i=y_i-\hat{\beta}_0+\hat{\beta}_1x_{i1}+\hat{\beta}_2x_{i2}+...+\hat{\beta}_kx_{ik}$$ 
+
+Or in the vector form:
+$$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{(I-H)y}$$
+---
+
+#### Example with numbers
+
+$$\small \begin{align*}
+\text{Dataset:} \\
+&\begin{array}{|c|c|c|c|}
+\hline
+\text{Student} & \text{Hours Studied (}x_1\text{)} & \text{Hours Slept (}x_2\text{)} & \text{Exam Score (}y\text{)} \\
+\hline
+1 & 3 & 8 & 80 \\
+2 & 4 & 7 & 85 \\
+3 & 6 & 6 & 92 \\
+4 & 5 & 7 & 88 \\
+\hline
+\end{array}
+\\
+\text{X matrix}: \\
+& X = \begin{bmatrix}
+1 & 3 & 8 \\
+1 & 4 & 7 \\
+1 & 6 & 6 \\
+1 & 5 & 7 \\
+\end{bmatrix}
+\\
+\text{Response Vector } (y): \\
+& y = \begin{bmatrix}
+80 \\
+85 \\
+92 \\
+88 \\
+\end{bmatrix}
+\end{align*}$$
+
+We are trying to find:
+
+$$\mathbf{\hat{\beta}} =\mathbf{(X'X)^{-1}X'y}$$
 
 ---
 
-Easier to solve in a matrix form
+#### Example with numbers
 
-Show in the matrix form
+Multiply $X'$ by $X$:
 
-I give you x'x and x'y and calculate beta 
+$$X'X = 
+\begin{bmatrix}
+1 & 1 & 1 & 1 \\
+3 & 4 & 6 & 5 \\
+8 & 7 & 6 & 7 \\
+\end{bmatrix}
+\begin{bmatrix}
+1 & 3 & 8 \\
+1 & 4 & 7 \\
+1 & 6 & 6 \\
+1 & 5 & 7 \\
+\end{bmatrix}=
+\begin{bmatrix}
+4 & 18 & 28 \\
+18 & 86 & 123 \\
+28 & 123 & 198 \\
+\end{bmatrix}$$
 
----
+Find the inverse $(X'X)^{-1}$
 
-error estimation
-hat matrix, error matrix
-
-
----
-
-tos] Sea el modelo de regresi´on lineal m´ultiple dado por
-y = Xβ + 
-con los supuestos de de Gauss-Markov, entonces muestre que
-yˆ
-0
-yˆ = βˆ0X0
-y
-
-
----
-
-Show with an example how it works, matrix by matrix 
-
----
-
-or just plug into R
-
-
----
-
-
-geometrical interpration
+$$(X'X)^{-1} = 
+\begin{bmatrix}
+474.75 & -30 & -48.5 \\
+-30 & 2 & 3 \\
+-48.5 & 3 & 5 \\
+\end{bmatrix}$$
 
 
 ---
+#### Example with numbers
+
+Next let's find $X'y$
+
+$$X'y=
+\begin{bmatrix}
+1 & 1 & 1 & 1 \\
+3 & 4 & 6 & 5 \\
+8 & 7 & 6 & 7 \\
+\end{bmatrix}
+\begin{bmatrix}
+80 \\
+85 \\
+92 \\
+88 \\
+\end{bmatrix}=
+\begin{bmatrix}
+345 \\
+1572 \\
+2403 \\
+\end{bmatrix}$$
+So, our coefficients are:
+
+
+$$\beta=\begin{bmatrix}
+\beta_0 \\
+\beta_1 \\
+\beta_2 \\
+\end{bmatrix} =
+ \underbrace{\begin{bmatrix}
+474.75 & -30 & -48.5 \\
+-30 & 2 & 3 \\
+-48.5 & 3 & 5 \\
+\end{bmatrix}}_{(X'X)^{-1}} \underbrace{\begin{bmatrix}
+345 \\
+1572 \\
+2403 \\
+\end{bmatrix}}_{X'y}=
+\begin{bmatrix}
+83.25 \\
+3 \\
+-1.5 \\
+\end{bmatrix}$$
+
+
+--
+
+**Interpretation**
+- Score with 0 hours of sleep and 0 of studying is 83.25
+- 1 more hour of studying (without changing sleep hours) increases score by 3 
+- 1 more hour of sleep (without changing study hours) decreases score by 1.5 
+
+
+---
+#### Example with numbers
+
+We can find predicted values:
+$$\hat{y}=X\hat{\beta}=
+\begin{bmatrix}
+1 & 3 & 8 \\
+1 & 4 & 7 \\
+1 & 6 & 6 \\
+1 & 5 & 7 \\
+\end{bmatrix}\begin{bmatrix}
+83.25 \\
+3 \\
+-1.5 \\
+\end{bmatrix}=
+\begin{bmatrix}
+80.25 \\
+84.75 \\
+92.25 \\
+87.75
+\\
+\end{bmatrix}$$
+And the residuals:
+$$e=y-\hat{y}=y-X\hat{\beta}=
+\begin{bmatrix}
+80 \\
+85 \\
+92 \\
+88 \\
+\end{bmatrix}-
+\begin{bmatrix}
+80.25 \\
+84.75 \\
+92.25 \\
+87.75
+\end{bmatrix}=
+\begin{bmatrix}
+-0.25 \\
+0.25 \\
+-0.25 \\
+0.25
+\end{bmatrix}$$
+
+
+
+---
+#### Example from data: 
+```{r, echo=TRUE}
+# Fit a linear regression model
+lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
 
 ---
 
-properties of oLS
+### Correlations vs Coefficients
 
-unbiased, variance, covariance
+Note, that $x_1$ and $x_2$ can both have positive correlation with $y_i$, but different coefficients!
 
----
-
-INdicator dummy, categorical variables
-
-- interpretation!
-
-13. Para analizar la discriminaci´on salarial en una empresa se estim´o el siguiente modelo con 42 observaciones:
-ln(SALi) = 1.5 − 0.08ln(EDi) − 0.05ln(EXi) + 0.03Hi + 0.02Pi + 0.03HiPi
-donde SALi es el salario del trabajador, EDi y EXi su educaci´on y experiencia en a˜nos, respectivamente,
-Hi una variable dicot´omica que toma el valor de 1 si el individuo es hombre y 0 si es mujer, y Pi una
-variable dicot´omica que toma el valor de 1 si el individuo posee un posgrado y 0 si no.
-a) Si adem´as se sabe que todos los coeficientes estimados son estad´ısticamente distintos de cero,
-interprete el ajuste en t´erminos de si existe presencia de discriminaci´on salarial por g´enero al
-tener distintos grados de estudio.
-b) Determine el nivel de salario medio que esperar´a que tenga una mujer con 10 a˜nos de educaci´on,
-5 de experiencia y que no posee un posgrado.
+- Suppose $x_1$ is study hours, $x_2$ is coffee cups drunk by a student, and $y$ is student's score on the exam. 
 
 
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='1000%'}
+library(GGally)
 
----
+# Create a dataset
+set.seed(123)
+n <- 100
+x1 <- runif(n, 0, 10)  # hours spent studying
+x2 <- x1 + rnorm(n, 0, 2)  # cups of coffee, correlated with study hours
+y <- 3 + 2*x1 + rnorm(n, 0, 2)  # exam score
 
-Interactions?
+# Create a data frame
+data <- data.frame(x1, x2, y)
+
+# Create a matrix of scatterplots
+ggpairs(data)+theme_xaringan()
+
+```
 
 ---
 
-Model with squared variable (and powers)
+### Correlations vs Coefficients
+
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='80%'}
+# Fit a linear regression model
+fit <- lm(y ~ x1 + x2, data)
+# Display the summary of the linear regression model
+summary(fit)
+
+```
+
+--
+- Why coffee has 0 impact?
+
+--
+- Because it only helps to study longer, but comparing students who study the same amount, drinking more coffee is not better. 
+---
+### OLS Properties
+
+- As usual, we asked whether it's unbiased and what is its variance.
+
+--
+
+- **Unbiased**:
+
+<div class="math">
+\[\small
+\begin{align*} 
+E(\hat{\beta}) & =E(\mathbf{(X'X)^{-1}X'y})=E(\mathbf{(X'X)^{-1}X'(X\beta+u)})) \\
+& = E(\mathbf{(X'X)^{-1}X'(X\beta+u)}))=E(\mathbf{(X'X)^{-1}X'X\beta})+E(\mathbf{(X'X)^{-1}X'u}) \\
+& = \beta+0=\beta
+\end{align*}
+\]
+</div>
+
+Where $\small E(\mathbf{(X'X)^{-1}X'u})$ if $\small E(u|X)=0$ (our usual assumption).
+
+--
+
+- **Variance**
+
+$$\small Var(\beta)=Cov(\beta)=\underbrace{\begin{bmatrix}
+var(\beta_0) & cov(\beta_0, \beta_1) & ... & cov(\beta_0, \beta_k) \\
+cov(\beta_1, \beta_0) & var(\beta_1) & ... & cov(\beta_1, \beta_k)  \\
+\vdots & \vdots & \vdots &  \vdots \\
+cov(\beta_k, \beta_0) & cov(\beta_k, \beta_1) & ... & var(\beta_k) &  \end{bmatrix}}_{\substack{ \\ (k+1) \times (k+1)}}$$
+- So it's a matrix with variance of single parameters on the diagonal and covariances off the diagonal.
+
+---
+### Variance
+
+First, note that: 
+
+$$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\beta + \mathbf{u} = \beta + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
+Let's use this
+
+<div class="math">
+\[\small
+\begin{align*} 
+var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\beta} - \mathbb{E}[\hat{\beta}])']
+ \\
+& =  \mathbb{E}[(X'X)^{-1}X'\mathbf{u} ((X'X)^{-1}X'\mathbf{u})']= (X'X)^{-1}X'\mathbb{E}[\mathbf{u}\mathbf{u}']X(X'X)^{-1}
+ \\
+& = (X'X)^{-1}X'(I\sigma^2)X(X'X)^{-1} =\sigma^2(X'X)^{-1}
+\end{align*}
+\]
+</div>
+
+--
+
+So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{kk}$$ where $(X'X)^{-1}_{kk}$ is element in $k$ row and $k$ column of $(X'X)^{-1}$ matrix.
+
+--
+
+- And standard deviation is just square root of this!
+
+--
+
+**Intuition**
+
+If we have just one regressor: $(X'X)^{-1}_{11}=\frac{1}{\sum(x_i-\bar{x})^2}$
+
+---
+### Variance
+
+- Where the hell do we get the $\sigma^2$ from?!
+
+
+--
+- Same as before: 
+
+$$\sigma^2=\frac{\sum_i e_i^2}{n-p}$$
+- Where $e_i$ is fitted residual and $p$ is number of parameters $p=k+1$
+- This is called mean squared error as well
+
+--
+
+The easiest way to compute this sum is:
+
+$$\sum_i e_i^2=\mathbf{e'}\mathbf{e}=(\mathbf{y-X\hat{\beta}})'(\mathbf{y-X\hat{\beta}})=\mathbf{y'y-\hat{\beta}'X'y}$$
 
 ---
 
-It's all about partial correlation, ou cannot look at correlations separately!
-  - correlation with the error, controlling for something and its effect
+#### Gauss Markov Theorem (Again)
 
-So for instance salary on some correlated variables. Once I keep constant one of them, the second one is not going to change much! 
+Assumptions
 
+- $E(u_i|X)=0$
+- $var(u_i)=\sigma^2$
+- $cov(u_i,u_j)=0$
+- $X$ is full rank
+
+NO NEED FOR NORMALITY
+
+
+
+**Theorem:** OLS is .blue[BLUE:] Best, Linear, Unbiased Estimator
+
+- It has the lowest variance among linear and unbiased estimators
+
+--
+
+- What's a linear estimator?
+  - It's an estimator where $\beta$ coefficients are linear functions of outcomes
+  - Anything of the form $b=Cy$ where C is p x n matrix.
+  - So $b_1=c_{11}y_1+c_{12}y_2+...+c_{13}y_3$
+  - Example $b_1=\frac{1}{n}y_1+...+\frac{1}{n}y_n$
+
+--
+
+- How is OLS linear?
+  $\hat{\beta}=Cy=\underbrace{(X'X)^{-1}X'}_{C}y$
+
+
+
+---
+
+### Categorical Variables in a Regression
+
+- Suppose we want to learn whether mode of work affects workers productivity.
+- Each worker can be in one of these 3 categories:
+  - Fully at the office
+  - Fully remote
+  - Hybrid
+
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
+
+workers <- 100  # Number of workers
+WorkMode <- factor(sample(c("Fully at the office", "Fully remote", "Hybrid"), 
+                         workers, replace = TRUE),
+                   levels = c("Fully at the office", "Fully remote", "Hybrid"))
+Productivity <- round(runif(workers, 70, 130))  # Random productivity scores between 70 and 130
+WorkerID=1:100
+
+d=data.frame(WorkerID, Productivity, WorkMode)
+
+
+
+# Display the data table
+datatable(d,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 8,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+---
+
+- How do we estimate the impact of categorical variable?
+- We turn it into a series of binary variables (or indicator variables)!
+
+$$D_{i, Remote}=\begin{cases}
+1 & WorkMode_i=Fully Remote \\
+0 & otherwise
+\end{cases}$$
+
+$$D_{i,Hybrid}=\begin{cases}
+1 & WorkMode_i=Hybrid\\
+0 & otherwise
+\end{cases}$$
+
+```{r, echo=FALSE}
+# Load the DT package
+# Your existing code
+library(DT)
+
+workers <- 100  # Number of workers
+WorkMode <- factor(sample(c("Fully at the office", "Fully remote", "Hybrid"), 
+                         workers, replace = TRUE),
+                   levels = c("Fully at the office", "Fully remote", "Hybrid"))
+Productivity <- round(runif(workers, 70, 130))  # Random productivity scores between 70 and 130
+WorkerID = 1:100
+
+d = data.frame(WorkerID, Productivity, WorkMode)
+
+# Create dummy variables for WorkMode
+dummy_vars <- model.matrix(~ WorkMode - 1, data = d)
+
+# Convert the matrix of dummy variables to a data frame
+dummy_df <- data.frame(dummy_vars)
+
+# Combine the dummy variables with your original data
+d <- cbind(d, dummy_df)
+
+# Display the updated data table with the dummy variables
+datatable(d,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+--
+- For each person, only one of these dummies is equal to 1!
+
+---
+- We will add these dummies into a regression, but not all of them!
+
+- If we have m categories, we will add m-1 dummies. Why?
+
+$$y_i=\beta_0+\beta_1D_{i1}+\beta_2D_{i2}+...+\beta_{m-1}D_{im-1}+u_i$$
+
+- In our Example:
+
+$$y_i=\beta_0+\beta_1D_{i,Hybrid}+\beta_2D_{i,Remote}+u_i$$
+--
+
+- Because otherwise X would not be full rank!
+
+<div class="math">
+\[
+\begin{array}{cc}
+\text{Full Rank Matrix:} & \text{Matrix Not of Full Rank:} \\
+\left[\begin{array}{ccc}
+1 & 1 & 0 \\
+1 & 0 & 0 \\
+1 & 0 & 1
+\end{array}\right]
+&
+\left[\begin{array}{cccc}
+1 & 1 & 0 & 0\\
+1 & 0 & 0 & 1\\
+1 & 0 & 1 & 0
+\end{array}\right]
+\end{array}
+\]
+</div>
+
+--
+
+- Intuitively, if I know that the values of $D_{i,Hybrid}$ and $D_{i,Remote}$, I know the value of $D_{i,Office}$
+- Ex: if they don't work hybrid and don't work remote, I know they work at the office
+- So including it does not bring any new information
+
+---
+
+
+- R automatically transform categorical variable to dummies and excludes one of them
+ 
+
+```{r, echo=TRUE}
+# Fit a linear regression model
+lm_model <- lm(Productivity ~ WorkMode, data = d)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+---
+
+### Interpretation of Coefficients
+
+
+
+- Coefficient on a dummy $D_1$ tells us by how much $y$ changes when we change category from the excluded one to the category 1.
+
+- In our example
+  - Excluded category is: work fully at the office - this is our comparision group
+  - $\beta_{hybrid}=6.184$: employees working in hybrid mode have on average 6.184 higher productivity score compared to the ones working at the office
+  - $\beta_{remote}=-7.256$: employees working in fully remotely have on average 7.256 lower productivity score compared to the ones working at the office
+  - The t-test on these coefficients tells us whether these differences in means across categories are significant!
+
+
+- Bottom line: the coefficients on the dummies show the average difference between $y$ in that category compared to the excluded category (holding everything else unchanged)
+
+---
+
+### Example
+
+Suppose we have a categorical variable representing education level. We run a regression of income on the education level. Interpret the coefficients. 
+
+```{r, echo=FALSE}
+# Load the DT package
+# Your existing code
+library(DT)
+
+workers <- 100  # Number of workers
+Education <- factor(sample(c("High School or less", "PhD", "Master", "Bachelor"), 
+                         workers, replace = TRUE),
+                   levels = c("High School or less", "PhD", "Master", "Bachelor"))
+Income <- round(runif(workers, 50000, 100000))  # Random productivity scores between 70 and 130
+Income[Education!="High School or less"]=Income[Education!="High School or less"]+10000
+Income[Education=="Master"]=Income[Education=="Master"]+10000
+
+
+WorkerID = 1:100
+
+d = data.frame(WorkerID, Income, Education)
+
+
+# Display the updated data table with the dummy variables
+datatable(d,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+---
+
+```{r, echo=TRUE}
+# Fit a linear regression model
+lm_model <- lm(Income ~ Education, data = d)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
 
 ---
 
@@ -224,14 +1119,158 @@ r squared
 
 
 ---
+layout: false
+class: inverse, middle
 
-Hypothesis testing/confidence intervals, same as before. easy once we know variance and expectation
-
+# Statistical Properties of OLS
 
 
 ---
-test for single coefficient
 
+### Inference
+
+- Let's add the assumption that errors are normally distributed:
+
+$$ \mathbf{u} \sim N(0,\sigma I) $$
+Which means that: 
+
+$$y \sim N(X\beta,\sigma I) $$
+
+- With inference we can:
+
+  - Do hypothesis testing on single coefficients, ex: $H_0: \beta_2=0$
+  - Find confidence intervals for a single coefficients
+  - Do hypothesis testing on multiple coefficients: ex: $H_0: \beta_1=\beta_2$
+
+
+---
+### Test for a Single Coefficient
+
+Under the above assumptions:
+
+$$\hat{\beta}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}})$$
+And 
+
+$$\hat{\beta_j}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}_{jj}})$$
+--
+Normalizing we get that:
+
+$$\frac{\hat{\beta}_j-\beta_j}{s\sqrt{(X'X)^{-1}_{jj}}} \sim t_{n-p}$$
+- This test statistic has student t distribution with n-p degrees of freedom
+  - Because the $\frac{s^2(n-p)}{\sigma^2} \sim \chi_{n-p}$
+- Where p is the number of parameters (coefficients)
+- $p=k+1$: k regressors and 1 intercept
+
+---
+### Test for a single coefficient
+
+Suppose:
+- $H_0: \beta_j=\beta_{j0}$
+- $H_A: \beta_j \neq \beta_{j0}$
+
+Then, we use test statistic:
+
+$$t_{test}=\frac{\hat{\beta}_j-\beta_{j0}}{s\sqrt{(X'X)^{-1}_{jj}}}$$
+And we reject if $t_{test}>t_{\alpha/2,n-p}$ or $t_{test}<-t_{\alpha/2,n-p}$
+
+Where $t_{\alpha/2,n-p}$ is $1-\alpha/2$ quantile of student t with n-p degrees of freedom
+---
+### Example
+
+Suppose:
+- $H_0: \beta_{Age}=0$
+- $H_A: \beta_{Age} \neq 0$
+
+```{r, echo=FALSE}
+# Fit a linear regression model
+lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+---
+### Confidence Interval for a  Single Coefficient
+
+We can also use this distribution to construct confidence intervals: 
+
+An interval for $\beta_j$ with confidence level $1-\alpha$ is:
+
+$$\begin{align*}
+CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\beta_j)\} \\
+& =\{\hat{\beta_j}-t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{jj}},\hat{\beta_j}+t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{jj}}\}
+\end{align*}$$
+
+
+--
+
+**Intepretation:**
+- We are $1-\alpha$ % confident that the true parameter is within this CI
+- If we take repeated samples, $1-\alpha$ %  of such constructed confidence intervals would contain true $\beta$
+
+---
+
+### Example:
+
+For iur age coefficient we had:
+- $\hat{\beta}_{Age}=0.206$
+- $SE(\hat{\beta})=0.067$
+- Our $n=5000$ so we can use normal approximation
+
+--
+
+So 95% CI for $\beta_{Age}$ is:
+
+$$\begin{align*}
+CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\beta_j)\} \\
+& =\{0.206-1.96*0.067,0.206+1.96*0.067\} \\
+& =\{0.075,0.337\} 
+\end{align*}$$
+
+--
+- Note that the CI does not contain 0
+- What does it imply for hypothesis testing with $H_0: \beta_{age}=0$?
+
+---
+### CI for mean response 
+
+CI for mean response
+
+$$\mathbf{x_0}=\begin{bmatrix}
+1 \\
+x_{01} \\
+x_{02}  \\
+\vdots \\
+x_{0k} \\
+\end{bmatrix}$$
+
+- here is a vector of characteristics of one individual, here is its distribution 
+
+$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$
+
+$E(\hat{y}_0)=\mathbf{x_0}'\beta$
+
+and
+
+$var(\hat{y}_0)=var(\mathbf{x_0}'\hat{\beta})=\mathbf{x_0}'var(\hat{\beta})\mathbf{x_0}=\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}$
+
+So 
+
+$\hat{y}_0 \sim N(\mathbf{x_0}'\beta, \sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}})$
+
+
+
+
+Where x_0
+
+- for a single guy it's this.
+
+
+---
+### CI for new observation
+
+CI for prediction of new observations
 
 ---
 
@@ -250,12 +1289,7 @@ testing equality of coefficients
 
 ---
 
-CI for regression coefficients
 
-
-CI for mean response
-
-CI for prediction of new observations
 
 ---
 Comparing coefficients - standarized regression coefficients
