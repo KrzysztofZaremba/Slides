@@ -1114,6 +1114,12 @@ summary(lm_model)
 
 ---
 
+Interactions
+
+
+
+---
+
 
 r squared
 
@@ -1213,7 +1219,7 @@ CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\a
 
 ### Example:
 
-For iur age coefficient we had:
+For our age coefficient we had:
 - $\hat{\beta}_{Age}=0.206$
 - $SE(\hat{\beta})=0.067$
 - Our $n=5000$ so we can use normal approximation
@@ -1235,7 +1241,8 @@ CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\a
 ---
 ### CI for mean response 
 
-CI for mean response
+.pull-left[
+Suppose that we want an average prediction for individuals with these characteristics:
 
 $$\mathbf{x_0}=\begin{bmatrix}
 1 \\
@@ -1245,50 +1252,283 @@ x_{02}  \\
 x_{0k} \\
 \end{bmatrix}$$
 
-- here is a vector of characteristics of one individual, here is its distribution 
+Ex: What's average income ( $y$ ), for people who whave 12 years of education $x_{01}=12$ (2 other people are there) and are age 50 $x_{02}=50$ 
 
-$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$
+
+How accurate is our prediction?  $$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$$ 
+
+]
+.pull-right[
+
+The prediction is unbiased:
 
 $E(\hat{y}_0)=\mathbf{x_0}'\beta$
 
-and
+and it's variance is:
 
-$var(\hat{y}_0)=var(\mathbf{x_0}'\hat{\beta})=\mathbf{x_0}'var(\hat{\beta})\mathbf{x_0}=\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}$
+$$\begin{align*} var(\hat{y}_0)& =var(\mathbf{x_0}'\hat{\beta}) \\
+& =\mathbf{x_0}'var(\hat{\beta})\mathbf{x_0} \\ &=\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0} \end{align*}$$
 
-So 
+So it's distribution is:
 
 $\hat{y}_0 \sim N(\mathbf{x_0}'\beta, \sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}})$
 
+Hence:
+
+$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}\}$
+]
 
 
+---
+### Exanmple
 
-Where x_0
+What's the 95% CI for average wait time when there is 10 people at the Urgent Care $x_{occupancy}=10$ for a person who is of age 52  $x_{age}=52$ ?
 
-- for a single guy it's this.
+- What do we need to answer this question?
+
+
+  - $\hat{\beta}=\{\hat{\beta_0}, \hat{\beta}_{occupancy}, \hat{\beta}_{age}\}=\{23.236, 3.7, 0.2\}$
+
+  - $\sqrt{\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=\sqrt{[1, 10, 52](\mathbf{X}'\mathbf{X})^{-1}[1, 10, 52]'}=0.021$
+
+  - $\sigma=98.97$
+
+--
+
+- Prediction: $\hat{y_0}=23.236*1+3.7*10+0.2*52=70.636$
+
+--
+- Standard Deviation: $SE(\hat{y_0})=\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=2.07837$
+
+--
+$$CI_{95}=\{70.636 \pm 1.96*2.07837\} \approx \{67, 75\}$$
+---
+### Exanmple
+
+Or simply in R: 
+
+```{r, echo = TRUE}
+lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
+new_data<- data.frame(Occupancy= c(10), EDAD=52)
+predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.fit=TRUE)
+```
+
+
 
 
 ---
 ### CI for new observation
 
-CI for prediction of new observations
+** Reminder **: 
+- When we look at average response, $u_i$ doesn't play a role (because on average errors are 0)
+- When we look at a single observation, $u_i$ matters, so it increases the variance of prediction error
+
+So variance is now the previous variance plus the variance of $u_i$
+
+$$\begin{align*}var(y_0-\hat{y}_0)& =var(x_0\beta+u_i-x_0\hat{\beta})  \\ & =var(u_0)+var(x_0\hat{\beta}) \\ & =\sigma^2+\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}\end{align*}$$
+
+So the confidence interval for a single observation is slightly wider:
+
+$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2(1+\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0})}\}$
+
+
+We are less certain about predicting outcome for a single person, compared to average outcome among namy people. 
 
 ---
 
-test for significance of the regression
-F-test or ANOVa... does it include beta0 or not?
+### Testing for multiple coefficients
 
-testing (subsets) multiple linear restrictions
+A cool thing about the regression is that we can test relationships between the coefficients:
 
-example
+**For example**:
+- Is the impact of additional year of experience the same as impact of additional year of work experience in a regression:
+
+$$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
+- That corresponds to null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$
+
+**Another Example**:
+- Suppose that employees can go through a sales training, get a promotion, and/or get better office (these are binary variables). We want to evaluate impact of these measures on their sales:
+
+$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{promotion}_i+\beta_3\text{office}_i+u_i$$
+- We wonder if giving an employee all three would increase sales by 100: $H_0: \beta_1+\beta_2+\beta_3=100$ 
+
+---
+### General Linear Hypothesis 
+
+We can express all these null hypothesis in a general way as:
+
+$$H_0: \mathbf{T}\beta=\mathbf{c}$$ where $\mathbf{T}$ is a $r \times p$ and $\mathbf{c}$ is a vector of size $r$
+
+- r is number of restrictions the hypothesis impose on the parameters
+
+---
+Consider this example:
+$$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
+- Null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$
+
+--
+- Here: $$T=\begin{bmatrix}
+0 & 1 & -1 
+\end{bmatrix}$$ and $c=0$
+
+--
+
+So that: 
+
+$$H_0: \mathbf{T}\beta=\begin{bmatrix}
+0 & 1 & -1 
+\end{bmatrix}\begin{bmatrix}
+\beta_0 \\ \beta_1 \\ \beta_2 
+\end{bmatrix}=\beta_1-\beta_2=0$$
+
+---
 
 
 ---
+Consider this example:
+$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{promotion}_i+\beta_3\text{office}_i+u_i$$
+- We wonder if giving an employee all three would increase sales by 100: $H_0: \beta_1+\beta_2+\beta_3=100$ 
+
+--
+- Here: $$T=\begin{bmatrix}
+0 & 1 & 1 & 1 
+\end{bmatrix}$$ and $c=100$
+
+--
+
+So that: 
+
+$$H_0: \mathbf{T}\beta=\begin{bmatrix}
+0 & 1 & 1 & 1
+\end{bmatrix}\begin{bmatrix}
+\beta_0 \\ \beta_1 \\ \beta_2 \\ \beta_3
+\end{bmatrix}=\beta_1+\beta_2+\beta_3=\underbrace{100}_{c}$$
+
+---
+
+---
+What if our hypothesis includes more than 1 restriction?
+$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{promotion}_i+\beta_3\text{office}_i+u_i$$
+- We wonder ig 
+  - Giving an employee an office has the same impact as giving her a promotion .blue[and]
+  - Giving an employee an office has the same impact as giving training:
+--
+
+- $H_0: \beta_1=\beta_2\text{ and }\beta_1=\beta_3$ 
+
+--
+
+- Here we have two restrictions: 
+$$\mathbf{T}=\begin{bmatrix}
+0 & 1 & -1 & 0 \\
+0 & 1 & 0 & -1
+\end{bmatrix} \qquad c=\begin{bmatrix}
+0  \\
+0 
+\end{bmatrix}$$
+
+--
+
+So that: 
+
+$$H_0: \mathbf{T}\beta=\begin{bmatrix}
+0 & 1 & -1 & 0 \\
+0 & 1 & 0 & -1
+\end{bmatrix}\begin{bmatrix}
+\beta_0 \\ \beta_1 \\ \beta_2 \\ \beta_3
+\end{bmatrix}=\begin{bmatrix}
+\beta_1-\beta_2  \\
+\beta_1-\beta_3 
+\end{bmatrix}=\underbrace{\begin{bmatrix}
+0  \\
+0 
+\end{bmatrix}}_{c}$$
+
+---
+What about testing if any coefficient is significantly different from 0?
+$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{promotion}_i+\beta_3\text{office}_i+u_i$$
+
+--
+- $H_0: \beta_1=0\text{ and } \beta_2=0\text{ and }\beta_3=0$ 
+
+
+--
+
+- Here we have 3 restrictions: 
+$$\mathbf{T}=\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix} \qquad c=\begin{bmatrix}
+0  \\
+0 \\
+0
+\end{bmatrix}$$
+
+--
+
+So that: 
+
+$$H_0: \mathbf{T}\beta=\begin{bmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\end{bmatrix}\begin{bmatrix}
+\beta_0 \\ \beta_1 \\ \beta_2 \\ \beta_3
+\end{bmatrix}=\begin{bmatrix}
+\beta_1  \\
+\beta_2 \\
+\beta_3 
+\end{bmatrix}=\underbrace{\begin{bmatrix}
+0  \\
+0 \\
+0
+\end{bmatrix}}_{c}$$
+
+---
+
+### General Linear Hypothesis 
+
+- This framework allows us to do a bunch of cool tests!
+
+--
+- **Intuition**: we compare errors in restricted model to errors in unrestricted model
+  - Restricted model is where we force the null to be true
+
+--
+  - Consider this example:
+
+$$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
+- Null hypothesis $H_0: \beta_1=\beta_2$
+- .red[Restricted Model]: $income_i=\beta_0+\beta_1\text{education}_i+\beta_1\text{experience}_i+u_i$
+- .green[Unrestricted Model]: $income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+\epsilon_i$
+
+--
+
+- Suppose we estimate the two models:
+    - If the **null hypothesis are true**, then the errors in restricted and unrestricted model should be similar
+    - If the **null is not true**, errors in restricted model should be larger: because we got the model wrong!
+
+---
+
+So here is how it works
+
+### General Linear Hypothesis 
+
+Here is the general framework
 
 testing equality of coefficients
 - can't be multicolinear
 
 ---
 
+### General Linear Hypothesis
+
+Here is couple of examples:
+
+significance of regression - all of them are 0
+
+equality of two coefficients 
 
 
 ---

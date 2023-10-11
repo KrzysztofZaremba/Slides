@@ -1524,8 +1524,8 @@ What's the expectation?
 $$E(\hat{y}|x=x_0)=E(\hat{\beta_0}+\hat{\beta_1}x_0)=\beta_0+\beta_1x_0$$
 --
 
-What's the variance?
-$$var(\hat{y}|x=x_0)=Var(\hat{\beta_0}+\hat{\beta_1}x_0)+Var(u_i)=\sigma^2(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
+How much true value varies around this prediction?
+$$var(y_0-\hat{y}|x=x_0)=Var(\hat{\beta_0}+\hat{\beta_1}x_0)+Var(u_i)=\sigma^2(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
 
 --
 What's the distribution:
