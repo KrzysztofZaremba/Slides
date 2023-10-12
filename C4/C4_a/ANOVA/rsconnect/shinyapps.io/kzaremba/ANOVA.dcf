@@ -5,7 +5,7 @@ account: kzaremba
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10038211
-bundleId: 7745077
+bundleId: 7796440
 url: https://kzaremba.shinyapps.io/ANOVA/
 version: 1
 asMultiple: FALSE

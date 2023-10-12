@@ -1468,7 +1468,7 @@ What would be 95% CI for average number of rides if temperature is 30C?
 
 --
 
-- $\hat{\sigma}=\frac{\sum_ie^2}{n-2}=5301.613$
+- $\hat{\sigma}=\sqrt{\frac{\sum_ie^2}{n-2}}=5301.613$
 
 --
 

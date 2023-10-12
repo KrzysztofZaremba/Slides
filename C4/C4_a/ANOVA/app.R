@@ -85,7 +85,7 @@ server <- function(input, output) {
       geom_abline(intercept = coef(lm_model)[1], slope = coef(lm_model)[2], linetype = "solid", color = "blue") +
       geom_segment(aes(x=x, xend = x, y=mean_y, yend = fitted_values), linetype = "dashed", alpha = 0.2) +
       labs(title = "Explained Deviations", x = "X", y = "Y") +
-      annotate("text", x = -2, y = max(data_df$y) - 2, label = paste("SSM =", round(SS_model, 2)), color = "red", size=6) +
+      annotate("text", x = -2, y = max(data_df$y) - 2, label = paste("SSR =", round(SS_model, 2)), color = "red", size=6) +
       theme_minimal()
   })
   
@@ -103,7 +103,7 @@ server <- function(input, output) {
       geom_abline(intercept = coef(lm_model)[1], slope = coef(lm_model)[2], linetype = "solid", color = "blue") +
       geom_segment(aes(x=x, xend = x, y=fitted_values, yend = y), linetype = "dashed", alpha = 0.2) +
       labs(title = "Unexplained Deviations", x = "X", y = "Y") +
-      annotate("text", x = -2, y = max(data_df$y) - 2, label = paste("SSR =", round(SS_residuals, 2)), color = "red", size=6) +
+      annotate("text", x = -2, y = max(data_df$y) - 2, label = paste("SSE =", round(SS_residuals, 2)), color = "red", size=6) +
       theme_minimal()
   })
   

@@ -11,6 +11,8 @@ output:
       countIncrementalSlides: true
       
 ---   
+
+
 <style type="text/css">
 .remark-slide-content {
     font-size: 20px;
@@ -18,6 +20,9 @@ output:
 
 
 </style>
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,dpi=300)
@@ -73,11 +78,7 @@ load("Daily_CMX_means2.Rda")
 
 
 ### This class
-- Testing assumptions behind residuals
-  - Linearity
-  - Constant Variance
-  - Uncorrelated Residuals
-  - Normality
+- Testing significance of a regression
   
 ---
 ### ANOVA
@@ -85,7 +86,7 @@ load("Daily_CMX_means2.Rda")
 **ANOVA** stands for the .blue[AN]alysis .blue[O]f .blue[V]ariance
 
 - We only look at it in the context of the regression
-- It helps us to determine wheather our regression is helpful
+- It helps us to determine whether our regression is helpful
   - It tests whether our regression model can explain variation in y
   
 ---
@@ -159,9 +160,9 @@ $$\sum_i(y_i-\bar{y})^2=\sum_i(\hat{y_i}-\bar{y})^2+\sum_i(y_i-\hat{y_i})^2$$
 **Decomposition of variance**
 
 $$SS_T=SS_R+SS_E$$
-- $SS_T$ is total sum of squares $\sum_i(y_i-\bar{y})^2$, .blue[1 DoF]
-- $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1S_{XY}$, .blue[n-2 DoF]
-- $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y_i})^2$, .blue[n-1 DoF]
+- $SS_T$ is total sum of squares $\sum_i(y_i-\bar{y})^2$, .blue[n-1 DoF]
+- $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1S_{XY}$, .blue[1 DoF]
+- $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y_i})^2$, .blue[n-2 DoF]
 
 ---
 ### ANOVA
