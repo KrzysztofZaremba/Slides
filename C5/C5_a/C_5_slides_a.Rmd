@@ -1113,16 +1113,169 @@ summary(lm_model)
 ```
 
 ---
+### Interactions
 
-Interactions
+Consider a regression:
 
+$$\text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+u_i $$
+- Where Male is a for patient $i$ being male
+- We assumed that occupancy has always the same effect, independent of your gender
+
+--
+- But what if occupancy matters more for men?
+- In other words: one additional patient on urgent care increases duration by more if you are a men?
+- Why? Maybe because when there is a lot of patients, doctors prioritize women (or men)
+
+--
+- We want allow the coefficient on occupancy to differ by gender. How?
+
+---
+### Interactions
+
+- Run the regression: 
+
+$$\text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*\text{Male}_i +u_i$$
+
+--
+- What's the coefficient on Occupancy when you are a woman $Male_i=0$?
+
+$$\begin{align*}
+& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*0 +u_i \\
+& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+u_i
+\end{align*}$$
+
+
+--
+
+- What's the coefficient on Occupancy when you are a man $Male_i=1$?
+
+$$\begin{align*}
+& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*1 +u_i \\
+& \text{Duration}_i=\beta_0+(\beta_1+\beta_3)\text{Occupancy}_i+\beta_2\text{Male}_i+u_i
+\end{align*}$$
+
+--
+
+We can estimate $\beta_3$ and it will tell us by how much bigger is the coefficient on occupancy for men compared to the coefficient on occupancy for women. 
+
+- $\beta_1$ is the coefficient for women
+- $\beta_1+\beta_3$ is the coefficient for women
+- $\beta_3$ is the difference in slopes, which we can test like other coefficients
+
+---
+
+```{r, echo=FALSE}
+# Fit a linear regression model
+lm_model <- lm(Duration ~ Occupancy*SEXO, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+- One additional patients increases duration for women by 2.69 minutes
+- One additional patients increases duration for men by  2.69+2.61=5.2 minutes
+
+--
+- What could be reasons for this?
+
+---
+
+### Interactions
+
+- More generally, we can rewrite a regression:
+
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i1}*x_{i2}+u_i$$
+- As
+
+$$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}++u_i$$
+--
+- $\beta_3$ answers the following question:
+  - If I increase $x_{i2}$ by one, by how much the coefficient on $x_i1$ changes?
 
 
 ---
 
+### Interactions
 
-r squared
+- Suppose you want to know who benefits the most from working from home. You collect survey data for each employee on the job satisfaction, whether they work in the office or from home, and the distance between the office and home
 
+--
+
+- Who do you think benefits most from working from home?
+
+--
+- How would you test this?
+
+--
+
+$$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\beta_3\text{WFH}_i*\text{Distance}_i +u_i$$
+
+
+--
+- What's the interpretation of $\beta_3$?
+
+--
+
+- By how much the effect of working from home on satisfaction changes when we increase distance by one unit (km)
+
+--
+
+- Which sign do you expect $\beta_3$ to have?
+
+---
+
+### Goodness of fit
+
+- We can use again the R square to measure the goodness of fit.
+
+$$\small R^2=1-\frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y}_i)^2}$$
+--
+
+- However, there is one problem with it.
+  - Even if we add variables unrelated to $y$, the $R^2$ would typically still increase by a bit
+
+--
+  - Even if in population there is 0 relationship with this variable, our sample is small so we will  never get exactly 0 relationship
+
+--
+  - Sampling noise will make coefficient slightly positive or negative
+  
+--
+  - So the increase in $R^2$ will reflect that noise in our sample 
+  
+--
+  - The more coefficients we include, the higher $R^2$
+  - We can adjust it, by accounting for the number of parameters used
+  
+--
+
+$$\small R_{Adj}^2=1-\frac{\sum(y_i-\hat{y}_i)^2/(n-p)}{\sum(y_i-\bar{y}_i)^2/(n-1)}$$
+
+--
+- More parameters -> $\downarrow(n-p)\rightarrow\uparrow\sum(y_i-\hat{y}_i)^2/(n-p)\rightarrow\downarrow R_{Adj}^2$
+- So it balances off the mechanical effect of higher $R^2$ due to more regressors
+---
+
+```{r, echo=FALSE}
+# Fit a linear regression model
+
+lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+---
+
+```{r, echo=FALSE}
+# Fit a linear regression model
+Sample_urg$Random_var<- runif(nrow(Sample_urg), 1,10)
+lm_model <- lm(Duration ~ Occupancy+EDAD+Random_var, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+- Adding random variable increased $R^2$ but not $R^2_{Adj}$
 
 ---
 layout: false
@@ -1506,19 +1659,41 @@ $$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
 --
 
 - Suppose we estimate the two models:
-    - If the **null hypothesis are true**, then the errors in restricted and unrestricted model should be similar
-    - If the **null is not true**, errors in restricted model should be larger: because we got the model wrong!
+    - If the **null hypothesis are true**, then the explained variation in restricted and unrestricted model should be similar
+    - If the **null is not true**, explained variation in unrestricted model should be larger: because restricted model is wrong!
+
+---
+
+We know how to get sum of squares and residuals from the unrestricted model
+
+
+But how do we do it for the restricted model?!
+- we will estimate model assuming that restrictions are true. 
+- ex: estimate when h0 is that they are 0
+- ex estimate this assuming they are eqaul
+
+
+You don't need to know full details, but T helps to do that
+
+
+
 
 ---
 
 So here is how it works
 
 ### General Linear Hypothesis 
+significance of regression - all of them are 0
 
-Here is the general framework
 
-testing equality of coefficients
-- can't be multicolinear
+This corresponds to ANOVA
+
+Write down ANOVA TABLE
+
+
+---
+Example in R
+
 
 ---
 
@@ -1526,11 +1701,85 @@ testing equality of coefficients
 
 Here is couple of examples:
 
-significance of regression - all of them are 0
 
+testing equality of coefficient
 equality of two coefficients 
 
 
 ---
-Comparing coefficients - standarized regression coefficients
+Example in R
+
+
+---
+
+### Standarized Coefficients
+
+- Coefficients depend on the units of measurement of the $x$
+- Since $x$ can have different units or magnitudes, we can't directly compare them
+
+
+--
+
+**Example:**
+
+$$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{polution}_i+u_i $$
+
+--
+
+- It doesn't make sense to compare $\beta_1$ to $\beta_2$ to see what has bigger effect
+- These variables have very differentt magnitues
+  -  Increasing temperature by one unit (1 degree celcius) is different than increasing polution by one unit (1 μg/m3)
+
+--
+- To make them directly comparable, we want to make them unitless (standarized)
+- Does increasing temperature by .blue[one standard deviation] has the same effect as inreasing polution by .blue[one standard deviation]?
+
+
+---
+### Standarized coeffcients
+
+Basically, we standardize all the variables and run the regression:
+
+$$\frac{y_i-\bar{y}}{s_y}=\gamma_1\frac{x_{i1}-\bar{x}_{1}}{s_{{x}_1}}+\gamma_2\frac{x_{i2}-\bar{x}_2}{s_{{x}_2}}+...+\gamma_k\frac{x_{ik}-\bar{x}_k}{s_{{x}_k}}+u_i$$
+So then $\gamma_k$ measures the impact of one standard deviation increase of $x_k$ on standard deviation in y
+
+
+--
+
+But there is a short cut to calculate these standard coefficients 
+
+$$\gamma_k=\beta_k\frac{s_{{x}_k}}{s_y}$$
+
+
+---
+
+### Example
+
+Urgent Care duration example:
+
+- $s_y=111.82$
+- $s_{Age}=20.82$
+- $s_{Occupancy}=13.921$
+
+
+--
+
+We calculated that $\hat{\beta}_{Age}=0.206$ and $\hat{\beta}_{Occupancy}=3.703$
+
+--
+
+**Standardized coefficients**
+
+$$\begin{align*} 
+& \hat{\gamma}_{Age}  =\hat{\beta}_{Age}\frac{s_{Age}}{s_{y}}=0.206\frac{20.82}{111.82}=0.0383 \\
+&\hat{\gamma}_{Occupancy} =\hat{\beta}_{Occupancy}\frac{s_{Occupancy}}{s_y}=3.703\frac{13.921}{111.82}=0.461
+\end{align*}$$
+
+--
+
+- Changing age by one standard deviation increases duration by 3.8% of a standard deviation
+- Changing occupancy one standard deviation increases duration by 46% of a standard deviation
+
+---
+
 

@@ -1468,9 +1468,22 @@ What would be 95% CI for average number of rides if temperature is 30C?
 
 --
 
+- $\hat{\sigma}=\frac{\sum_ie^2}{n-2}=5301.613$
+
+--
+
 $$CI_{(\bar{y}|x=x_0)}=16892.66+723.55*30 \pm 1.96* \underbrace{5301.613\sqrt{({\frac{1}{781}+\frac{(30-16.96)^2}{4044}})}}_{SE}$$
 $$CI_{(\bar{y}|x=x_0)}=38599.16 \pm 2161.588$$
 
+
+--
+
+- Interpretation?
+
+--
+  - If we take a lot of samples, and calculate confidence interval using data from each, 95% of them would contain the true value
+  - We are 95% confident, true value is in the interval
+  
 
 ---
 ### Confidence Intervals

@@ -663,7 +663,7 @@ qq_plot=ggplotly(qq_plot,
 data_df$Index <- rank(data_df$Residuals)
 data_df$Cumulative_Probability <- round(data_df$Index / (nrow(data_df) + 1),3)
 data_df <- data_df[order(data_df$Residuals), ]
-qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability)
+qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability, "\nTheoretical:", data_df$Quantile_Normal,"\nSample: ", data_df$Standardized_Residuals)
 
 ```
 
@@ -686,6 +686,11 @@ residuals <- rchisq(100, df = 3)
 
 # Create a data frame with the residuals
 data_df <- data.frame(Residuals = scale(residuals))
+data_df$Standardized_Residuals=data_df$Residuals
+data_df$Index <- rank(data_df$Standardized_Residuals)
+data_df$Cumulative_Probability <- round(data_df$Index / (nrow(data_df) + 1),3)
+data_df$Quantile_Normal <- round(qnorm(data_df$Cumulative_Probability),3)
+
 
 # Create a histogram plot with ggplot2
 histogram_plot <- ggplot(data_df, aes(x = scale(Residuals))) +
@@ -710,7 +715,7 @@ histogram_plot
 ]
 .pull-right[
 ```{r, include=FALSE, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
-data_df <- data.frame(Residuals = scale(residuals))
+
 qq_plot <- ggplot(data_df) +
   geom_qq(aes(sample = Residuals)) +
   geom_abline(color = "red") +
@@ -729,7 +734,7 @@ qq_plot=ggplotly(qq_plot,
 data_df$Index <- rank(data_df$Residuals)
 data_df$Cumulative_Probability <- round(data_df$Index / (nrow(data_df) + 1),3)
 data_df <- data_df[order(data_df$Residuals), ]
-qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability)
+qq_plot$x$data[[1]]$text <- paste("Quantile:", data_df$Cumulative_Probability, "\nTheoretical:", data_df$Quantile_Normal,"\nSample: ", round(data_df$Standardized_Residuals,3))
 
 ```
 
