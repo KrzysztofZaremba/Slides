@@ -384,7 +384,7 @@ b_k  \\ \end{bmatrix}
 $$y_i=b_0+b_1x_{i1}+b_2x_{i2}+...+b_kx_{ik}+e_i$$
 - That is minimize 
 
-$$SSE=\sum_ie_i^2=\sum_i(y_i-\hat{y}_i)^2=\mathbf{e}'\mathbf{e}=(\mathbf{y-\hat{y}})'(\mathbf{y-\hat{y}})=(\mathbf{y-X\hat{\beta}})'(\mathbf{y-X\hat{\beta}})$$
+$$SSE=\sum_ie_i^2=\sum_i(y_i-\hat{y}_i)^2=\mathbf{e}'\mathbf{e}=(\mathbf{y-\hat{y}})'(\mathbf{y-\hat{y}})=(\mathbf{y-Xb})'(\mathbf{y-Xb})$$
 ---
 ### Multiple linear regression
 
@@ -398,7 +398,7 @@ $$\begin{align*}
 \end{align*}$$
 
 --
-- We have $k$ equations with $k$ unknowns. 
+- We have $k+1$ equations with $k+1$ unknowns. 
 
 ---
 ### Multiple linear regression
@@ -412,7 +412,7 @@ $$SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'
 --
 - Then minimize it with respect to $\mathbf{b}$
 
-$$\frac{\partial}{\partial \mathbf{b}}\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}=\mathbf{-2X'y}+\mathbf{2X'Xb}$$
+$$\frac{\partial}{\partial \mathbf{b}}(\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb})=\mathbf{-2X'y}+\mathbf{2X'Xb}$$
 
 --
 - $\hat{\beta}$ is the solution of such minimization (our OLS estimator)
@@ -521,8 +521,8 @@ which gives:
 \hat{\beta}_0 \\
 \hat{\beta}_1\end{bmatrix}
 =
-\begin{bmatrix} \bar{y}-\bar{x}_1\frac{\sum(x^2_{1i}-n\bar{y}\bar{x}_1)}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2} \\
-\frac{\sum_ix_iy_i-n\bar{x}_{1}\bar{y}}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2}\end{bmatrix}
+\begin{bmatrix} \bar{y}-\bar{x}_1\frac{\sum(x_{1i}y_i-n\bar{y}\bar{x}_1)}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2} \\
+\frac{\sum_ix_{1i}y_i-n\bar{x}_{1}\bar{y}}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2}\end{bmatrix}
 \]
 </div>
 
@@ -798,11 +798,11 @@ Where $\small E(\mathbf{(X'X)^{-1}X'u})$ if $\small E(u|X)=0$ (our usual assumpt
 
 - **Variance**
 
-$$\small Var(\beta)=Cov(\beta)=\underbrace{\begin{bmatrix}
-var(\beta_0) & cov(\beta_0, \beta_1) & ... & cov(\beta_0, \beta_k) \\
-cov(\beta_1, \beta_0) & var(\beta_1) & ... & cov(\beta_1, \beta_k)  \\
+$$\small Var(\hat{\beta})=Cov(\hat{\beta})=\underbrace{\begin{bmatrix}
+var(\hat{\beta_0}) & cov(\hat{\beta_0}, \hat{\beta_1}) & ... & cov(\hat{\beta_0}, \hat{\beta_k}) \\
+cov(\hat{\beta_1}, \hat{\beta_0}) & var(\hat{\beta_1}) & ... & cov(\hat{\beta_1}, \hat{\beta_k})  \\
 \vdots & \vdots & \vdots &  \vdots \\
-cov(\beta_k, \beta_0) & cov(\beta_k, \beta_1) & ... & var(\beta_k) &  \end{bmatrix}}_{\substack{ \\ (k+1) \times (k+1)}}$$
+cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & ... & var(\hat{\beta_k}) &  \end{bmatrix}}_{\substack{ \\ (k+1) \times (k+1)}}$$
 - So it's a matrix with variance of single parameters on the diagonal and covariances off the diagonal.
 
 ---
@@ -827,7 +827,10 @@ var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\
 
 --
 
-So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{kk}$$ where $(X'X)^{-1}_{kk}$ is element in $k$ row and $k$ column of $(X'X)^{-1}$ matrix.
+So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k$ row and $k$ column of $(X'X)^{-1}$ matrix.
+
+--
+- Because first coefficient is $\beta_0$
 
 --
 
