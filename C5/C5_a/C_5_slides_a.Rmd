@@ -1494,7 +1494,7 @@ We are less certain about predicting outcome for a single person, compared to av
 
 - Does our model helps to explain any variation in $y_i$?
 
-- $\small H_0: \beta_1=\beta_2=...\beta_k$
+- $\small H_0: \beta_1=\beta_2=...\beta_k=0$
 - $\small H_A: \beta_j \neq 0$ for at least one $j$
 --
 
@@ -1682,7 +1682,7 @@ $H_A: \beta_1+\beta_2>100$
 
 Suppose we have a model:
 
-$$y=\beta_0+\beta_1+\beta_2+...\beta_k+u$$
+$$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
 --
 
 - We want to test if the difference between impact of $x_1$ and $x_2$ is equal to c
@@ -1767,7 +1767,7 @@ Conclusion
 
 Suppose we have a model:
 
-$$y=\beta_0+\beta_1+\beta_2+...\beta_k+u$$
+$$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
 --
 
 - We want to test if the sum of impact of $x_1$ and $x_2$ is equal to c
