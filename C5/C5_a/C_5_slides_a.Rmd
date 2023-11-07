@@ -15,8 +15,6 @@ output:
 .remark-slide-content {
     font-size: 20px;
 }
-
-
 </style>
 
 ```{r setup, include=FALSE}
@@ -1816,12 +1814,12 @@ vcov_matrix
 
 **Example:**
 
-$$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{polution}_i+u_i $$
+$$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{polution}_i+u_i$$
 
 --
 
 - It doesn't make sense to compare $\beta_1$ to $\beta_2$ to see what has bigger effect
-- These variables have very differentt magnitues
+- These variables have very different magnitudes
   -  Increasing temperature by one unit (1 degree celcius) is different than increasing polution by one unit (1 μg/m3)
 
 --
@@ -1834,7 +1832,7 @@ $$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{poluti
 
 Basically, we standardize all the variables and run the regression:
 
-$$\frac{y_i-\bar{y}}{s_y}=\gamma_1\frac{x_{i1}-\bar{x}_{1}}{s_{{x}_1}}+\gamma_2\frac{x_{i2}-\bar{x}_2}{s_{{x}_2}}+...+\gamma_k\frac{x_{ik}-\bar{x}_k}{s_{{x}_k}}+u_i$$
+$$\frac{y_i-\bar{y}}{s_y}=\gamma_1\frac{x_{i1}-\bar{x}_{1}}{s_{x_1}}+\gamma_2\frac{x_{i2}-\bar{x}_2}{s_{x_2}}+...+\gamma_k\frac{x_{ik}-\bar{x}_k}{s_{x_k}}+u_i$$
 So then $\gamma_k$ measures the impact of one standard deviation increase of $x_k$ on standard deviation in y
 
 
@@ -1842,7 +1840,7 @@ So then $\gamma_k$ measures the impact of one standard deviation increase of $x_
 
 But there is a short cut to calculate these standard coefficients 
 
-$$\gamma_k=\beta_k\frac{s_{{x}_k}}{s_y}$$
+$$\gamma_k=\beta_k\frac{s_{x_k}}{s_y}$$
 
 
 ---
