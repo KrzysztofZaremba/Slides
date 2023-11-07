@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Class 6a: Time Series</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Business Forecasting" />
+    <script src="libs/header-attrs-2.22/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Class 6a: Time Series
+]
+.author[
+### Business Forecasting
+]
+
+---
+
+&lt;style type="text/css"&gt;
+.remark-slide-content {
+    font-size: 20px;
+}
+
+
+&lt;/style&gt;
+
+
+
+
+
+
+
+---
+
+###Roadmap:
+
+1. Components of time series
+2. Patterns of correlation in time series
+3. Simple forecasting methods
+4. Evaluating forecasts
+5. Time series decomposition
+6. Forecasting with time series decomposition 
+
+
+---
+### Example 
+- Suppose you wonder if you should go into the wedding business.
+- You need to predict whether there is potential for work
+- So you look at evolution in the number of weddings across years
+
+#### Heterosexual Marriages in Mexico
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-4-1.png" width="100%" /&gt;
+
+--
+
+What patterns can you identify in that time series?
+---
+### Same Sex Marriages in Mexico 
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-5-1.png" width="100%" /&gt;
+
+--
+Going into gay marriage business is probably a better idea!
+
+---
+### Components
+
+1. **Trend** - long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+---
+
+### Heterosexual Marriages in Mexico
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-6-1.png" width="100%" /&gt;
+
+
+---
+### Components
+
+1. **Trend** - long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+---
+
+### Heterosexual Marriages in Mexico
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-7-1.png" width="100%" /&gt;
+
+
+
+---
+### Components
+
+1. **Trend**: Long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+3. **Cyclical pattern**: Wavelike upward and downward movements along the trend. Not always the same length, not always the same time of year
+  - Different from seasonality which always happens at the same time and has same length
+  - Often related to business cycles
+
+---
+
+
+### Heterosexual Marriages in Mexico
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-8-1.png" width="100%" /&gt;
+
+
+---
+### Components
+
+1. **Trend**: Long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+3. **Cyclical pattern**: Wavelike upward and downward movements along the trend. Not always the same length, not always the same time of year
+  - Different from seasonality which always happens at the same time and has same length
+  - Often related to business cycles
+
+4. **Random components**:  Can't be attributed to other parts of the model. The most difficult to predict 
+
+---
+
+### Heterosexual Marriages in Mexico
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-9-1.png" width="100%" /&gt;
+
+
+---
+### Some other examples
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-10-1.png" width="100%" /&gt;
+
+
+---
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-11-1.png" width="100%" /&gt;
+
+---
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-12-1.png" width="100%" /&gt;
+
+
+---
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-13-1.png" width="100%" /&gt;
+
+
+---
+### Autocorrelation
+
+- Can past values predict future values?
+
+--
+- Yes, if they are correlated 
+
+--
+- We will measure **Autocorrelation**: 
+    - Are values in previous period correlated with values in the next period?
+    - So between `\(y_t\)` and `\(y_{t-1}\)`,$y_t$ and `\(y_{t-2}\)` etc
+    
+`$$\hat{\rho}_k=\frac{\sum^{n}_{t=k+1}(y_{t}-\bar{y})(y_{t-k}-\bar{y})}{\sum^{n}_{t=1}(y_t-\bar{y})^2}$$`
+
+```
+## # A tsibble: 360 x 5 [1M]
+##       Month     M Lag1_M Lag2_M Lag3_M
+##       &lt;mth&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1993 Jan 54850     NA     NA     NA
+##  2 1993 Feb 54271  54850     NA     NA
+##  3 1993 Mar 55350  54271  54850     NA
+##  4 1993 Apr 52268  55350  54271  54850
+##  5 1993 May 59671  52268  55350  54271
+##  6 1993 Jun 47557  59671  52268  55350
+##  7 1993 Jul 54503  47557  59671  52268
+##  8 1993 Aug 51534  54503  47557  59671
+##  9 1993 Sep 46000  51534  54503  47557
+## 10 1993 Oct 51590  46000  51534  54503
+## # ℹ 350 more rows
+```
+
+---
+We can calculate the values for marriage data:
+
+&lt;table&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; lag &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.0000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6.0000000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; acf &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3126539 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4934558 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2992763 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2474031 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2879573 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1557756 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+And plot the Autocorrelation Function (ACF) on a correlogram:
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-16-1.png" width="100%" /&gt;
+
+- Why high values at 12 and 24 lag?
+
+---
+### Some other examples:
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-17-1.png" width="100%" /&gt;&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-17-2.png" width="100%" /&gt;
+
+- If there is a trend there will be positive autocorrelation
+
+---
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-18-1.png" width="100%" /&gt;&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-18-2.png" width="100%" /&gt;
+
+- Shock persists for a long time
+- If stationary, shocks should not persist, autocorrelation should decay quickly to 0
+
+
+---
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-19-1.png" width="15cm" /&gt;
+
+
+
+---
+### Autocorrelation
+
+- How do we know that the correlation is significant and not just sampling randomness?
+- Test:
+
+  - `\(H_0: \rho_k=0\)` or data is white noise
+  - `\(H_A: \rho_k\neq 0\)`
+
+--
+- What is **White Noise**?
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-20-1.png" width="100%" /&gt;
+**White noise** data is uncorrelated across time, with zero mean and constant variance
+  - It is stationary!
+
+---
+### White Noise
+
+Autocorrelation of white noise
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-21-1.png" width="100%" /&gt;
+
+
+---
+### Test
+
+- Intuitively:
+  1. We will calculate test statistic 
+  2. Figure out how likely to obtain such value if data was White Noise
+  
+--
+- If test statistic is big, it's unlikely to come from White Noise, so we reject null
+
+`$$t_{test}=\frac{\hat{\rho}_k-0}{1/\sqrt{n-k}}$$`
+
+- Compare it to t distribution with `\(t_{n-k}\)` degrees of freedom 
+
+--
+- Rule of thumb for larger datasets: reject at 95% if:
+
+`$$|\hat{\rho}_k|&gt;\frac{2}{\sqrt{n}}$$`
+
+---
+### Confidence bands
+
+- We can compute confidence bands such that if `\(\hat{\rho}_k\)` is within these bands, it's not significant. 
+
+- In our data on straight marriage, n=360
+
+- If data is white noise, autocorrelations should not cross 0.1054
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-22-1.png" width="100%" /&gt;
+
+- The more observation you have, the better you are at detecting autocorrelation
+---
+### Gay marriages
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-23-1.png" width="100%" /&gt;
+
+--
+- Is there a way to transform the data, so it's stationary?
+
+---
+### First differencing
+
+- Take the first differences
+
+`$$\Delta y_t=y_t-y_{t-1}$$`
+- First differences approximate how much data growth in each period
+- If trend is linear, this variable should have more or less constant mean
+
+---
+### First differencing
+
+
+```
+## # A tsibble: 154 x 3 [1M]
+##       Month     M Diff_M
+##       &lt;mth&gt; &lt;int&gt;  &lt;int&gt;
+##  1 2010 Mar    94     NA
+##  2 2010 Apr    72    -22
+##  3 2010 May    60    -12
+##  4 2010 Jun    68      8
+##  5 2010 Jul    61     -7
+##  6 2010 Aug    69      8
+##  7 2010 Sep    52    -17
+##  8 2010 Oct    69     17
+##  9 2010 Nov    47    -22
+## 10 2010 Dec    97     50
+## # ℹ 144 more rows
+```
+
+---
+
+
+Is transform data stationary?
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-25-1.png" width="100%" /&gt;
+--
+- Does it have constant mean?
+
+--
+- What about constant variance?
+
+--
+- What about autocorrelation?
+
+---
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-26-1.png" width="100%" /&gt;
+
+
+---
+
+
+###d
+e) Na¨ıve models and average methods. Centred Moving Average for smoothing.
+
+
+
+
+naive forecast: just use previous observation:
+
+`\(\hat{y}_{T+1|T}=y_T\)`
+
+
+
+```
+##     Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+## 361          54887 37375.25 72398.75 28105.09 81668.91
+```
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-27-1.png" width="100%" /&gt;
+
+
+##Example from the marriages 
+
+seasonal naive:
+
+`\(\hat{y}_{T+1|T}=y_{m(T+1)}\)`
+
+
+m(T) is the last time period with the same season as T+1
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-28-1.png" width="100%" /&gt;
+##Example from the marriages 
+
+
+---
+
+Average prediction (just average y)
+
+We could just take an average of time series as prediction. but is it good?
+
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-29-1.png" width="100%" /&gt;
+
+
+## Better only average of observations around the period of interest
+
+
+Moving average
+
+`$$MA(k)_t: \frac{\sum^k_{j=1} y_{t+1-j} }{k}=\frac{y_{t}+y_{t-1}..+y_{t+1-k}}{k}$$`
+
+Last couple of observations
+usually pick the length of a season (so if quarterly, than 4, if monthly than 12), it also can help to smooth the seasonality (if we take average of seasons with lower and higher marriages, they basically cancel out)
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-30-1.png" width="100%" /&gt;
+
+---
+
+4 months
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-31-1.png" width="100%" /&gt;
+
+---
+
+
+3 months
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-32-1.png" width="100%" /&gt;
+
+---
+
+
+
+fit vs accuracy out of sample vs insample
+
+Forecast error 
+
+(PICTURE FROM THAT BOOK)
+
+`\(e_{T+h}=y_{T+h}-\hat{y}_{T+h|T}\)`
+where A_t and hatyt is estimated using only observations up to t-1. 
+
+d) Forecast error and accuracy: ME, MPE, MAE; MAPE, MSE and RMSE. Hypotheses
+testing for the mean error.
+
+`$$ME=\frac{\sum(A_t-F_t)}{n}$$`
+positive and negative values can add to 0.... but useful to measure bias - over or underprediction
+
+`$$MAE=\frac{\sum|A_t-F_t|}{n}$$`
+
+`$$MPE=\frac{\sum(A_t-F_t)/A_t}{n}$$`
+it's unitless 
+
+`$$MAPE=\frac{|\sum(A_t-F_t)/A_t|}{n}$$`
+
+`$$MSE=\frac{\sum(A_t-F_t)^2}{n}$$`
+
+`$$RMSE=\sqrt{\frac{\sum(A_t-F_t)^2}{n}}$$`
+
+
+---
+
+
+
+###d
+
+hypothesis testing mean error
+
+Usual stuff: 
+
+`$$t_{test}=\frac{\bar{e}-0}{SE(\bar{e})}=$$` 
+
+---
+
+Decomposition overwiev
+
+
+##
+helps to smooth 
+
+similar, but we center at the observation of interest
+
+so we average observations before and after. This is to basically get rid of seasonality and isolate other elements of time series. Will be helpful later in decomposing time sereies in different elements
+
+helpful in removing short term fluctuations
+
+Centred Moving Average for smoothing.
+
+typical level for a period on which it is centered (a year)
+---
+`$$MA(5)_t: \frac{\sum^{2}_{j=-2} y_{t+j} }{5}=\frac{y_{t+2}+y_{t+1}+y_t+y_{t-1}+y_{t-2}}{5}$$`
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-33-1.png" width="100%" /&gt;
+
+
+
+`$$MA(12)_t: \frac{\sum^{5}_{j=-6} y_{t+j} }{12}=\frac{y_{t+5}+y_{t+4}..+y_t+..+y_{t-5}+y_{t-6}}{12}$$`
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-34-1.png" width="100%" /&gt;
+
+since even, it's not really centered. To center it, I will  take average of two moving averages, one including -6 and one including +6. They both include 12 observations, so take average over the year!
+
+`$$CMA(12)_t=(\frac{\sum^{5}_{j=-6} y_{t+j} }{12}+\frac{\sum^{6}_{j=-5} y_{t+j} }{12})/2$$`
+Note that we lose some data at the end and at the beginning. 
+
+
+---
+covid average
+
+![My Plot](covid_average.jpg)
+
+what would happen if I take 7 days average? 
+
+
+
+---
+Now that I have data without seasons, I can identify other important elements
+like trend, cyclical element, and irregular elememt.Once I have all these elements, I can forecast them separately and put all of them back together to make forecast general forecast. 
+
+So I don't confuse seasonal variation with trend
+
+
+---
+
+b) Adjustments for seasonality: concepts and applications
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-35-1.png" width="100%" /&gt;
+
+
+
+---
+Seasonal indices 
+
+Compare actual data to seasonal data to get seasonal indices 
+
+January seasonal factor would be
+`$$SF_{January, 2010}=Y_{January,2010}/CMA_{January,2010}$$`
+Then,
+
+`$$SF_{January}=\sum_{year}Y_{January,year}/CMA_{January,year}$$`
+
+
+```
+##    Month Seasonal_index
+## 1      1      0.8646459
+## 2      2      1.3184852
+## 3      3      1.0124035
+## 4      4      0.9360894
+## 5      5      1.0167274
+## 6      6      0.8573390
+## 7      7      0.9494380
+## 8      8      0.9299655
+## 9      9      0.8000362
+## 10    10      0.9524714
+## 11    11      0.9844850
+## 12    12      1.3779134
+```
+Make sure they average to 1.  That may require dividing by a constant
+
+
+
+`$$\sum^S_{s=1}SF_s=S$$`
+
+They always  add up to number of seasons! So if you miss one, you can identify it from the rest
+
+
+
+---
+### ok, alternative: 
+
+
+
+
+f ) Linear Regression and Trend.
+
+Estimated from deseasonalized data. We will assume the trend is linear
+
+so 
+
+`$$CMA_t=a+bt$$`
+
+you can find a and b with a regression 
+
+
+```
+## 
+## Call:
+## lm(formula = trend ~ Time, data = a)
+## 
+## Coefficients:
+## (Intercept)         Time  
+##    77204.63       -61.46
+```
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-37-1.png" width="100%" /&gt;
+
+
+```
+## 
+## Call:
+## lm(formula = trend ~ Time, data = a)
+## 
+## Coefficients:
+## (Intercept)         Time  
+##   -1145.310        2.407
+```
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-38-1.png" width="100%" /&gt;
+
+---
+
+g) Time series decomposition: Multiplicative model.
+
+
+I have trend component and seasonal component. Now let's deal with the cyclical component
+
+divide the centered moving average, by centerd moving average trend (just trend)
+
+
+&lt;img src="C_6_slides_a_files/figure-html/unnamed-chunk-39-1.png" width="100%" /&gt;
+
+---
+
+
+
+---
+
+Putting it all together:
+
+`$$y=s*t*c*I$$`
+I assumed to be one, unless you have a reason to believe there will be a shock
+
+h) Forecast and onfidence interval in time series.
+
+Assemble all the elements:
+
+you know the seasonal factor, the trend, you don't know the cycle component - this needs to be figured out
+
+just seasonalize the predicted trend
+
+simple forecast
+predicttion - sigma residal etc https://otexts.com/fpp2/prediction-intervals.html
+prediction interval (residual), 
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"countIncrementalSlides": true
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

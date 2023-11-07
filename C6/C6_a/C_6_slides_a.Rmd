@@ -1,0 +1,894 @@
+---
+title: 'Class 6a: Time Series'
+author: "Business Forecasting"
+output:
+  xaringan::moon_reader:
+    self_contained: true
+    css: xaringan-themer.css
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: true
+      
+---   
+<style type="text/css">
+.remark-slide-content {
+    font-size: 20px;
+}
+
+
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
+library(shiny)
+library(ggplot2)
+library(forecast)
+library(plotly)
+library(igraph)
+library(reshape)
+library(spData)
+library(leaflet)
+library(readr)
+library(ggplot2)
+library(tidyverse)
+library(gridExtra)
+library(forecast)
+library(hrbrthemes)
+library(gridExtra)
+library(cowplot)
+library(viridis)
+library(gapminder)
+library(knitr)
+library(fpp3)
+library(kableExtra)
+library(DT)
+library(feasts)
+library(tsibble)
+library(tsibbledata)
+library(lubridate)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", 
+colors = c(
+  red = "#f34213",
+  purple = "#3e2f5b",
+  orange = "#ff8811",
+  green = "#136f63",
+  blue = "#1E90FF",
+  white = "#FFFFFF"
+))
+```
+
+
+```{r setup2, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+library(dplyr)
+library(MASS) # for truehist function
+load("Marriages.Rda")
+SS=Ag_data[Ag_data$SS==TRUE,]
+HT=Ag_data[Ag_data$SS==FALSE,]
+HT$M=as.numeric(HT$M)
+```
+---
+
+###Roadmap:
+
+1. Components of time series
+2. Patterns of correlation in time series
+3. Simple forecasting methods
+4. Evaluating forecasts
+5. Time series decomposition
+6. Forecasting with time series decomposition 
+
+
+---
+### Example 
+- Suppose you wonder if you should go into the wedding business.
+- You need to predict whether there is potential for work
+- So you look at evolution in the number of weddings across years
+
+#### Heterosexual Marriages in Mexico
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+HT$Month=make_yearmonth(year = HT$ANIO_REGIS, month =  HT$MES_REGIS)
+SS$Month=make_yearmonth(year = SS$ANIO_REGIS, month =  SS$MES_REGIS)
+HT=as_tsibble(HT, index=Month)
+SS=as_tsibble(SS, index=Month)
+autoplot(HT, M)
+
+```
+
+--
+
+What patterns can you identify in that time series?
+---
+### Same Sex Marriages in Mexico 
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+autoplot(SS, M)
+
+```
+
+--
+Going into gay marriage business is probably a better idea!
+
+---
+### Components
+
+1. **Trend** - long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+---
+
+### Heterosexual Marriages in Mexico
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+autoplot(HT, M)
+
+```
+
+
+---
+### Components
+
+1. **Trend** - long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+---
+
+### Heterosexual Marriages in Mexico
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+autoplot(HT, M)
+
+```
+
+
+
+---
+### Components
+
+1. **Trend**: Long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+3. **Cyclical pattern**: Wavelike upward and downward movements along the trend. Not always the same length, not always the same time of year
+  - Different from seasonality which always happens at the same time and has same length
+  - Often related to business cycles
+
+---
+
+
+### Heterosexual Marriages in Mexico
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+autoplot(HT, M)
+
+```
+
+
+---
+### Components
+
+1. **Trend**: Long term change in the level of data, positive or negative.
+  - If flat, we call the data stationary
+  - Formally, the mean, variance, and autocorrelation does not depend on time
+
+2. **Seasonal pattern**: Variation in level that repeats at the same time each period
+  - If there is seasonality, data is not stationary
+
+3. **Cyclical pattern**: Wavelike upward and downward movements along the trend. Not always the same length, not always the same time of year
+  - Different from seasonality which always happens at the same time and has same length
+  - Often related to business cycles
+
+4. **Random components**:  Can't be attributed to other parts of the model. The most difficult to predict 
+
+---
+
+### Heterosexual Marriages in Mexico
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+autoplot(HT, M)
+
+```
+
+
+---
+### Some other examples
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+PBS %>%
+filter(ATC2 == "A10") %>%
+summarise(total_cost = sum(Cost)) %>%
+mutate(total_cost = total_cost / 1e6) -> a10
+
+autoplot(a10, total_cost) +
+  labs(y = "$ (millions)",
+       title = "Australian antidiabetic drug sales")
+
+```
+
+
+---
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+aus_production %>%
+filter(year(Quarter) >= 1980) %>%
+autoplot(Electricity) +
+labs(y = "GWh", title = "Australian electricity production")
+```
+
+---
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+aus_production %>%
+autoplot(Bricks) +
+labs(y = "million units", title = "Australian clay brick production")
+```
+
+
+---
+
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+gafa_stock %>%
+filter(Symbol == "AMZN", year(Date) >= 2018) %>%
+autoplot(Close) +
+labs(y = "$US", title = "Amazon closing stock price")
+
+```
+
+
+---
+### Autocorrelation
+
+- Can past values predict future values?
+
+--
+- Yes, if they are correlated 
+
+--
+- We will measure **Autocorrelation**: 
+    - Are values in previous period correlated with values in the next period?
+    - So between $y_t$ and $y_{t-1}$,$y_t$ and $y_{t-2}$ etc
+    
+$$\hat{\rho}_k=\frac{\sum^{n}_{t=k+1}(y_{t}-\bar{y})(y_{t-k}-\bar{y})}{\sum^{n}_{t=1}(y_t-\bar{y})^2}$$
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+HT=ungroup(HT)
+HT[,c("Month","M")] %>%
+  mutate(
+    Lag1_M = lag(M, order_by = Month),
+    Lag2_M = lag(M, order_by = Month, n = 2),
+    Lag3_M = lag(M, order_by = Month, n = 3)
+  ) 
+```
+
+---
+We can calculate the values for marriage data:
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+p=HT|>ACF(M)
+kable(t(p)[,1:6])
+```
+
+And plot the Autocorrelation Function (ACF) on a correlogram:
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+HT|>ACF(M)|>autoplot()
+
+```
+
+- Why high values at 12 and 24 lag?
+
+---
+### Some other examples:
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+retail <- us_employment %>%
+filter(Title == "Retail Trade", year(Month) >= 1980)
+v=retail %>% autoplot(Employed)
+w=retail %>%
+ACF(Employed, lag_max = 48) %>%
+autoplot()
+v
+w
+```
+
+- If there is a trend there will be positive autocorrelation
+
+---
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+google_2015 <- gafa_stock %>%
+filter(Symbol == "GOOG", year(Date) == 2015) 
+v=google_2015 %>%autoplot()
+
+w=google_2015 %>%
+ACF(Close, lag_max = 100) %>%
+autoplot()
+
+v
+w
+
+```
+
+- Shock persists for a long time
+- If stationary, shocks should not persist, autocorrelation should decay quickly to 0
+
+
+---
+
+```{r, fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, out.width="15cm"}
+cowtemp <- as_tsibble(fma::cowtemp)
+USAccDeaths <- as_tsibble(USAccDeaths)
+AirPassengers <- as_tsibble(AirPassengers)
+mink <- as_tsibble(fma::mink)
+tp1 <- autoplot(cowtemp, value) +
+  labs(x = "", y = "chirps per minute", title = "1. Daily temperature of cow")
+tp2 <- autoplot(USAccDeaths, value) +
+  labs(x = "", y = "thousands", title = "2. Monthly accidental deaths")
+tp3 <- autoplot(AirPassengers, value) +
+  labs(x = "", y = "thousands", title = "3. Monthly air passengers")
+tp4 <- autoplot(mink, value) +
+  labs(x = "", y = "thousands", title = "4. Annual mink trappings")
+acfb <- ACF(cowtemp, value) %>% autoplot() +
+  labs(x="", title="B") + ylim(-0.4,1)
+acfa <- ACF(USAccDeaths, value) %>% autoplot() +
+  labs(x = "", title = "A") + ylim(-0.4,1)
+acfd <- ACF(AirPassengers, value) %>% autoplot() +
+  labs(x = "", title = "D") + ylim(-0.4,1)
+acfc <- ACF(mink, value) %>% autoplot() +
+  labs(x = "", title ="C") + ylim(-0.4,1)
+ plot_grid(tp1, tp2, tp3, tp4,acfa, acfb , acfc , acfd, ncol = 4)
+ 
+
+```
+
+
+
+---
+### Autocorrelation
+
+- How do we know that the correlation is significant and not just sampling randomness?
+- Test:
+
+  - $H_0: \rho_k=0$ or data is white noise
+  - $H_A: \rho_k\neq 0$
+
+--
+- What is **White Noise**?
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+set.seed(30)
+y <- ts(rnorm(50))
+autoplot(y) + ggtitle("White noise")
+
+```
+**White noise** data is uncorrelated across time, with zero mean and constant variance
+  - It is stationary!
+
+---
+### White Noise
+
+Autocorrelation of white noise
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+ggAcf(y)
+```
+
+
+---
+### Test
+
+- Intuitively:
+  1. We will calculate test statistic 
+  2. Figure out how likely to obtain such value if data was White Noise
+  
+--
+- If test statistic is big, it's unlikely to come from White Noise, so we reject null
+
+$$t_{test}=\frac{\hat{\rho}_k-0}{1/\sqrt{n-k}}$$
+
+- Compare it to t distribution with $t_{n-k}$ degrees of freedom 
+
+--
+- Rule of thumb for larger datasets: reject at 95% if:
+
+$$|\hat{\rho}_k|>\frac{2}{\sqrt{n}}$$
+
+---
+### Confidence bands
+
+- We can compute confidence bands such that if $\hat{\rho}_k$ is within these bands, it's not significant. 
+
+- In our data on straight marriage, n=360
+
+- If data is white noise, autocorrelations should not cross 0.1054
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+HT|>ACF(M)|>autoplot()
+
+```
+
+- The more observation you have, the better you are at detecting autocorrelation
+---
+### Gay marriages
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+SS|>ACF(M)|>autoplot()
+
+```
+
+--
+- Is there a way to transform the data, so it's stationary?
+
+---
+### First differencing
+
+- Take the first differences
+
+$$\Delta y_t=y_t-y_{t-1}$$
+- First differences approximate how much data growth in each period
+- If trend is linear, this variable should have more or less constant mean
+
+---
+### First differencing
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+SS=ungroup(SS)
+SS[,c("Month","M")] %>%
+  mutate(Diff_M = difference(M))
+```
+
+---
+
+
+Is transform data stationary?
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+SS|>autoplot(difference(M))
+
+```
+--
+- Does it have constant mean?
+
+--
+- What about constant variance?
+
+--
+- What about autocorrelation?
+
+---
+```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
+SS|>ACF(difference(M))|>autoplot()
+```
+
+
+---
+
+
+###d
+e) Na¨ıve models and average methods. Centred Moving Average for smoothing.
+
+
+
+
+naive forecast: just use previous observation:
+
+$\hat{y}_{T+1|T}=y_T$
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+naive(HT$M, 1)
+library(fable)
+library(tsibbledata)
+HT %>%
+  model(NAIVE(M)) %>%
+  forecast(h = 24) %>%
+  autoplot(HT, level=NULL)
+
+
+```
+
+
+##Example from the marriages 
+
+seasonal naive:
+
+$\hat{y}_{T+1|T}=y_{m(T+1)}$
+
+
+m(T) is the last time period with the same season as T+1
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT %>%
+  model(SNAIVE(M ~ lag("year"))) %>%
+  forecast(h = 24) %>%
+  autoplot(HT, level=NULL)
+
+```
+##Example from the marriages 
+
+
+---
+
+Average prediction (just average y)
+
+We could just take an average of time series as prediction. but is it good?
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT %>% 
+  model(mean = MEAN(M ~ window(size = 1000)))%>%
+  forecast(h = 24) %>%
+  autoplot(HT, level=NULL)
+
+```
+
+
+## Better only average of observations around the period of interest
+
+
+Moving average
+
+$$MA(k)_t: \frac{\sum^k_{j=1} y_{t+1-j} }{k}=\frac{y_{t}+y_{t-1}..+y_{t+1-k}}{k}$$
+
+Last couple of observations
+usually pick the length of a season (so if quarterly, than 4, if monthly than 12), it also can help to smooth the seasonality (if we take average of seasons with lower and higher marriages, they basically cancel out)
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT=as_tsibble(HT, key=SS)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, mean,
+                .before = 11, .after = 0, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+
+---
+
+4 months
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, .f=~mean(.x, na.rm=TRUE),
+                .before = 3, .after = 0, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+
+---
+
+
+3 months
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, mean,
+                .before = 119, .after = 0, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+
+---
+
+
+
+fit vs accuracy out of sample vs insample
+
+Forecast error 
+
+(PICTURE FROM THAT BOOK)
+
+$e_{T+h}=y_{T+h}-\hat{y}_{T+h|T}$
+where A_t and hatyt is estimated using only observations up to t-1. 
+
+d) Forecast error and accuracy: ME, MPE, MAE; MAPE, MSE and RMSE. Hypotheses
+testing for the mean error.
+
+$$ME=\frac{\sum(A_t-F_t)}{n}$$
+positive and negative values can add to 0.... but useful to measure bias - over or underprediction
+
+$$MAE=\frac{\sum|A_t-F_t|}{n}$$
+
+$$MPE=\frac{\sum(A_t-F_t)/A_t}{n}$$
+it's unitless 
+
+$$MAPE=\frac{|\sum(A_t-F_t)/A_t|}{n}$$
+
+$$MSE=\frac{\sum(A_t-F_t)^2}{n}$$
+
+$$RMSE=\sqrt{\frac{\sum(A_t-F_t)^2}{n}}$$
+
+
+---
+
+
+
+###d
+
+hypothesis testing mean error
+
+Usual stuff: 
+
+$$t_{test}=\frac{\bar{e}-0}{SE(\bar{e})}=$$ 
+
+---
+
+Decomposition overwiev
+
+
+##
+helps to smooth 
+
+similar, but we center at the observation of interest
+
+so we average observations before and after. This is to basically get rid of seasonality and isolate other elements of time series. Will be helpful later in decomposing time sereies in different elements
+
+helpful in removing short term fluctuations
+
+Centred Moving Average for smoothing.
+
+typical level for a period on which it is centered (a year)
+---
+$$MA(5)_t: \frac{\sum^{2}_{j=-2} y_{t+j} }{5}=\frac{y_{t+2}+y_{t+1}+y_t+y_{t-1}+y_{t-2}}{5}$$
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, mean,
+                .before = 2, .after = 2, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+
+
+
+$$MA(12)_t: \frac{\sum^{5}_{j=-6} y_{t+j} }{12}=\frac{y_{t+5}+y_{t+4}..+y_t+..+y_{t-5}+y_{t-6}}{12}$$
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, mean,
+                .before = 6, .after = 5, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+
+since even, it's not really centered. To center it, I will  take average of two moving averages, one including -6 and one including +6. They both include 12 observations, so take average over the year!
+
+$$CMA(12)_t=(\frac{\sum^{5}_{j=-6} y_{t+j} }{12}+\frac{\sum^{6}_{j=-5} y_{t+j} }{12})/2$$
+Note that we lose some data at the end and at the beginning. 
+
+
+---
+covid average
+
+![My Plot](covid_average.jpg)
+
+what would happen if I take 7 days average? 
+
+
+
+---
+Now that I have data without seasons, I can identify other important elements
+like trend, cyclical element, and irregular elememt.Once I have all these elements, I can forecast them separately and put all of them back together to make forecast general forecast. 
+
+So I don't confuse seasonal variation with trend
+
+
+---
+
+b) Adjustments for seasonality: concepts and applications
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+HT|>gg_season(M)
+
+```
+
+
+
+---
+Seasonal indices 
+
+Compare actual data to seasonal data to get seasonal indices 
+
+January seasonal factor would be
+$$SF_{January, 2010}=Y_{January,2010}/CMA_{January,2010}$$
+Then,
+
+$$SF_{January}=\sum_{year}Y_{January,year}/CMA_{January,year}$$
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
+  components() 
+
+data.frame(Month=1:12, Seasonal_index=a$seasonal[1:12])
+
+```
+Make sure they average to 1.  That may require dividing by a constant
+
+
+
+$$\sum^S_{s=1}SF_s=S$$
+
+They always  add up to number of seasons! So if you miss one, you can identify it from the rest
+
+
+
+---
+### ok, alternative: 
+
+
+
+
+f ) Linear Regression and Trend.
+
+Estimated from deseasonalized data. We will assume the trend is linear
+
+so 
+
+$$CMA_t=a+bt$$
+
+you can find a and b with a regression 
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
+  components()
+a$Time=as.numeric(a$Month)
+
+lin_model=lm(trend~Time, data=a)
+print(lin_model)
+a$trend_pred <- predict(lin_model, newdata = a)
+
+ggplot(a, aes(x = Month)) + 
+    geom_line(aes(y = trend), color = "blue") +
+    geom_line(aes(y = trend_pred), color = "red") +
+    labs(title = "Linear Trend vs Deseasoned Data",
+         y = "Value",
+         x = "Time",
+         color = "Legend") +
+    theme_minimal() +
+    scale_color_manual(values = c("blue", "red"), 
+                       labels = c("Deseasoned Data", "Linear Trend"))
+
+```
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+a=SS%>%model(classical_decomposition(M, type = "mult")) %>%
+  components()
+a$Time=as.numeric(a$Month)
+
+lin_model=lm(trend~Time, data=a)
+print(lin_model)
+a$trend_pred <- predict(lin_model, newdata = a)
+
+ggplot(a, aes(x = Month)) + 
+    geom_line(aes(y = trend), color = "blue") +
+    geom_line(aes(y = trend_pred), color = "red") +
+    labs(title = "Linear Trend vs Deseasoned Data",
+         y = "Value",
+         x = "Time",
+         color = "Legend") +
+    theme_minimal() +
+    scale_color_manual(values = c("blue", "red"), 
+                       labels = c("Deseasoned Data", "Linear Trend"))
+
+```
+
+---
+
+g) Time series decomposition: Multiplicative model.
+
+
+I have trend component and seasonal component. Now let's deal with the cyclical component
+
+divide the centered moving average, by centerd moving average trend (just trend)
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
+  components()
+a$Time=as.numeric(a$Month)
+
+lin_model=lm(trend~Time, data=a)
+a$trend_pred <- predict(lin_model, newdata = a)
+
+x=ggplot(a, aes(x = Month)) + 
+    geom_line(aes(y = trend), color = "blue") +
+    geom_line(aes(y = trend_pred), color = "red") +
+    labs(title = "Linear Trend vs Deseasoned Data",
+         y = "Value",
+         x = "Time",
+         color = "Legend") +
+    theme_minimal() +
+    scale_color_manual(values = c("blue", "red"), 
+                       labels = c("Deseasoned Data", "Linear Trend"))
+a$cyclical=a$trend/a$trend_pred
+y=ggplot(a, aes(x = Month)) + 
+    geom_line(aes(y = cyclical), color = "black") +
+    labs(title = "Cyclical Component",
+         y = "Value",
+         x = "Time",
+         color = "Legend") +
+    theme_minimal() 
+grid.arrange(x, y, ncol=1)
+```
+
+---
+
+
+
+---
+
+Putting it all together:
+
+$$y=s*t*c*I$$
+I assumed to be one, unless you have a reason to believe there will be a shock
+
+h) Forecast and onfidence interval in time series.
+
+Assemble all the elements:
+
+you know the seasonal factor, the trend, you don't know the cycle component - this needs to be figured out
+
+just seasonalize the predicted trend
+
+simple forecast
+predicttion - sigma residal etc https://otexts.com/fpp2/prediction-intervals.html
+prediction interval (residual), 
+
+
+

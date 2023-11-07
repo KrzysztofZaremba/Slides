@@ -65,6 +65,7 @@ library(ggplot2)
 library(dplyr)
 library(MASS) # for truehist function
 load("URG_Sample.Rda")
+Sample_urg=Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",]
 ```
 ---
 ## Roadmap
@@ -836,11 +837,6 @@ So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+
 
 - And standard deviation is just square root of this!
 
---
-
-**Intuition**
-
-If we have just one regressor: $(X'X)^{-1}_{11}=\frac{1}{\sum(x_i-\bar{x})^2}$
 
 ---
 ### Variance
@@ -851,7 +847,7 @@ If we have just one regressor: $(X'X)^{-1}_{11}=\frac{1}{\sum(x_i-\bar{x})^2}$
 --
 - Same as before: 
 
-$$\sigma^2=\frac{\sum_i e_i^2}{n-p}$$
+$$\hat{\sigma}^2=\frac{\sum_i e_i^2}{n-p}$$
 - Where $e_i$ is fitted residual and $p$ is number of parameters $p=k+1$
 - This is called mean squared error as well
 
@@ -1193,7 +1189,7 @@ $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i1}*x_{i2}+u_i$$
 $$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}++u_i$$
 --
 - $\beta_3$ answers the following question:
-  - If I increase $x_{i2}$ by one, by how much the coefficient on $x_i1$ changes?
+  - If I increase $x_{i2}$ by one, by how much the coefficient on $x_{i1}$ changes?
 
 
 ---
@@ -1313,11 +1309,11 @@ Under the above assumptions:
 $$\hat{\beta}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}})$$
 And 
 
-$$\hat{\beta_j}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}_{jj}})$$
+$$\hat{\beta_j}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}_{j+1,j+1}})$$
 --
 Normalizing we get that:
 
-$$\frac{\hat{\beta}_j-\beta_j}{s\sqrt{(X'X)^{-1}_{jj}}} \sim t_{n-p}$$
+$$\frac{\hat{\beta}_j-\beta_j}{s\sqrt{(X'X)^{-1}_{j+1,j+1}}} \sim t_{n-p}$$
 - This test statistic has student t distribution with n-p degrees of freedom
   - Because the $\frac{s^2(n-p)}{\sigma^2} \sim \chi_{n-p}$
 - Where p is the number of parameters (coefficients)
@@ -1332,10 +1328,13 @@ Suppose:
 
 Then, we use test statistic:
 
-$$t_{test}=\frac{\hat{\beta}_j-\beta_{j0}}{s\sqrt{(X'X)^{-1}_{jj}}}$$
+$$t_{test}=\frac{\hat{\beta}_j-\beta_{j0}}{s\sqrt{(X'X)^{-1}_{j+1,j+1}}}$$
 And we reject if $t_{test}>t_{\alpha/2,n-p}$ or $t_{test}<-t_{\alpha/2,n-p}$
 
 Where $t_{\alpha/2,n-p}$ is $1-\alpha/2$ quantile of student t with n-p degrees of freedom
+--
+
+**NOTE:** This is a test for $\beta_j$ given all other regressors. It's not the same as the test statistic with only one regressor!
 ---
 ### Example
 
@@ -1360,8 +1359,8 @@ We can also use this distribution to construct confidence intervals:
 An interval for $\beta_j$ with confidence level $1-\alpha$ is:
 
 $$\begin{align*}
-CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\beta_j)\} \\
-& =\{\hat{\beta_j}-t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{jj}},\hat{\beta_j}+t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{jj}}\}
+CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\hat{\beta}_j)\} \\
+& =\{\hat{\beta_j}-t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{j+1,j+1}},\hat{\beta_j}+t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{j+1,j+1}}\}
 \end{align*}$$
 
 
@@ -1385,7 +1384,7 @@ For our age coefficient we had:
 So 95% CI for $\beta_{Age}$ is:
 
 $$\begin{align*}
-CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\beta_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\beta_j)\} \\
+CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\hat{\beta}_j)\} \\
 & =\{0.206-1.96*0.067,0.206+1.96*0.067\} \\
 & =\{0.075,0.337\} 
 \end{align*}$$
@@ -1491,6 +1490,172 @@ $CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2(1+\mathbf{x
 We are less certain about predicting outcome for a single person, compared to average outcome among namy people. 
 
 ---
+### Testing for the significance of the regression
+
+- Does our model helps to explain any variation in $y_i$?
+
+- $\small H_0: \beta_1=\beta_2=...\beta_k$
+- $\small H_A: \beta_j \neq 0$ for at least one $j$
+--
+
+- It's the same procedure as before!
+  - **Explained variation** should be large compared to **unexplained variation** if the model works
+--
+
+- We can again do the decomposition in SST, SSR, and SSE:
+  - $SS_T$ is total sum of squares $\sum_i(y_i-\bar{y})^2$, .blue[n-1 DoF]
+  - $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2$, .blue[k DoF]
+  - $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y_i})^2$, .blue[n-k-1 DoF]
+
+```{r, results = "asis", echo = FALSE, message = FALSE}
+library(knitr)
+
+tex2markdown <- function(texstring) {
+  writeLines(text = texstring,
+             con = myfile <- tempfile(fileext = ".tex"))
+  texfile <- pandoc(input = myfile, format = "html")
+  cat(readLines(texfile), sep = "\n")
+  unlink(c(myfile, texfile))
+}
+
+textable <- "
+\\begin{table}[ht]
+\\centering
+\\begin{tabular}{lccc}
+\\toprule
+Source & Sum of Squares & Degrees of Freedom & DoF  \\\\
+\\midrule
+Regression & 13557462 & 2 & k  \\\\
+Residual Error & 48947909 & 4995 & n-k-1  \\\\
+Total & 62505371 & 4997 & n-1 \\\\
+\\bottomrule
+\\end{tabular}
+\\end{table}
+
+"
+
+tex2markdown(textable)
+```
+
+---
+### Testing for the significance of the regression
+
+F-stat and its distribution under the null
+
+$$F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)} \sim \underbrace{F_{k,n-k-1}}_{\text{Dist under } H_0}$$
+--
+
+Alternative way to think about it:
+
+- $\small H_0: y=\beta_0+u$ restricted model
+- $\small H_A: y=\beta_0+\beta_1x_{1}+\beta_2x_{2}+u$
+
+If $H_A$ is true, restricted model should explain more of $y$
+
+$$\small F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}==\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}$$
+--
+
+- $\small SSR_{H_A}$ is the regression sum of square from unrestricted model with $\small k$ degrees of freedom (2)
+- $\small SSR_{H_0}$ is the regression sum of squres from the restricted model wiht $\small k_0$ degrees of freedom (0) - it's the number of regressors in restricted model
+- $\small SSE_{H_A}$ is the residual sum of squres in the unrestricted model
+
+---
+### Testing for the significance of the regression
+
+```{r, echo = TRUE, message = FALSE}
+
+linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
+
+```
+
+---
+### Adding a coefficient 
+
+- We can use the above logic to test how much more we can explain by including one more coeffcient
+
+
+--
+- Suppose we want to compare a regression model with only occupancy vs both occupancy and age
+
+- $\small H_0: y=\beta_0+\beta_1Occupancy+u$ restricted model
+- $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
+
+$$\small F_{2}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}} \sim \underbrace{F_{k-k_0, n-k-1}}_{\text{Dist under } H_0}$$
+- In our case $k=2$ and $k_0=1$, so the null distribution is $F_{1, n-3}
+
+---
+### Adding a coefficient 
+```{r, echo = FALSE, message = FALSE}
+lm_model <- lm(Duration ~Occupancy+EDAD, data = Sample_urg)
+anova(lm_model)
+
+```
+
+- **Sequential testing:** 
+- Occupancy - $F_1$ is the additional effect of including Occupancy to a model without any regressors
+  - $\small H_0: y=\beta_0+u$ restricted model
+  - $\small H_A: y=\beta_0+\beta_1Occupancy+u$ unrestricted model
+
+
+- EDAD - $F_2$ is the additional effect of including Age once we already have Occupancy in the model
+  - $\small H_0: y=\beta_0+\beta_1Occupancy+u$ restricted model
+  - $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
+
+
+
+---
+### Adding a coefficient 
+- $F_k$ (last coef) is equivalent to $t_k^2$ in our full model
+- But $F_1$ is not equivalent to $t_1^2$ in our full model
+
+```{r, echo = FALSE, message = FALSE}
+lm_model <- lm(Duration ~Occupancy+EDAD, data = Sample_urg)
+summary_lm <- summary(lm_model)
+coef_table <- summary_lm$coefficients
+coef_table
+anova(lm_model)
+
+```
+
+---
+### Adding a coefficient 
+
+- Why reordering variables changes $F_{stats}$? 
+
+```{r, echo = FALSE, message = FALSE}
+anova(lm_model)
+
+lm_model <- lm(Duration ~EDAD+Occupancy, data = Sample_urg)
+anova(lm_model)
+```
+--
+
+- Because it changes which regressors we already have in the model
+
+--
+- Do squares always add up to the same thing?
+
+---
+### Testing multiple coefficients
+
+Suppose we have a model with three predictors 
+
+$$\small y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$$
+We can test for a subset of predictors, for example if Age and Sex matter
+
+- $H_0:\beta_2=\beta_3=0  \rightarrow y=\beta_0+\beta_1Occupancy+u$
+- $H_A:\beta_2\neq 0$ or $\beta_3\neq0  \rightarrow y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$
+
+$$\small F_{test}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}} \sim F_{2, n-4}$$
+---
+
+```{r, echo = FALSE, message = FALSE}
+lm_model <- lm(Duration ~Occupancy+EDAD+SEXO, data = Sample_urg[Sample_urg$SEXO!="SEXONO ESPECIFICADO",])
+linearHypothesis(lm_model, c("EDAD=0", "SEXOMASCULINO=0"))
+```
+
+
+---
 
 ### Testing for multiple coefficients
 
@@ -1500,13 +1665,142 @@ A cool thing about the regression is that we can test relationships between the 
 - Is the impact of additional year of experience the same as impact of additional year of work experience in a regression:
 
 $$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
-- That corresponds to null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$
+
+- That corresponds to null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$ 
 
 **Another Example**:
-- Suppose that employees can go through a sales training, get a promotion, and/or get better office (these are binary variables). We want to evaluate impact of these measures on their sales:
+- Suppose that employees can go through a sales training, and/or get a better office (these are binary variables). We want to evaluate impact of these measures on their sales:
 
-$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{promotion}_i+\beta_3\text{office}_i+u_i$$
-- We wonder if giving an employee all three would increase sales by 100: $H_0: \beta_1+\beta_2+\beta_3=100$ 
+$$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{office}_i+u_i$$
+- We wonder if giving an employee all three would increase sales by more than 100: 
+$H_A: \beta_1+\beta_2>100$ 
+
+
+
+---
+### Relationships between coefficients 
+
+Suppose we have a model:
+
+$$y=\beta_0+\beta_1+\beta_2+...\beta_k+u$$
+--
+
+- We want to test if the difference between impact of $x_1$ and $x_2$ is equal to c
+
+**Hypothesis**
+- $H_0: \beta_1-\beta_2=c$
+- $H_A: \beta_1-\beta_2\neq c$
+
+--
+ - Special case: $c=0$ => testing equality $\beta_1=\beta_2$
+
+--
+**Test statistic and its distribution under the null**
+
+$$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+- Calculate p-value as $2P(t_{n-k-1}>|T_{test}|)$
+
+---
+### Relationships between coefficients
+
+- In the same way we can test whether one coefficient is larger than another by some amount
+
+**Hypothesis**
+- $H_0: \beta_1-\beta_2=c$
+- $H_A: \beta_1-\beta_2> c$
+--
+
+ - Special case: $c=0$ => testing inequality $\beta_1>\beta_2$
+
+--
+
+**Test statistic and its distribution under the null**
+
+$$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+--
+
+- Calculate p-value as $P(t_{n-k-1}>T_{test})$
+--
+
+- If alternative is $H_A: \beta_1-\beta_2 < c$, then $P(t_{n-k-1}<T_{test})$
+
+
+---
+### Example
+
+- Test if one more person at the hospital has larger effect than being one year older
+
+```{r, echo = FALSE, message = FALSE}
+m1=lm(formula = Duration ~ Occupancy + EDAD + SEXO, data = Sample_urg)
+m1
+vcov_matrix <- vcov(m1)
+vcov_matrix
+```
+
+---
+### Example
+
+- Hypotheses:
+  - $H_0: \beta_{O}=\beta_{A}$
+  - $H_A: \beta_{O}>\beta_{A}$
+--
+
+- Calculate the test statistic
+
+$$\small T_{test}=\frac{\beta_{O}-\beta_{A}}{\sqrt{var(\hat{\beta_O})+var(\hat{\beta_A})-2cov(\hat{\beta_O},\hat{\beta_A})}}=\frac{3.6803- 0.2047}{\sqrt{0.01+0.0045-2*(-0.00054)}}=27.84$$
+
+--
+
+- Calculate p-value
+
+$P-value=P(t_{n-k-1}>T_{test})=P(t_{4994}>27.84) \approx0$
+
+
+--
+
+Conclusion
+
+- we reject that impact of one more year is smaller or equal to the impact of one more person
+
+---
+### Sum of coefficients 
+
+Suppose we have a model:
+
+$$y=\beta_0+\beta_1+\beta_2+...\beta_k+u$$
+--
+
+- We want to test if the sum of impact of $x_1$ and $x_2$ is equal to c
+
+**Hypothesis**
+- $H_0: \beta_1+\beta_2=c$
+- $H_A: \beta_1+\beta_2\neq c$
+
+--
+
+**Test statistic and its distribution under the null**
+
+$$T_{test}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{SE(\hat{\beta_1}+\hat{\beta_2})}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})+2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+--
+
+- Calculate p-value as $P(t_{n-k-1}>T_{test})$
+
+- If $H_A: \beta_1+\beta_2 < c$, then $P(t_{n-k-1}<T_{test})$
+- If $H_A: \beta_1+\beta_2 > c$, then $P(t_{n-k-1}>T_{test})$
+
+---
+### Example
+
+- Test if the total impact of increasing occupancy by one person and being male is larger than 17
+
+
+```{r, echo = FALSE, message = FALSE}
+m1=lm(formula = Duration ~ Occupancy + EDAD + SEXO, data = Sample_urg)
+m1
+vcov_matrix <- vcov(m1)
+vcov_matrix
+```
+
 
 ---
 ### General Linear Hypothesis 
