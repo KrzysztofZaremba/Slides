@@ -458,6 +458,7 @@ Is transform data stationary?
 SS|>autoplot(difference(M))
 
 ```
+
 --
 - Does it have constant mean?
 
@@ -475,20 +476,18 @@ SS|>ACF(difference(M))|>autoplot()
 
 ---
 
+### Simple forecasting methods
 
-###d
-e) Na¨ıve models and average methods. Centred Moving Average for smoothing.
+**Naive Model**
 
+The simplest way to forecast is to assume that it will be the same as previous period
 
+- One step forecast: $\hat{y}_{T+1|T}=y_T$ 
 
-
-naive forecast: just use previous observation:
-
-$\hat{y}_{T+1|T}=y_T$
-
+--
+- h-step forecast: $\hat{y}_{T+h|T}=y_T$ 
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
-naive(HT$M, 1)
 library(fable)
 library(tsibbledata)
 HT %>%
@@ -497,17 +496,84 @@ HT %>%
   autoplot(HT, level=NULL)
 
 
+
 ```
 
 
-##Example from the marriages 
+---
+### Simple forecasting methods
 
-seasonal naive:
+What is the confidence interval for such prediction?
+
+- We need to know the variance of the forecast error
+
+--
+- What is **Forecast Error**? 
+
+$$e_t=y_{T+h}-\hat{y}_{T+h|T}$$
+--
+- It's the difference between what we forecasted and what actually happened onece we observe this datapoint
+- Also known as out-of-sample error
+
+--
+- We only used observations up to point T when estimating this model!
+
+--
+- Different from **Fitted Residuals**!
+
+$$u_t=y_{t}-\hat{y}_{t}$$
+These are fitted residuals for observations that we used in estimation. 
+
+
+---
+### Simple forecasting methods
+
+- In the simplest model, and one step ahead, residuals and forecast errors are similar. 
+
+- So we can approximate the standard deviation of $e_t$ with standard deviation of $u_t$ in this naive model.
+
+- Let $\sigma_h$ be the h-step forecast error. 
+
+- We will assume: $$\sigma_1=\sigma_u$$ so the standard deviation of the one step ahead forecast is the same as the standard deviation of the residuals
+
+- This gives us the following confidence interval for one step ahead error:
+
+$$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
+
+For longer horizon, forecast error in naive forecast is:
+
+- Let $\sigma_h=\sigma_u\sqrt{h}$ be the sd of h-step forecast error, and $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{h}$$
+
+---
+### Simple forecasting methods
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+X=HT %>%
+  model(NAIVE(M))
+sd(X$`NAIVE(M)`[[1]]$fit$.resid, na.rm=TRUE)
+naive(HT$M, 1)
+library(fable)
+library(tsibbledata)
+HT %>%
+  model(NAIVE(M)) %>%
+  forecast(h = 24) %>%
+  autoplot(HT)
+
+
+```
+
+---
+### Simple forecasting methods
+
+**Seasonal naive**
+
+We can make it slightly more elaborate by assuming it's the same value as in the last same season:
 
 $\hat{y}_{T+1|T}=y_{m(T+1)}$
 
 
-m(T) is the last time period with the same season as T+1
+- m(T) is the last time period with the same season as T+1
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -519,14 +585,61 @@ HT %>%
   autoplot(HT, level=NULL)
 
 ```
-##Example from the marriages 
-
 
 ---
 
-Average prediction (just average y)
+### Simple forecasting methods
 
-We could just take an average of time series as prediction. but is it good?
+- At one step ahead, the confidence interval is the same:
+
+$$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
+
+--
+
+- For longer horizon, forecast error is slightly different:
+
+--
+
+- Let $\sigma_h=\sigma_u\sqrt{h}$ be the h-step forecast error sd
+- Let $k$ be the number of seasonal cycles in the forecast prior to forecast time
+  - If it's the first January since time T, k+1=1
+  - If it's the second January since time T, k+1=2
+
+
+ $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{k+1}$$
+---
+
+### Simple forecasting methods
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT %>%
+  model(SNAIVE(M ~ lag("year"))) %>%
+  forecast(h = 24) %>%
+  autoplot(HT)
+
+```
+
+--
+- Why the interval is smaller than in the previous case?
+
+--
+- The forecast errors are smaller
+- So the standard deviation of errors is smaller!
+
+---
+
+### Simple forecasting methods
+
+
+**Simple Average**
+
+We can also just take an average of the time series and make it our prediction:
+
+
+$\hat{y}_{T+1|T}=\bar{y}_T=\frac{\sum_{t\leq T} y_t}{T}$
+
 
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
@@ -540,16 +653,44 @@ HT %>%
 
 ```
 
+---
 
-## Better only average of observations around the period of interest
 
 
-Moving average
+### Simple forecasting methods
+
+- At one step ahead, the confidence interval is the same:
+
+$$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
+
+--
+
+- For longer horizon, forecast error is slightly different:
+
+--
+
+- Let $\sigma_h=\sigma_u\sqrt{h+\frac{1}{T}}$ be the h-step forecast error sd
+
+
+ $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{h+\frac{1}{T}}$$
+
+- Generally,aAverage value acros 20 years is not a good prediction
+
+---
+
+
+### Moving average
+
+Consider an average of the last $k$ observations:
 
 $$MA(k)_t: \frac{\sum^k_{j=1} y_{t+1-j} }{k}=\frac{y_{t}+y_{t-1}..+y_{t+1-k}}{k}$$
 
-Last couple of observations
-usually pick the length of a season (so if quarterly, than 4, if monthly than 12), it also can help to smooth the seasonality (if we take average of seasons with lower and higher marriages, they basically cancel out)
+- How many? Usually equal to number of seasons, so the seasonal variation smoothed out
+
+--
+- As we will see later, this is more useful in identifying trend and cycle components
+
+**12 months**
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -569,7 +710,7 @@ HT %>%
 
 ---
 
-4 months
+**4 Months**
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -589,7 +730,7 @@ HT %>%
 ---
 
 
-3 months
+**3 years**
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -608,69 +749,214 @@ HT %>%
 
 ---
 
+### Evaluating forecasts
 
+Which of the forecasts was the best?
 
-fit vs accuracy out of sample vs insample
-
-Forecast error 
-
-(PICTURE FROM THAT BOOK)
-
-$e_{T+h}=y_{T+h}-\hat{y}_{T+h|T}$
-where A_t and hatyt is estimated using only observations up to t-1. 
-
-d) Forecast error and accuracy: ME, MPE, MAE; MAPE, MSE and RMSE. Hypotheses
-testing for the mean error.
-
-$$ME=\frac{\sum(A_t-F_t)}{n}$$
-positive and negative values can add to 0.... but useful to measure bias - over or underprediction
-
-$$MAE=\frac{\sum|A_t-F_t|}{n}$$
-
-$$MPE=\frac{\sum(A_t-F_t)/A_t}{n}$$
-it's unitless 
-
-$$MAPE=\frac{|\sum(A_t-F_t)/A_t|}{n}$$
-
-$$MSE=\frac{\sum(A_t-F_t)^2}{n}$$
-
-$$RMSE=\sqrt{\frac{\sum(A_t-F_t)^2}{n}}$$
-
-
+--
+- There is couple of ways to evaluate the forecast accuracy
+- They all have advantages and disadventages
+- General idea: how close the forecast was to the observed value
+- You always use OUT-OF-SAMPLE errors, not fitted residuals
 ---
 
+### Mean Error
 
+$$ME=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})}{T-h}$$
+- This is the average of forecast error
 
-###d
+--
+- Can tell us which direction is the bias
 
-hypothesis testing mean error
+- You can test for the existence of bias with a usual t test:
 
-Usual stuff: 
+  - $H_0:E(e_t)=0$
+  - $H_A:E(e_t) \neq 0$ (or inequality)
 
-$$t_{test}=\frac{\bar{e}-0}{SE(\bar{e})}=$$ 
+- Test statistic and the null distribution:
+  $$T_{test}=\frac{\bar e-0}{\frac{\hat{\sigma}_e}{\sqrt n}} \sim t_{n-1}$$
+
+--
+- Positive and negative values can add up to 0
+- So even if errors are large, but symmetric, this measure will be close to 0
 
 ---
+### Mean Error:
 
-Decomposition overwiev
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
 
+Marriages_train=HT%>%
+  filter(as.numeric(ANIO_REGIS) < 2010)
+FC=Marriages_train %>% 
+   model(
+    Mean = MEAN(M),
+    `Naïve` = NAIVE(M),
+    `Seasonal naïve` = SNAIVE(M))%>%
+  forecast(h = 2)
 
-##
-helps to smooth 
-
-similar, but we center at the observation of interest
-
-so we average observations before and after. This is to basically get rid of seasonality and isolate other elements of time series. Will be helpful later in decomposing time sereies in different elements
-
-helpful in removing short term fluctuations
-
-Centred Moving Average for smoothing.
-
-typical level for a period on which it is centered (a year)
----
-$$MA(5)_t: \frac{\sum^{2}_{j=-2} y_{t+j} }{5}=\frac{y_{t+2}+y_{t+1}+y_t+y_{t-1}+y_{t-2}}{5}$$
+```
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
+forecast::accuracy(FC, HT)
+
+```
+- If the error is negative, we overestimate! 
+
+---
+### Mean Absolute Error
+
+$$MAE=\frac{\sum^{T-h}_{t=1}|y_{t+h}-\hat{y}_{t+h|t}|}{T-h}$$
+
+- Similar, but we take absolute value of errors. So they don't cancel out!
+- This measure is **always** positive 
+- But we can't say whether we underpredict or overpredict
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+forecast::accuracy(FC, HT)
+
+```
+
+- Now clearly seasonal is the best
+
+---
+### Mean Percentage Error
+
+$$MPE=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})/y_{t+h}}{T-h}$$
+- Answers the question:
+  - on average, my forecast is x% wrong
+  
+--
+- It's unitless, so I can compare forecasts of different measures
+  - EG: comparing forecast of inflation vs exports 
+
+--
+- But again, negative and positive can cancel out...
+
+- So average forecast is again performing well!
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+forecast::accuracy(FC, HT)
+
+```
+
+
+---
+### Mean Absolute Percentage Error
+
+
+
+$$MAPE=\frac{\sum^{T-h}_{t=1}|y_{t+h}-\hat{y}_{t+h|t}|/y_{t+h}}{T-h}$$
+- Similar as before, but we take the absolute value
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+forecast::accuracy(FC, HT)
+
+```
+
+---
+### Squared Errors
+
+- Mean Squared Errors
+$$MSE=\frac{\sum(A_t-F_t)^2}{n}$$
+
+- Root Mean Squared Errors
+$$RMSE=\sqrt{\frac{\sum(A_t-F_t)^2}{n}}$$
+--
+- If we take squre instead of absolute value, we penalize more big deviations
+- Then we need to take square root to get the right units back
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+forecast::accuracy(FC, HT)
+
+```
+
+
+---
+
+### Time series decomposition
+
+- Helps in analyzing the patterns in the time series data
+- Sometimes used for forecasting
+
+--
+
+**Multiplicative Decomposition**: Assume time series is a product of 4 elements:
+
+$$y_t=S_tT_tC_cR_t$$
+
+
+--
+**Goal**: Identify the elements of the time series:
+
+1. Seasonality $S_t$
+2. Trend $T_t$
+3. Cycles $C_t$
+4. Irregular/Reminder $R_t$
+
+--
+- Two notes:
+  - We will often ignore irregular components
+  - Some methods don't distinguish between Trend and Cycles
+
+---
+### Seasonality
+
+- How would you identify which variations are due to seasonality?
+
+
+```{r, warning=FALSE, fig.height=2, out.width='100%', message=FALSE}
+HT|>gg_season(M)
+
+```
+
+--
+- **Idea**: 
+  1. Eliminate seasonal variation
+  2. Compare the actual series to the one without seasonal variation
+  3. The difference is due to seasonality!
+
+--
+- How to eliminate seasonal variation?
+
+--
+- We will use (Centred) Moving Averages for smoothing.
+
+---
+### Seasonality
+
+#### Moving averages for smoothing
+
+- Why moving average smoothes out seasonal variation?
+
+--
+- It averages out variation over some period of time
+
+--
+- In some seasons we have more weddings, in some seasons we have less wedding. On average these positive and negative seasonalities will average out. 
+
+--
+- Over which period should we take average?
+
+---
+### Seasonality
+
+- Suppose I take average over 5 months. 
+- Note that this time the period in focus is at the center
+- I look at $y_t$, two observations before it and two observations after it! 
+- So the closest observations to $y_t$
+
+
+$$\small MA(5)_t: \frac{\sum^{2}_{j=-2} y_{t+j} }{5}=\frac{y_{t+2}+y_{t+1}+y_t+y_{t-1}+y_{t-2}}{5}$$
+
+```{r, warning=FALSE, fig.height=2, out.width='100%', message=FALSE}
 library(fable)
 library(tsibbledata)
 HT=ungroup(HT)
@@ -684,9 +970,18 @@ HT %>%
 
 ```
 
+--
+- If I take only 5, I don't average over all seasons!
+- Sometimes I capture more high seasons but not low seasons, so seasonality persists
 
+---
+### Seasonality
 
-$$MA(12)_t: \frac{\sum^{5}_{j=-6} y_{t+j} }{12}=\frac{y_{t+5}+y_{t+4}..+y_t+..+y_{t-5}+y_{t-6}}{12}$$
+- Suppose I take average over 12 seasons
+- Now each average is over all months (seasons)
+- We eliminated seasonal variation
+
+$$\small MA(12)_t: \frac{\sum^{5}_{j=-6} y_{t+j} }{12}=\frac{y_{t+5}+y_{t+4}..+y_t+..+y_{t-5}+y_{t-6}}{12}$$
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -703,50 +998,104 @@ HT %>%
 
 ```
 
-since even, it's not really centered. To center it, I will  take average of two moving averages, one including -6 and one including +6. They both include 12 observations, so take average over the year!
+---
+### Seasonality
+
+--
+- Mathematical caveat
+  - Since the number of periods is even (12), our main observations is not really at the center
+  - We can have 5 obs before and 6 after
+  - Or 6 obs bevore and 5 after
+
+--
+**Centered** Moving Average
+
+- Or we can have both!
+
+--
+- Calculate moving average both ways and then take the average of the two.
 
 $$CMA(12)_t=(\frac{\sum^{5}_{j=-6} y_{t+j} }{12}+\frac{\sum^{6}_{j=-5} y_{t+j} }{12})/2$$
-Note that we lose some data at the end and at the beginning. 
+
+--
+- Note that we lose some data at the end and at the beginning. 
 
 
 ---
-covid average
+
+- What was the "seasonality" in terms of Covid?
 
 ![My Plot](covid_average.jpg)
 
-what would happen if I take 7 days average? 
+--
+- Less testing on weekends
 
+--
+- Seasonality was by the day of the week
 
-
----
-Now that I have data without seasons, I can identify other important elements
-like trend, cyclical element, and irregular elememt.Once I have all these elements, I can forecast them separately and put all of them back together to make forecast general forecast. 
-
-So I don't confuse seasonal variation with trend
-
+--
+- So we take 7 days average to smooth it out
 
 ---
+### Seasonality
 
-b) Adjustments for seasonality: concepts and applications
+- We achieved first step, we have a series without seasonal variation
+- So how we identify which parts are due to seasonality?
 
-```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
-HT|>gg_season(M)
+
+--
+**Seasonal indices**
+
+- Compare actual data to data without seasons
+
+--
+- January 2010 seasonal factor would be
+  $$SF_{January, 2010}=Y_{January,2010}/CMA_{January,2010}$$
+
+---
+
+```{r, warning=FALSE, fig.height=2.5, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+HT %>% 
+  mutate(
+    `12-MA` = slider::slide_dbl(M, mean,
+                .before = 6, .after = 5, .complete=TRUE)
+  ) %>%
+  autoplot(M, color="gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+```
+  $$SF_{t}=Y_{t}/CMA_{t}$$
+
+```{r, warning=FALSE, fig.height=2,5, out.width='100%', message=FALSE}
+
+library(fable)
+library(tsibbledata)
+HT %>% 
+  mutate(
+    MA12 = slider::slide_dbl(M, mean,
+                .before = 6, .after = 5, .complete=TRUE)
+  ) %>%
+  mutate(Seasonality=M/MA12)%>%
+  autoplot(Seasonality) +
+  geom_line(aes(y = Seasonality), colour = "#D55E00")
 
 ```
 
 
-
 ---
-Seasonal indices 
+### Seasonality
+**Seasonal indices**
 
-Compare actual data to seasonal data to get seasonal indices 
-
-January seasonal factor would be
-$$SF_{January, 2010}=Y_{January,2010}/CMA_{January,2010}$$
-Then,
+- We assume seasonal indices are the same across the time, so we just take the average of all of them for each season: 
 
 $$SF_{January}=\sum_{year}Y_{January,year}/CMA_{January,year}$$
 
+--
+.pull-left[
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
 a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
@@ -755,32 +1104,57 @@ a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
 data.frame(Month=1:12, Seasonal_index=a$seasonal[1:12])
 
 ```
-Make sure they average to 1.  That may require dividing by a constant
+]
+.pull-right[
 
+- In January, we have 13.5% less weddings than yearly average
+- In December, we have on average 38% weddings than yearly avearge
+- in June, we have 14.3% less weddings than yearly average
+]
+---
+### Seasonality
 
-
+- They should average to 1
+  - Because they represent how much they deviate from average in a given season
+- (or in other words) They should add up to the number of seasons!
 $$\sum^S_{s=1}SF_s=S$$
-
-They always  add up to number of seasons! So if you miss one, you can identify it from the rest
-
+--
+- If you don't know one index, you can identify it from the sum
 
 
 ---
-### ok, alternative: 
 
+### Trend
 
+- We isolated seasonality
+- Now that our time series is not contaminated by seasonal variation, we can identify the trend
 
+--
 
-f ) Linear Regression and Trend.
+**Assumption:** Trend is linear
 
-Estimated from deseasonalized data. We will assume the trend is linear
+- We are trying to find a line that best approximate the *deseasoned data*
 
-so 
+--
+- That's what a linear regression do!
 
-$$CMA_t=a+bt$$
+--
+- My outcome is the deseasoned time series values
+- My predictor is time
 
-you can find a and b with a regression 
+--
+$$CMA_t=a+bt+e_t$$
 
+--
+- We find $a$ and $b$ by OLS 
+
+-- 
+Our predicted trend at time t is:
+
+$$T_t=\hat{a}+\hat{b}t$$
+
+---
+### Straight marriages
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
 a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
@@ -800,9 +1174,13 @@ ggplot(a, aes(x = Month)) +
          color = "Legend") +
     theme_minimal() +
     scale_color_manual(values = c("blue", "red"), 
-                       labels = c("Deseasoned Data", "Linear Trend"))
+                       labels = c("Deseasoned Data", "Linear Trend"))+
+  ylim(0, NA)
 
 ```
+
+---
+### Same-sex marriages
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -828,13 +1206,14 @@ ggplot(a, aes(x = Month)) +
 ```
 
 ---
+### Cyclical element
 
-g) Time series decomposition: Multiplicative model.
+- Cyclical element is the upward and downward movements around the trend in the deseasoned data
 
+--
+- Divide the centered moving average (deseasoned time series) by the trend value 
 
-I have trend component and seasonal component. Now let's deal with the cyclical component
-
-divide the centered moving average, by centerd moving average trend (just trend)
+$$C_t=\frac{CMA_t}{T_t}$$
 
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
@@ -863,26 +1242,33 @@ y=ggplot(a, aes(x = Month)) +
          y = "Value",
          x = "Time",
          color = "Legend") +
-    theme_minimal() 
+    theme_minimal() + geom_hline(yintercept = 1, linetype = "dashed", color = "darkgrey")
 grid.arrange(x, y, ncol=1)
 ```
 
 ---
+### Multiplicative Decomposition
 
+- What about the irregular component?
+- We will assume it's one, unless someone tells us there will be some shock
+
+
+- Once we identified all the elements, we can make predictions for the original variable using the model:
+
+$$y_t=S_tT_tC_cR_t$$
 
 
 ---
-
-Putting it all together:
-
-$$y=s*t*c*I$$
-I assumed to be one, unless you have a reason to believe there will be a shock
 
 h) Forecast and onfidence interval in time series.
 
 Assemble all the elements:
 
 you know the seasonal factor, the trend, you don't know the cycle component - this needs to be figured out
+
+
+---
+### Forecasting with decomposition
 
 just seasonalize the predicted trend
 
