@@ -1159,7 +1159,7 @@ $$T_t=\hat{a}+\hat{b}t$$
 
 a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
   components()
-a$Time=as.numeric(a$Month)
+a$Time=as.numeric(a$Month)-min(as.numeric(a$Month))+1
 
 lin_model=lm(trend~Time, data=a)
 print(lin_model)
@@ -1186,7 +1186,7 @@ ggplot(a, aes(x = Month)) +
 
 a=SS%>%model(classical_decomposition(M, type = "mult")) %>%
   components()
-a$Time=as.numeric(a$Month)
+a$Time=as.numeric(a$Month)-min(as.numeric(a$Month))+1
 
 lin_model=lm(trend~Time, data=a)
 print(lin_model)
@@ -1220,7 +1220,7 @@ $$C_t=\frac{CMA_t}{T_t}$$
 
 a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
   components()
-a$Time=as.numeric(a$Month)
+a$Time=as.numeric(a$Month)-min(as.numeric(a$Month))+1
 
 lin_model=lm(trend~Time, data=a)
 a$trend_pred <- predict(lin_model, newdata = a)
@@ -1259,22 +1259,70 @@ $$y_t=S_tT_tC_cR_t$$
 
 
 ---
+### Prediction
 
-h) Forecast and onfidence interval in time series.
+What will be the marriage rate in January 2023 (T+1)?
 
-Assemble all the elements:
+- What is my $S_{T+1}$
 
-you know the seasonal factor, the trend, you don't know the cycle component - this needs to be figured out
+--
+  - $S_{T+1}$ for January is:  0.865
 
+--
+- What is my $T_{T+1}$?
+
+--
+  - Formula: $60304.43-61.46*361=38117.37$
+  - January 1993 is t=1, February 1993 is t=2 ... January 2023 is t=361
+
+--
+- What is my $C_{T+1}$?
+
+--
+  - Hardest to predict
+  - Assume it's the same as last available one: $C_{T-6}=1.0876$
+
+--
+- What is my $R_{T+1}$?
+
+--
+  - We don't expect anything crazy to happen so $R_{T+1}=1$
+
+--
+  - Putting it all together:
+  $$\hat{y}_{T+1}=S_{T+1}T_{T+1}C_{T+1}R_{T+1}=35859.83$$
 
 ---
-### Forecasting with decomposition
+### Prediction
 
-just seasonalize the predicted trend
+**Confidence Interval**
 
-simple forecast
-predicttion - sigma residal etc https://otexts.com/fpp2/prediction-intervals.html
-prediction interval (residual), 
+**Step 1** Find interval bands from trend regression
+  - Just use the standard formula
+  
+$$\hat{T}_{T+1} \pm t_{\alpha/2,n-2}\sqrt{\hat{\sigma_T}^2(1+\frac{1}{T}+\frac{(T+1-\bar t)^2}{\sum^T_{t=1}(t-\bar t)^2})}$$
+  - T is the number of the last observation
+  - $T_{T+1}$ is the trend prediction 
+  - $\hat{\sigma}_T=\frac{SSE}{T-2}$ is the st.dev of residuals from the linear regression.
 
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+
+a=HT%>%model(classical_decomposition(M, type = "mult")) %>%
+  components()
+a$Time=as.numeric(a$Month)-min(as.numeric(a$Month))+1
+
+lin_model=lm(trend~Time, data=a)
+new_data<- data.frame(Time= c(361))
+a=predict(lin_model, newdata = new_data, interval = "predict", level = 0.95, se.fit=TRUE)
+a$fit
+```
+
+
+**Step 2** Mulitply these bands by the seasonal and cyclical component
+
+
+$$CI_{95}=(31187*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}}, 45050*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}})=(29339.92, 42381.87)$$
+- This is under the assumption there is little uncertainty about seasonal and cyclical component
 
 
