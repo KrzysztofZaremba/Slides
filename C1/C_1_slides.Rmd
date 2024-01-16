@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,dpi=300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -287,7 +287,9 @@ a <- ggplot(data=data, aes(x=gdpPercap, y=lifeExp, size=pop, fill=continent, tex
     xlab("Gdp per Capita") +
     theme(legend.position = "none")
 
-ggplotly(a, tooltip="text")
+ggplotly(a, tooltip="text",
+        width = 500,   # Adjust the width according to your preference
+        height = 450)
   
 ```
 
@@ -320,7 +322,9 @@ p <- data %>%
           legend.text = element_text(size = 14)) # Increase legend text font size
 
 # Turn it interactive with ggplotly
-p <- ggplotly(p)
+p <- ggplotly(p,
+        width = 500,   # Adjust the width according to your preference
+        height = 450)
 p
 ```
 
@@ -346,24 +350,18 @@ Tools will often depend on the horizon and data availability
 
 #### Forecasting Horizons
 - .blue[Very Short Horizon:]
-  - High-Frequency Trading: 
-      - Real-time price predictions for financial trading
-  - Traffic Flow Management: 
-      - Optimizing traffic signals based on real-time data
+  - High-Frequency Trading: Real-time price predictions for financial trading
+  - Traffic Flow Management: Optimizing traffic signals based on real-time data
 --
 
 - .blue[Short Horizon]:
-  - Retail Store: 
-    - Forecasting cashier scheduling based on historical foot traffic and transaction data
-  - Public bikes: 
-    - Predict the availability of bikes at bike station and adjust the number
+  - Retail Store: Forecasting cashier scheduling based on historical foot traffic and transaction data
+  - Public bikes: Predict the availability of bikes at bike station and adjust the number
 --
 
 - .blue[Long Horizon]:
-  - New obesity drug: 
-    - Forecasting number of potential patients and their resources
-  - Investing in new country: 
-    - Forecasting political stability
+  - New obesity drug: Forecasting number of potential patients and their resources
+  - Investing in new country: Forecasting political stability
 ---
 
 ### Overview of Forecasting Techniques
