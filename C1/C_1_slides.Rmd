@@ -64,13 +64,13 @@ colors = c(
   - **Research focus**: Applied Econometrics, Health Economics
   
 --
-  - **Email:** .blue[krzysztof.zaremba@itam.mx]
+  - **Email:** .blue[zaremba@itam.mx]
   
 --
   - **Office:** In Santa Teresa Campus
   
 --
-  - **Office hours:** Calendly, virtual or in person, Wednesday 9-10am
+  - **Office hours:** Calendly, virtual, Tuesday 2-3pm or by appointment
   
 ---
 
@@ -174,20 +174,22 @@ colors = c(
 ### Organization
 
 - **Schedule**: 
-  - Tuesday 10:00-12:00 Room: RH SA4
-  - Thursday 10:00-11:30 Room: RH SA4
+  - Group Section 001
+      - Tuesday 08:00 -10:00 hrs. Room: RH 104
+      - Thursday 08:00 -09:30 hrs. Room: RH 104
+  - Group Section 002 
+      - Tuesday 10:00 -12:00 hrs. Room: PF 105
+      - Thursday 10:00 -11:30 hrs. Room:PF 105
 
 
-- **Textbooks**: 
-  - Makridakis, Wheelwright, Hyndman: *Forecasting methods and applications*
-  - Montgomery, Peck, Vining: *Introduction to Linear Regression Analysis*
-  - [https://www.econometrics-with-r.org/](https://www.econometrics-with-r.org/)
+- **Textbooks**
+  - See canvas course materials and syllabus
   
 ### Grading
 
 - 20% 2x Midterms 
 - 30% Final Exam
-- 15% Quizzes (Every 3-4 weeks, with 1 week notice, in-class)
+- 15% Quizzes (with 1 week notice, in-class)
 - 15% Final Project (In groups of 3)
 - 0% Homeworks
 
@@ -236,18 +238,21 @@ colors = c(
 file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
 wifi_data <- read_csv(file_url,show_col_types = FALSE)
 
+#aliminatre latutides different larger than 20 and smaller than 18
+#eliminates longitudes larger than 100 and smaller than 97
+wifi_data=wifi_data%>%filter(Latitud<20)%>%filter(Latitud>18)%>%filter(Longitud<(-97))%>%filter(Longitud>(-100))
 
 # Create a Leaflet map with clustering
 wifi_map <- leaflet(wifi_data) %>%
   addTiles() %>%
-  addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
+  addCircleMarkers(lng = ~Longitud, lat = ~Latitud, popup = ~Programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
   addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
   addLayersControl(
     baseGroups = c("Greyscale"),
     options = layersControlOptions(collapsed = FALSE)
   ) %>%
-  setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE), 
-          lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
+  setView(lng = mean(as.numeric(wifi_data$Longitud), na.rm = TRUE), 
+          lat = mean(as.numeric(wifi_data$Latitud), na.rm = TRUE), zoom = 10)
 
 # Print the map
 wifi_map
@@ -324,9 +329,11 @@ p
   
   ### Remarks
   - We will use it for practical exercises with data
-  - We will learn it together during labs
-  - You won't be evaluated on it
+  - You will use it for the final project
+  - We will learn some of it together in class
   - Chatgpt is your friend
+  - You might be evaluated on reading the output of R code
+ 
 
 
 ---
@@ -339,18 +346,24 @@ Tools will often depend on the horizon and data availability
 
 #### Forecasting Horizons
 - .blue[Very Short Horizon:]
-  - High-Frequency Trading: Real-time price predictions for financial trading
-  - Traffic Flow Management: Optimizing traffic signals based on real-time data
+  - High-Frequency Trading: 
+      - Real-time price predictions for financial trading
+  - Traffic Flow Management: 
+      - Optimizing traffic signals based on real-time data
 --
 
 - .blue[Short Horizon]:
-  - Retail Store: Forecasting cashier scheduling based on historical foot traffic and transaction data
-  - Public bikes: Predict the availability of bikes at bike station and adjust the number
+  - Retail Store: 
+    - Forecasting cashier scheduling based on historical foot traffic and transaction data
+  - Public bikes: 
+    - Predict the availability of bikes at bike station and adjust the number
 --
 
 - .blue[Long Horizon]:
-  - New obesity drug: Forecasting number of potential patients and their resources
-  - Investing in new country: Forecasting political stability
+  - New obesity drug: 
+    - Forecasting number of potential patients and their resources
+  - Investing in new country: 
+    - Forecasting political stability
 ---
 
 ### Overview of Forecasting Techniques
@@ -364,8 +377,11 @@ Tools will often depend on the horizon and data availability
 2. Quantitative Forecasting
    - Uses historical data and numerical techniques
    - Suitable when data is available and continuity assumptions hold true
-      - *Continuity assumption*: past trends continue in the future
-      
+      - *Continuity assumption*: past trends and relationships continue in the future
+        - When it holds?
+          - Interest rates and investments
+        - When it does not hold?  
+          - Covid Cases & Deaths and Vaccines 
 ---
 layout: false
 class: inverse, middle
@@ -377,7 +393,7 @@ class: inverse, middle
 
 .pull-left[
 
-- .blue[Time series data]: collection of data points on a single subject ordered chronologically.
+- .blue[Time series data]: collection of data points for a single unit (one firm, one person, one country, one) ordered chronologically.
 - .blue[Time series forecasting]: identifying patterns and trends in historical data to predict future values
 ]
 .pull-right[
@@ -533,19 +549,34 @@ class: inverse, middle
 # Methods of Qualitative Forecasting
 
 ---
+
+<center>
+<img src=Delphi.jpg width="600">
+</center>
+
+
+---
 ### Delphi Method
-- A structured communication process to reach a consensus.
-- Experts respond anonymously to questionnaires.
-- Refine answers based on feedback.
-- Goal: Converge on a reliable decision.
+- A structured communication process to reach a consensus for complex, uncertain and long terms forecasting tasks
+  1. Select a group of experts
+  2. Invite them to the study. They are anonymous and don't talk to each other!
+  3. Ask them to answer a questionnaire
+  4. Get initial responses
+  5. Compile them into summary
+  6. Send them summary and get their feedback with refined answers
+  7. Reiterate until consensus is reached or no further improvement
+  
 
 
 --
 #### Example: Determining Technological Trends
-- Technology forecasting team.
-- Panel of experts from academia and industry.
-- Predict key technological trends for the next decade.
-- Identify the most probable trends.
+- What are the risks of AI developments?
+- Panel of experts from academia and industry
+  - Computer scientists, engineers, CEOs of AI companies, ethic experts
+- Send them questionnaires asking about potential threats
+- Compile responses into summary and send them back
+- Get more rounds of responses until consensus
+- Identify the most probable risks
 
 ---
 
@@ -553,24 +584,32 @@ class: inverse, middle
 - Creative technique for generating ideas.
 - Encourages free thinking and building on suggestions.
 - Appropriate for exploring possibilities.
+  - Form a group (no need for experts)
+  - State the problem
+  - Encourage ideas, no matter how crazy
+  - Build and combine each others' ideas
+  - Document the ideas and synthesize them 
 
 --
 #### Example: Enhancing Employee Engagement
 - Tech company's HR department.
 - Representatives from HR, IT, and different departments.
 - Generate ideas for a mobile app to enhance employee engagement.
+- Write them down and implement the relevant ones
 
 ---
 
 ### Panel of Experts
-- Assemble knowledgeable individuals.
-- Offer insights and expertise.
+- Assemble knowledgeable individuals
+  - At the same time and spot
+- They meet,  offer insights and expertise, and discuss
 - Aid in well-informed decisions.
+- Sometimes ends up with a report with conculsions
 
 
 --
 #### Example: Environmental Policy Formulation
-- Government agency.
+- Government agency want to find identify and address most pressing environmental issues
 - Environmental scientists, economists, conservationists, and policymakers.
 - Discuss policy options.
 - Create comprehensive environmental policies.
@@ -578,16 +617,16 @@ class: inverse, middle
 ---
 
 ### Focus Groups
-- Gather diverse participants.
+- Gather diverse participant - experts
 - Share perceptions, attitudes, and opinions.
 - Provide qualitative data and consumer insights.
 
 
 --
 #### Example: Market Research for a New Beverage
-- Beverage company.
+- Proposing a new TV Show and trying to see how well it will do
 - Participants from various demographics.
-- Understand consumers' preferences and perceptions about a new energy drink.
+- Understand consumers' preferences and perceptions about the TV show
 - Fine-tune the product and marketing strategy.
 
 ---
@@ -601,16 +640,16 @@ class: inverse, middle
 0. Ungraded quiz on Thursday 
 --
 
-1. Review of Statistics *(Midterm 1: 13th September)*
+1. Review of Statistics *(Midterm 1: 21st February)*
 --
    
-2. Simple linear regression *(Midterm 2: 18th October)*
+2. Simple linear regression *(Midterm 2: 3rd April)*
 --
 
 3. Multiple linear regression
 --
 
-4. Time Series *(Final: December)*
+4. Time Series *(Final: May)*
 
 --
 
