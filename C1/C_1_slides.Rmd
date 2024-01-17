@@ -567,7 +567,7 @@ class: inverse, middle
 
 
 --
-#### Example: Determining Technological Trends
+#### Example: Determining AI threats
 - What are the risks of AI developments?
 - Panel of experts from academia and industry
   - Computer scientists, engineers, CEOs of AI companies, ethic experts
@@ -621,7 +621,7 @@ class: inverse, middle
 
 
 --
-#### Example: Market Research for a New Beverage
+#### Example: Market Research for a New TV SHOW
 - Proposing a new TV Show and trying to see how well it will do
 - Participants from various demographics.
 - Understand consumers' preferences and perceptions about the TV show

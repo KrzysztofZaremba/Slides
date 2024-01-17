@@ -111,12 +111,45 @@ library(MASS) # for truehist function
 
 - You need to know how many people in Mexico have diabetes
 
+--
+#### Parameter
 - Call $\mu_d$ the proportion of Mexican population which has diabetes
-  - This is a parameter that you want to learn
-  
+  - Usually the parameter is an **unknown** number **describing the whole population**
+  - You want to learn what it is
+  - In our example, $\mu_d$ is a parameter that you want to learn
+  - More generally, parameter describes an aspect of the entire population
+
+--
+#### Statistic
 - But you don't have data on the whole population. At best you can get a sample from a survey 
   - So you will try to estimate this parameter with sample
+  - Statistic is a **guess of the parameter** which can be **calculated from the sample**
   - You will calculate a statistic $\hat{\mu}_p$ which is the proportion of diabetics in the sample
+  
+
+---
+
+### Parameters vs Statistics
+
+- What is population, sample, parameter and statistic in the following examples?
+
+--
+
+- You want to know the probability that a user who got a match on tinder will go out on a date with that person. You survey 1000 users and ask them about each match they got if they went on a date. You then calculate the share of dates which ended up in a match for these users. 
+
+--
+- You want to know what whether starbucks baristas are faster than Cielito Querido baristas. You go to 10 starbucks and 10 Cielito Querido and measure the time it takes to make a coffee. You then calculate the average time it takes to make a coffee in each of these chains.
+
+--
+- You want to know the average age of people who go to the gym. You go to a gym and ask 100 people about their age. You then calculate the average age of these people.
+
+--
+- You want to know the variance of internet speed during in Mexico City. You visit 500 households and calculate the variance of their internet speed.
+
+
+---
+
+
 
 
 
@@ -129,7 +162,8 @@ class: inverse, middle
 ---
 
 ### Longitudinal Data
-- Observations are collected for the same subject over a period of time
+- Observations are collected for the same subject (entity) over a period of time
+- Same as time series data
 - Example: Tracking a company's annual revenue and number of employees over several years
 
 #### Longitudinal Data Example
@@ -267,7 +301,7 @@ datatable(data1,
 --
 
 **Panel data**
--Multiple observation per subject (currency)
+- Multiple time observation per subject (currency) and multiple subjects
 
 ---
 
@@ -303,7 +337,7 @@ datatable(data2,
 --
 
 **Cross-sectional data**
--Single observation per subject (user)
+- Single (time) observation per subject (user), many subjects
 
 ---
 
@@ -336,7 +370,49 @@ datatable(data3,
 --
 
 **Longitudinal data** 
--Multiple observations of a single subject
+- Multiple (time) observations of a single subject
+
+---
+
+### Primary vs Secondary Data
+
+--
+- **Primary data** is original data collected .red[directly from the source] for a .red[specific research purpose]. 
+  - Experimental data (if used by team designing the experiment)
+  - Survey data (if used by survey team designing the surey)
+  - It is customized for a particular research objective
+
+
+--
+- **Secondary data** is data that has .red[already been collected by someone else] for a different purpose but .red[can be used for a new research question or analysis]
+  - National statisics - death certificates
+  - National surveys reused by researchers
+  - Data from medical records
+  - Data on stock market
+
+
+
+---
+### What kind of data is it?
+
+<small>
+- Surveys: A company conducts a customer satisfaction survey to gather feedback from its customers regarding their products and services.
+
+- Sales Reports: A business can analyze past sales data from previous years to identify trends and make strategic decisions.
+
+- Interviews: A researcher interviews individuals to understand their opinions on a particular topic, such as political preferences or healthcare choices.
+
+- Census Data: Government census data can be used by researchers to study demographic trends or population characteristics in a specific region
+
+- Observations: An ecologist observes the behavior of a particular species in its natural habitat to gather data for a research project.
+
+- Social Media Data: Companies can analyze social media posts and user engagement data from platforms like Twitter or Facebook to gain insights into customer preferences and sentiment.
+
+- Experiments: Scientists conduct laboratory experiments to test a specific hypothesis and collect data directly from the experiments.
+
+- Academic Journals: Researchers can review published studies and articles to gather data and insights related to their research topic.
+</small>
+
 
 ---
 
@@ -367,13 +443,36 @@ We have two general types: .blue[Categorical] and .blue[Numerical] variables
 
 ### Numerical Variables
 
-- Variables that hold numeric data.
+- Variables that hold numeric value and ordering is possible
   - **Discrete:** These variables can only take certain values
       - *Example*: Number of App Downloads from App Store
       - *Example*: Number of children you have
+      - *Example*: Size of coke products: 0.33L, 0.5L, 1L, 2.25L 
       
+      
+<center>
+<img src=coke_sizes.jpg width="500">
+</center>
+
+---
+### Numerical Variables
+
+- Variables that hold numeric value and ordering is possible
+  - **Discrete:** These variables can only take certain values
+      - *Example*: Number of App Downloads from App Store
+      - *Example*: Number of children you have
+      - *Example*: Size of coke products
+      
+
+
   - **Continuous:** These variables can take any value within a range
-      - *Example*: Time (in seconds) Spent on a Webpage
+      - *Example*: Time spent on a Webpage
+      - *Example*: Exchange rate between MXN and USD
+
+---
+
+  - **Continuous:** These variables can take any value within a range
+      - *Example*: Time spent on a Webpage
       - *Example*: Exchange rate between MXN and USD
 
 ---
@@ -1170,13 +1269,15 @@ datatable(freq_table,
 
 ### Definition
 - **Probability Density Function (pdf)**  describes the probability distribution of a continuous random variable. 
-- The PDF represents the likelihood of the random variable taking on a specific value within a given range. 
-- Unlike the probability mass function (PMF) for discrete variables, the PDF does not give the probability of exact values but provides the relative likelihood of the random variable being within a certain interval.
+- It **does not** give probability at a given value (this is always 0 for continous variable)
+- It shows which in which intervals that variable the most often appears
+- It is used to calculate the probability of the random variable being in a given interval
+- Area under it always adds up to 1
 
 --
 
 ### Example
-Suppose we have a random variable X representing the weight of adults in Mexican population. The PDF of X would describe the likelihood of finding a person of a specific weight within a range (e.g., between 58kg and 60kg).
+We have a random variable X representing the weight of adults in Mexican population. The PDF of X  helps to describe the likelihood of finding a person of a specific weight within a range (e.g., between 58kg and 60kg).
 
 ---
 
@@ -1526,15 +1627,17 @@ ggplot(df_combined_skewed, aes(x = Value, fill = Distribution)) +
 ## Cumulative Distribution Function (CDF)
 
 
-The .blue[Cumulative Distribution Function] (CDF) gives the probability that a continuous random variable X will take on a value less than or equal to a specific value x.
+The .blue[Cumulative Distribution Function] (CDF) gives the probability that a random variable X will take on a value less than or equal to a specific value.
 
 For a continuous random variable X with PDF f(x), the CDF F(x) is defined as:
 
 $F(x) = \int_{-\infty}^{x} f(t) \, dt = P(X<x)$
 
-The CDF provides a cumulative view of the probability distribution and is useful for calculating probabilities over intervals and finding percentiles. 
-- The CDF starts at 0 as probability of X being less than or equal to negative infinity is 0
-- It approaches 1 as x approaches infinity since the the probability of X being less than or equal to positive infinity is 1.
+Characteristics:
+- The CDF starts (for minus infinity) at 0 (minimum)
+- It approaches 1 as x approaches infinity (maximum)
+- It is non decreasing
+- It is right continuous
 ---
 
 ## Example 1: Standard Normal
@@ -1644,10 +1747,11 @@ We can do similar thing with our weight data.
 
 $ECDF(x)=\frac{\sum I(w_i<x)}{N}=\frac{\text{Number of people with weight lower than x}}{N}$
  
+<small>
 - $I(w_i<x)=1$ if weight of person $i$ is lower than $x$ (*Indicator Function*)
 - $N$ is total number of people (*Sample Size*)
 - Share of people with weight lower than x
-
+</small>
 
 ```{r example4, echo=FALSE, fig.width=12, fig.height=4, warning=FALSE}
 ecdf_data <- ecdf(Health_data$weight)
