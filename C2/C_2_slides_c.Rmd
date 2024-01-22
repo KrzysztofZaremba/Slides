@@ -676,7 +676,7 @@ plot_grid(scatter_plot, dotplot, ncol = 1)
 
 ### Variance in the aggregated data
 
-Can we calculate standard variation in the population from aggregate data?
+Can we calculate variance in the population from aggregate data?
 
 .pull-left[
 ```{r 5a, out.width='100%', fig.height=3, warning=FALSE}

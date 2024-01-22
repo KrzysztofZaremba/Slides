@@ -126,7 +126,7 @@ ggplot(df, aes(x = Value)) +
 ---
 ## Mean of a binary variable
 
-What is a mean of a **binary variable**?
+What if a mean of a **binary variable**?
   - Binary variable is a variable which takes value 0 or 1
   - For example: do you have diabetes (yes=1, no=0)
   
@@ -149,7 +149,7 @@ It's the proportion of people with diabetes in the sample: mean(diabetes)= `r fo
 - In some scenarios, data points have different weights. 
 - For a dataset with weights $w_i$ and values $x_i$, the weighted mean is:
 
-$$\text{Weighted Mean} = \frac{\sum_{i=1}^{n} w_i \cdot x_i}{\sum_{i=1}^{n} w_i}$$
+$$\small \text{Weighted Mean} = \frac{\sum_{i=1}^{n} w_i \cdot x_i}{\sum_{i=1}^{n} w_i}$$
 ```{r, echo=FALSE, results='asis'}
 # Create a data frame for the table
 df <- data.frame(Person = c("Midterm 1", "Midterm 2", "Quizzes", "Final Project", "Final exam"),
@@ -177,6 +177,7 @@ datatable(df,
 The ** weighted mean** is:
 
 \begin{align*}
+\small
     \bar{x} & =\frac{0.2\times 6+0.2\times 8+0.15 \times  9+ 0.15 \times  4+0.3 \times 8}{0.2+0.2+0.15+0.15+0.3} 
 \end{align*}
 
@@ -446,7 +447,7 @@ datatable(frequency_table,
 - What is the tradeoff of keeping too much vs too litle inventory?
 
 --
-- How much milk should we have, so we don't stock out on at least 95% of days?
+- Suppose we want to have enough of milk to cover sales on 95% of days
 
 --
 - To figure it out, let's look at the distribution of the daily use of milk
@@ -486,8 +487,9 @@ ggplot(hist_data, aes(x = DailySales)) +
 
 ## Percentiles
 
-- We want to choose amount $M$, such that $P(s_i<M)=0.95$
-- That is, in 95% of days sales are smaller than $M$
+- Let $s_i$ be the daily sales of milk
+- We want to choose amount $M$, such that $P(s_i < M)=0.95$
+- That is, in 95% of days sales are smaller or equal than $M$
 
 --
 ```{r Sales_dist_figure_with_shaded_region, out.width='100%', fig.height=3, warning=FALSE}
@@ -516,8 +518,24 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 
 - *Percentiles* divide the ordered data into 100 equal parts. 
 - $p$th percentile is a value such that $p\%$ of the data are below it
-    - $v_p$ is such that $P(x_i<v_p)=p$
-    - $v_{95}$ is such that $P(x_i<v_{95})=95\%$
+    - $v_p$ is such that $P(x_i < v_p)=p$
+    - $v_{95}$ is such that $P(x_i< v_{95})=95\%$
+
+---
+## Percentiles
+
+--
+
+- What is the the height such that 75% of ITAM students are smaller than this height?
+
+--
+
+- What is the income level such that 25% of people in Mexico earn less than that level?
+
+--
+
+- What is the age, such that 50% of people die before that age?
+
 
 ---
 
@@ -533,7 +551,7 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 
 3. If it's an integer, value of ith observation is your percentile
 4. If it's not, take the average between ith rounded down and ith rounded up 
-      In our example it would be the average of 950th and 951th observation
+    - In our example it would be the average of 950th and 951th observation
  
 ---
 
@@ -606,7 +624,7 @@ ggplot(data.frame(x = c(0, 40000)), aes(x)) +
 
 - **Deciles** - 10th, 20th, ... 90th 
   - How bad pollution gets in CDMX during top 10% polluted days?
-  - During top 10% of polluted days pollution level is larger than 9th decile.  
+  - During top 10% of polluted days pollution level is larger or than 9th decile.  
   
 ```{r Image_with_shaded_area_Deciles, out.width='100%', fig.height=4, warning=FALSE}
 library(ggplot2)
