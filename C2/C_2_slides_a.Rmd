@@ -1631,7 +1631,7 @@ The .blue[Cumulative Distribution Function] (CDF) gives the probability that a r
 
 For a continuous random variable X with PDF f(x), the CDF F(x) is defined as:
 
-$F(x) = \int_{-\infty}^{x} f(t) \, dt = P(X<x)$
+$F(x) = \int_{-\infty}^{x} f(t) \, dt = P(X \leq x)$
 
 Characteristics:
 - The CDF starts (for minus infinity) at 0 (minimum)
@@ -1642,7 +1642,7 @@ Characteristics:
 
 ## Example 1: Standard Normal
 
-$F(-2) = \int_{-\infty}^{-2} f(t) \, dt = P(X<-2)=0.02$
+$F(-2) = \int_{-\infty}^{-2} f(t) \, dt = P(X \leq -2)=0.02$
 
 ```{r example1, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
 
@@ -1684,7 +1684,7 @@ grid.arrange(pdf_plot1, cdf_plot1, ncol = 2)
 
 ## Example 2: Standard Normal
 
-$F(0.2) = \int_{-\infty}^{0.2} f(t) \, dt = P(X<0.2)=0.58$
+$F(0.2) = \int_{-\infty}^{0.2} f(t) \, dt = P(X \leq 0.2)=0.58$
 
 ```{r example2, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
 # Generate data for plotting
@@ -1712,7 +1712,7 @@ grid.arrange(pdf_plot2, cdf_plot2, ncol = 2)
 
 ## Example 3: Standard Normal
 
-$F(3.2) = \int_{-\infty}^{3.2} f(t) \, dt = P(X<3.2)=0.99$
+$F(3.2) = \int_{-\infty}^{3.2} f(t) \, dt = P(X \leq 3.2)=0.99$
 
 
 ```{r example3, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
@@ -1745,7 +1745,7 @@ grid.arrange(pdf_plot3, cdf_plot3, ncol = 2)
 
 We can do similar thing with our weight data. 
 
-$ECDF(x)=\frac{\sum I(w_i<x)}{N}=\frac{\text{Number of people with weight lower than x}}{N}$
+$ECDF(x)=\frac{\sum I(w_i\leq x)}{N}=\frac{\text{Number of people with weight lower than x}}{N}$
  
 <small>
 - $I(w_i<x)=1$ if weight of person $i$ is lower than $x$ (*Indicator Function*)
@@ -1773,4 +1773,4 @@ ggplotly(cdf_plot,
 
 --
 
-$P(weight>100)=1-P(weight<100)=1-ECDF(100)$
+$P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
