@@ -488,7 +488,7 @@ ggplot(hist_data, aes(x = DailySales)) +
 ## Percentiles
 
 - Let $s_i$ be the daily sales of milk
-- We want to choose amount $M$, such that $P(s_i < M)=0.95$
+- We want to choose amount $M$, such that $P(s_i \leq M)=0.95$
 - That is, in 95% of days sales are smaller or equal than $M$
 
 --
@@ -518,8 +518,8 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 
 - *Percentiles* divide the ordered data into 100 equal parts. 
 - $p$th percentile is a value such that $p\%$ of the data are below it
-    - $v_p$ is such that $P(x_i < v_p)=p$
-    - $v_{95}$ is such that $P(x_i< v_{95})=95\%$
+    - $v_p$ is such that $P(x_i \leq v_p)=p$
+    - $v_{95}$ is such that $P(x_i \leq v_{95})=95\%$
 
 ---
 ## Percentiles
@@ -557,7 +557,7 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 
 ## Or use the CDF
 
-- $ECDF(v)=P(x_i<v)$
+- $ECDF(v)=P(x_i \leq v)$
 
 ```{r Image_of _CDF, out.width='100%', fig.height=3, warning=FALSE}
 ecdf_data <- ecdf(Health_data$weight)
