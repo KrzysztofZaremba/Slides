@@ -700,7 +700,9 @@ ylim <- c(-8, 8)
 x1 <- rnorm(n)
 y1 <- x1 + rnorm(n)
 plot1 <- plot_ly(x = x1, y = y1, text = paste("correlation:",round(cor(x1, y1), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -708,7 +710,9 @@ layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
 x2 <- rnorm(n)
 y2 <- -x2 + rnorm(n)
 plot2 <- plot_ly(x = x2, y = y2, text = paste("correlation:", round(cor(x2, y2), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -716,7 +720,9 @@ layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
 x3 <- rnorm(n)
 y3 <- rnorm(n)
 plot3 <- plot_ly(x = x3, y = y3, text = paste("correlation:",round(cor(x3, y3), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -729,7 +735,9 @@ cor_base <- cor(x_base, y_base)
 x4 <- x_base
 y4 <- 2 * y_base
 plot4 <- plot_ly(x = x4, y = y4, text = paste("correlation:",round(cor(x4, y4), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -737,7 +745,9 @@ layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
 x5 <- 2 * x_base
 y5 <- y_base
 plot5 <- plot_ly(x = x5, y = y5, text = paste("correlation:",round(cor(x5, y5), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -745,7 +755,9 @@ layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
 x6 <- seq(-2*pi, 2*pi, length.out = n)
 y6 <- sin(x6) + rnorm(n, sd=0.5)
 plot6 <- plot_ly(x = x6, y = y6, text = paste("correlation:",round(cor(x6, y6), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
-layout(xaxis = list(range = xlim), yaxis = list(range = ylim))
+layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
+        width = 200,   # Adjust the width according to your preference
+        height = 200)
 
 # Negative correlation
 
@@ -771,3 +783,44 @@ subplot(plot1, plot2, plot3, plot4, plot5, plot6, nrows = 2, margin = 0.02)
 --
 5. Correlation doesn't imply causation; a relationship could be coincidental.
 
+---
+
+### Causality vs Correlation
+
+
+<center>
+<img src=Trump.jpg width="800">
+</center>
+
+
+---
+### Causality vs Correlation
+
+`r knitr::include_url('https://tylervigen.com/spurious-correlations', height='550px')`
+
+.footmark[
+  Source: [https://tylervigen.com/spurious-correlations](https://tylervigen.com/spurious-correlations)
+]
+
+
+
+---
+### Causality vs Correlation
+- Less obvious examples
+- You look at historical data from some media campaign
+- You notice that people who were more exposed to ads were less likely to buy that product
+- What can you conclude?
+
+--
+- Are people who were exposed to ads similar to people who were not?
+
+--
+- Maybe they were targeted in the first place because they are less likely to buy and you want to change it?
+
+
+---
+### Causality vs Correlation
+- Less obvious examples
+- Education usually correlates with Income (correlation)
+
+- Does it mean that if decide to get a degree, you will earn more? (causality)
