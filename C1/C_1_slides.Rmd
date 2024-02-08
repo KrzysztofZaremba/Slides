@@ -240,22 +240,22 @@ wifi_data <- read_csv(file_url,show_col_types = FALSE)
 
 #aliminatre latutides different larger than 20 and smaller than 18
 #eliminates longitudes larger than 100 and smaller than 97
-wifi_data=wifi_data%>%filter(Latitud<20)%>%filter(Latitud>18)%>%filter(Longitud<(-97))%>%filter(Longitud>(-100))
+#wifi_data=wifi_data%>%filter(Latitud<20)%>%filter(Latitud>18)%>%filter(Longitud<(-97))%>%filter(Longitud>(-100))
 
 # Create a Leaflet map with clustering
-wifi_map <- leaflet(wifi_data) %>%
-  addTiles() %>%
-  addCircleMarkers(lng = ~Longitud, lat = ~Latitud, popup = ~Programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
-  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
-  addLayersControl(
-    baseGroups = c("Greyscale"),
-    options = layersControlOptions(collapsed = FALSE)
-  ) %>%
-  setView(lng = mean(as.numeric(wifi_data$Longitud), na.rm = TRUE), 
-          lat = mean(as.numeric(wifi_data$Latitud), na.rm = TRUE), zoom = 10)
+#wifi_map <- leaflet(wifi_data) %>%
+#  addTiles() %>%
+#  addCircleMarkers(lng = ~Longitud, lat = ~Latitud, popup = ~Programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) #%>%
+#  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
+#  addLayersControl(
+#    baseGroups = c("Greyscale"),
+#    options = layersControlOptions(collapsed = FALSE)
+#  ) %>%
+#  setView(lng = mean(as.numeric(wifi_data$Longitud), na.rm = TRUE), 
+#          lat = mean(as.numeric(wifi_data$Latitud), na.rm = TRUE), zoom = 10)
 
 # Print the map
-wifi_map
+# wifi_map
 ```
 
 
@@ -615,7 +615,7 @@ class: inverse, middle
 ---
 
 ### Focus Groups
-- Gather diverse participant - experts
+- Gather diverse participant - note necessarily experts
 - Share perceptions, attitudes, and opinions.
 - Provide qualitative data and consumer insights.
 
