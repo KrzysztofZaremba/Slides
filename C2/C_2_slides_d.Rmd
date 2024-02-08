@@ -721,8 +721,8 @@ x3 <- rnorm(n)
 y3 <- rnorm(n)
 plot3 <- plot_ly(x = x3, y = y3, text = paste("correlation:",round(cor(x3, y3), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
 layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
-        width = 200,   # Adjust the width according to your preference
-        height = 200)
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
 
 # Negative correlation
 
@@ -736,8 +736,8 @@ x4 <- x_base
 y4 <- 2 * y_base
 plot4 <- plot_ly(x = x4, y = y4, text = paste("correlation:",round(cor(x4, y4), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
 layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
-        width = 200,   # Adjust the width according to your preference
-        height = 200)
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
 
 # Negative correlation
 
@@ -746,8 +746,8 @@ x5 <- 2 * x_base
 y5 <- y_base
 plot5 <- plot_ly(x = x5, y = y5, text = paste("correlation:",round(cor(x5, y5), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
 layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
-        width = 200,   # Adjust the width according to your preference
-        height = 200)
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
 
 # Negative correlation
 
@@ -756,8 +756,8 @@ x6 <- seq(-2*pi, 2*pi, length.out = n)
 y6 <- sin(x6) + rnorm(n, sd=0.5)
 plot6 <- plot_ly(x = x6, y = y6, text = paste("correlation:",round(cor(x6, y6), 2)), type = 'scatter', mode = 'markers', showlegend = FALSE)%>%
 layout(xaxis = list(range = xlim), yaxis = list(range = ylim),
-        width = 200,   # Adjust the width according to your preference
-        height = 200)
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
 
 # Negative correlation
 

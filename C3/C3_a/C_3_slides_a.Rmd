@@ -791,6 +791,20 @@ $$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant
 $$\text{If } X \sim \mathcal{N}(\mu_1, \sigma_1) \text{ and } Y \sim \mathcal{N}(\mu_2, \sigma_2), \text{ then } X + Y \sim \mathcal{N}(\mu_1 + \mu_2, \sqrt{\sigma_1^2 + \sigma_2^2})$$
 
 ---
+## Standard deviation
+
+- Great, sample means have normal distribution in large samples
+
+--
+
+- Can we say something about hte standard deviation?
+
+--
+
+- If $X_i$ is normal, then yes! Standard deviation will have **chi-square** distribution 
+
+
+---
 
 ## From Normal to Chi-Square
 - We start with the standard random normal distribution N(0, 1).

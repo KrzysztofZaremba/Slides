@@ -73,14 +73,38 @@ class: inverse, middle
 - Confidence intervals measure uncertainty around the estimate
 
 ---
+### Confidence Intervals
+
+- Suppose that we calculated the confidence interval to be:
+$$\{1086.64, 1404.22\}$$
+--
+    - But where are these numbers coming from?
+
+--
+
+  1. The sampling distribution of the sample mean tells us how likely we are to get a point estimate which is far away from the true mean
+
+--
+
+  2. The confidence interval uses this property of the sampling distribution to tell us where the true mean might be
+
+--
+
+ - Let's go through these statements 1-by-1
+  
+---
 ### Sampling distribution
 
+**Q: How likely is it that a sample mean is far away from the true mean?**
+
 - Consider a hypothetical sampling distribution of a sample mean
-  - Again, this is never actually observed in practice
+  - Reminder: $\bar{x} \sim \mathcal{N}(\mu, \frac{\sigma}{\sqrt{n}})$
+  
+--
 - If we draw samples repeatedly, 95% of their means will be within the shaded area 
 - Why 1.96?
 
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+```{r, warning=FALSE, fig.height=3.3, out.width='100%'}
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
@@ -248,8 +272,10 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 
 ### Sampling distribution
 
-- Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{n}$ to the true parameter
-- There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{n}$
+**Q: How far is the sampled mean from the true mean?**
+
+- Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{\sqrt n}$ to the true parameter
+- There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{ \sqrt n}$
 - Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt  n}$
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
