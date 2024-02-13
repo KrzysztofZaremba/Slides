@@ -262,11 +262,23 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 \begin{align*}
 0.95&= P(-1.96<Z<1.96) \\
 &= P(z_{-\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{s/\sqrt  n}<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}s/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}s/\sqrt  n) \\
-&= P(\mu-z_{-\frac{\alpha}{2}}s/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}s/\sqrt  n) \\
+&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt  n}<z_{\frac{\alpha}{2}}) \\
+&= P(z_{-\frac{\alpha}{2}}\sigma/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}\sigma/\sqrt  n) \\
+&= P(\mu-z_{-\frac{\alpha}{2}}\sigma/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}\sigma/\sqrt  n) \\
 \end{align*}
 
+
+  - Theoretically, CLT theorem guarantees that $\frac{\bar{X}-\mu}{\sigma/\sqrt  n}$ is standard normal
+  
+--
+  
+  - What happens if you do not know $\sigma$?
+
+--
+
+  - In large sample, $s \rightarrow \sigma$, so $\frac{\bar{X}-\mu}{s/\sqrt  n} \rightarrow N(0,1)$
+  - So in large samples, standardized sample mean (with estimated standard deviation) will also have normal distribution
+  - You man need a bit higher n to ensure $s \rightarrow \sigma$
 
 ---
 
@@ -278,7 +290,7 @@ text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
 - There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{ \sqrt n}$
 - Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt  n}$
 
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
       xlim = c(-4, 4),
       main = "Sampling Distribution of Sample Mean",
@@ -390,7 +402,7 @@ axis(1,
      padj = 0.75,
      labels = c(expression(-z[0.005]),
                 expression(0),
-                expression(z_[0.005])))
+                expression(z[0.005])))
 
 # shade the tails for the 2.5% regions
 polygon(x = c(-4, seq(-4, -2.58, 0.01), -2.58),
@@ -440,7 +452,7 @@ axis(1,
      padj = 0.75,
      labels = c(expression(-z[0.005]),
                 expression(0),
-                expression(z_[0.005])))
+                expression(z[0.005])))
 
 # shade the tails for the 2.5% regions
 polygon(x = c(-4, seq(-4, 2.58, 0.01), 2.58),
