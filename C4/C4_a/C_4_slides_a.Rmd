@@ -151,9 +151,8 @@ $$y_i=\beta_0+\beta_1x_i+u_i$$
 Assumptions: 
 0. Model is linear in the parameter and with additive error term
 1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+\beta_1x_0$
-2. $E(u_i|x)=0$
-3. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
-4. $cov(u_i,u_j)=0$
+2. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
+3. $cov(u_i,u_j)=0$
 
 ---
 
@@ -260,7 +259,7 @@ $$y_i=\hat{\beta}_0+\hat{\beta}_1x_i+e_i$$
 
 --
 
-Error term here reflects both uncertainy about parameters and the random part present in population model
+Error term here reflects both uncertainly about parameters and the random part present in population model
 
 --
 

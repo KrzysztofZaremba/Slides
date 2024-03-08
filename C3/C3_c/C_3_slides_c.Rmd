@@ -123,11 +123,15 @@ Some examples of hypotheses testing:
 
 --
 
-- Why would we need a fancy test
+- Why would we need a fancy test?
 
 --
 
 - Because we only have a sample, but we want to learn about the population parameter!
+
+--
+
+- Maybe in our sample it's below 100g, but in the whole population it's above
 
 --
 
@@ -142,9 +146,10 @@ Some examples of hypotheses testing:
 It usually relies on two elements:
  - .blue[Test statistics] 
   - Function of the sample data summarizing evidence for or against a hypothesis 
-  - On which we base the decision
+  - Usually we know how it should be distributed under the null. Ex: standardized mean
  - .blue[Rejection region] 
   - Values of the test statistics such that we would reject the null if we observe them
+    - Basically, values which are very unlikely under the null hypothesis
   - Typically threshold based:
   - Such as: reject $H_0$ if the test statistic > k, where k is some threshold
  
@@ -155,7 +160,7 @@ It usually relies on two elements:
 Let's go back to the sugar example. Suppose we have a sample $n=36$.
 
  - .blue[Test statistics] 
-  - Our test statistic would be:
+  - Our test statistic could be:
   $$z=\frac{\bar{x}-100}{\underbrace{s_x/\sqrt 36}_{SE}}$$
 
  - .blue[Rejection region] 
@@ -174,11 +179,13 @@ magick::image_read_pdf("Rejection.pdf",
 ### Testing procedure: Example
 
 
-- Suppose $s_x=20$. What's the lowest $\bar{x}$ for which we would reject?
+- Suppose $s_x=20$. When would we reject?
 
 --
 
-- $1.645=\frac{\bar{x}_{min}-100}{20/\sqrt 36} \rightarrow \bar{x}_{min}=105.483$
+Reject if: 
+- $\frac{\bar{x}-100}{20/\sqrt 36}>1.645$
+- Or equivalently if $\bar{x}>105.483$
 
 --
 
@@ -186,11 +193,14 @@ magick::image_read_pdf("Rejection.pdf",
 
 --
 
-- Because there could be randomness in the sample
+- Because there could be randomness in the sample:
 
 - So even if the $\mu_s=100$ we could get a sample with $\bar{x}>100$
 
+--
 
+- Why $\bar{x}>105.483$ though? 
+- Formally about it later, but it's very unlikely to get a sample mean that large if $\mu_s=100$
 
 ---
 
@@ -291,13 +301,13 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 
 --
 - Probability of making type 2 error is $\beta$
-  - To calculate $\beta$, you need to know the true distribution
+  - To calculate $\beta$, you need to know the true $\mu$
+
 ---
 ### Trade-off between type 1 and 2 errors
 - When you decrease probability of error type 1, you increase the probability of error type 2
 
-`r knitr::include_url('https://shiny.rit.albany.edu/stat/betaprob/', height='450px')`
-Source: https://shiny.rit.albany.edu/stat/betaprob/
+- (APP)
 
 ---
 ### Power of a test
@@ -333,40 +343,6 @@ Power increases if:
 - Alternative is further away from the null
 - $\sigma$ decreases
 - $\alpha$ increases
-
----
-### Link between Tests and Confidence Intervals
-
-Imagine a test for a parameter $\mu$ with hypothesis $H_0=4$ and $H_A \neq 4$. 
-
-- Suppose you draw a sample of 49 units with a mean $\bar{x}=3$ and standard deviation is $s=3$
-- Our test statistic is $z_{test}=\frac{3-4}{3/7}=-2.34$
-- Our critical values at $\alpha=0.05$ are -1.96 and 1.96, hence we reject
-
---
-- We can also calculate the 95% confidence interval for our sample mean:
-
-$$\small \{3-1.96\frac{3}{\sqrt 49}, 3+1.96\frac{3}{\sqrt 49}\}=\{2.16, 3.84\}$$
-- It does not contain the null hypothesis
-
-
----
-### Link between Tests and Confidence Intervals
-
-- More generally: the $1-\alpha$ confidence interval doesn't contain null = null would be rejected with a test of significance $\alpha$
-
-
---
-- Mathematically: 
-
-  - Let $\mu_0$ be the null hypothesis. We reject (in two sided test) the null at $\alpha$ if 
-  $$\scriptsize \left| \small \frac{\bar{X}-\mu_0}{ s/ \sqrt n} \right|>z_{\frac{\alpha}{2}}$$
-  
-  - Which can be rewritten as: 
-
-  $$\scriptsize  \mu_0<\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
-
-  
 
 ---
 
@@ -515,6 +491,42 @@ text(-2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 ```
 ]
+
+
+---
+### Link between Tests and Confidence Intervals
+
+Imagine a test for a parameter $\mu$ with hypothesis $H_0=4$ and $H_A \neq 4$. 
+
+- Suppose you draw a sample of 49 units with a mean $\bar{x}=3$ and standard deviation is $s=3$
+- Our test statistic is $z_{test}=\frac{3-4}{3/7}=-2.34$
+- Our critical values at $\alpha=0.05$ are -1.96 and 1.96, hence we reject
+
+--
+- We can also calculate the 95% confidence interval for our sample mean:
+
+$$\small \{3-1.96\frac{3}{\sqrt 49}, 3+1.96\frac{3}{\sqrt 49}\}=\{2.16, 3.84\}$$
+- It does not contain the null hypothesis
+
+
+---
+### Link between Tests and Confidence Intervals
+
+- More generally: the $1-\alpha$ confidence interval doesn't contain null = null would be rejected with a test of significance $\alpha$
+
+
+--
+- Mathematically: 
+
+  - Let $\mu_0$ be the null hypothesis. We reject (in two sided test) the null at $\alpha$ if 
+  $$\scriptsize \left| \small \frac{\bar{X}-\mu_0}{ s/ \sqrt n} \right|>z_{\frac{\alpha}{2}}$$
+  
+  - Which can be rewritten as: 
+
+  $$\scriptsize  \mu_0<\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
+
+  
+
 
 ---
 
@@ -731,7 +743,7 @@ Depends on:
 - Calculated test statistic
 
 --
-- Suppose the test statistic under $H_0$ $Z_{test} \sim N(0,1)$
+- Suppose the test statistic under $H_0$ is $Z_{test} \sim N(0,1)$
 - One sided tests:
   - For  $H_A: \mu>\mu_0$ $p-value=P(Z_{Test} \geq (computed-test-statistic))$
   - For  $H_A: \mu<\mu_0$ $p-value=P(Z_{Test} \leq (computed-test-statistic))$
@@ -782,13 +794,13 @@ class: inverse, middle
 
 ---
 
-### Two Samples for the Difference in Means
+### Two Samples and the Difference in Means
 We have 2 iid samples .red[independent] of each other from two populations $X_1,X_2,..,X_n$ and $Y_1,Y_2,..,Y_m$.
 
 **General idea:** 
 - We test the difference between .blue[population means] in two populations
   - Ex: $H_0: \mu_X-\mu_Y=100$ vs $H_A: \mu_X-\mu_Y \neq 100$
-  - Ex: $H_0: \mu_X-\mu_Y=0$ vs $H_0: \mu_X-\mu_Y>0$
+  - Ex: $H_0: \mu_X-\mu_Y=0$ vs $H_A: \mu_X-\mu_Y>0$
   
 --
   - Test for no difference:
@@ -911,7 +923,7 @@ text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 
 ---
 
-### Single Sample - Mean - One sided - Case 1
+### Two Samples - Mean - One sided - Case 1
 
 **Hypothesis:**
 $H_0: \mu_X-\mu_Y=\Delta_0$ and 
@@ -938,7 +950,7 @@ Where
 - $-z_\alpha$ and $-t_{v,\alpha}$ are  $\small \alpha$ quantiles of standard normal and t-students with v degrees of freedom
 
 ---
-### Single Sample - Mean - One sided - Case 1
+### Two Samples - Mean - One sided - Case 1
 
 .center[
 ```{r, warning=FALSE, fig.height=2.7, out.width='100%'}
@@ -987,7 +999,7 @@ $$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}<-z_\alpha)=P
 
 ---
 
-### Single Sample - Mean - One sided - Case 2
+### Two Samples - Mean - One sided - Case 2
 
 **Hypothesis:**
 $H_0: \mu_X-\mu_Y=\Delta_0$ and 
@@ -1014,7 +1026,7 @@ Where
 - $z_\alpha$ and $t_{v,\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with v degrees of freedom
 
 ---
-### Single Sample - Mean - One sided - Case 2
+### Two Samples - Mean - One sided - Case 2
 
 .center[
 ```{r, warning=FALSE, fig.height=2.7, out.width='100%'}

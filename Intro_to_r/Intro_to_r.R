@@ -174,7 +174,7 @@ cov(df$C_y,df$C_w)
 
 ##replace with your path!
 listings <- read.csv("C:/Users/Intro_to_r/listings.csv", comment.char="#")
-
+save(listings, file="listings.Rda")
 # how many columns we have?
 nrow(listings)
 # how many rows
