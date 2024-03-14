@@ -1402,7 +1402,7 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
 
 --
 
-- So $t_{test}=\frac{\hat{\rho}(C,P)\sqrt {(n-2)}}{\sqrt{1-\hat{\rho}(C,P)^2}}=\frac{0.159\sqrt {98}}{\sqrt{1-0.025}}=2.25$
+- So $t_{test}=\frac{\hat{\rho}(C,P)\sqrt {(n-2)}}{\sqrt{1-\hat{\rho}(C,P)^2}}=\frac{0.159\sqrt {198}}{\sqrt{1-0.025}}=2.27$
 
 --
 
@@ -1410,7 +1410,7 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
   - Compare calculated statistic to critical regions at various significance levels
   - Compute its p-value
   
-- $p-value=P(Z>t_{test})=P(Z>2.25)=0.0126$
+- $p-value=P(Z>t_{test})=P(Z>2.27)=0.0126$
 
 --
   - Test at $\alpha=0.05$ would reject $H_0$

@@ -1,0 +1,12 @@
+name: SST_SSE
+title: SST_SSE
+username: kzaremba
+account: kzaremba
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10038250
+bundleId: 7745103
+url: https://kzaremba.shinyapps.io/SST_SSE/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

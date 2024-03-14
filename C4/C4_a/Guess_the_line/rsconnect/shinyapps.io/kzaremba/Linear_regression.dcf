@@ -5,7 +5,7 @@ account: kzaremba
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10038591
-bundleId: 7745244
+bundleId: 8370068
 url: https://kzaremba.shinyapps.io/Linear_regression/
 version: 1
 asMultiple: FALSE

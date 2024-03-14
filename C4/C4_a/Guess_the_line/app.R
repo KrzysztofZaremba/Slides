@@ -103,12 +103,3 @@ server <- function(input, output) {
 
 # Run the Shiny app
 shinyApp(ui = ui, server = server)
-
-df <- 8
-
-# Define the t-value
-t_value <- 1.625
-
-# Calculate the probability
-probability <- 1 - pt(t_value, df)
-

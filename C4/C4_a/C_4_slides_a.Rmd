@@ -174,7 +174,7 @@ Assumptions:
 
 ---
 
-1 & 2 are in the app
+2 is in the app
 
 
 ---
@@ -222,7 +222,7 @@ ggplot(data_df, aes(x = x, y = y)) +
 
 
 ---
-Let's go back to our reression line
+Let's go back to our regression line
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 # Generate some sample data
@@ -429,7 +429,7 @@ $$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=y_i$$
 
 ### Best fit line 2
 
-Partial derivative with respect to \(\hat{\beta}_1\):
+Partial derivative with respect to $\(\hat{\beta}_1\)$:
 
 $$\frac{\partial SSE}{\partial \hat{\beta}_1} = 2\sum_{i=1}^{n} x_i\left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right)$$
 
@@ -443,9 +443,9 @@ $$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
 
 Putting it all together:
 
-$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=y_i$$
+$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
 
-$$\hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}+\hat{\beta_1}\bar{x}$$
+$$\hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$
 
 --
 And plugging this here:
@@ -609,7 +609,7 @@ $$R^2=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
 Intuition: 
 - How much more variation in $y$ can we explain with our model
 - It is always between 0 and 1
-  - In fact $SST=SSR+SSE=\sum(y_i-\hat{y})^2+\sum(\hat{y}_i-\bar{y})^2$
+  - In fact $SST=SSR+SSE=\sum(\hat{y}_i-\bar{y})^2+\sum(\hat{y}_i-y_i)^2$
 - SSE/SST is proportion that cannot be explained with the model
 - so 1-SSE/SST is the variation that we can explain with the model
 
