@@ -625,7 +625,7 @@ If we have just one regressor, the $R^2$ is related to correlation between x and
 $$R^2=(\rho(x,y))^2$$
 Moreover, we can show that: 
 
-$$R^2=(\rho(x,y))^2=\beta^2_1\frac{S_{xx}}{S_{yy}}=\beta^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
+$$R^2=(\rho(x,y))^2=\hat\beta^2_1\frac{S_{xx}}{S_{yy}}=\hat{\beta}^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
 
 
 ---
@@ -1076,7 +1076,7 @@ Under these assumptions:
 
 
 0. Relationship is linear in parameters with linear disturbance
-1. $E(u_i|x)=0$
+1. $E(u_i)=0$
 2. $Var(u_i)=\sigma^2$
 3. $cov(u_i,u_j)=0$
 
@@ -1087,7 +1087,7 @@ $$E(\hat{\beta}_1)=E\left(\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\ba
 
 --
 
-- Assumption 1 is enough for being unbiased $E(u_i|x)=0$
+- Assumption 1 is enough for being unbiased $E(u_i)=0$
 
 ---
 ### Uncertainty in the Estimate
