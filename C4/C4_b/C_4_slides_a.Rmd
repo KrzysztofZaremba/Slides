@@ -87,9 +87,8 @@ Let's revisit the assumptions behind linear model:
 
 0. Model is linear in the parameter and with additive error term
 1. $E(u_i)=0$
-2. $E(u_i|x)=0$
-3. $Var(u_i)=\sigma^2$
-4. $cov(u_i,u_j)=0$
+2. $Var(u_i)=\sigma^2$
+3. $cov(u_i,u_j)=0$
 
 Additional assumption needed for hypothesis testing and confidence intervals:
 

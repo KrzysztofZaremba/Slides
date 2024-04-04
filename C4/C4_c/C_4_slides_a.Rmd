@@ -161,7 +161,7 @@ $$\sum_i(y_i-\bar{y})^2=\sum_i(\hat{y_i}-\bar{y})^2+\sum_i(y_i-\hat{y_i})^2$$
 
 $$SS_T=SS_R+SS_E$$
 - $SS_T$ is total sum of squares $\sum_i(y_i-\bar{y})^2$, .blue[n-1 DoF]
-- $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1S_{XY}$, .blue[1 DoF]
+- $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1^2S_{XY}$, .blue[1 DoF]
 - $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y_i})^2$, .blue[n-2 DoF]
 
 ---
@@ -356,11 +356,11 @@ $$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}=\frac{\frac{SS_T-SS_E}{df_T-df_E}}{\frac{
 
 Think about two models trying to explain $y$
 - Our model with $x_i$ $\hat{y_i}=\hat{\beta_0}+\hat{\beta_1} x_i$ (call it .blue[full model])
-  - The unexplained part is measured by $SS_E=\sum(y_i-\hat{y_i})$
+  - The unexplained part is measured by $SS_E=\sum(y_i-\hat{y_i})^2$
 
 --
 - Just intercept model $\hat{y_i}=\hat{\beta_0}=\bar{y}$ (call it .blue[restricted model])
-  - The unexplained part is measured by $SS_T=\sum(y_i-\bar{y_i})$
+  - The unexplained part is measured by $SS_T=\sum(y_i-\bar{y_i})^2$
 
 --
 - Hence $\frac{SS_T-SS_E}{df_T-df_E}$ measures by how much we decrease the unexplained part going from the reduced model to the full model
@@ -384,6 +384,7 @@ Think about two models trying to explain $y$
 
 ### Exercise:
 
+Suppose you test whether product placement with more popular influencers increases your website visits more. 
 From the ANOVA table of a simple linear regression model fitted with 15 observations,
 we recovered the sums of squares of the residuals and the total sum of squares; namely, $SS_E$ = 52 and $SS_T$ = 152.
 Using the F-test statistic, validate the significance of the regression at the 5% level. Make

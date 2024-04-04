@@ -1178,7 +1178,7 @@ $$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\
 - Until now, we haven't made any assumptions about the **distributions** of the underlying data or $\beta$
 
 --
-  - We don't need it for calculating coefficients $\beta_0$ or $\beta_1$
+  - We don't need it for calculating coefficients $\hat\beta_0$ or $\hat\beta_1$
 
 --
   - We don't need it for making predictions $\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_i$
@@ -1191,7 +1191,7 @@ $$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\
 
 --
 
-- However, to make **inference** (confidence intervals, hypothesis testing), we need to know something about distribution of $\beta$
+- However, to make **inference** (confidence intervals, hypothesis testing), we need to know something about distribution of $\hat\beta$
 
 --
   - In particular, we will assume that population errors are normally distributed: $u_i \sim N(0,\sigma)$
@@ -1201,7 +1201,7 @@ $$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\
   - $y_i$ or $x_i$ does not need to be normally distributed
 
 --
-  - But if $u_i \sim N(0,\sigma)$, then conditional on $x_i$: $y_i|x_i \sim N(\hat{\beta}_0+\hat{\beta}_1x_i,\sigma)$
+  - But if $u_i \sim N(0,\sigma)$, then conditional on $x_i$: $y_i|x_i \sim N(\beta_0+\beta_1x_i,\sigma)$
 
 ---
 
@@ -1292,12 +1292,12 @@ $$\frac{(n-2)\hat{\sigma}^2}{\sigma^2}\sim\chi^2_{n-2}$$
 
 Our **test statistic** for $\beta_1$ and it's distribution under the null hypothesis: $H_0: \beta_1=b_1$
 
-$$T=\frac{\hat{\beta_1}-b_1}{SE(\hat{\beta_1})}=\frac{\hat{\beta_1}-b_1}{\frac{\sigma}{\sqrt{S_{xx}}}} \sim t_{n-2}$$
+$$T=\frac{\hat{\beta_1}-b_1}{SE(\hat{\beta_1})}=\frac{\hat{\beta_1}-b_1}{\frac{ \hat \sigma}{\sqrt{S_{xx}}}} \sim t_{n-2}$$
 
 
 Similarly, for  $\beta_0$ the null hypothesis: $H_0: \beta_0=b_0$
 
-$$T=\frac{\hat{\beta_0}-b_0}{SE(\hat{\beta_0})}=\frac{\hat{\beta_0}-b_0}{\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}} \sim t_{n-2}$$
+$$T=\frac{\hat{\beta_0}-b_0}{SE(\hat{\beta_0})}=\frac{\hat{\beta_0}-b_0}{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}} \sim t_{n-2}$$
 
 With that, we can use usual hypothesis testing procedures
 
@@ -1391,11 +1391,11 @@ Using the distributions, we can figure out confidence intervals for our estimate
 
 $$P(-t_{n-2,\frac{\alpha}{2}}<\frac{\hat{\beta}_1-\beta}{SE(\hat{\beta}_1)}<t_{n-2,\frac{\alpha}{2}})=1-\alpha$$
 
-$$CI_{\beta_1}=\left(\hat{\beta}_1-t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)},\hat{\beta}_1+t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)}\right)$$
+$$CI_{\beta_1}=\left(\hat{\beta}_1-t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)},\hat{\beta}_1+t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)}\right)$$
 
 And Similarly for $\beta_0$
 
-$$CI_{\beta_0}=\left(\hat{\beta}_0-t_{n-2,\frac{\alpha}{2}}\underbrace{\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)},\hat{\beta}_0+t_{n-2,\frac{\alpha}{2}}\underbrace{\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)}\right)$$
+$$CI_{\beta_0}=\left(\hat{\beta}_0-t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)},\hat{\beta}_0+t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)}\right)$$
 
 ---
 ### Confidence Intervals
@@ -1450,7 +1450,7 @@ $$(\bar{y}|x=x_0)\sim N\left(\beta_0+\beta_1x_0, \sigma\sqrt{({\frac{1}{n}+\frac
 
 We can build the confidence intervals as before:
 
-$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\sigma\sqrt{({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
 
 
 ---
@@ -1549,7 +1549,7 @@ $$(\bar{y}|x=x_0)\sim N\left(\beta_0+\beta_1x_0, \sigma\sqrt{(1+ {\frac{1}{n}+\f
 
 We can build the confidence intervals as before:
 
-$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\sigma\sqrt{(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
 
 ---
 

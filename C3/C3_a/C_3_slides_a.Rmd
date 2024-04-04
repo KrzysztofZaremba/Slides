@@ -306,6 +306,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
   - Suppose we sample from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
   - Estimator 1:  $\small (3X_1 + X_2)/4$
   - Estimator 2:  $\small (X_1 + X_2+X_3+X_4)/4$
+  - An estimator is more $\textbf{efficient}$ if it has a smaller variance
 
 ```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 library(ggplot2)
