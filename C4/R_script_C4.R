@@ -92,6 +92,7 @@ b1-SEb1*qt(0.975, dfdm)
 b1+SEb1*qt(0.975, dfdm)
 
 qt(0.995, 29)
+
 ## Predict the response if no rises to 0.1
 b0=as.numeric(coef(model1)["(Intercept)"])
 b0+b1*0.1

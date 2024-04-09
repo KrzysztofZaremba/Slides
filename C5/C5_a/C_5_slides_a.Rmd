@@ -475,6 +475,11 @@ n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
 </div>
 
 ---
+### Practice theory
+
+Lista 5.1 Q9
+
+---
 
 ### Special Case: k=1
 
@@ -550,7 +555,13 @@ Or in the vector form:
 $$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{(I-H)y}$$
 ---
 
+### Practice Theory
+Lista 5.1 Q7
+
+---
+
 #### Example with numbers
+Similar to Lista 5.1 Q8
 
 $$\small \begin{align*}
 \text{Dataset:} \\
@@ -731,6 +742,12 @@ summary(lm_model)
 
 ---
 
+### Practice
+
+Predict how long a patient will stay if there 10 other patients in the hospital and the patient is 50 years old.
+
+---
+
 ### Correlations vs Coefficients
 
 Note, that $x_1$ and $x_2$ can both have positive correlation with $y_i$, but different coefficients!
@@ -862,7 +879,7 @@ $$\sum_i e_i^2=\mathbf{e'}\mathbf{e}=(\mathbf{y-X\hat{\beta}})'(\mathbf{y-X\hat{
 
 Assumptions
 
-- $E(u_i|X)=0$
+- $E(u_i)=0$
 - $var(u_i)=\sigma^2$
 - $cov(u_i,u_j)=0$
 - $X$ is full rank
