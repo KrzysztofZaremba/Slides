@@ -561,7 +561,7 @@ Lista 5.1 Q7
 ---
 
 #### Example with numbers
-Similar to Lista 5.1 Q8
+Similar to Lista 5.1 Q8. What's the impact of hours studied and hours slept on the exam score?
 
 $$\small \begin{align*}
 \text{Dataset:} \\
@@ -593,9 +593,6 @@ $$\small \begin{align*}
 \end{bmatrix}
 \end{align*}$$
 
-We are trying to find:
-
-$$\mathbf{\hat{\beta}} =\mathbf{(X'X)^{-1}X'y}$$
 
 ---
 
@@ -657,9 +654,9 @@ So, our coefficients are:
 
 
 $$\beta=\begin{bmatrix}
-\beta_0 \\
-\beta_1 \\
-\beta_2 \\
+\hat{\beta}_0 \\
+\hat{\beta}_1 \\
+\hat{\beta}_2 \\
 \end{bmatrix} =
  \underbrace{\begin{bmatrix}
 474.75 & -30 & -48.5 \\
@@ -809,7 +806,7 @@ E(\hat{\beta}) & =E(\mathbf{(X'X)^{-1}X'y})=E(\mathbf{(X'X)^{-1}X'(X\beta+u)})) 
 \]
 </div>
 
-Where $\small E(\mathbf{(X'X)^{-1}X'u})$ if $\small E(u|X)=0$ (our usual assumption).
+Where $\small E(\mathbf{(X'X)^{-1}X'u})$ if $\small E(u)=0$ (our usual assumption).
 
 --
 
@@ -830,7 +827,7 @@ First, note that:
 $$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\beta + \mathbf{u} = \beta + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
 Let's use this
 
-<div class="math">
+
 \[\small
 \begin{align*} 
 var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\beta} - \mathbb{E}[\hat{\beta}])']
@@ -840,18 +837,16 @@ var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\
 & = (X'X)^{-1}X'(I\sigma^2)X(X'X)^{-1} =\sigma^2(X'X)^{-1}
 \end{align*}
 \]
-</div>
 
 --
 
-So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k$ row and $k$ column of $(X'X)^{-1}$ matrix.
+- Where two last inequalies come from?
+  - From $\sigma^2$ being constant and errors having zero covariance.
 
 --
-- Because first coefficient is $\beta_0$
 
---
+So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k+1$ row and $k+1$ column of $(X'X)^{-1}$ matrix.
 
-- And standard deviation is just square root of this!
 
 
 ---
@@ -1132,66 +1127,132 @@ summary(lm_model)
 
 Consider a regression:
 
-$$\text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+u_i $$
-- Where Male is a for patient $i$ being male
-- We assumed that occupancy has always the same effect, independent of your gender
+$$\text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2\text{Age<25}_i+u_i $$
+- Where tiktok ads is how much the company spends on tiktok ads
+- Age<25 is a dummy variable that is 1 if the person is younger than 25
+- Purchases is how much person i spent on clothes from a company.
+
+
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+set.seed(123) # for reproducibility
+data <- data.frame(
+  tiktok_ad_spend = runif(200, 0, 500), # random ad spending between $50 and $500
+  young = sample(0:1, 200, replace = TRUE) # randomly assign age groups
+)
+
+# Generate sales based on the model with interaction
+beta_0 <- 150
+beta_1 <- 0.2
+beta_2 <- 40
+beta_3 <- 0.7
+data$sales <- with(data, beta_0 + beta_1 * tiktok_ad_spend + beta_2 * young + beta_3 * tiktok_ad_spend * young + rnorm(200, sd = 40))
+data$young=as.character(data$young)
+model <- lm(sales ~ tiktok_ad_spend +young, data = data)
+data$predicted_sales <- predict(model, newdata = data)
+
+```
+
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='100%'}
+
+# Load the ggplot2 library
+library(ggplot2)
+library(plotly)
+
+# Create a scatter plot with regression line
+ggplot(data, aes(x = tiktok_ad_spend, y = sales, color=young) ) +
+  geom_line(aes(y = predicted_sales), size = 1) +
+  geom_point() +
+  theme_xaringan()
+
+
+
+```
+
+
+
+
+---
+### Interactions
+
+
+```{r, echo=FALSE}
+# Fit a linear regression model
+summary(model)
+
+```
+
+
+---
+### Interactions
+
+- Do ads on tik tok affect in the same way older and younger people?
+- In other words: one additional dollar on tik-tok ads increases purchases more if you are young?
 
 --
-- But what if occupancy matters more for men?
-- In other words: one additional patient on urgent care increases duration by more if you are a men?
-- Why? Maybe because when there is a lot of patients, doctors prioritize women (or men)
+- We want allow the coefficient on ads to differ by age group.
 
---
-- We want allow the coefficient on occupancy to differ by gender. How?
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='100%'}
+
+# Load the ggplot2 library
+library(ggplot2)
+library(plotly)
+
+model <- lm(sales ~ tiktok_ad_spend*young, data = data)
+data$predicted_sales <- predict(model, newdata = data)
+
+# Create a scatter plot with regression line
+ggplot(data, aes(x = tiktok_ad_spend, y = sales, color=young) ) +
+  geom_line(aes(y = predicted_sales), size = 1) +
+  geom_point() +
+  theme_xaringan()
+
+
+
+```
 
 ---
 ### Interactions
 
 - Run the regression: 
 
-$$\text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*\text{Male}_i +u_i$$
+$$\text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2\text{Age<25}_i+\beta_3\text{TikTok ads}_i*\text{Age<25}_i+u_i $$
+
 
 --
-- What's the coefficient on Occupancy when you are a woman $Male_i=0$?
+- What's the coefficient on ads when you are older $Age<25_i=0$?
 
 $$\begin{align*}
-& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*0 +u_i \\
-& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+u_i
+& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*0+\beta_3\text{TikTok ads}_i*0 +u_i \\
+& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+u_i
 \end{align*}$$
 
 
 --
 
-- What's the coefficient on Occupancy when you are a man $Male_i=1$?
+- What's the coefficient on ads when you are younger $Age<25_i=1$?
 
 $$\begin{align*}
-& \text{Duration}_i=\beta_0+\beta_1\text{Occupancy}_i+\beta_2\text{Male}_i+\beta_3\text{Occupancy}_i*1 +u_i \\
-& \text{Duration}_i=\beta_0+(\beta_1+\beta_3)\text{Occupancy}_i+\beta_2\text{Male}_i+u_i
+& \text{Duration}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*1+\beta_3\text{TikTok ads}_i*1 +u_i \\
+& \text{Duration}_i=\beta_0+\beta_2+(\beta_1+\beta_3)\text{TikTok ads}_i+u_i
 \end{align*}$$
 
 --
 
-We can estimate $\beta_3$ and it will tell us by how much bigger is the coefficient on occupancy for men compared to the coefficient on occupancy for women. 
+We can estimate $\beta_3$ and it will tell us by how much bigger is the coefficient on ads for young compared to the coefficient on ads for old. 
 
-- $\beta_1$ is the coefficient for women
-- $\beta_1+\beta_3$ is the coefficient for women
+- $\beta_1$ is the slope for old
+- $\beta_1+\beta_3$ is the slope for young
 - $\beta_3$ is the difference in slopes, which we can test like other coefficients
 
 ---
 
 ```{r, echo=FALSE}
-# Fit a linear regression model
-lm_model <- lm(Duration ~ Occupancy*SEXO, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
-# Display the summary of the linear regression model
-summary(lm_model)
+summary(model)
 
 ```
 
-- One additional patients increases duration for women by 2.69 minutes
-- One additional patients increases duration for men by  2.69+2.61=5.2 minutes
-
---
-- What could be reasons for this?
+- One additional dollar on ads increases purchases among old by 0.222 dollars
+- One additional dollar on ads increases purchases among young by 0.222+0.706=0.928 dollars
 
 ---
 
@@ -1206,6 +1267,10 @@ $$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}++u_i$$
 --
 - $\beta_3$ answers the following question:
   - If I increase $x_{i2}$ by one, by how much the coefficient on $x_{i1}$ changes?
+  
+--
+- Suppose $y$ is mortality, $x_1$ is temperature, $x_2$ is age
+- What would you expect $\beta_3$ to be?
 
 
 ---
@@ -1236,6 +1301,8 @@ $$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\be
 --
 
 - Which sign do you expect $\beta_3$ to have?
+
+- Exercise: Lista 5.1, 10 a) and b)
 
 ---
 
@@ -1408,7 +1475,7 @@ CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}
 --
 - Note that the CI does not contain 0
 - What does it imply for hypothesis testing with $H_0: \beta_{age}=0$?
-
+- Exercise: lista 5.1 4a) and b)
 ---
 ### CI for mean response 
 
@@ -1451,7 +1518,15 @@ $CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}
 
 
 ---
-### Exanmple
+### Example
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
+X <- model.matrix(lm_model)
+XTX <- t(X) %*% X
+# Calculate (X'X)^-1
+XTX_inv <- solve(XTX)
+```
 
 What's the 95% CI for average wait time when there is 10 people at the Urgent Care $x_{occupancy}=10$ for a person who is of age 52  $x_{age}=52$ ?
 
@@ -1460,15 +1535,24 @@ What's the 95% CI for average wait time when there is 10 people at the Urgent Ca
 
   - $\hat{\beta}=\{\hat{\beta_0}, \hat{\beta}_{occupancy}, \hat{\beta}_{age}\}=\{23.236, 3.7, 0.2\}$
 
-  - $\sqrt{\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=\sqrt{[1, 10, 52](\mathbf{X}'\mathbf{X})^{-1}[1, 10, 52]'}=0.021$
 
-  - $\sigma=98.97$
+  - $\hat{\sigma}=98.97$
 
---
+  - $(X'X)^{-1}=$
 
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+print(XTX_inv)
+```
+
+---
+### Example
+  
 - Prediction: $\hat{y_0}=23.236*1+3.7*10+0.2*52=70.636$
 
 --
+
+- $\sqrt{\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=\sqrt{[1, 10, 52](\mathbf{X}'\mathbf{X})^{-1}[1, 10, 52]'}=0.021$
+ 
 - Standard Deviation: $SE(\hat{y_0})=\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=2.07837$
 
 --
