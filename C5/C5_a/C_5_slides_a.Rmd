@@ -1351,7 +1351,7 @@ summary(lm_model)
 
 ```{r, echo=FALSE}
 # Fit a linear regression model
-Sample_urg$Random_var<- runif(nrow(Sample_urg), 1,10)
+Sample_urg$Random_var<- rnorm(nrow(Sample_urg), 5,30)
 lm_model <- lm(Duration ~ Occupancy+EDAD+Random_var, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
 # Display the summary of the linear regression model
 summary(lm_model)
@@ -1643,16 +1643,17 @@ tex2markdown(textable)
 F-stat and its distribution under the null
 
 $$F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)} \sim \underbrace{F_{k,n-k-1}}_{\text{Dist under } H_0}$$
---
+---
+### Testing for the significance of the regression
 
 Alternative way to think about it:
 
-- $\small H_0: y=\beta_0+u$ restricted model
+- $\small H_0: y=\beta_0+u$ restricted model ( $x_1$ and $x_2$ don't matter)
 - $\small H_A: y=\beta_0+\beta_1x_{1}+\beta_2x_{2}+u$
 
-If $H_A$ is true, restricted model should explain more of $y$
+If $H_A$ is true, unrestricted model should explain more of $y$
 
-$$\small F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}==\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}$$
+$$\small F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}$$
 --
 
 - $\small SSR_{H_A}$ is the regression sum of square from unrestricted model with $\small k$ degrees of freedom (2)
@@ -1681,7 +1682,7 @@ linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
 - $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
 
 $$\small F_{2}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}} \sim \underbrace{F_{k-k_0, n-k-1}}_{\text{Dist under } H_0}$$
-- In our case $k=2$ and $k_0=1$, so the null distribution is $F_{1, n-3}
+- In our case $k=2$ and $k_0=1$, so the null distribution is $F_{1, n-3}$
 
 ---
 ### Adding a coefficient 
@@ -1744,7 +1745,7 @@ $$\small y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$$
 We can test for a subset of predictors, for example if Age and Sex matter
 
 - $H_0:\beta_2=\beta_3=0  \rightarrow y=\beta_0+\beta_1Occupancy+u$
-- $H_A:\beta_2\neq 0$ or $\beta_3\neq0  \rightarrow y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$
+- $H_A:\beta_2\neq 0  \text{ or }  \beta_3\neq0  \\ \rightarrow y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$
 
 $$\small F_{test}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}} \sim F_{2, n-4}$$
 ---
@@ -1762,7 +1763,7 @@ linearHypothesis(lm_model, c("EDAD=0", "SEXOMASCULINO=0"))
 A cool thing about the regression is that we can test relationships between the coefficients:
 
 **For example**:
-- Is the impact of additional year of experience the same as impact of additional year of work experience in a regression:
+- Is the impact of additional year of education the same as impact of additional year of work experience in a regression:
 
 $$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
 
@@ -1772,7 +1773,7 @@ $$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
 - Suppose that employees can go through a sales training, and/or get a better office (these are binary variables). We want to evaluate impact of these measures on their sales:
 
 $$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{office}_i+u_i$$
-- We wonder if giving an employee all three would increase sales by more than 100: 
+- We wonder if giving an employee both of them would increase sales by more than 100: 
 $H_A: \beta_1+\beta_2>100$ 
 
 
