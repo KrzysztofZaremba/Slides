@@ -23,7 +23,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE,dpi=300)
 library(shiny)
 library(ggplot2)
-library(forecast)
 library(plotly)
 library(igraph)
 library(reshape)
@@ -92,7 +91,6 @@ HT$M=as.numeric(HT$M)
 - So you look at evolution in the number of weddings across years
 
 #### Heterosexual Marriages in Mexico
-
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 HT$Month=make_yearmonth(year = HT$ANIO_REGIS, month =  HT$MES_REGIS)
 SS$Month=make_yearmonth(year = SS$ANIO_REGIS, month =  SS$MES_REGIS)
@@ -261,7 +259,7 @@ labs(y = "$US", title = "Amazon closing stock price")
 --
 - We will measure **Autocorrelation**: 
     - Are values in previous period correlated with values in the next period?
-    - So between $y_t$ and $y_{t-1}$,$y_t$ and $y_{t-2}$ etc
+    - So between $y_t$ and $y_{t-1}$, or $y_t$ and $y_{t-2}$ etc
     
 $$\hat{\rho}_k=\frac{\sum^{n}_{t=k+1}(y_{t}-\bar{y})(y_{t-k}-\bar{y})}{\sum^{n}_{t=1}(y_t-\bar{y})^2}$$
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
@@ -512,7 +510,7 @@ What is the confidence interval for such prediction?
 
 $$e_t=y_{T+h}-\hat{y}_{T+h|T}$$
 --
-- It's the difference between what we forecasted and what actually happened onece we observe this datapoint
+- It's the difference between what we forecasted and what actually happened once we observe this data point
 - Also known as out-of-sample error
 
 --
@@ -539,6 +537,9 @@ These are fitted residuals for observations that we used in estimation.
 - This gives us the following confidence interval for one step ahead error:
 
 $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
+---
+### Simple forecasting methods
+
 
 For longer horizon, forecast error in naive forecast is:
 
@@ -555,10 +556,10 @@ sd(X$`NAIVE(M)`[[1]]$fit$.resid, na.rm=TRUE)
 naive(HT$M, 1)
 library(fable)
 library(tsibbledata)
-HT %>%
+HT3=HT%>%
   model(NAIVE(M)) %>%
-  forecast(h = 24) %>%
-  autoplot(HT)
+  forecast(h = 24) %>%autoplot(HT)
+
 
 
 ```
@@ -573,7 +574,7 @@ We can make it slightly more elaborate by assuming it's the same value as in the
 $\hat{y}_{T+1|T}=y_{m(T+1)}$
 
 
-- m(T) is the last time period with the same season as T+1
+- m(T+1) is the last time period with the same season as T+1
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 
@@ -581,8 +582,7 @@ library(fable)
 library(tsibbledata)
 HT %>%
   model(SNAIVE(M ~ lag("year"))) %>%
-  forecast(h = 24) %>%
-  autoplot(HT, level=NULL)
+  forecast(h = 24)%>%autoplot(HT, level=NULL)
 
 ```
 
@@ -616,9 +616,7 @@ library(fable)
 library(tsibbledata)
 HT %>%
   model(SNAIVE(M ~ lag("year"))) %>%
-  forecast(h = 24) %>%
-  autoplot(HT)
-
+  forecast(h = 24)%>%autoplot(HT)
 ```
 
 --
@@ -674,7 +672,7 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 
  $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{h+\frac{1}{T}}$$
 
-- Generally,aAverage value acros 20 years is not a good prediction
+- Generally,average value acros 20 years is not a good prediction
 
 ---
 
