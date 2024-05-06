@@ -403,6 +403,8 @@ $$t_{test}=\frac{\hat{\rho}_k-0}{1/\sqrt{n-k}}$$
 - Rule of thumb for larger datasets: reject at 95% if:
 
 $$|\hat{\rho}_k|>\frac{2}{\sqrt{n}}$$
+- Practice: final fall 2023, b
+
 
 ---
 ### Confidence bands
@@ -510,10 +512,9 @@ What is the confidence interval for such prediction?
 
 $$e_t=y_{T+h}-\hat{y}_{T+h|T}$$
 --
-- It's the difference between what we forecasted and what actually happened once we observe this data point
-- Also known as out-of-sample error
 
---
+- It's the difference between what we forecasted based on our model and what actually happened once we observe this data point
+- Also known as out-of-sample error, because the forecasted point was not in the estimation sample
 - We only used observations up to point T when estimating this model!
 
 --
@@ -522,11 +523,411 @@ $$e_t=y_{T+h}-\hat{y}_{T+h|T}$$
 $$u_t=y_{t}-\hat{y}_{t}$$
 These are fitted residuals for observations that we used in estimation. 
 
+---
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (all but last observation)
+estimation_sample <- ts_data[1:(n - 1)]
+prediction_sample <- ts_data[n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:(n - 1)
+model <- lm(estimation_sample ~ time_index)
+
+# Predict the next value
+predicted_value <- predict(model, newdata = data.frame(time_index = n))
+forecast_error <- prediction_sample - predicted_value
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", n - 1), "Out-of-Sample"),
+  Fitted = c(fitted(model), predicted_value)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = n - 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend", shape = "Sample Type") +
+  scale_color_manual(values = c("Observed" = "grey", 
+                                "Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
 
 ---
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 59
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+
+
+---
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 58
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+
+---
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 57
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+
+
+---
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 56
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+
+
+---
+
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 55
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+
+---
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Generate a time series dataset with a trend
+set.seed(1223)
+n <- 61
+trend <- 0.1 * (1:n)
+noise <- rnorm(n, mean = 0, sd = 1)
+ts_data <- trend + noise
+
+# Define estimation sample (up to t = 30)
+estimation_end <- 30
+estimation_sample <- ts_data[1:estimation_end]
+out_of_sample <- ts_data[(estimation_end + 1):n]
+
+# Fit a linear model to the estimation sample
+time_index <- 1:estimation_end
+model <- lm(estimation_sample ~ time_index)
+
+# Predict values for the remaining out-of-sample period
+predicted_values <- predict(model, newdata = data.frame(time_index = (estimation_end + 1):n))
+observed_values <- out_of_sample
+forecast_errors <- observed_values - predicted_values
+
+# Create a data frame for plotting
+plot_df <- data.frame(
+  Time = 1:n,
+  Observed = ts_data,
+  Sample = c(rep("Estimation Sample", estimation_end), rep("Out-of-Sample", n - estimation_end)),
+  Fitted = c(fitted(model), predicted_values)
+)
+
+# Create the plot using ggplot2
+p <- ggplot(plot_df, aes(x = Time)) +
+  geom_line(aes(y = Fitted, color = "Fitted Model"), size = 1) +
+  geom_point(aes(y = Observed, color = Sample), size = 2) +
+  geom_vline(xintercept = estimation_end + 0.5, linetype = "dashed", color = "red") +
+  scale_x_continuous(limits = c(0, n + 10)) +  # Add extra margin
+  labs(title = "Residuals vs Forecast Errors",
+       x = "Time", y = "Value",
+       color = "Legend") +
+  scale_color_manual(values = c("Fitted Model" = "blue",
+                                "Estimation Sample" = "black", 
+                                "Out-of-Sample" = "orange")) +
+  theme_minimal()
+# Convert ggplot2 plot to plotly object for interactivity
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 500)
+```
+
+---
+
+
 ### Simple forecasting methods
 
-- In the simplest model, and one step ahead, residuals and forecast errors are similar. 
+- In the simplest naive model, the one step ahead residuals and forecast errors are similar. 
 
 - So we can approximate the standard deviation of $e_t$ with standard deviation of $u_t$ in this naive model.
 
@@ -552,11 +953,11 @@ For longer horizon, forecast error in naive forecast is:
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 X=HT %>%
   model(NAIVE(M))
-sd(X$`NAIVE(M)`[[1]]$fit$.resid, na.rm=TRUE)
+paste("error standard deviation:",sd(X$`NAIVE(M)`[[1]]$fit$.resid, na.rm=TRUE))
 naive(HT$M, 1)
 library(fable)
 library(tsibbledata)
-HT3=HT%>%
+HT%>%
   model(NAIVE(M)) %>%
   forecast(h = 24) %>%autoplot(HT)
 
@@ -580,6 +981,9 @@ $\hat{y}_{T+1|T}=y_{m(T+1)}$
 
 library(fable)
 library(tsibbledata)
+X=HT %>%
+  model(SNAIVE(M ~ lag("year")))
+
 HT %>%
   model(SNAIVE(M ~ lag("year"))) %>%
   forecast(h = 24)%>%autoplot(HT, level=NULL)
@@ -614,6 +1018,7 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 
 library(fable)
 library(tsibbledata)
+paste("error standard deviation:", sd(X$`SNAIVE(M ~ lag("year"))`[[1]]$fit$.resid, na.rm=TRUE))
 HT %>%
   model(SNAIVE(M ~ lag("year"))) %>%
   forecast(h = 24)%>%autoplot(HT)
@@ -672,7 +1077,10 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 
  $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{h+\frac{1}{T}}$$
 
-- Generally,average value acros 20 years is not a good prediction
+
+--
+
+- Generally, average value acros 20 years is not a good prediction
 
 ---
 
@@ -778,8 +1186,45 @@ $$ME=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})}{T-h}$$
 - Positive and negative values can add up to 0
 - So even if errors are large, but symmetric, this measure will be close to 0
 
+- Practice: final fall 2023, c
+
+
+---
+### Mean Error
+
+My estimation sample is up to December 2009. I am trying to predict values in 2010
+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+library(fable)
+library(tsibbledata)
+HT=ungroup(HT)
+
+Marriages_train=HT%>%
+  filter(as.numeric(ANIO_REGIS) < 2010)
+FC=Marriages_train %>% 
+   model(
+    Mean = MEAN(M),
+    `Naïve` = NAIVE(M),
+    `Seasonal naïve` = SNAIVE(M))%>%
+  forecast(h = 12)
+
+HT2=HT%>%filter(as.numeric(ANIO_REGIS) < 2011)
+
+FC%>%autoplot(HT2, level=NULL)
+
+```
+
 ---
 ### Mean Error:
+
+
+To calculate the mean error at h=1, I would repeat this repetitively increasing my estimation sample. 
+
+- Ex: Estimate based on data up to January 2010, and predict February 2010, compute error
+- Next: Estimate based on data up to February 2010, and predict March 2010, compute error
+- And so on... until T-1. 
+- Then compute average of these errors
+
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
 library(fable)
@@ -862,12 +1307,13 @@ forecast::accuracy(FC, HT)
 ### Squared Errors
 
 - Mean Squared Errors
-$$MSE=\frac{\sum(A_t-F_t)^2}{n}$$
+$$MSE=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})^2}{T-h}$$
 
 - Root Mean Squared Errors
-$$RMSE=\sqrt{\frac{\sum(A_t-F_t)^2}{n}}$$
+$$RMSE=\sqrt{\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})^2}{T-h}}$$
 --
-- If we take squre instead of absolute value, we penalize more big deviations
+
+- If we take a sqaure instead of absolute value, we penalize more big deviations
 - Then we need to take square root to get the right units back
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
@@ -876,7 +1322,16 @@ forecast::accuracy(FC, HT)
 
 ```
 
+---
+#### Practice
 
+- Lista 04.2
+  - Ex 2,4 
+- Lista 04.3
+  - Ex 1,3a  (exponential smoothing is not part of the course anymore)
+  - Ex 11a
+  
+  
 ---
 
 ### Time series decomposition
@@ -888,7 +1343,7 @@ forecast::accuracy(FC, HT)
 
 **Multiplicative Decomposition**: Assume time series is a product of 4 elements:
 
-$$y_t=S_tT_tC_cR_t$$
+$$y_t=S_tT_tC_tR_t$$
 
 
 --
@@ -907,17 +1362,20 @@ $$y_t=S_tT_tC_cR_t$$
 ---
 ### Seasonality
 
-- How would you identify which variations are due to seasonality?
-
 
 ```{r, warning=FALSE, fig.height=2, out.width='100%', message=FALSE}
 HT|>gg_season(M)
 
 ```
 
+
+--
+
+- How would you identify which variations in time series are due to seasonality?
+
 --
 - **Idea**: 
-  1. Eliminate seasonal variation
+  1. Eliminate seasonal variation - deseason
   2. Compare the actual series to the one without seasonal variation
   3. The difference is due to seasonality!
 
@@ -1003,7 +1461,7 @@ HT %>%
 - Mathematical caveat
   - Since the number of periods is even (12), our main observations is not really at the center
   - We can have 5 obs before and 6 after
-  - Or 6 obs bevore and 5 after
+  - Or 6 obs before and 5 after
 
 --
 **Centered** Moving Average
@@ -1106,7 +1564,7 @@ data.frame(Month=1:12, Seasonal_index=a$seasonal[1:12])
 .pull-right[
 
 - In January, we have 13.5% less weddings than yearly average
-- In December, we have on average 38% weddings than yearly avearge
+- In December, we have on average 38% more weddings than yearly average
 - in June, we have 14.3% less weddings than yearly average
 ]
 ---
@@ -1144,10 +1602,11 @@ $$\sum^S_{s=1}SF_s=S$$
 $$CMA_t=a+bt+e_t$$
 
 --
+
 - We find $a$ and $b$ by OLS 
 
--- 
-Our predicted trend at time t is:
+--
+- Our predicted trend at time t is:
 
 $$T_t=\hat{a}+\hat{b}t$$
 
@@ -1323,4 +1782,8 @@ a$fit
 $$CI_{95}=(31187*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}}, 45050*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}})=(29339.92, 42381.87)$$
 - This is under the assumption there is little uncertainty about seasonal and cyclical component
 
+---
 
+### Practice
+- last question final 2023 fall
+- lista 04.4: ex 8, 10
