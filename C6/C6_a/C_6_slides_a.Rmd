@@ -983,7 +983,7 @@ library(fable)
 library(tsibbledata)
 X=HT %>%
   model(SNAIVE(M ~ lag("year")))
-
+paste("error standard deviation:",sd(X$`SNAIVE(M ~ lag("year"))`[[1]]$fit$.resid, na.rm=TRUE))
 HT %>%
   model(SNAIVE(M ~ lag("year"))) %>%
   forecast(h = 24)%>%autoplot(HT, level=NULL)

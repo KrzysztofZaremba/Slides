@@ -59,6 +59,9 @@ colors = c(
 
 
   - Krzysztof Zaremba
+
+--
+    - **Education**: PhD in Economics from Columbia University
   
 --
   - **Research focus**: Applied Econometrics, Health Economics
@@ -70,7 +73,12 @@ colors = c(
   - **Office:** In Santa Teresa Campus
   
 --
-  - **Office hours:** Calendly, virtual, Tuesday 2-3pm or by appointment
+  - **Office hours:** on zoom, choose timing: http://whenisgood.net/mhn9dy3
+  
+<center>
+<img src=QR_Code_1723494552.png width="300">
+</center>
+  
   
 ---
 
@@ -173,39 +181,63 @@ colors = c(
 
 ### Organization
 
-- **Schedule**: 
-  - Group Section 001
-      - Tuesday 08:00 -10:00 hrs. Room: RH 104
-      - Thursday 08:00 -09:30 hrs. Room: RH 104
-  - Group Section 002 
-      - Tuesday 10:00 -12:00 hrs. Room: PF 105
-      - Thursday 10:00 -11:30 hrs. Room:PF 105
+- **Lectures Schedule**: 
+      - Tuesday 8:00 - 11:30 hrs. Room: RH B5
 
+- **TA schedule**: 
+  - Weekly 1 hour lab session - timing/location to be determined
+  - Office Hours with TAs - timing/location to be determined\
+  - Canvas Discussion Board
 
 - **Textbooks**
   - See canvas course materials and syllabus
   
+  
+---
+
 ### Grading
 
 - 20% 2x Midterms 
-- 30% Final Exam
-- 15% Quizzes (with 1 week notice, in-class)
+- 30% Final Exam - you need at east 60 to pass the class
+- 15% Quizzes 
+  - *Type 1 Quiz*: In-class, individual, theory + some calculations, 30 min max, one week notice, around 4-6 per semester. You can bring one page of handwritten notes. Printed or electronic notes will not be accepted. 
+  - *Type 2 Quiz*: At home, individually or in pairs, practice with data, 24h to complete, around 3-4 per semester, open book.
+  - Lowest grade among all is dropped
 - 15% Final Project (In groups of 3)
 - 0% Homeworks
 
 ---
 
+### Last Year Median Grades
+
+- Midterm 1: 55
+- Midterm 2: 57
+- Final Exam: 60
+- Quiz: 81
+- Final Project: 82
+
+--
+
 ### Pre-requisites
 
 - Mathematics III or Linear Algebra I
 - Statistics II or Statistical Inference
---
+
+---
 
 ### Language
+
+
 - Class is in English
 
 --
 - But your English is not evaluated
+
+--
+- If you don't know a word, feel free to ask
+
+--
+- Exams will be available in both languages but you have to answer in English
 
 --
 - I will understand your English
@@ -213,6 +245,68 @@ colors = c(
 --
 - Great occasion to learn vocabulary useful for interviews
 
+
+---
+### ChatGPT Policy 
+- We are not trying to fight the technology
+
+--
+
+- You are allowed to use ChatGPT/other language models for your advantage
+
+  - You can use it for at home quizzes and final project to improve your code and writing, but...
+
+--
+
+    - Just copying and pasting the answer without understanding what's going on will not get you any points
+    - Just copying and pasting without reading the context shows you don't care
+
+--
+
+- Good for coding, but not for math. 
+
+--
+
+- I recommend it for learning:
+  - Try typing in: 
+    - Why we cannot say that the confidence interval contains the true value with 95%
+    - What the relationship between type 1 and type 2 errors
+    - What is a p-value?
+
+---
+
+
+<center>
+<img src=Chatgptlearning.png width="800">
+</center>
+
+
+---
+### Integrity
+
+- Cheating is disrespectful for your study sponsors, you are not learning anything, and you risk getting kicked out
+- Cheating is disrespectful to your peer students, who make effort in the class
+- Cheating is disrespectful to the professor
+
+
+
+--
+- **Cheating is easy to discover**:
+  - Questions are usually randomized
+  - The on screen activity in quizes is logged-on. If you leave the tab of the quiz, you get 0.
+  - If you access the quiz in a place other than the classroom, you get 0 (unless agreed beforehand)
+
+--
+- **Penalties are very strong**
+  - I take cheating extremely seriously
+   - When discovered cheating, I will report you to the administration. You will fail the class and have to retake it. At the second time, you are expelled. 
+   - I did report cheating in this course before.
+
+
+
+--
+- If you are honest, you don't have to worry about all the above
+   
 
 ---
 ### Software - R
@@ -224,39 +318,6 @@ colors = c(
 - Community Support: You can easily find plenty of tutorials and help
 - Data Visualization: Amazing vizualizations and ways to communicate your findings
 
-
-
-
----
-### Public Wifi Antennas in Mexico City
-
-
-
-```{r mexico_city_map, echo=FALSE, fig.height=8, fig.width=10, warning=FALSE, show=FALSE}
-
-# Read CSV file
-file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
-wifi_data <- read_csv(file_url,show_col_types = FALSE)
-
-#aliminatre latutides different larger than 20 and smaller than 18
-#eliminates longitudes larger than 100 and smaller than 97
-#wifi_data=wifi_data%>%filter(Latitud<20)%>%filter(Latitud>18)%>%filter(Longitud<(-97))%>%filter(Longitud>(-100))
-
-# Create a Leaflet map with clustering
-#wifi_map <- leaflet(wifi_data) %>%
-#  addTiles() %>%
-#  addCircleMarkers(lng = ~Longitud, lat = ~Latitud, popup = ~Programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) #%>%
-#  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
-#  addLayersControl(
-#    baseGroups = c("Greyscale"),
-#    options = layersControlOptions(collapsed = FALSE)
-#  ) %>%
-#  setView(lng = mean(as.numeric(wifi_data$Longitud), na.rm = TRUE), 
-#          lat = mean(as.numeric(wifi_data$Latitud), na.rm = TRUE), zoom = 10)
-
-# Print the map
-# wifi_map
-```
 
 
 
@@ -330,15 +391,45 @@ p
 
 
 ---
+### Public Wifi Antennas in Mexico City
+
+
+```{r mexico_city_map, width = 40, height = 10, echo=FALSE, fig.height=8, fig.width=10, warning=FALSE, show=FALSE}
+
+# Read CSV file
+file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
+wifi_data <- read_csv(file_url,show_col_types = FALSE)
+
+#aliminatre latutides different larger than 20 and smaller than 18
+#eliminates longitudes larger than 100 and smaller than 97
+wifi_data=wifi_data%>%filter(latitud<20)%>%filter(latitud>18)%>%filter(longitud<(-97))%>%filter(longitud>(-100))
+
+# Create a Leaflet map with clustering
+wifi_map <- leaflet(wifi_data, width="60%", height="60%") %>%
+ addTiles() %>%
+ addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
+ addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
+ addLayersControl(
+   baseGroups = c("Greyscale"),
+   options = layersControlOptions(collapsed = FALSE)
+ ) %>%
+ setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE),
+         lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
+
+# Print the map
+wifi_map
+```
+
+
+
+---
   
   ### Remarks
   - We will use it for practical exercises with data
   - You will use it for the final project
   - We will learn some of it together in class
+  - TA lab sessions will further help with this
   - Chatgpt is your friend
-  - You might be evaluated on reading the output of R code
- 
-
 
 ---
 
@@ -355,7 +446,7 @@ Tools will often depend on the horizon and data availability
 --
 
 - .blue[Short Horizon]:
-  - Retail Store: Forecasting cashier scheduling based on historical foot traffic and transaction data
+  - Retail Store: Forecasting cashier scheduling based on historical data
   - Public bikes: Predict the availability of bikes at bike station and adjust the number
 --
 
@@ -377,9 +468,13 @@ Tools will often depend on the horizon and data availability
    - Suitable when data is available and continuity assumptions hold true
       - *Continuity assumption*: past trends and relationships continue in the future
         - When it holds?
+
+--
           - Interest rates and investments
-        - When it does not hold?  
-          - Covid Cases & Deaths and Vaccines 
+        - When it does not hold?
+
+--
+           - Covid Cases & Deaths and Vaccines 
 ---
 layout: false
 class: inverse, middle
@@ -391,7 +486,7 @@ class: inverse, middle
 
 .pull-left[
 
-- .blue[Time series data]: collection of data points for a single unit (one firm, one person, one country, one) ordered chronologically.
+- .blue[Time series data]: collection of data points for a single unit (one firm, one person, one country) ordered chronologically. Can be one or more variables.
 - .blue[Time series forecasting]: identifying patterns and trends in historical data to predict future values
 ]
 .pull-right[
@@ -588,6 +683,7 @@ class: inverse, middle
   - Build and combine each others' ideas
   - Document the ideas and synthesize them 
 
+
 --
 #### Example: Enhancing Employee Engagement
 - Tech company's HR department.
@@ -615,7 +711,7 @@ class: inverse, middle
 ---
 
 ### Focus Groups
-- Gather diverse participant - note necessarily experts
+- Gather diverse participant - not necessarily experts
 - Share perceptions, attitudes, and opinions.
 - Provide qualitative data and consumer insights.
 
@@ -635,19 +731,19 @@ class: inverse, middle
 
 #### Quantatitve Forecasting
 
-0. Ungraded quiz on Thursday 
+0. Ungraded quiz next week or week after
 --
 
-1. Review of Statistics *(Midterm 1: 21st February)*
+1. Review of Statistics *(Midterm 1: Tuesday September 17th: 14:30-16)*
 --
    
-2. Simple linear regression *(Midterm 2: 3rd April)*
+2. Simple linear regression *(Midterm 2: Wednesday October 23rd: 14-16)*
 --
 
 3. Multiple linear regression
 --
 
-4. Time Series *(Final: May)*
+4. Time Series *(Final: December)*
 
 --
 
