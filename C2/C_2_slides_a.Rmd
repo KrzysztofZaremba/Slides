@@ -469,12 +469,14 @@ We have two general types: .blue[Categorical] and .blue[Numerical] variables
       - *Example*: Time spent on a Webpage
       - *Example*: Exchange rate between MXN and USD
 
----
+--
 
-  - **Continuous:** These variables can take any value within a range
-      - *Example*: Time spent on a Webpage
-      - *Example*: Exchange rate between MXN and USD
-
+  - What's the main difference between ordinal and discrete?
+    - We could say 1=Very unsatisfied, 2=Unsatisfied
+    - But we cannot say that very unsatisfied has half of satisfaction of person who is just unsatisfied!
+    - We can order, but these numbers don't have meaning in terms of distance between them
+  
+  
 ---
 
 ### Mexican Health Survey
@@ -1745,6 +1747,43 @@ grid.arrange(pdf_plot3, cdf_plot3, ncol = 2)
 
 We can do similar thing with our weight data. 
 
+Intuition on how it comes up:
+ 
+```{r example40, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+Health_data$nr=1:nrow(Health_data)
+
+# Create the first plot: Bars of participant height by participant number
+p1 <- ggplot(Health_data, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual number", y = "Weight", title = "Individual's weight") +
+  coord_flip()+
+  theme_xaringan()
+
+p1
+
+```
+
+```{r example401, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+
+#Sort the data by weight:
+Health_data_s <- Health_data[order(Health_data$weight),]
+Health_data_s$nr=1:nrow(Health_data_s)
+
+# Create the second plot: Sorted participants by height
+p2 <-  ggplot(Health_data_s, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual Weight Rank", y = "Weight", title = "Sorted by weight") +
+  coord_flip() +
+  theme_xaringan()
+
+# Arrange the plots side by side
+p2
+
+```
+
+---
+### Empirical CDF
+
 $ECDF(x)=\frac{\sum I(w_i\leq x)}{N}=\frac{\text{Number of people with weight lower than x}}{N}$
  
 <small>
@@ -1753,7 +1792,9 @@ $ECDF(x)=\frac{\sum I(w_i\leq x)}{N}=\frac{\text{Number of people with weight lo
 - Share of people with weight lower than x
 </small>
 
-```{r example4, echo=FALSE, fig.width=12, fig.height=4, warning=FALSE}
+
+
+```{r example4b, echo=FALSE, fig.width=12, fig.height=4, warning=FALSE}
 ecdf_data <- ecdf(Health_data$weight)
 
 # Plot the cumulative distribution
@@ -1767,10 +1808,14 @@ ggplotly(cdf_plot,
         width = 800,   # Adjust the width according to your preference
         height = 300)
 ```
----
 
-### So how do we calculate share of people with weight>100kg?
+
 
 --
-
+- So how do we calculate share of people with weight>100kg?
 $P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
+
+
+
+
+
