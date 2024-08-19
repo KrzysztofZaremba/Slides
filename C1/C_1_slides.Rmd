@@ -399,25 +399,25 @@ p
 # Read CSV file
 file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
 wifi_data <- read_csv(file_url,show_col_types = FALSE)
-
-#aliminatre latutides different larger than 20 and smaller than 18
-#eliminates longitudes larger than 100 and smaller than 97
-wifi_data=wifi_data%>%filter(latitud<20)%>%filter(latitud>18)%>%filter(longitud<(-97))%>%filter(longitud>(-100))
-
-# Create a Leaflet map with clustering
-wifi_map <- leaflet(wifi_data, width="60%", height="60%") %>%
- addTiles() %>%
- addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
- addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
- addLayersControl(
-   baseGroups = c("Greyscale"),
-   options = layersControlOptions(collapsed = FALSE)
- ) %>%
- setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE),
-         lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
-
-# Print the map
-wifi_map
+# 
+# #aliminatre latutides different larger than 20 and smaller than 18
+# #eliminates longitudes larger than 100 and smaller than 97
+# wifi_data=wifi_data%>%filter(latitud<20)%>%filter(latitud>18)%>%filter(longitud<(-97))%>%filter(longitud>(-100))
+# 
+# # Create a Leaflet map with clustering
+# wifi_map <- leaflet(wifi_data, width="60%", height="60%") %>%
+#  addTiles() %>%
+#  addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
+#  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
+#  addLayersControl(
+#    baseGroups = c("Greyscale"),
+#    options = layersControlOptions(collapsed = FALSE)
+#  ) %>%
+#  setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE),
+#          lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
+# 
+# # Print the map
+# wifi_map
 ```
 
 

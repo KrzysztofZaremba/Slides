@@ -1755,7 +1755,7 @@ Health_data$nr=1:nrow(Health_data)
 # Create the first plot: Bars of participant height by participant number
 p1 <- ggplot(Health_data, aes(x = nr, y = weight)) +
   geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
-  labs(x = "Individual number", y = "Weight", title = "Individual's weight") +
+  labs(x = "Individual\nnumber", y = "Weight", title = "Individual's weight") +
   coord_flip()+
   theme_xaringan()
 
@@ -1772,7 +1772,7 @@ Health_data_s$nr=1:nrow(Health_data_s)
 # Create the second plot: Sorted participants by height
 p2 <-  ggplot(Health_data_s, aes(x = nr, y = weight)) +
   geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
-  labs(x = "Individual Weight Rank", y = "Weight", title = "Sorted by weight") +
+  labs(x = "Individual\nWeight Rank", y = "Weight", title = "Sorted by weight") +
   coord_flip() +
   theme_xaringan()
 
@@ -1780,6 +1780,49 @@ p2 <-  ggplot(Health_data_s, aes(x = nr, y = weight)) +
 p2
 
 ```
+---
+### Empirical CDF
+
+We can do similar thing with our weight data. 
+
+Intuition on how it comes up:
+ 
+```{r example4034, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+Health_data$nr=1:nrow(Health_data)
+
+# Create the first plot: Bars of participant height by participant number
+p1 <- ggplot(Health_data, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual\nnumber", y = "Weight", title = "Individual's weight") +
+  coord_flip()+
+  theme_xaringan()
+
+p1
+
+```
+
+```{r example4013, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+
+#Sort the data by weight:
+Health_data_s <- Health_data[order(Health_data$weight),]
+Health_data_s$nr=1:nrow(Health_data_s)
+
+rank_75kg <- Health_data_s$nr[min(which(round(Health_data_s$weight) == 75))]
+
+# Create the second plot: Sorted participants by height with a mark for 75 kg
+p2 <- ggplot(Health_data_s, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  geom_point(data = subset(Health_data_s, weight == 75), aes(x = nr, y = weight), color = "red", size = 3) +
+  geom_text(aes(x = rank_75kg, y = 75, label = paste("75 kg\nRank:", rank_75kg)), hjust = -0.2, color = "red") +
+  labs(x = "Individual\nWeight Rank", y = "Weight", title = "Sorted by weight") +
+  coord_flip() +
+  theme_xaringan()
+
+# Arrange the plots side by side
+p2
+
+```
+
 
 ---
 ### Empirical CDF
@@ -1816,6 +1859,12 @@ ggplotly(cdf_plot,
 $P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
 
 
+---
+### Exercises:
+
+- Review Exercises:
+  - PDF 1: 1,2,3,4,5,6,7
+  - PDF 2: 14,15,16,17
 
 
 

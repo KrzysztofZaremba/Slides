@@ -312,15 +312,16 @@ $$q^{New}_{1}=3q^{Old}_1+1000$$
 $$q^{New}_{3}=3q^{Old}_3+1000$$
 
 --
-- And more generally, for $$y_i=bx_i+a$$
+- And more generally, for $$y_i=bx_i+a$$ and $b>0$
 
 $$v^y_p=bv^{x}_p+a$$
-
+- if $b<0$ then the order reverses. 
 
 --
 - So what does it mean for IQR?
 
 $$IQR^{New}=q^{New}_{3}-q^{New}_{1}=3q^{Old}_3-3q^{Old}_1=3*IQR^{Old}$$
+
 
 ---
 
@@ -674,104 +675,104 @@ plot_grid(scatter_plot, dotplot, ncol = 1)
 
 ---
 
-### Variance in the aggregated data
+<!-- ### Variance in the aggregated data -->
 
-Can we calculate variance in the population from aggregate data?
+<!-- Can we calculate variance in the population from aggregate data? -->
 
-.pull-left[
-```{r 5a, out.width='100%', fig.height=3, warning=FALSE}
-### table with income by neighborhood
-# Create a data frame for the example
-neighborhoods <- c("Polanco", "Condesa", "Roma", "Tepito", "Coyoacán", "Santa Fe", "Zona Rosa", "Iztapalapa", "Tacubaya", "San Miguel", "Chalco", "Tláhuac")
-average_income <- c(60000, 45000, 35000, 15000, 30000, 25000, 40000, 12000, 18000, 9000, 10000, 12000)
-population <- c(10000, 20000, 30000, 5000, 25000, 18000, 12000, 40000, 15000, 8000, 60000, 45000)
-
-
-# Calculate the unweighted average income
-unweighted_mean <- mean(average_income)
-
-# Calculate the weighted average income
-weighted_mean <- sum(average_income * population) / sum(population)
-df <- data.frame(Neighborhood = neighborhoods,
-                 Average_Income = average_income,
-                 Population = population)
-# Create a data frame for the table
-
-datatable(df,
-          fillContainer = FALSE,
-          options = list(
-            pageLength = 6,
-            searching = FALSE,
-            initComplete = JS(
-              "function(settings, json) {",
-              "$(this.api().table().container()).css({'font-size': '12px'});",
-              "}"
-            )
-          ),
-          rownames = FALSE
-)
-```
-]
-
-.pull-right[
-
-$$\frac{\sum_{z}{N_z} (\bar{x}_z - \mu)^2}{\sum_z N_z} \neq \sigma^2 $$ 
-- **Intuition:** we are missing the variation within the neighborhoods
-]
-
----
-
-### Variance in the aggregated data
-
-- We can't do it if there is variation within groups
-- But we can if there is no variation within groups
-  - *Example*: frequency distribution of discrete variables
-
-.pull-left[
-```{r 5b, out.width='100%', fig.height=3, warning=FALSE}
-### table with income by neighborhood
-frequency_table <- table(Health_data[Health_data$diabetes==1,]$age)
-frequency_table <- as.data.frame(frequency_table)
-colnames(frequency_table) <- c('Age', 'n_i')
-
-# Adding relative frequencies (p_i)
-frequency_table$p_i <- prop.table(frequency_table$n_i)
-frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+<!-- .pull-left[ -->
+<!-- ```{r 5a, out.width='100%', fig.height=3, warning=FALSE} -->
+<!-- ### table with income by neighborhood -->
+<!-- # Create a data frame for the example -->
+<!-- neighborhoods <- c("Polanco", "Condesa", "Roma", "Tepito", "Coyoacán", "Santa Fe", "Zona Rosa", "Iztapalapa", "Tacubaya", "San Miguel", "Chalco", "Tláhuac") -->
+<!-- average_income <- c(60000, 45000, 35000, 15000, 30000, 25000, 40000, 12000, 18000, 9000, 10000, 12000) -->
+<!-- population <- c(10000, 20000, 30000, 5000, 25000, 18000, 12000, 40000, 15000, 8000, 60000, 45000) -->
 
 
-datatable(frequency_table,
-          fillContainer = FALSE,
-          options = list(
-            pageLength = 6,
-            searching = FALSE,
-            initComplete = JS(
-              "function(settings, json) {",
-              "$(this.api().table().container()).css({'font-size': '12px'});",
-              "}"
-            )
-          ),
-          rownames = FALSE
-)
-```
-]
+<!-- # Calculate the unweighted average income -->
+<!-- unweighted_mean <- mean(average_income) -->
 
-.pull-right[
+<!-- # Calculate the weighted average income -->
+<!-- weighted_mean <- sum(average_income * population) / sum(population) -->
+<!-- df <- data.frame(Neighborhood = neighborhoods, -->
+<!--                  Average_Income = average_income, -->
+<!--                  Population = population) -->
+<!-- # Create a data frame for the table -->
 
-- For simplicity, assume we have data on all population: 
+<!-- datatable(df, -->
+<!--           fillContainer = FALSE, -->
+<!--           options = list( -->
+<!--             pageLength = 6, -->
+<!--             searching = FALSE, -->
+<!--             initComplete = JS( -->
+<!--               "function(settings, json) {", -->
+<!--               "$(this.api().table().container()).css({'font-size': '12px'});", -->
+<!--               "}" -->
+<!--             ) -->
+<!--           ), -->
+<!--           rownames = FALSE -->
+<!-- ) -->
+<!-- ``` -->
+<!-- ] -->
 
-\begin{align}
-\tiny
-   \sigma^2 &=\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2 \\
-    &= \frac{(20-\mu)^2+(20-\mu)^2+(20-\mu)^2+...}{N}  \\
-    &=  \frac{4\cdot(20-\mu)^2+2 \cdot(21-\mu)^2+...}{N} \\
-    &= \frac{\sum_{a}{N_a} (\bar{x}_a - \mu)^2}{\sum_a N_a}
-\end{align}
+<!-- .pull-right[ -->
 
-- Where $N_a$ is number of people with age $a$
+<!-- $$\frac{\sum_{z}{N_z} (\bar{x}_z - \mu)^2}{\sum_z N_z} \neq \sigma^2 $$  -->
+<!-- - **Intuition:** we are missing the variation within the neighborhoods -->
+<!-- ] -->
+
+<!-- --- -->
+
+<!-- ### Variance in the aggregated data -->
+
+<!-- - We can't do it if there is variation within groups -->
+<!-- - But we can if there is no variation within groups -->
+<!--   - *Example*: frequency distribution of discrete variables -->
+
+<!-- .pull-left[ -->
+<!-- ```{r 5b, out.width='100%', fig.height=3, warning=FALSE} -->
+<!-- ### table with income by neighborhood -->
+<!-- frequency_table <- table(Health_data[Health_data$diabetes==1,]$age) -->
+<!-- frequency_table <- as.data.frame(frequency_table) -->
+<!-- colnames(frequency_table) <- c('Age', 'n_i') -->
+
+<!-- # Adding relative frequencies (p_i) -->
+<!-- frequency_table$p_i <- prop.table(frequency_table$n_i) -->
+<!-- frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3) -->
+
+
+<!-- datatable(frequency_table, -->
+<!--           fillContainer = FALSE, -->
+<!--           options = list( -->
+<!--             pageLength = 6, -->
+<!--             searching = FALSE, -->
+<!--             initComplete = JS( -->
+<!--               "function(settings, json) {", -->
+<!--               "$(this.api().table().container()).css({'font-size': '12px'});", -->
+<!--               "}" -->
+<!--             ) -->
+<!--           ), -->
+<!--           rownames = FALSE -->
+<!-- ) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- .pull-right[ -->
+
+<!-- - For simplicity, assume we have data on all population:  -->
+
+<!-- \begin{align} -->
+<!-- \tiny -->
+<!--    \sigma^2 &=\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2 \\ -->
+<!--     &= \frac{(20-\mu)^2+(20-\mu)^2+(20-\mu)^2+...}{N}  \\ -->
+<!--     &=  \frac{4\cdot(20-\mu)^2+2 \cdot(21-\mu)^2+...}{N} \\ -->
+<!--     &= \frac{\sum_{a}{N_a} (\bar{x}_a - \mu)^2}{\sum_a N_a} -->
+<!-- \end{align} -->
+
+<!-- - Where $N_a$ is number of people with age $a$ -->
 
 
 
-]
+<!-- ] -->
 
 
 ---
@@ -963,3 +964,13 @@ Health_data %>%
   theme(legend.position = "none")
 
 ```
+
+---
+### Exercises:
+
+- Review Exercises:
+  - PDF 2: 1,2,6,8 (skip f),9,10,13,
+
+- Homeworks
+  - Lista 00.1: 1,2,4,5
+

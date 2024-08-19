@@ -1,10 +1,21 @@
-remotes::install_github("jhelvy/renderthis", dependencies = TRUE)
+#remotes::install_github("jhelvy/renderthis", dependencies = TRUE)
 
-install.packages("remotes")
+#install.packages("chromote")
+#install.packages("renderthis")
+
 library(renderthis)
-remotes::install_github('rstudio/chromote')
 to_pdf("C_2_slides_a.html")
 
-?to_pdf
-Sys.getenv("GITHUB_PAT")
-Sys.unsetenv("GITHUB_PAT")
+# 
+# usethis::git_sitrep()
+# 
+# 
+# install.packages("usethis")
+# library(usethis)
+# usethis::git_sitrep()
+# 
+# usethis::browse_github_pat()
+# 
+# usethis::edit_r_environ()
+# 
+# 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

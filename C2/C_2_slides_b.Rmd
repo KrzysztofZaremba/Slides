@@ -78,12 +78,12 @@ class: inverse, middle
 ## Mean
 
 - **Mean** represents the arithmetic average of the data.
+- Sometimes called the expected value of the random variable E(X)
 - The population mean $\mu$ is the sum of all observations divided by the total population size:
 
-$$\mu =E(X)=\frac{\sum_{i=1}^{N} x_i}{N}$$
+$$\mu =E(X)=\frac{\sum_{i=1}^{N} x_i}{N}=\sum_{x\in X}P(X) \times X$$
 
 - where $N$ is the total population size, and $x_i$ are individual data points.
-
 
 - The sample mean, denoted as $\bar{x}$, is the sample equivalent:
 
@@ -187,7 +187,7 @@ The ** weighted mean** is:
 
 ## Aggregated Data
 
-- We want to know average income in Mexico City.
+- We want to know average individual income in Mexico City
 - But we only know averages by neighborhood, no individual data
 
 ```{r, echo=FALSE}
@@ -237,7 +237,19 @@ datatable(df,
 
 --
 
-$$\mu = \frac{\sum_{i=1}^{N} x_i}{N}= \frac{\sum_{z}\sum_{i=1}^{N_z} x_i}{\sum_z N_z}= \frac{\sum_{z} \frac{N_z}{N_z} \sum_{i=1}^{N_z}x_i}{\sum_z N_z} = \frac{\sum_{z} N_z\sum_{i=1}^{N_z} \frac{x_i}{N_z}}{\sum_z N_z}=\frac{\sum_{z}{N_z} \bar{x}_z}{\sum_z N_z}$$
+Let
+
+- $\mu$ be the average individual income 
+- $x_i$ be income of person "i"
+- $N$ be the total Population in CDMX
+- $N_z$ be the population in a neighborhood "z"
+- $\mu_z$ be the average income in a neighborhood "z"
+
+
+
+--
+
+$$\mu = \underbrace{\frac{\sum_{i=1}^{N} x_i}{N}}_{\text{Average} \\ \text{Individual} \\ \text{Income}}= \frac{\sum_{z}\sum_{i=1}^{N_z} x_i}{\sum_z N_z}= \frac{\sum_{z} \frac{N_z}{N_z} \sum_{i=1}^{N_z}x_i}{\sum_z N_z} = \frac{\sum_{z} N_z\sum_{i=1}^{N_z} \frac{x_i}{N_z}}{\sum_z N_z}=\underbrace{\frac{\sum_{z}{N_z} \bar{x}_z}{\sum_z N_z}}_{\text{Weighted} \\ \text{Average of} \\ \text{Neighborhood}  \\ \text{ Incomes}}$$
 
 ---
 ## Mean
@@ -707,4 +719,14 @@ datatable(tiktok_dataset,
   - First decile is the average of the 20th and 21st observation
 - Index for the 95th percentile is: $i = \left(\frac{95}{100}\right)(200+1)=190.95$
   - 95th percentile is the average of the at 190th and 191st observation
+
+
+---
+### Exercises:
+
+- Review Exercises:
+  - PDF 2: 3,4,5,6,
+
+- Homeworks
+  - Lista 00.1: 3
 
