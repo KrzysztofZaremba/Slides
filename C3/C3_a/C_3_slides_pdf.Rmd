@@ -571,7 +571,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - The estimator: $\hat{\theta}_4 = \frac{\sum_n{X_i}}{n}$
 
 --
-- Expected Value: $E(\hat{\theta}_4)=E(\frac{\sum_n{X_i}}{n})=\frac{\sum_n{E(X_i)}}{n}=\frac{\sum_n{E(\mu)}}{n} = \mu$
+- Expected Value: $E(\hat{\theta}_4)=E(\frac{\sum_n{X_i}}{n})=\frac{\sum_n{E(X_i)}}{n}=\frac{\sum_n{\mu}}{n} = \mu$
 
 --
 - Bias: $E(\hat{\theta}_4) - \mu=0$ (unbiased)
@@ -584,7 +584,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - But how do we choose among unbiased estimator?
 
 --
-  - Suppose we sample from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
+  - Suppose we sample IID from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
   - Imagine you don't know the mean is 10, and you try to estimate it:
   - Estimator 1:  $\hat\mu_1=\small (3X_1 + X_2)/4$
   - Estimator 2:  $\hat\mu_2=\small (X_1 + X_2+X_3+X_4)/4$
@@ -631,7 +631,7 @@ print(p)
 
 - Variance of an estimator is defined as:
 
-$$Var(\hat{\theta})=E[(\hat{\theta}-E[\theta])^2]$$
+$$Var(\hat{\theta})=E[(\hat{\theta}-E[\hat\theta])^2]$$
 - We want the estimator to have low  variance! 
 - Estimator with the lower variance is more efficient
 - In the example above
