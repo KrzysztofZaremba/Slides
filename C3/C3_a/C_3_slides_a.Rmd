@@ -83,11 +83,6 @@ load("sample_listing.Rda")
 - How to build confidence intervals
 - How to test hypothesis
 
---
-
-### Why?
-- Which alternative performs better -> data driven optimal decision 
-
 ---
 
 ### Motivating Example
@@ -108,6 +103,9 @@ load("sample_listing.Rda")
 ```{r, echo=FALSE}
 # Load the DT package
 library(DT)
+
+Sample_list$clean[Sample_list$clean==TRUE] <- "Clean"
+Sample_list$clean[Sample_list$clean==FALSE] <- "Dirty"
 
 
 # Display the data table
@@ -155,22 +153,163 @@ In statistical language:
 
 - .blue[Goal]: What we want to learn about the population?
   - Is $\mu_c$ > $\mu_d$? If yes, by how much?
+  - But we do not know $\mu_c$ and $\mu_d$
+  - We will try to guess it using an estimator and a random IID sample
 
 ---
 
 
-### Random sample properties
 
-- **At random:** A sample is random if each member of the population (each listing) has an equal chance of being selected.
+### What is a random sample?
+
+- **At random:** A sample is random if each member of the population (each listing) has an equal chance of being selected. This process of selecting is called *drawing* from a population or a sample.
 
 --
 - **Random Variable: $P_i$:**
-  - RV describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
+  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
 
 --
 - **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
 
 --
+- **Observed Value: $p_i$:**
+  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+
+
+#### Before Drawing the Sample
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", "", ""),
+    "P_2" = c("P_2", "", ""),
+    "P_3" = c("P_3", "", ""),
+    "P_4" = c("P_4", "", ""),
+    "P_5" = c("P_5", "", ""),
+    "P_6" = c("P_6", "", ""),
+    "P_7" = c("P_7", "", ""),
+    "P_8" = c("P_8", "", "")
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+---
+
+
+
+### What is a random sample?
+
+
+- **Random Variable: $P_i$:**
+  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
+
+
+- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
+
+
+- **Observed Value: $p_i$:**
+  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+
+#### After Drawing the Sample (Sample 1)
+
+```{r, echo=FALSE, results='asis'}
+set.seed(1234)
+
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 120),
+    "P_2" = c("P_2", sample(1000:9999, 1), 150),
+    "P_3" = c("P_3", sample(1000:9999, 1), 800),
+    "P_4" = c("P_4", sample(1000:9999, 1), 200),
+    "P_5" = c("P_5", sample(1000:9999, 1), 1400),
+    "P_6" = c("P_6", sample(1000:9999, 1), 110),
+    "P_7" = c("P_7", sample(1000:9999, 1), 1800),
+    "P_8" = c("P_8", sample(1000:9999, 1), 900)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+---
+
+
+
+### What is a random sample?
+
+
+- **Random Variable: $P_i$:**
+  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
+
+
+- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
+
+
+- **Observed Value: $p_i$:**
+  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+
+#### After Drawing the Sample (Sample 2)
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 260),
+    "P_2" = c("P_2", sample(1000:9999, 1), 420),
+    "P_3" = c("P_3", sample(1000:9999, 1), 500),
+    "P_4" = c("P_4", sample(1000:9999, 1), 2120),
+    "P_5" = c("P_5", sample(1000:9999, 1), 800),
+    "P_6" = c("P_6", sample(1000:9999, 1), 1450),
+    "P_7" = c("P_7", sample(1000:9999, 1), 120),
+    "P_8" = c("P_8", sample(1000:9999, 1), 809)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+---
+
+### What is a random sample?
+
+
+- **Random Variable: $P_i$:**
+  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
+
+
+- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
+
+
+- **Observed Value: $p_i$:**
+  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+
+#### After Drawing the Sample (Sample 3)
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+    "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 150),
+    "P_2" = c("P_2", sample(1000:9999, 1), 980),
+    "P_3" = c("P_3", sample(1000:9999, 1), 3450),
+    "P_4" = c("P_4", sample(1000:9999, 1), 220),
+    "P_5" = c("P_5", sample(1000:9999, 1), 120),
+    "P_6" = c("P_6", sample(1000:9999, 1), 853),
+    "P_7" = c("P_7", sample(1000:9999, 1), 2353),
+    "P_8" = c("P_8", sample(1000:9999, 1), 1244)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+---
+
+
+### What is a random sample?
+
+
+
 - **IID (Independent and Identically Distributed):**
 
 --
@@ -179,15 +318,14 @@ In statistical language:
 --
   - **Identically Distributed:** All units $P_i$ come from the same distribution.
 
---
-- **Observed Value: $p_i$:**
-  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
+
 ---
 
 ### Estimators
 
 
-- **Estimator:**
+- **Intuition**
+  - It's our method of guessing the parameter based on the data we have
   - A function of random variables in our sample $\hat\theta=f(P_1, P_2,...,P_n)$
   - Given its random nature, we can analyze its statistical properties
   - Examples we have seen: 
@@ -206,31 +344,164 @@ In statistical language:
 
 ---
 
+### Example: Estimator
+
+- Suppose we want to know average price of the apartment in Mexico City, but we don't have data for the whole population.
+
+- We take a sample of 8 listings and calculate the average price.
+
+#### Before Drawing the Sample
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", "", ""),
+    "P_2" = c("P_2", "", ""),
+    "P_3" = c("P_3", "", ""),
+    "P_4" = c("P_4", "", ""),
+    "P_5" = c("P_5", "", ""),
+    "P_6" = c("P_6", "", ""),
+    "P_7" = c("P_7", "", ""),
+    "P_8" = c("P_8", "", "")
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+
+**Estimator:** $\hat\mu=\frac{P_1+P_2+P_3+P_4+P_5+P_6+P_7+P_8}{8}$
+
+
+
+---
+
+
+
+### Example: Estimator
+
+- Suppose we want to know average price of the apartment in Mexico City, but we don't have data for the whole population.
+
+- We take a sample of 8 listings and calculate the average price.
+
+#### After Drawing the Sample (Sample 1)
+
+```{r, echo=FALSE, results='asis'}
+set.seed(1234)
+
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 120),
+    "P_2" = c("P_2", sample(1000:9999, 1), 150),
+    "P_3" = c("P_3", sample(1000:9999, 1), 800),
+    "P_4" = c("P_4", sample(1000:9999, 1), 200),
+    "P_5" = c("P_5", sample(1000:9999, 1), 1400),
+    "P_6" = c("P_6", sample(1000:9999, 1), 110),
+    "P_7" = c("P_7", sample(1000:9999, 1), 1800),
+    "P_8" = c("P_8", sample(1000:9999, 1), 900)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+
+
+**Estimator:** $\hat\mu=\frac{P_1+P_2+P_3+P_4+P_5+P_6+P_7+P_8}{8}$
+
+**Point estimate:** $\frac{p_1+p_2+p_3+p_4+p_5+p_6+p_7+p_8}{8}=685$
+
+---
+
+### Example: Estimator
+
+- Suppose we want to know average price of the apartment in Mexico City, but we don't have data for the whole population.
+
+- We take a sample of 8 listings and calculate the average price.
+
+#### After Drawing the Sample (Sample 2)
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+ "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 260),
+    "P_2" = c("P_2", sample(1000:9999, 1), 420),
+    "P_3" = c("P_3", sample(1000:9999, 1), 500),
+    "P_4" = c("P_4", sample(1000:9999, 1), 2120),
+    "P_5" = c("P_5", sample(1000:9999, 1), 800),
+    "P_6" = c("P_6", sample(1000:9999, 1), 1450),
+    "P_7" = c("P_7", sample(1000:9999, 1), 120),
+    "P_8" = c("P_8", sample(1000:9999, 1), 809)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+
+
+**Estimator:** $\hat\mu=\frac{P_1+P_2+P_3+P_4+P_5+P_6+P_7+P_8}{8}$
+
+**Point estimate:** $\frac{p_1+p_2+p_3+p_4+p_5+p_6+p_7+p_8}{8}=809.875$
+
+---
+
+### Example: Estimator
+
+- Suppose we want to know average price of the apartment in Mexico City, but we don't have data for the whole population.
+
+- We take a sample of 8 listings and calculate the average price.
+
+#### After Drawing the Sample (Sample 3)
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(
+  data.frame(
+    "Description" = c("Random Variables P_i (Before Drawing)", "Selected Listings IDs", "Realized Values p_i (After Drawing)"),
+    "P_1" = c("P_1", sample(1000:9999, 1), 150),
+    "P_2" = c("P_2", sample(1000:9999, 1), 980),
+    "P_3" = c("P_3", sample(1000:9999, 1), 3450),
+    "P_4" = c("P_4", sample(1000:9999, 1), 220),
+    "P_5" = c("P_5", sample(1000:9999, 1), 120),
+    "P_6" = c("P_6", sample(1000:9999, 1), 853),
+    "P_7" = c("P_7", sample(1000:9999, 1), 2353),
+    "P_8" = c("P_8", sample(1000:9999, 1), 1244)
+  ),
+  col.names = NULL,
+  align = 'c'
+)
+```
+
+**Estimator:** $\hat\mu=\frac{P_1+P_2+P_3+P_4+P_5+P_6+P_7+P_8}{8}$
+
+**Point estimate:** $\frac{p_1+p_2+p_3+p_4+p_5+p_6+p_7+p_8}{8}=1171.25$
+
+---
+
 ### Estimators 
 
 
-- The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),3), scientific=FALSE)` MXN
+- The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean=="Clean",]$price),3), scientific=FALSE)` MXN
 - This is our point estimate
 
 --
-- Can we evaluate how reliable is it?
+- Can can't really say how close this one number (point estimate) is to the true mean price in Mexico City without knowing the population
+- But we can say how good our method of guessing (estimator) is by looking at it's sampling distribution
 
-`r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='500px')`
 
 
 ---
 ### Estimators 
 
-- **Sampling distribution** is the distribution of a statistic calculated from multiple random samples drawn from the same population.
+- **Sampling distribution** is the distribution of the estimator calculated from multiple random samples drawn from the same population.
 
---
-- It is never actually observed (we only have one draw)
 
---
-- But knowing its properties can help us determine the accuracy of the mean we computed
-  - Let's start by determining the expectation and the variance of the statistic/estimator
+`r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='500px')`
+
   
 ---
+
+
 ### Expectation of an estimator
 
 - A good estimator should be unbiased:
@@ -239,6 +510,8 @@ $$E[\hat{\theta}]=\theta$$
 - This should be true for any value of $\theta$
 - The sampling distribution should be centered at the parameter's value
 - Intuitively, on average the estimator should give us the parameter's value
+- When I take a many,many,many samples of apartments and calculate mean price in each sample
+  - The average of these means should be super close to the true mean price in Mexico City
 
 
 --
@@ -248,20 +521,24 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 
 ---
 
-### Example 1: Estimator = 5
+### Example 1: Estimator = 570
 #### Expectation
-- The estimator: $\hat{\theta}_1 = 5$
+- Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
+- We want to estimate this mean
+- The estimator: $\hat{\theta}_1 = 570$
 
 --
-- Expected Value: $E(\hat{\theta}_1) = 5$
+- Expected Value: $E(\hat{\theta}_1) = 570$
 
 --
-- Bias: $E(\hat{\theta}_1)-\mu\neq 0$ if $\mu \neq 5$ (biased)
+- Bias: $E(\hat{\theta}_1)-\mu\neq 0$ if $\mu \neq 570$ (biased)
 
 ---
 
 ### Example 2: Estimator = $X_i$
 #### Expectation
+- Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
+- We want to estimate this mean
 - The estimator: $\hat{\theta}_2 = X_i$
 
 --
@@ -274,19 +551,23 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - Is it a good estimator?
 ---
 
-### Example 3: Estimator = $(3X_1 + X_2)/4$
+### Example 3: Estimator = $(3X_1 + X_2)/5$
 #### Expectation
-- The estimator: $\hat{\theta}_3 = \frac{3X_1 + X_2}{4}$
+- Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
+- We want to estimate this mean
+- The estimator: $\hat{\theta}_3 = \frac{3X_1 + X_2}{5}$
 
 --
-- Expected Value: $E(\hat{\theta}_3)= \frac{3}{4}E(X_1) + \frac{1}{4}E(X_2) = \frac{3}{4}\mu + \frac{1}{4}\mu = \mu$
+- Expected Value: $E(\hat{\theta}_3)= \frac{3}{5}E(X_1) + \frac{1}{5}E(X_2) = \frac{3}{5}\mu + \frac{1}{5}\mu = \frac{4}{5}\mu$
 
 --
-- Bias: $E(\hat{\theta}_3) - \mu=0$ (unbiased)
+- Bias: $E(\hat{\theta}_3) - \mu= \frac{4}{5}\mu - \mu=-\frac{1}{5}\mu$ (biased)
 
 ---
 ### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
 #### Expectation
+- Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
+- We want to estimate this mean
 - The estimator: $\hat{\theta}_4 = \frac{\sum_n{X_i}}{n}$
 
 --
@@ -304,11 +585,13 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 
 --
   - Suppose we sample from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
-  - Estimator 1:  $\small (3X_1 + X_2)/4$
-  - Estimator 2:  $\small (X_1 + X_2+X_3+X_4)/4$
+  - Imagine you don't know the mean is 10, and you try to estimate it:
+  - Estimator 1:  $\hat\mu_1=\small (3X_1 + X_2)/4$
+  - Estimator 2:  $\hat\mu_2=\small (X_1 + X_2+X_3+X_4)/4$
   - An estimator is more $\textbf{efficient}$ if it has a smaller variance
 
-```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
+--
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
 library(ggplot2)
 
 set.seed(123)
@@ -353,14 +636,16 @@ $$Var(\hat{\theta})=E[(\hat{\theta}-E[\theta])^2]$$
 - Estimator with the lower variance is more efficient
 - In the example above
 
-$$var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})$$
+$$var(\hat\mu_1)=var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})=var(\hat\mu_2)$$
+- Relative efficiency of the two estimators is the ratio of their variances
+$$Eff_{\hat\mu_1,\hat\mu_2}=\frac{var(\frac{3X_1 + X_2}{4})}{var(\frac{X_1+X_2+X_3+X_4}{4})}=\frac{\frac{10}{16}}{\frac{4}{16}}=\frac{5}{2}$$
 
 ---
 
 ### Variance of estimators
 
-####Example 1: Estimator = 5
--  $\small Var(\hat{\theta}_1) = E[(\hat{\theta}_1 - E[\hat{\theta}_1])^2]=E[(5 - E[5])^2] = 0$
+####Example 1: Estimator = 570
+-  $\small Var(\hat{\theta}_1) = E[(\hat{\theta}_1 - E[\hat{\theta}_1])^2]=E[(570 - E[570])^2] = 0$
 
 --
 #### Example 2: Estimator = $X_i$
@@ -373,6 +658,26 @@ $$var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})$$
 --
 #### Example 3: Estimator = $\frac{3X_1 + X_2}{4}$
 - $\small  Var(\hat{\theta}_4) = E\left[\left((3X_1 + X_2)/4 - \mu\right)^2\right]=\frac{10\sigma^2}{16}$
+
+
+---
+
+### Side note
+
+- In all previous cases of estimators we assumed an independent sample
+
+- Suppose that $X_1$ and $X_2$ are **not independent**
+- Example: daily sales of two products in the same store 
+
+--
+- What is $E(X_1+X_2)$
+
+--
+- What is $var(X_1+X_2)$?
+
+--
+- What about $var(X_1-X_2)$?
+
 
 ---
 
@@ -395,15 +700,6 @@ $$Bias(\hat{\theta}_6)=E[\hat{\theta}_6]-\sigma^2=-\frac{\sigma^2}{n}$$
 - The sample variance estimator (divided by $\frac{1}{n-1}$) is unbiased:
 
 $$E[\hat{\theta}_7] = E[s^2]= E[\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}]=\frac{(n - 1)\sigma^2}{n-1}=\sigma^2$$
-
-
-
-
-
-
-
-
-
 
 
 ---
@@ -609,7 +905,11 @@ par(mfrow = c(1, 1))
 
 --
 - $\sigma_{\bar{X}}=\sqrt{var(\bar{X}_n)}=\frac{\sigma_X}{\sqrt n}=\frac{\sqrt{p(1-p)}}{\sqrt n}=\frac{0.5}{\sqrt n}$
+
+
 ---
+
+
 ### Central Limit Theorem 
 What happens if some assumptions are not respected?
 - .blue[Random draws] means that each member of the population has equal chance of being selected 
@@ -792,13 +1092,36 @@ $$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant
 $$\text{If } X \sim \mathcal{N}(\mu_1, \sigma_1) \text{ and } Y \sim \mathcal{N}(\mu_2, \sigma_2), \text{ then } X + Y \sim \mathcal{N}(\mu_1 + \mu_2, \sqrt{\sigma_1^2 + \sigma_2^2})$$
 
 ---
+
+### What if I don't know $\sigma$
+
+- Suppose that sales in stores are normally distributed with mean 200 and with unknown variance
+
+--
+- I want to take a sample of 80 stores and I want to know the probability that the average sales in a sample will be greater than 220
+
+--
+$$P(\frac{\sum_{i=1}^{80} X_i}{80}>220)$$
+Ok, I know that according to central limit theorem $$\frac{\sum_{i=1}^{80} X_i}{80}\sim N(200, \frac{\sigma}{\sqrt{80}})$$
+
+--
+- But if I don't know $\sigma$ how can I use it?
+- We can use the sample standard deviation instead to estimate $\sigma$
+
+--
+- Since it is just an estimate, it adds uncertainty
+- But if you have big sample, then you are really good at estimating standard deviation and the error is small
+- So the distribution will still converge to normal, but you will need a bit more observations (say 50 rather than 40)
+
+
+---
 ## Standard deviation
 
 - Great, sample means have normal distribution in large samples
 
 --
 
-- Can we say something about hte standard deviation?
+- Can we say something about the standard deviation?
 
 --
 
@@ -893,3 +1216,15 @@ par(mfrow = c(1, 1))
 
 --
 - Because of CLT - it's sum of random variables
+
+
+---
+### Exercises:
+
+- Review Exercises:
+  - PDF 3: 1,2,3,4,6,7(b),9,10,11,12,13,14,15,16
+
+- Homeworks
+  - Lista 00.1: 6,7,8,9,10,11,12,13,14,15
+  - Lista 00.2: 1,2,3,4,5,6,7,8,9,10,11,12,16,17,18,19,
+

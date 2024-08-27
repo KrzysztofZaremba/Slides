@@ -93,22 +93,22 @@ class: inverse, middle
 
 ###Comparing categorical variables
 
-####Does mother's diabetes predict diabetes?
+####Do people living in rural areas are more likely to have diabetes?
 
 - We have two categorical variables
-- We can use frequency table to see how diabetes is distributed among groups with healthy vs diabetic mother
+- We can use frequency table to see how diabetes is distributed among the two types of areas:
 
 ```{r 1, out.width='100%', fig.height=3, warning=FALSE}
 
 Health_data$diabetes <- factor(Health_data$diabetes, levels = c(0, 1), labels = c("No", "Yes"))
-Health_data$Mother_diabetes <- factor(Health_data$Mother_diabetes, levels = c(0, 1), labels = c("No", "Yes"))
+Health_data$Mother_diabetes <- factor(Health_data$location_type)
 
 # Create a frequency table
-frequency_table <- table( Health_data$Mother_diabetes,Health_data$diabetes)
+frequency_table <- table( Health_data$location_type ,Health_data$diabetes)
 
 # Add variable names to row and column names
 col_names <- c( "No Diabetes","Has Diabetes")
-row_names <- c( "Mother No Diabetes","Mother Has Diabetes")
+row_names <- c( "Rural","Urban")
 rownames(frequency_table) <- row_names
 colnames(frequency_table) <- col_names
 
@@ -119,10 +119,12 @@ table_output <- kable(frequency_table, format = "html", caption = "") %>%
 table_output 
 ```
 
+
+
 ---
 ###Comparing categorical variables
 
-####Does mother's diabetes predict diabetes?
+####Do people living in rural areas are more likely to have diabetes?
 
 - Are relative frequencies more helpful?
 - Share of each subgroup within the sample
@@ -161,22 +163,173 @@ table_output
 #### Table of frequency
 
 
-- We want to compare whether someone with diabetic mother is more likely to have diabetes than someone with healthy mother
+- We want to compare whether someone living in rural area is more likely to have diabetes than someone living in urban area
 
 --
-- So we want to see whether: $$ \scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)>P(Diabetes_i=1|\text{Mother has diabetes}_i=0)$$
+- So we want to see whether: $$ \scriptsize P(Diabetes_i=1|Area_i=Rural)>P(Diabetes_i=1|Area_i=Urban)$$
 
 --
 - We want to look at the **relative conditional frequencies**
 - They are usually in **contingency tables**
-  - Share with diabetes within group of people whose mothers have diabetes
-  - Share with diabetes within group of people whose mothers are healthy
+  - Share with diabetes within urban sample
+  - Share with diabetes within rural sample
 
 
 --
+```{r 2cafd, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+frequency_table <- table(Health_data$location_type ,Health_data$diabetes)
+
+# Add variable names to row and column names
+col_names <- c( "No Diabetes","Has Diabetes")
+row_names <- c( "Rural","Urban")
+rownames(frequency_table) <- row_names
+colnames(frequency_table) <- col_names
+
+# Calculate relative frequencies
+total_rows <- rowSums(frequency_table)
+prop_table <- frequency_table / total_rows
+
+table_output <-kable(prop_table, format = "html", caption = "", digits=2) %>%
+  kable_styling("striped", full_width = FALSE)
+table_output
+```
+
+$$ \scriptsize P(Diabetes_i=1|Area_i=Rural)=\scriptsize \frac{ P(Diabetes_i=1 \cap Area_i=Rural) }{P(Area_i=Rural)}\approx\frac{0.03}{0.03+0.24} \approx 0.1$$
+Or:
+
+$$ \scriptsize P(Diabetes_i=1|Area_i=Rural)=\scriptsize \frac{ \text{Number live in Rural & Have diabetes} }{\text{Number live in Rural}}=\frac{993}{993+8906} \approx 0.1$$
+
+---
+
+```{r 2ca, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
+
+frequency_table <- table(Health_data$location_type ,Health_data$diabetes)
+
+# Add variable names to row and column names
+col_names <- c( "No Diabetes","Has Diabetes")
+row_names <- c( "Rural","Urban")
+rownames(frequency_table) <- row_names
+colnames(frequency_table) <- col_names
+
+# Calculate relative frequencies
+total_rows <- rowSums(frequency_table)
+prop_table <- frequency_table / total_rows
+
+table_output <-kable(prop_table, format = "html", caption = "", digits=2) %>%
+  kable_styling("striped", full_width = FALSE)
+table_output
+```
+
+--
+- What about marginal frequencies here?
+  - Row sums should add up to 1
+      - $\scriptsize P(Diabetes_i=1|\text{Area=Rural}_i)+P(Diabetes_i=0|\text{Area=Urban}_i)$
+  - Column sums are meaningless
+      - $\scriptsize P(Diabetes_i=1|\text{Area=Rural}_i)+P(Diabetes_i=1|\text{Area=Urban}_i)$
+
+
+
+---
+- We can visualize it on a barplot
+
+.center[
+```{r 2d, out.width='100%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
+
+summary_table <- table(Health_data$location_type, Health_data$diabetes)
+prop_table <- prop.table(summary_table, margin = 1)
+prop_df <- as.data.frame(prop_table)
+
+# Renaming columns for better labels
+colnames(prop_df) <- c("Area", "Has Diabetes", "Proportion")
+
+
+# Reshaping the dataframe for plotting
+
+
+
+# Creating the bar plot using ggplot2
+p=ggplot(prop_df, aes(x = `Has Diabetes`, y = Proportion, fill = Area)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Has Diabetes", y = "Proportion", fill = "Area") +
+  theme(legend.position = "top")+
+  theme_xaringan()+scale_xaringan_fill_discrete()
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+```
+]
+---
+
+- Or better on a **stacked barplot**
+
+.center[
+```{r 2e, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+
+summary_table <- table(Health_data$location_type, Health_data$diabetes)
+prop_table <- prop.table(summary_table, margin = 1)
+prop_df <- as.data.frame(prop_table)
+
+# Renaming columns for better labels
+colnames(prop_df) <- c("Area", "Has Diabetes", "Proportion")
+
+
+# Reshaping the dataframe for plotting
+
+
+
+# Creating the bar plot using ggplot2
+p=ggplot(prop_df, aes(fill = `Has Diabetes`, y = Proportion, x = Area)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "Area", y = "Proportion", fill = "Has Diabetes") +
+  theme(legend.position = "top")+
+  theme_xaringan()+scale_xaringan_fill_discrete()
+
+ggplotly(p,
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+```
+]
+
+- *Stacked barplot* clearly shows the distribution of diabetes within each group
+
+---
+
+###Practice
+
+- Are you more likely to have diabetes if your mother had diabetes?
+- By how much?
+
+```{r 1bvc, out.width='100%', fig.height=3, warning=FALSE}
+load("Data/Health_data.Rda")
+Health_data$diabetes <- factor(Health_data$diabetes, levels = c(0, 1), labels = c("No", "Yes"))
+Health_data$Mother_diabetes <- factor(Health_data$Mother_diabetes, levels = c(0, 1), labels = c("No", "Yes"))
+
+# Create a frequency table
+frequency_table <- table( Health_data$Mother_diabetes,Health_data$diabetes)
+
+# Add variable names to row and column names
+col_names <- c( "No Diabetes","Has Diabetes")
+row_names <- c( "Mother No Diabetes","Mother Has Diabetes")
+rownames(frequency_table) <- row_names
+colnames(frequency_table) <- col_names
+
+
+table_output <- kable(frequency_table, format = "html", caption = "") %>%
+  kable_styling("striped", full_width = FALSE) 
+
+table_output 
+```
+
+
+---
+
+###Practice
+
+
 ```{r 2c, out.width='100%', fig.height=3, warning=FALSE, echo=FALSE, message=FALSE}
 
-frequency_table <- table( Health_data$Mother_diabetes,Health_data$diabetes)
+frequency_table <- table(Health_data$Mother_diabetes,Health_data$diabetes)
 
 # Add variable names to row and column names
 col_names <- c( "No Diabetes","Has Diabetes")
@@ -193,94 +346,20 @@ table_output <-kable(prop_table, format = "html", caption = "", digits=2) %>%
 table_output
 ```
 
-
-
---
-- What about marginal frequencies here?
-  - Row sums should add up to 1
-      - $\scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)+P(Diabetes_i=0|\text{Mother has diabetes}_i=1)$
-  - Column sums are meaningless
-      - $\scriptsize P(Diabetes_i=1|\text{Mother has diabetes}_i=1)+P(Diabetes_i=1|\text{Mother has diabetes}_i=0)$
-
-
+- Does it mean that having diabetic mother **causes** higher change of having diabetes?
 
 ---
-- We can visualize it on a barplot
 
-.center[
-```{r 2d, out.width='100%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
-
-summary_table <- table(Health_data$Mother_diabetes, Health_data$diabetes)
-prop_table <- prop.table(summary_table, margin = 1)
-prop_df <- as.data.frame(prop_table)
-
-# Renaming columns for better labels
-colnames(prop_df) <- c("Mother Has Diabetes", "Has Diabetes", "Proportion")
-
-
-# Reshaping the dataframe for plotting
-
-
-
-# Creating the bar plot using ggplot2
-p=ggplot(prop_df, aes(x = `Has Diabetes`, y = Proportion, fill = `Mother Has Diabetes`)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(x = "Has Diabetes", y = "Proportion", fill = "Mother has Diabetes") +
-  theme(legend.position = "top")+
-  theme_xaringan()+scale_xaringan_fill_discrete()
-ggplotly(p,
-        width = 800,   # Adjust the width according to your preference
-        height = 400)
-```
-]
----
-
-- Or better on a **stacked barplot**
-
-.center[
-```{r 2e, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
-
-summary_table <- table(Health_data$Mother_diabetes, Health_data$diabetes)
-prop_table <- prop.table(summary_table, margin = 1)
-prop_df <- as.data.frame(prop_table)
-
-# Renaming columns for better labels
-colnames(prop_df) <- c("Mother Has Diabetes", "Has Diabetes", "Proportion")
-
-
-# Reshaping the dataframe for plotting
-
-
-
-# Creating the bar plot using ggplot2
-p=ggplot(prop_df, aes(fill = `Has Diabetes`, y = Proportion, x = `Mother Has Diabetes`)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs(x = "Mother has Diabetes", y = "Proportion", fill = "Has Diabetes") +
-  theme(legend.position = "top")+
-  theme_xaringan()+scale_xaringan_fill_discrete()
-
-ggplotly(p,
-        width = 800,   # Adjust the width according to your preference
-        height = 400)
-```
-]
-
-- *Stacked barplot* clearly shows the distribution of diabetes within each group
-
-- Does it mean that having diabetic mother **causes** higher change of having diebetes?
----
-
-### Comparing quantitative variables
-#### Discrete variables
+### One quantitative and one categorical
 
 
 - For quantitative variables we can compare some summary statistics
- - *Example* means in two subpopulations
- - Are people older with diabetes older than people without it?
-
+ - Are people with diabetes older than people without it?
 
 --
-```{r 2f, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
+ - *Example* means in two subpopulations
+
+```{r 2ffd, out.width='100%', fig.height=5, warning=FALSE, echo=FALSE, message=FALSE}
 
 mean_age_by_location <- Health_data %>%
   group_by(diabetes) %>%
@@ -303,10 +382,10 @@ ggplotly(p,
         height = 400)
 ```
 
+
 ---
 
-### Comparing quantitative variables
-#### Discrete variables
+### One quantitative and one categorical
 
 - Or we can do Box and Whiskers plots as before
 - Or we can compare the whole distributions of frequencies
@@ -324,7 +403,7 @@ ggplot(Health_data, aes(x = age, fill = factor(diabetes))) +
 ```
 
 ---
-#### Continous variables
+#### One quantitative and one categorical
 - For continuous variables we can use the same methods (except frequency distribution) 
 - Instead, we can compare densities or histograms
 - Are men heavier than women?
@@ -338,7 +417,7 @@ ggplot(Health_data, aes(x = weight, fill=gender)) +
   facet_wrap(~ gender, ncol = 1,
              scales = "free_y") +
   labs(
-       x = "Age",
+       x = "Weight",
        y = "Count") +
   theme_xaringan()+scale_xaringan_fill_discrete()+theme(legend.position="none")
 
@@ -348,7 +427,8 @@ ggplot(Health_data, aes(x = weight, fill=gender)) +
 
 
 ---
-## Association
+
+### Associations: Two Quantitative Variables
 
 
 - Likely people would subscribe to the website to lose weight
@@ -824,3 +904,5 @@ subplot(plot1, plot2, plot3, plot4, plot5, plot6, nrows = 2, margin = 0.02)
 - Education usually correlates with Income (correlation)
 
 - Does it mean that if decide to get a degree, you will earn more? (causality)
+
+

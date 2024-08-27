@@ -81,7 +81,7 @@ class: inverse, middle
 - Sometimes called the expected value of the random variable E(X)
 - The population mean $\mu$ is the sum of all observations divided by the total population size:
 
-$$\mu =E(X)=\frac{\sum_{i=1}^{N} x_i}{N}=\sum_{x\in X}P(X) \times X$$
+$$\mu =E(X)=\frac{\sum_{i=1}^{N} x_i}{N}=\sum_{x\in X}P(X=x) \times x$$
 
 - where $N$ is the total population size, and $x_i$ are individual data points.
 
