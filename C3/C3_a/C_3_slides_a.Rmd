@@ -649,14 +649,20 @@ $$Eff_{\hat\mu_1,\hat\mu_2}=\frac{var(\frac{3X_1 + X_2}{4})}{var(\frac{X_1+X_2+X
 
 --
 #### Example 2: Estimator = $X_i$
+
+--
 - $\small  Var(\hat{\theta}_2) = E[(X_i - \mu)^2]=\sigma^2$
 
 --
 #### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
+
+--
 - $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
 
 --
 #### Example 3: Estimator = $\frac{3X_1 + X_2}{4}$
+
+--
 - $\small  Var(\hat{\theta}_4) = E\left[\left((3X_1 + X_2)/4 - \mu\right)^2\right]=\frac{10\sigma^2}{16}$
 
 
@@ -872,7 +878,7 @@ sample.sizes <- c(5, 20, 75, 100)
 set.seed(123)
 
 # Set smaller margin values to decrease space
-par(mfrow = c(2, 2), mar = c(3, 3, 2, 1))  # Set mar = c(bottom, left, top, right)
+par(mfrow = c(2, 2))  # Set mar = c(bottom, left, top, right)
 
 # Outer loop (loop over the sample sizes)
 for (n in sample.sizes) {
@@ -888,14 +894,23 @@ for (n in sample.sizes) {
   }
 
   # Plot histogram and overlay the N(0,1) density in every iteration
-  hist(samplemean, 
+  hist_data=hist(samplemean, 
        col = "steelblue", 
-       freq = FALSE, 
        breaks = 40,
        xlim = c(0, 1), 
-       ylim = c(0, 10), 
        xlab = paste("n =", n), 
-       main = "")
+       main = "",
+       freq=TRUE,plot=FALSE)
+
+  hist_data$counts <- hist_data$counts / sum(hist_data$counts)
+
+# Plot the histogram with relative frequencies
+plot(hist_data, 
+     col = "steelblue", 
+     xlim = c(0, 1), 
+     xlab = paste("n =", n), 
+     ylab = "Relative Frequency", 
+     main = "")
 }
 
 # Reset par to its default settings
@@ -1122,6 +1137,7 @@ Ok, I know that according to central limit theorem $$\frac{\sum_{i=1}^{80} X_i}{
 --
 
 - Can we say something about the standard deviation?
+- That is, we if take multiple samples, calculate the standard deviation of each sample, what will be the distribution of these standard deviations?
 
 --
 
@@ -1166,7 +1182,7 @@ p1
 ## Visualizing the Connection
 - The shaded areas represent probability that $X=Z^2>1$ 
 - Where $X \sim \chi^2(1)$ and $Z \sim N(0,1)$
-- Shaded areas are the same in both graphs
+- Shaded parts have the same area in both graphs
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%'}
 # Generate random data from standard normal distribution

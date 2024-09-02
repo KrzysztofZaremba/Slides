@@ -3,11 +3,12 @@ title: 'Class 2c: Review of concepts in Probability and Statistics'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
+    self_contained: true
     css: xaringan-themer.css
     lib_dir: libs
     nature:
       highlightStyle: github
-      countIncremdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==entalSlides: true
+      countIncremdataSlides: true
       fig.retina: 2
 ---   
 <style type="text/css">
@@ -367,7 +368,7 @@ print(combined_plot)
 **Variance** measures how much observations deviate from the mean:
 
 - **Population variance**: 
-$$\sigma^2=E[(X-\mu)^2]=\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2$$
+$$\sigma^2=E[(X-\mu)^2]=E[X^2]-\mu^2 =\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2=\frac{1}{N} (\sum^N_{i=1}x^2_i-N\mu^2)$$
 
 --
 - But this does not have the right units...
@@ -481,11 +482,11 @@ print(p)
 ### Sample equivalents
 
 - **Sample variance**: 
-$$s^2=\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2$$
+$$s^2=\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2=\frac{1}{n-1} \sum^n_{i=1}(x_i^2-n\bar{x}^2)$$
 --
 - **Sample standard deviation** deviation:
 
-$$s=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2}$$
+$$s=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2}=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i^2-n\bar{x}^2)}$$
 --
 - Why we divide by $n-1$ rather than $n$?
 

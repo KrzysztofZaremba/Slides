@@ -19,6 +19,7 @@ output:
 </style>
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = FALSE,dpi=300)
 library(shiny)
 library(ggplot2)
@@ -68,13 +69,14 @@ class: inverse, middle
 
 - We calculated the mean price in our sample
 
-- How confident are we that our estimates close to the parameter's value?
+- How confident are we that our estimate is close to the parameter's value?
 
 - Confidence intervals measure uncertainty around the estimate
 
 ---
 ### Confidence Intervals
 
+- Mean price was 1245.43
 - Suppose that we calculated the confidence interval to be:
 $$\{1086.64, 1404.22\}$$
 --
@@ -532,7 +534,7 @@ Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, 
 ---
 ### Practice
 
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $s=8$. Calculate 99% confidence interval and say whether interpratation is correct:
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
 --
 - We are 99% confident that the average commute of these 60 students is between  (20.3364, 25.6636)
@@ -578,7 +580,7 @@ When should we use critical values from Normal Distribution?
 
 1. Original distribution (of $X$) is not normal: 
 
-  - If $n>30$ - you can use critical values from normal distribution
+  - If $n>30$- use critical values from normal distribution (40 if $\sigma$ unknown)
   
   - If $n<30$ - you are screwed
 
@@ -589,10 +591,10 @@ When should we use critical values from Normal Distribution?
   - If you know $\sigma$, you can use critical values from normal ( $n$ doesn't matter)
       - If $X$ is normal, then use $\sigma$ instead of $s$ and $\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt n}} \sim N(0,1)$ 
 
-  - If you don't know $\sigma$ but $n>30$, you can use critical values from normal
+  - If you don't know $\sigma$ but $n>40$, you can use critical values from normal
       - CLT kicks in
 
-  - If you don't know $\sigma$ and $n<30$, you use critical values from .blue[student's t].
+  - If you don't know $\sigma$ and $n<40$, you use critical values from .blue[student's t].
       - $\frac{\bar{X}-\mu}{\frac{s}{\sqrt n}}$ is not normal. $s$ is not a good approx. of $\sigma$ when $n$ is low
     
 
@@ -782,7 +784,7 @@ b) Average spending without free shipping is $182, can say anything about whethe
 ### Confidence Intervals for Variance
 
 - Suppose $X_1, X_2, ...X_n$ come from normal distribution
-- The sampling distribution of the sample variance is $S^2=\frac{\sum_i(X_i-\bar{X})^2}{n-1}$ is: 
+- The sampling distribution of the sample variance  $S^2=\frac{\sum_i(X_i-\bar{X})^2}{n-1}$ is: 
 
 $$\small \frac{(n-1)S^2}{\sigma^2}\sim\chi_{n-1}$$
 --
@@ -849,3 +851,11 @@ $$CI_{1-\alpha}=\{\frac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2},n-1}}, \frac{(n-1)S^2
 ### Practice
 
 Suppose you produce sausages. As a quality control, you measure the level of fat in your sausages. You take a random sample of 12 sausages and you find the variance of 20  ( $grams^2$ ). Find 99% confidence interval for the variance. What assumptions you need?
+
+---
+### Exercises:
+
+- Review Exercises:
+  - PDF 4: 1,2,3,4,5,6,7,8,9
+  
+
