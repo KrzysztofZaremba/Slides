@@ -77,10 +77,16 @@ class: inverse, middle
 ### Confidence Intervals
 
 - Mean price was 1245.43
+
+--
+- Is it reasonable to think true average price in population is 1100? What about 2000?
+
+--
 - Suppose that we calculated the confidence interval to be:
 $$\{1086.64, 1404.22\}$$
+
 --
-    - But where are these numbers coming from?
+    - Where are these numbers coming from?
 
 --
 
@@ -518,6 +524,13 @@ How do we interpret a 90% confidence interval we computed?
       - Interval is a function of random variables only **before** we draw a sample and make any computation.
       - After we have a sample, nothing is random. The true mean is either between 1086.64 and 1404.22 or not.
 
+---
+
+<center>
+<img src=airbnb_True.png width="800">
+</center>
+
+
 
 ---
 
@@ -531,46 +544,39 @@ Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, 
 `r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='420px')`
 
 
+
 ---
 ### Practice
 
 Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
---
-- We are 99% confident that the average commute of these 60 students is between  (20.3364, 25.6636)
+<center>
+<img src=Standard_deviation.png width="400">
+</center>
 
---
-  - .red[False]
---
+---
+### Practice
 
-- We are 99% confident that the average commute of all ITAM students is between (20.3364, 25.6636)
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
---
-  - .green[True]
---
 
--  A 95% cofidence interval would be wider
+<iframe src="https://embed.polleverywhere.com/free_text_polls/76zHlSi0gHvRlzJYvACp1?controls=none&short_poll=true" width="800px" height="460px"></iframe>
 
---
-  - .red[False]
---
+---
+### Practice
 
-- 99% of random samples would have mean between (20.3364, 25.6636)
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
---
-  - .red[False]
---
+<center>
+<img src=Interpretation.png width="400">
+</center>
 
-- 99% of random samples would capture the true mean
+---
+### Practice
 
---
-  - .green[True]
---
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
-- With 99% probability true mean is between this and this (20.3364, 25.6636)
-
---
-  - .red[False]
+<iframe src="https://embed.polleverywhere.com/multiple_choice_polls/jQZ2Q2wEZCkCFm9nyHpSp?controls=none&short_poll=true" width="800px" height="450px"></iframe>
 ---
 
 ### What critical values?

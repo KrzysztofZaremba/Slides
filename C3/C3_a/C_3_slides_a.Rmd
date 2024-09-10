@@ -6,6 +6,7 @@ output:
     self_contained: true
     css: xaringan-themer.css
     lib_dir: libs
+    google-font: FALSE 
     nature:
       highlightStyle: github
       countIncrementalSlides: true

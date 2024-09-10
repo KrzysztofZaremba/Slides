@@ -1642,6 +1642,8 @@ Characteristics:
 - It is right continuous
 ---
 
+
+## Trransform these so they are commuting times, not abstract standard normals?
 ## Example 1: Standard Normal
 
 $F(-2) = \int_{-\infty}^{-2} f(t) \, dt = P(X \leq -2)=0.02$
