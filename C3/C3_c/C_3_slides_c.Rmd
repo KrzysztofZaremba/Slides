@@ -178,29 +178,38 @@ magick::image_read_pdf("Rejection.pdf",
 ---
 ### Testing procedure: Example
 
-
-- Suppose $s_x=20$. When would we reject?
+- Suppose $\sigma_x=20$. When would we reject?
 
 --
 
 Reject if: 
 - $\frac{\bar{x}-100}{20/\sqrt 36}>1.645$
 - Or equivalently if $\bar{x}>105.483$
-
+- Those two formulations are fine 
 --
 
 - Why don't we reject even if $\bar{x}=103$?
 
---
 
+
+
+---
+### Testing procedure: Example
 - Because there could be randomness in the sample:
 
 - So even if the $\mu_s=100$ we could get a sample with $\bar{x}>100$
+
+
+.center[
+<img src="Plot_sampl_dist.png" style="width:70%">
+]
 
 --
 
 - Why $\bar{x}>105.483$ though? 
 - Formally about it later, but it's very unlikely to get a sample mean that large if $\mu_s=100$
+
+
 
 ---
 
@@ -277,6 +286,8 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 ---
 ### Decision errors
 
+Do prople spend more if they get free shipping? ($H_0$ is that they spend the same)
+
 - .blue[Type 1 error]: reject null when $H_0$ is true
   - Conclude that people spend more when they got free shipping, while in reality they spend the same as those who didn't
 
@@ -285,14 +296,12 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
   - Conclude that people who got free shipping spend the same as those without free shipping, while those with free shipping spend more
 
 --
-
 - Imagine a trial of a murderer and suppose $H_0$ is innocent, and $H_1$ is guilty. 
 - Describe error type 1 and 2 in these scenarios
 
 --
   - Type 1: Convict an innocent
   - Type 2: Do not convict a murderer
-
 
 --
 - Probability of making type 1 error is $\alpha$
@@ -304,10 +313,31 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
   - To calculate $\beta$, you need to know the true $\mu$
 
 ---
-### Trade-off between type 1 and 2 errors
+### Probability of type 2 error
+- In our example (and valid only for this example): $\mu_s$ is true sugar content
+- We reject if $\scriptsize z=\frac{\bar{x}-100}{\sigma_x/ \sqrt 36}>1.645$
+- Or equivalently if $\scriptsize \bar{X}>105.483=\mu_0+\underbrace{z_{\alpha}}_{Crit.Val:1.645}*\frac{\sigma_x}{\sqrt n}$
+
+- Type 2 error is if we don't reject when alt. is true
+$$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(\bar{X}<105.483)}_{\text{Pr. if alt is true}}=\underbrace{P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n})}_{\text{Pr. if alt is true}}=P(\frac{\bar{X}-\mu_s}{\sigma_x/ \sqrt n}<\frac{\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n}-\mu_s}{\sigma_x/ \sqrt n})$$
+Rearranging and applying to our example
+$$\scriptsize \beta=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}==\underbrace{\Phi(\frac{100-\mu_s}{20/ \sqrt{36}}+1.645\frac{20}{\sqrt 36})}_{\text{Normal CDF}}=\underbrace{\Phi(\frac{105.483-\mu_s}{20/ \sqrt{36}})}_{\text{Normal CDF}}$$
+
+- depends on what true $\mu$ is and where our rejection region is!
 - When you decrease probability of error type 1, you increase the probability of error type 2
 
-- (APP)
+
+---
+### Trade-off between type 1 and 2 errors
+
+$$\beta=P(\text{Type 2 error}) \beta=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$
+
+$$\alpha=P(\text{Type 1 error})=P(Z>z_{\alpha})=1-\underbrace{\Phi(z_{\alpha})}_{\text{Normal CDF}}$$
+If I change critical value $z_{\alpha}$, it will have the opposite effect on them. 
+
+My app or:
+Source: https://shiny.rit.albany.edu/stat/betaprob/
+
 
 ---
 ### Power of a test
@@ -510,10 +540,11 @@ $$\small \{3-1.96\frac{3}{\sqrt 49}, 3+1.96\frac{3}{\sqrt 49}\}=\{2.16, 3.84\}$$
 
 
 ---
-### Link between Tests and Confidence Intervals
+### Link between two sided Tests and Confidence Intervals
 
 - More generally: the $1-\alpha$ confidence interval doesn't contain null = null would be rejected with a test of significance $\alpha$
 
+https://kzaremba.shinyapps.io/Hypothesis_Confidence/
 
 --
 - Mathematically: 
@@ -811,6 +842,8 @@ We have 2 iid samples .red[independent] of each other from two populations $X_1,
 $$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^{\Delta_0}}{SE}=\frac{\bar{X}-\bar{Y}-\Delta_0}{SE}$$
  
 ---
+### Variance in two samples 
+
   - Where SE is standard error and depends on the estimate of standard deviation
       - If standard deviation known: $\small SE=\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}$
 
@@ -920,6 +953,17 @@ text(-2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 ```
 ]
+
+---
+### Confidence interval for a difference
+
+Following this idea, we can construct a confidence interval for the difference:
+
+
+$$\small P(-z_{\alpha/2}<\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}<z_{\alpha/2})=1-\frac{\alpha}{2}$$
+$$\small P(\bar{X}-\bar{Y}-z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m}<\mu_{X,0}-\mu_{Y,0}<\bar{X}-\bar{Y}+z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m})=1-\frac{\alpha}{2}$$
+
+$$\small CI_{\alpha}=(\bar{X}-\bar{Y} \pm z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m})$$
 
 ---
 
@@ -1102,6 +1146,9 @@ ggplot(data = Sample_list, aes(x = clean, y = price)) +
 --
 - At which $\alpha$ we reject the null?
 
+--
+- Calculate 95\% confidence interval for the difference
+
 
 ---
 We suspect Burger King might have larger caloric content for kids' meal. Let's test it.
@@ -1251,6 +1298,20 @@ Critical regions at 5% are:
 --
 - We reject the equality at 5%
 
+
+
+---
+### Exercise 
+
+The time C is a commute time of itam students distributed as C ∼ N(30, 10). Two random samples of commute times are taken for two days of sizes $n_1 = 15$ and $n_2 = 18$ students. They both come from the same distribution specified above. If sample variances $s_1^2$ and $s_2^2$ are to be reported,  What is the probability that variance in sample one is more than twice as big as sample on day 2?
+
+--
+$$\small \frac{(n-1)s^2_1}{\sigma^2_1} \sim \chi_{n-1}$$
+$$\small F_{test}=\frac{\frac{(n-1)s^2_1}{\sigma^2_1(n-1)}}{\frac{(m-1)s^2_2}{\sigma^2_2(m-1)}} \sim F_{n-1,m-1}$$
+
+- They are from the same distribution so $\sigma_1=\sigma_2$
+
+$P(s_1^2>2s_2^2)=P(\frac{s_1^2}{s_2^2}>2)=P(F_{14,17}>2)$
 
 ---
 layout: false
@@ -1449,5 +1510,11 @@ ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
 
 Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending.  You calculated the correlation coefficient of $\hat{\rho}=-0.45$. Can you reject null of $\rho=0$ in favor of alternative $\rho \neq 0$ at 5% significance level?
 
+---
+### Exercises
+- Review Exercises:
+  - All the remaining from PDFs 4 and 5
 
+- Homeworks
+  - All the remaining from Lista 00.2
 

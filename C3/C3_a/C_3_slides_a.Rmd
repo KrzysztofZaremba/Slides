@@ -635,10 +635,11 @@ print(p)
 $$Var(\hat{\theta})=E[(\hat{\theta}-E[\hat\theta])^2]$$
 - We want the estimator to have low  variance! 
 - Estimator with the lower variance is more efficient
+- Efficiency is property of unbiased estimators
 - In the example above
 
 $$var(\hat\mu_1)=var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})=var(\hat\mu_2)$$
-- Relative efficiency of the two estimators is the ratio of their variances
+- Relative efficiency of the two (unbiased) estimators is the ratio of their variances
 $$Eff_{\hat\mu_1,\hat\mu_2}=\frac{var(\frac{3X_1 + X_2}{4})}{var(\frac{X_1+X_2+X_3+X_4}{4})}=\frac{\frac{10}{16}}{\frac{4}{16}}=\frac{5}{2}$$
 
 ---
