@@ -616,7 +616,7 @@ How much we managed to explain with our regression?
 
 Measure of fit is:
 
-$$R^2=1-\frac{SSR}{SST}=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
+$$R^2=\frac{SSR}{SST}=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
 Intuition: 
 - How much variation in $y$ can we explain with our model
 - It is always between 0 and 1
