@@ -443,18 +443,21 @@ $$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
 
 Putting it all together:
 
-$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
+$$\small \hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
 
-$$\hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$
+$$\small \hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$
 
 --
 And plugging this here:
 
 
-$$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
+$$\small \hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$
 
 We get: 
-$$\hat{\beta}_1=\frac{\sum x_iy_i-\frac{\sum x_i\sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}=\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}=\frac{cov(x_i,y_i)}{var(x_i)}$$
+$$\small \hat{\beta}_1=\frac{\sum x_iy_i-\frac{\sum x_i\sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}=\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}=\frac{\widehat{cov(x_i,y_i)}}{\widehat{var(x_i)}}$$
+Or
+$$\small \hat{\beta}_1=\frac{\widehat{cov(x_i,y_i)}}{\widehat{var(x_i)}}=\frac{\widehat{cov(x_i,y_i)}}{\sqrt{\widehat{var(x_i)}}\sqrt{\widehat{var(x_i)}}}\frac{\sqrt{\widehat{var(y_i)}}}{\sqrt{\widehat{var(y_i)}}}=\widehat{\rho(x,y)}\frac{\sqrt{\widehat{var(y_i)}}}{\sqrt{\widehat{var(x_i)}}}$$
+
 ---
 
 `r knitr::include_url('https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression', height='450px')`
@@ -536,6 +539,13 @@ summary(lm_model)
 
 ```
 
+
+---
+
+<center>
+<img src=Exam_qs_to_paste/use_correlation_for_coefficiients.png width="800">
+</center>
+
 ---
 ### Properties of this estimator
 
@@ -601,13 +611,14 @@ grid.arrange(grobs = plots, ncol = 3)
 ### Measure of fit - R squared
 How much we managed to explain with our regression? 
 
-SST= total sum of squares = $S_{yy}=\sum(y_i-\bar{y})^2=\sum y_i^2-n\bar{y}^2$
+- SST= total sum of squares = $S_{yy}=\sum(y_i-\bar{y})^2=\sum y_i^2-n\bar{y}^2$
+- SSR= regression sum of squares = $\sum(\hat{y}_i-\bar{y})^2=\sum \hat{y}_i^2-n\bar{y}^2$
 
 Measure of fit is:
 
-$$R^2=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
+$$R^2=1-\frac{SSR}{SST}=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
 Intuition: 
-- How much more variation in $y$ can we explain with our model
+- How much variation in $y$ can we explain with our model
 - It is always between 0 and 1
   - In fact $SST=SSR+SSE=\sum(\hat{y}_i-\bar{y})^2+\sum(\hat{y}_i-y_i)^2$
 - SSE/SST is proportion that cannot be explained with the model
@@ -646,20 +657,41 @@ summary(lm_model)
 
 ```
 
+---
+### Question
 
+Midterm 2, fall 2022, Long question 2, a) and b)
 
 ---
 ### Scaling of variables:
 
 Suppose that we used $x$ and $y$ in our sample to estimate $\hat{\beta}_1$ and $\hat{\beta}_0$.
 
-- Let's say that the scale of x changed. New $z=\alpha x+ c$. 
+- Let's say that the scale of x changed. New $z=a x+ c$. 
   - How do $\hat{\beta}_1$ and $\hat{\beta}_0$ change?
 
-- Let's say that the scale of y changed. New $w=\alpha y+ c$. 
+- Let's say that the scale of y changed. New $y'=b y+ d$. 
   - How do $\hat{\beta}_1$ and $\hat{\beta}_0$ change?
   
 - Suppose that $\bar{y}=0$ and $\bar{x}=0$. What is $\hat{\beta}_0$?
+
+
+---
+### Scaling of variables:
+
+Exact formulas:
+
+- $\hat{\beta}'_1=\frac{b}{a}\hat{\beta}_1$ 
+
+- $\hat{\beta}'_0=b\hat{\beta}_0+d-\frac{b}{a}\hat{\beta}_1c$ 
+  
+
+---
+
+<center>
+<img src=Exam_qs_to_paste/Variable_scaling.png width="800">
+</center>
+
 ---
 ### Regression through the origin 
 
@@ -671,6 +703,12 @@ $$y_i=\beta_1x_i+u_i$$
 --
 
 - What happens if we use this estimator when it's not going throuth the origin?
+
+---
+
+<center>
+<img src=Exam_qs_to_paste/Origing-abcd.png width="600">
+</center>
 
 
 ---
@@ -688,6 +726,7 @@ $$\hat{\beta}_0=\bar{y}_{x_i=0}$$
 and 
 
 $$\hat{\beta}_1=\bar{y}_{x_i=1}-\bar{y}_{x_i=0}$$
+
 
 ---
 layout: false
@@ -1170,7 +1209,19 @@ $$\hat{\beta}_1'=\sum_i c_iy_i$$ where $c_i$ are some weights, usually function 
 $$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\frac{\sum_i(x_i-\bar{x})y_i}{\sum_i(x_i-\bar{x})^2} \qquad so \qquad c^{OLS}_i=\frac{(x_i-\bar{x})}{\sum_i(x_i-\bar{x})^2}$$
 
 
+---
+### UPDATE on Gauss Markov
 
+- Science is in progress
+- A new paper in 2022 by Hansen shows linearity is not needed
+- OLS, under our assumptions, is BUE (Best Unbiased Estimator)
+
+
+---
+
+<center>
+<img src=Exam_qs_to_paste/Gauss-Markov.png width="800">
+</center>
 
 ---
 ### Inference
@@ -1406,6 +1457,13 @@ What's the confidence 95% interval for the effect on temperature?
 
 $$CI_{\beta_1}=\left(723.55-1.96*83.37,723.55+1.96*83.37\right)$$
 $$CI_{\beta_1}=\left(560.87,886.23\right)$$
+
+---
+### Question
+
+<center>
+<img src=Exam_qs_to_paste/Q_b1_conf_interval.png width="800">
+</center>
 
 ---
 #### Confidence Intervals
@@ -1645,6 +1703,14 @@ predict(lm_model, newdata = new_data, interval = "predict", level = 0.95, se.fit
 
 ### Question
 
+Midterm 2 2022, fall, Long question 1
+
+
+---
+
+
+### Question
+
 Suppose a model where we have employee's salary and their years of education. Predictor variable is education, response variable is salary. We try to establish the relationship between education and salary. 
 
 
@@ -1658,5 +1724,8 @@ Suppose a model where we have employee's salary and their years of education. Pr
 - Would the estimator be unbiased? 
 
 
+---
+### Practice
 
+- Lista 02
 

@@ -1504,6 +1504,10 @@ ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
 
 ```
 
+---
+### Exercise
+Midterm 2, fall 2023, Q8
+
 
 ---
 ### Exercise

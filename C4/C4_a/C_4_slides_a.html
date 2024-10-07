@@ -17,6 +17,26 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+    <style type="text/css">@layer htmltools {
+.html-fill-container {
+display: flex;
+flex-direction: column;
+
+min-height: 0;
+min-width: 0;
+}
+.html-fill-container > .html-fill-item {
+
+flex: 1 1 auto;
+min-height: 0;
+min-width: 0;
+}
+.html-fill-container > :not(.html-fill-item) {
+
+flex: 0 0 auto;
+}
+}
+</style>
     <script>(function() {
   // If window.HTMLWidgets is already defined, then use it; otherwise create a
   // new object. This allows preceding code to set options that affect the
@@ -1284,6 +1304,15 @@ HTMLWidgets.widget({
     var table = $table.DataTable(options);
     $el.data('datatable', table);
 
+    if ('rowGroup' in options) {
+      // Maintain RowGroup dataSrc when columns are reordered (#1109)
+      table.on('column-reorder', function(e, settings, details) {
+        var oldDataSrc = table.rowGroup().dataSrc();
+        var newDataSrc = details.mapping[oldDataSrc];
+        table.rowGroup().dataSrc(newDataSrc);
+      });
+    }
+
     // Unregister previous Crosstalk event subscriptions, if they exist
     if (instance.ctfilterSubscription) {
       instance.ctfilterHandle.off("change", instance.ctfilterSubscription);
@@ -1374,6 +1403,7 @@ HTMLWidgets.widget({
     };
 
     if (data.filter !== 'none') {
+      if (!data.hasOwnProperty('filterSettings')) data.filterSettings = {};
 
       filterRow.each(function(i, td) {
 
@@ -1437,7 +1467,7 @@ HTMLWidgets.widget({
             }
           });
           var $input2 = $x.children('select');
-          filter = $input2.selectize({
+          filter = $input2.selectize($.extend({
             options: $input2.data('options').map(function(v, i) {
               return ({text: v, value: v});
             }),
@@ -1456,8 +1486,7 @@ HTMLWidgets.widget({
               $td.data('filter', value.length > 0);
               table.draw();  // redraw table, and filters will be applied
             }
-          });
-          if (searchCol) filter[0].selectize.setValue(JSON.parse(searchCol));
+          }, data.filterSettings.select));
           filter[0].selectize.on('blur', function() {
             $x.hide().trigger('hide'); $input.parent().show(); $input.trigger('blur');
           });
@@ -1466,10 +1495,12 @@ HTMLWidgets.widget({
           var fun = function() {
             searchColumn(i, $input.val()).draw();
           };
-          if (server) {
-            fun = $.fn.dataTable.util.throttle(fun, options.searchDelay);
-          }
-          $input.on('input', fun);
+          // throttle searching for server-side processing
+          var throttledFun = $.fn.dataTable.util.throttle(fun, options.searchDelay);
+          $input.on('input', function(e, immediate) {
+            // always bypass throttling when immediate = true (via the updateSearch method)
+            (immediate || !server) ? fun() : throttledFun();
+          });
         } else if (inArray(type, ['number', 'integer', 'date', 'time'])) {
           var $x0 = $x;
           $x = $x0.children('div').first();
@@ -1555,13 +1586,11 @@ HTMLWidgets.widget({
               filter.val(v);
             }
           });
-          var formatDate = function(d, isoFmt) {
+          var formatDate = function(d) {
             d = scaleBack(d, scale);
             if (type === 'number') return d;
             if (type === 'integer') return parseInt(d);
             var x = new Date(+d);
-            var fmt = ('filterDateFmt' in data) ? data.filterDateFmt[i] : undefined;
-            if (fmt !== undefined && isoFmt === false) return x[fmt.method].apply(x, fmt.params);
             if (type === 'date') {
               var pad0 = function(x) {
                 return ('0' + x).substr(-2, 2);
@@ -1582,7 +1611,7 @@ HTMLWidgets.widget({
             start: [r1, r2],
             range: {min: r1, max: r2},
             connect: true
-          }, opts));
+          }, opts, data.filterSettings.slider));
           if (scale > 1) (function() {
             var t1 = r1, t2 = r2;
             var val = filter.val();
@@ -1597,13 +1626,28 @@ HTMLWidgets.widget({
                 start: [t1, t2],
                 range: {min: t1, max: t2},
                 connect: true
-              }, opts), true);
+              }, opts, data.filterSettings.slider), true);
               val = filter.val();
             }
             r1  = t1; r2 = t2;
           })();
+          // format with active column renderer, if defined
+          var colDef = data.options.columnDefs.find(function(def) {
+            return (def.targets === i || inArray(i, def.targets)) && 'render' in def;
+          });
           var updateSliderText = function(v1, v2) {
-            $span1.text(formatDate(v1, false)); $span2.text(formatDate(v2, false));
+            // we only know how to use function renderers
+            if (colDef && typeof colDef.render === 'function') {
+              var restore = function(v) {
+                v = scaleBack(v, scale);
+                return inArray(type, ['date', 'time']) ? new Date(+v) : v;
+              }
+              $span1.text(colDef.render(restore(v1), 'display'));
+              $span2.text(colDef.render(restore(v2), 'display'));
+            } else {
+              $span1.text(formatDate(v1));
+              $span2.text(formatDate(v2));
+            }
           };
           updateSliderText(r1, r2);
           var updateSlider = function(e) {
@@ -1636,7 +1680,7 @@ HTMLWidgets.widget({
         // processing
         if (server) {
           // if a search string has been pre-set, search now
-          if (searchCol) searchColumn(i, searchCol).draw();
+          if (searchCol) $input.trigger('input').trigger('change');
           return;
         }
 
@@ -1682,15 +1726,7 @@ HTMLWidgets.widget({
         $.fn.dataTable.ext.search.push(customFilter);
 
         // search for the preset search strings if it is non-empty
-        if (searchCol) {
-          if (inArray(type, ['factor', 'logical'])) {
-            filter[0].selectize.setValue(JSON.parse(searchCol));
-          } else if (type === 'character') {
-            $input.trigger('input');
-          } else if (inArray(type, ['number', 'integer', 'date', 'time'])) {
-            $input.trigger('change');
-          }
-        }
+        if (searchCol) $input.trigger('input').trigger('change');
 
       });
 
@@ -1952,6 +1988,9 @@ HTMLWidgets.widget({
         updateColsSelected();
         updateCellsSelected();
       })
+      updateRowsSelected();
+      updateColsSelected();
+      updateCellsSelected();
     }
 
     var selMode = data.selection.mode, selTarget = data.selection.target;
@@ -2338,8 +2377,9 @@ HTMLWidgets.widget({
           console.log('The search keyword for column ' + i + ' is undefined')
           return;
         }
-        $(td).find('input').first().val(v).trigger('input');
-        searchColumn(i, v);
+        // Update column search string and values on linked filter widgets.
+        // 'input' for factor and char filters, 'change' for numeric filters.
+        $(td).find('input').first().val(v).trigger('input', [true]).trigger('change');
       });
       table.draw();
     }
@@ -2757,18 +2797,21 @@ Setting this derivative to zero:
 
 Putting it all together:
 
-`$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$`
+`$$\small \hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$`
 
-`$$\hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$`
+`$$\small \hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$`
 
 --
 And plugging this here:
 
 
-`$$\hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$`
+`$$\small \hat{\beta}_0\sum x_i+\hat{\beta}_1\sum x^2_i=\sum x_iy_i$$`
 
 We get: 
-`$$\hat{\beta}_1=\frac{\sum x_iy_i-\frac{\sum x_i\sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}=\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}=\frac{cov(x_i,y_i)}{var(x_i)}$$`
+`$$\small \hat{\beta}_1=\frac{\sum x_iy_i-\frac{\sum x_i\sum y_i}{n}}{\sum x_i^2-\frac{(\sum x_i)^2}{n}}=\frac{\sum(x_i-\bar{x})(y_i-\bar{y})}{\sum(x_i-\bar{x})^2}=\frac{\widehat{cov(x_i,y_i)}}{\widehat{var(x_i)}}$$`
+Or
+`$$\small \hat{\beta}_1=\frac{\widehat{cov(x_i,y_i)}}{\widehat{var(x_i)}}=\frac{\widehat{cov(x_i,y_i)}}{\sqrt{\widehat{var(x_i)}}\sqrt{\widehat{var(x_i)}}}\frac{\sqrt{\widehat{var(y_i)}}}{\sqrt{\widehat{var(y_i)}}}=\widehat{\rho(x,y)}\frac{\sqrt{\widehat{var(y_i)}}}{\sqrt{\widehat{var(x_i)}}}$$`
+
 ---
 
 &lt;iframe src=&quot;https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression&quot; width=&quot;100%&quot; height=&quot;450px&quot; data-external=&quot;1&quot;&gt;&lt;/iframe&gt;
@@ -2801,7 +2844,7 @@ We want to estimate the following relationship:
 ### Regression output in R
 
 
-```r
+``` r
 # Fit a linear regression model
 lm_model &lt;- lm(Trips ~ TMP, data = Data_BP)
 # Display the summary of the linear regression model
@@ -2829,6 +2872,13 @@ summary(lm_model)
 ## F-statistic: 75.32 on 1 and 779 DF,  p-value: &lt; 2.2e-16
 ```
 
+
+---
+
+&lt;center&gt;
+&lt;img src=Exam_qs_to_paste/use_correlation_for_coefficiients.png width=&quot;800&quot;&gt;
+&lt;/center&gt;
+
 ---
 ### Properties of this estimator
 
@@ -2855,13 +2905,14 @@ Here is a couple of cool useful properties of OLS. Let&#39;s derive them:
 ### Measure of fit - R squared
 How much we managed to explain with our regression? 
 
-SST= total sum of squares = `\(S_{yy}=\sum(y_i-\bar{y})^2=\sum y_i^2-n\bar{y}^2\)`
+- SST= total sum of squares = `\(S_{yy}=\sum(y_i-\bar{y})^2=\sum y_i^2-n\bar{y}^2\)`
+- SSR= regression sum of squares = `\(\sum(\hat{y}_i-\bar{y})^2=\sum \hat{y}_i^2-n\bar{y}^2\)`
 
 Measure of fit is:
 
-$$R^2=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
+$$R^2=1-\frac{SSR}{SST}=1-\frac{SSE}{SST}=1-\frac{\sum(y_i-\hat{y})^2}{\sum(y_i-\bar{y})^2} $$
 Intuition: 
-- How much more variation in `\(y\)` can we explain with our model
+- How much variation in `\(y\)` can we explain with our model
 - It is always between 0 and 1
   - In fact `\(SST=SSR+SSE=\sum(\hat{y}_i-\bar{y})^2+\sum(\hat{y}_i-y_i)^2\)`
 - SSE/SST is proportion that cannot be explained with the model
@@ -2912,20 +2963,41 @@ Moreover, we can show that:
 ## F-statistic: 75.32 on 1 and 779 DF,  p-value: &lt; 2.2e-16
 ```
 
+---
+### Question
 
+Midterm 2, fall 2022, Long question 2, a) and b)
 
 ---
 ### Scaling of variables:
 
 Suppose that we used `\(x\)` and `\(y\)` in our sample to estimate `\(\hat{\beta}_1\)` and `\(\hat{\beta}_0\)`.
 
-- Let&#39;s say that the scale of x changed. New `\(z=\alpha x+ c\)`. 
+- Let&#39;s say that the scale of x changed. New `\(z=a x+ c\)`. 
   - How do `\(\hat{\beta}_1\)` and `\(\hat{\beta}_0\)` change?
 
-- Let&#39;s say that the scale of y changed. New `\(w=\alpha y+ c\)`. 
+- Let&#39;s say that the scale of y changed. New `\(y&#39;=b y+ d\)`. 
   - How do `\(\hat{\beta}_1\)` and `\(\hat{\beta}_0\)` change?
   
 - Suppose that `\(\bar{y}=0\)` and `\(\bar{x}=0\)`. What is `\(\hat{\beta}_0\)`?
+
+
+---
+### Scaling of variables:
+
+Exact formulas:
+
+- `\(\hat{\beta}&#39;_1=\frac{b}{a}\hat{\beta}_1\)` 
+
+- `\(\hat{\beta}&#39;_0=b\hat{\beta}_0+d-\frac{b}{a}\hat{\beta}_1c\)` 
+  
+
+---
+
+&lt;center&gt;
+&lt;img src=Exam_qs_to_paste/Variable_scaling.png width=&quot;800&quot;&gt;
+&lt;/center&gt;
+
 ---
 ### Regression through the origin 
 
@@ -2937,6 +3009,12 @@ Suppose the following model:
 --
 
 - What happens if we use this estimator when it&#39;s not going throuth the origin?
+
+---
+
+&lt;center&gt;
+&lt;img src=Exam_qs_to_paste/Origing-abcd.png width=&quot;600&quot;&gt;
+&lt;/center&gt;
 
 
 ---
@@ -2954,6 +3032,7 @@ Suppose the following model:
 and 
 
 `$$\hat{\beta}_1=\bar{y}_{x_i=1}-\bar{y}_{x_i=0}$$`
+
 
 ---
 layout: false
@@ -3215,7 +3294,19 @@ It&#39;s .blue[BLUE] - Best, Linear, Unbiased Estimator
 `$$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\frac{\sum_i(x_i-\bar{x})y_i}{\sum_i(x_i-\bar{x})^2} \qquad so \qquad c^{OLS}_i=\frac{(x_i-\bar{x})}{\sum_i(x_i-\bar{x})^2}$$`
 
 
+---
+### UPDATE on Gauss Markov
 
+- Science is in progress
+- A new paper in 2022 by Hansen shows linearity is not needed
+- OLS, under our assumptions, is BUE (Best Unbiased Estimator)
+
+
+---
+
+&lt;center&gt;
+&lt;img src=Exam_qs_to_paste/Gauss-Markov.png width=&quot;800&quot;&gt;
+&lt;/center&gt;
 
 ---
 ### Inference
@@ -3376,6 +3467,13 @@ What&#39;s the confidence 95% interval for the effect on temperature?
 `$$CI_{\beta_1}=\left(560.87,886.23\right)$$`
 
 ---
+### Question
+
+&lt;center&gt;
+&lt;img src=Exam_qs_to_paste/Q_b1_conf_interval.png width=&quot;800&quot;&gt;
+&lt;/center&gt;
+
+---
 #### Confidence Intervals
 Suppose we instead want to estimate the impact of pollution (PM10) on bike trips.
 
@@ -3470,7 +3568,7 @@ What would be 95% CI for average number of rides if temperature is 30C?
 **R code**
 
 
-```r
+``` r
 lm_model &lt;- lm(Trips ~ TMP, data = Data_BP)
 new_data&lt;- data.frame(TMP= c(30))
 predict(lm_model, newdata = new_data, interval = &quot;confidence&quot;, level = 0.95, se.fit=TRUE)
@@ -3559,7 +3657,7 @@ What would be 95% CI for number of rides on some day with 30C?
 **R code**
 
 
-```r
+``` r
 lm_model &lt;- lm(Trips ~ TMP, data = Data_BP)
 new_data&lt;- data.frame(TMP= c(30))
 predict(lm_model, newdata = new_data, interval = &quot;predict&quot;, level = 0.95, se.fit=TRUE)
@@ -3584,6 +3682,14 @@ predict(lm_model, newdata = new_data, interval = &quot;predict&quot;, level = 0.
 
 ### Question
 
+Midterm 2 2022, fall, Long question 1
+
+
+---
+
+
+### Question
+
 Suppose a model where we have employee&#39;s salary and their years of education. Predictor variable is education, response variable is salary. We try to establish the relationship between education and salary. 
 
 
@@ -3597,7 +3703,10 @@ Suppose a model where we have employee&#39;s salary and their years of education
 - Would the estimator be unbiased? 
 
 
+---
+### Practice
 
+- Lista 02
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
