@@ -637,8 +637,8 @@ $$R^2=(\rho(x,y))^2$$
 Moreover, we can show that: 
 
 $$R^2=(\rho(x,y))^2=\hat\beta^2_1\frac{S_{xx}}{S_{yy}}=\hat{\beta}^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
-
-
+And
+$$SSR=\hat\beta_1*S_{xy}=\hat\beta_1*\sum(x_i-\barx)(y_i-\bary)$$
 ---
 
 #### How much of bike usage does the temperature explains?
