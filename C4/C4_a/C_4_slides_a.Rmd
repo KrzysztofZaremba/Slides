@@ -423,7 +423,7 @@ $$\frac{\partial SSE}{\partial \hat{\beta}_0} = -2\sum_{i=1}^{n} \left( y_i - (\
 Setting this derivative to zero:
 
 $$-2\sum_{i=1}^{n} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right) = 0$$
-$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=y_i$$
+$$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
 
 ---
 

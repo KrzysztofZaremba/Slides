@@ -1,3 +1,5 @@
+##R Squared SST SSR
+
 library(shiny)
 library(plotly)
 

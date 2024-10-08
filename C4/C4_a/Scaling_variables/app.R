@@ -1,4 +1,6 @@
-# Load required libraries
+#scaling variales
+
+#Load required libraries
 library(shiny)
 library(ggplot2)
 
