@@ -347,7 +347,7 @@ $$p-value=P(F_{1,n-2} \geq F_{test})$$
 ---
 ### F-test
 
-I will not discuss an alternative way to interpret this test, which we will use in other tests
+I will now discuss an alternative way to interpret this test, which we will use in other tests
 
 - Let's rewrite the **F-test** in the following way:
 
@@ -392,5 +392,28 @@ The entire test approach is made explicit: hypothesis, rejection region, test st
 conclusion. Use 4 decimal places.
 
 
+---
 
+### Exam style question:
+
+**Question:** A data analyst at a grocery delivery company wants to examine the relationship between the number of promotional emails sent to customers (\(x\)) and the total value of their monthly at-home grocery orders (\(y\)). Using a random sample of 15 customers over a one-month period, the following statistics have been calculated:
+
+$$\text{Cov}(x, y) = 520 \quad \text{Var}(y) = 950, \quad \text{Var}(x) = 320$$
+
+
+Using this data, complete the following tasks:
+
+**a)** Construct an Analysis of Variance (ANOVA) table to assess the relationship between the number of promotional emails and monthly grocery order values. Show all calculations and explain your reasoning.
+
+**b)**  Test the significance of the regression model at a significance level of \(\alpha = 0.01\). Outline the assumptions necessary for this test and specify the rejection region.
+
+**c)** Based on your findings from parts (a) and (b), conclude whether there is evidence that promotional emails significantly influence the total value of monthly grocery orders for the company.
+
+
+
+---
+
+### Exercises:
+
+Rest of lista 02 
 

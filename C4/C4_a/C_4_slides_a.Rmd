@@ -638,7 +638,7 @@ Moreover, we can show that:
 
 $$R^2=(\rho(x,y))^2=\hat\beta^2_1\frac{S_{xx}}{S_{yy}}=\hat{\beta}^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
 And
-$$SSR=\hat\beta_1*S_{xy}=\hat\beta_1*\sum(x_i-\barx)(y_i-\bary)$$
+$$SSR=\hat\beta_1*S_{xy}=\hat\beta_1*\sum(x_i-\bar x)(y_i-\bar y)$$
 ---
 
 #### How much of bike usage does the temperature explains?
@@ -664,6 +664,15 @@ Midterm 2, fall 2022, Long question 2, a) and b)
 
 ---
 ### Scaling of variables:
+
+--
+- You built a linear regression explaining how one more peso spent on training improves the performance of the employee.
+
+--
+- You will present this regression to a client from US, who has no idea what a peso is.
+
+--
+- You need to translate it to dollars
 
 Suppose that we used $x$ and $y$ in our sample to estimate $\hat{\beta}_1$ and $\hat{\beta}_0$.
 
@@ -726,6 +735,14 @@ $$\hat{\beta}_0=\bar{y}_{x_i=0}$$
 and 
 
 $$\hat{\beta}_1=\bar{y}_{x_i=1}-\bar{y}_{x_i=0}$$
+--
+
+Example:
+
+$$wage_i=\beta_0+\beta_1female_i+u_i$$
+-  $female_i=1$ if $i$ female and 0 if male
+- What is $\beta_0$?
+- What is $\beta_1$?
 
 
 ---
@@ -1361,8 +1378,6 @@ Does temperature predicts bike rides? Let's test it at $\alpha=0.05$
 $H_0: \beta_1=0$
 $H_A: \beta_1\neq0$
 
-GRAPHS: slope - show with graph the alternative and the null
-
 
 $$T_{test}=\frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}=\frac{723.55}{83.37}=8.679$$
 
@@ -1516,21 +1531,20 @@ $$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2
 
 What would be 95% CI for average number of rides if temperature is 30C?
 
-- $\hat{\beta_0}=16892.66$
-- $\hat{\beta_1}=723.55$
+- $\small \hat{\beta_0}=16892.66$ and  $\small \hat{\beta_1}=723.55$
 - n=781
-- $\bar{x}=16.96$
-- $S_{xx}=4044$
-- $\sum_ie^2=21895427100$
+- $\small \bar{x}=16.96$
+- $\small S_{xx}=4044$
+- $\small \sum_ie^2=21895427100$
 
 --
 
-- $\hat{\sigma}=\sqrt{\frac{\sum_ie^2}{n-2}}=5301.613$
+- $\small \hat{\sigma}=\sqrt{\frac{\sum_ie^2}{n-2}}=5301.613$
 
 --
 
-$$CI_{(\bar{y}|x=x_0)}=16892.66+723.55*30 \pm 1.96* \underbrace{5301.613\sqrt{({\frac{1}{781}+\frac{(30-16.96)^2}{4044}})}}_{SE}$$
-$$CI_{(\bar{y}|x=x_0)}=38599.16 \pm 2161.588$$
+$$\small CI_{(\bar{y}|x=x_0)}=16892.66+723.55*30 \pm 1.96* \underbrace{5301.613\sqrt{({\frac{1}{781}+\frac{(30-16.96)^2}{4044}})}}_{SE}$$
+$$\small CI_{(\bar{y}|x=x_0)}=38599.16 \pm 2161.588$$
 
 
 --

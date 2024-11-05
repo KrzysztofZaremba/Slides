@@ -1,10 +1,6 @@
+load("C:/Users/kzysi/Dropbox/Itam_teaching/Markdowns/C4/Accidents_CDMX.Rda")
 M_accidents=Accidents[Accidents$delegacion_cierre=="MIGUEL HIDALGO",]
-
-install.packages("tidyverse")
 library(tidyverse)
-
-
-
 
 ## Create a histogram of accidents
 hist(M_accidents$N_acc)
@@ -12,19 +8,18 @@ hist(M_accidents$N_acc)
 ## create a histogram of temperatures
 hist(M_accidents$NOx)
 
-## plot number of accidents in that neighborhood by date.
-ggplot(data=M_accidents, aes(x=date, y=N_acc))+
-  geom_line()
+# Plot number of accidents by date
+plot(M_accidents$date, M_accidents$N_acc, type = "l", xlab = "Date", ylab = "Number of Accidents", main = "Number of Accidents by Date")
 
-ggplot(data=M_accidents, aes(x=date, y=NOx))+
-  geom_line()
-
-##Find the day with the highest number of accidents
-M_accidents$date[which.max(M_accidents$N_acc)]
+# Plot NOx levels by date
+plot(M_accidents$date, M_accidents$NOx, type = "l", xlab = "Date", ylab = "NOx Levels", main = "NOx Levels by Date")
 
 ## Create a scatterplot of number of accideents vs NOx
 ggplot(data=M_accidents, aes(x=NOx, y=N_acc))+
   geom_point()
+
+##Find the day with the highest number of accidents
+M_accidents$date[which.max(M_accidents$N_acc)]
 
 
 ## Find beta 0 and beta 1
@@ -54,9 +49,7 @@ ggplot(data=M_accidents, aes(x=NOx, y=yhat))+
 
 ## Find residuals, check they are the same as y-yhat
 M_accidents$residuals=M_accidents$N_acc-M_accidents$yhat
-model1$residuals==M_accidents$residuals
 
-## Evaluate residuals
 
 ##let's plot them against yhat
 ggplot(data=M_accidents, aes(x=yhat, y=residuals))+
@@ -69,16 +62,31 @@ ggplot(M_accidents) +
   coord_fixed() 
 
 
+library(tseries)
+jarque.bera.test(M_accidents$residuals)
+
+
 # Find mean squared error - sigma
 
 sigmasq=sum(model1$residuals^2)/(model1$df.residual)
 sqrt(sigmasq)
+
+##or
+sqrt(sum(M_accidents$residuals^2)/(length(M_accidents$N_acc)-2))
+
+#sum of squared deviations
+Sxx=var(M_accidents$NOx)*(331)
+
+SEb1_1=sqrt(sigmasq/Sxx)
+
 
 ## test for beta 1 being larger than 300
 b1=as.numeric(coef(model1)["NOx"])
 SEb1=sqrt(diag(vcov(model1)))[2]
 Ttest=(b1-300)/SEb1
 dfdm=model1$df.residual
+
+
 
 ##find p-value
 pt(q=Ttest, df=dfdm, lower.tail = FALSE)
@@ -88,10 +96,9 @@ pt(q=Ttest, df=dfdm, lower.tail = FALSE)
 confint(model1, level = 0.95)
 
 ##which is same as:
-b1-SEb1*qt(0.975, dfdm)
-b1+SEb1*qt(0.975, dfdm)
+b1-SEb1*qnorm(0.975)
+b1+SEb1*qnorm(0.975)
 
-qt(0.995, 29)
 
 ## Predict the response if no rises to 0.1
 b0=as.numeric(coef(model1)["(Intercept)"])
@@ -107,7 +114,12 @@ new_data <- data.frame(NOx = x_new)
 
 predict(model1, newdata = new_data, interval = "confidence", level=0.95)
 predict(model1, newdata = new_data, interval = "prediction", level=0.95)
-?predict
+
+
+## Make anova table
+anova(model1)
+
+
 
 ### what is the probability that a number of accidents on a new day with NOx=0.05 number of is lower than 100?
 ### Wow we can make 
@@ -121,5 +133,3 @@ pred=b0+b1*0.05
 
 1 - pnorm(50, mean = pred, sd = se_pred)
 
-## Make anova table
-anova(model1)

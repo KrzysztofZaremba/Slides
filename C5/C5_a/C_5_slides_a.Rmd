@@ -555,6 +555,11 @@ Or in the vector form:
 $$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{(I-H)y}$$
 ---
 
+### Summary
+
+- We are trying to find $\beta$s which minimize the prediction error
+- It turns out that we get minimal errors when we set $\beta$ to be: $\hat{\beta}=(X'X)^{-1}X'y$
+
 ### Practice Theory
 Lista 5.1 Q7
 
@@ -593,6 +598,26 @@ $$\small \begin{align*}
 \end{bmatrix}
 \end{align*}$$
 
+---
+## What these matrices mean and do?!
+
+- Now we have more, and we want to know SEPARATE impact of each. 
+- What would happen if we change just that one thing (hours of sleep) and keep everything else constant (hours studied)?
+
+--
+- But how do we keep other things constant? Hours slept and hours studied could be correlated
+
+--
+- So when we compare people with different hours of sleep, there is risk we also compare people with different hours studied
+
+--
+- How do we know that the change we see is coming from hours of sleep, not hours of studied?
+
+--
+- Cross terms in the matrix discount this correlation
+- Intuitively, this makes variables "uncorrelated" and allows to get their own impacts. 
+
+
 
 ---
 
@@ -626,7 +651,6 @@ $$(X'X)^{-1} =
 -30 & 2 & 3 \\
 -48.5 & 3 & 5 \\
 \end{bmatrix}$$
-
 
 ---
 #### Example with numbers
@@ -801,7 +825,7 @@ summary(fit)
 \begin{align*} 
 E(\hat{\beta}) & =E(\mathbf{(X'X)^{-1}X'y})=E(\mathbf{(X'X)^{-1}X'(X\beta+u)})) \\
 & = E(\mathbf{(X'X)^{-1}X'(X\beta+u)}))=E(\mathbf{(X'X)^{-1}X'X\beta})+E(\mathbf{(X'X)^{-1}X'u}) \\
-& = \beta+0=\beta
+& = \beta+\mathbf{(X'X)^{-1}X'E(u)}=\beta+0+\beta
 \end{align*}
 \]
 </div>
@@ -828,15 +852,15 @@ $$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\beta + \mathbf
 Let's use this
 
 
-\[\small
+$$\small
 \begin{align*} 
 var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\beta} - \mathbb{E}[\hat{\beta}])']
  \\
 & =  \mathbb{E}[(X'X)^{-1}X'\mathbf{u} ((X'X)^{-1}X'\mathbf{u})']= (X'X)^{-1}X'\mathbb{E}[\mathbf{u}\mathbf{u}']X(X'X)^{-1}
  \\
 & = (X'X)^{-1}X'(I\sigma^2)X(X'X)^{-1} =\sigma^2(X'X)^{-1}
-\end{align*}
-\]
+\end{align*}$$
+
 
 --
 
@@ -845,7 +869,7 @@ var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\
 
 --
 
-So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k+1$ row and $k+1$ column of $(X'X)^{-1}$ matrix.
+So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k+1$ row and $k+1$ column of $(X'X)^{-1}$ matrix. First one is intercept!
 
 
 
