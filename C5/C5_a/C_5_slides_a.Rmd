@@ -843,6 +843,15 @@ cov(\hat{\beta_1}, \hat{\beta_0}) & var(\hat{\beta_1}) & ... & cov(\hat{\beta_1}
 cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & ... & var(\hat{\beta_k}) &  \end{bmatrix}}_{\substack{ \\ (k+1) \times (k+1)}}$$
 - So it's a matrix with variance of single parameters on the diagonal and covariances off the diagonal.
 
+
+---
+
+## Example
+
+![](Exam_covariance.png)
+
+
+
 ---
 ### Variance
 
@@ -872,6 +881,27 @@ var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\
 So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k+1$ row and $k+1$ column of $(X'X)^{-1}$ matrix. First one is intercept!
 
 
+---
+### Example:
+
+$$\text{cov}(\hat{\beta})=
+\begin{bmatrix}
+0.07784 & -0.00808 & -0.00738 \\
+-0.00808 & 0.0175 & -0.00014 \\
+-0.00738 & -0.00014 & 0.00164
+\end{bmatrix}=$$
+And the residuals:
+$$\text{cov}(\hat{\beta})=\underbrace{0.02389}_{\sigma^2} \times \underbrace{\begin{bmatrix}
+3.2583 & -0.3382 & -0.3089 \\
+-0.3382 & 0.7325 & -0.0059 \\
+-0.3089 & -0.0059 & 0.0686
+\end{bmatrix}}_{(X'X)^{-1}}$$
+
+--
+Example:
+
+$var(\hat{\beta}_1)=0.02389 \times 0.7325=0.0175$
+$cov(\hat{\beta}_1,\hat{\beta}_0)=0.02389 \times -0.3382=-0.00808$
 
 ---
 ### Variance
@@ -884,6 +914,8 @@ So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+
 
 $$\hat{\sigma}^2=\frac{\sum_i e_i^2}{n-p}$$
 - Where $e_i$ is fitted residual and $p$ is number of parameters $p=k+1$
+- k is number of variables
+- +1 because of intercept
 - This is called mean squared error as well
 
 --
@@ -1256,8 +1288,8 @@ $$\begin{align*}
 - What's the coefficient on ads when you are younger $Age<25_i=1$?
 
 $$\begin{align*}
-& \text{Duration}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*1+\beta_3\text{TikTok ads}_i*1 +u_i \\
-& \text{Duration}_i=\beta_0+\beta_2+(\beta_1+\beta_3)\text{TikTok ads}_i+u_i
+& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*1+\beta_3\text{TikTok ads}_i*1 +u_i \\
+& \text{Purchases}_i=\beta_0+\beta_2+(\beta_1+\beta_3)\text{TikTok ads}_i+u_i
 \end{align*}$$
 
 --
@@ -1287,15 +1319,23 @@ summary(model)
 $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i1}*x_{i2}+u_i$$
 - As
 
-$$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}++u_i$$
+$$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}+u_i$$
 --
 - $\beta_3$ answers the following question:
   - If I increase $x_{i2}$ by one, by how much the coefficient on $x_{i1}$ changes?
+  - If $x_{i2}$ is categorical: by how much the effect of $x_{i1}$ changes when $x_{i2}=1$ compared to when $x_{i2}=0$?
   
 --
 - Suppose $y$ is mortality, $x_1$ is temperature, $x_2$ is age
 - What would you expect $\beta_3$ to be?
 
+
+---
+
+### Interactions
+
+Exam example
+![](Interaction.png)
 
 ---
 
@@ -1375,13 +1415,14 @@ summary(lm_model)
 
 ```{r, echo=FALSE}
 # Fit a linear regression model
+set.seed(126)
 Sample_urg$Random_var<- rnorm(nrow(Sample_urg), 5,30)
 lm_model <- lm(Duration ~ Occupancy+EDAD+Random_var, data = Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",])
 # Display the summary of the linear regression model
 summary(lm_model)
 
 ```
-- Adding random variable increased $R^2$ but not $R^2_{Adj}$
+- Adding random variable increased $R^2$ but decreased $R^2_{Adj}$
 
 ---
 layout: false
@@ -1456,8 +1497,10 @@ lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
 summary(lm_model)
 
 ```
+---
+## Example
 
-
+![](Exam_covariance.png)
 ---
 ### Confidence Interval for a  Single Coefficient
 
@@ -1694,6 +1737,11 @@ linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
 ```
 
 ---
+## Example
+
+![](ANOVA.png)
+
+---
 ### Adding a coefficient 
 
 - We can use the above logic to test how much more we can explain by including one more coeffcient
@@ -1820,6 +1868,7 @@ $$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
  - Special case: $c=0$ => testing equality $\beta_1=\beta_2$
 
 --
+
 **Test statistic and its distribution under the null**
 
 $$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
@@ -1993,7 +2042,17 @@ $$\begin{align*}
 &\hat{\gamma}_{Occupancy} =\hat{\beta}_{Occupancy}\frac{s_{Occupancy}}{s_y}=3.703\frac{13.921}{111.82}=0.461
 \end{align*}$$
 
---
+---
+```{r, echo=FALSE, out.width="85%"}
+knitr::include_graphics("Exam_fq.png")
+```
+
+
+---
+
+### Practice
+
+Lista 05.1
 
 - Changing age by one standard deviation increases duration by 3.8% of a standard deviation
 - Changing occupancy one standard deviation increases duration by 46% of a standard deviation
