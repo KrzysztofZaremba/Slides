@@ -542,7 +542,7 @@ Or in the vector form:
 
 $$\mathbf{\hat{y}}=\mathbf{X\hat{\beta}}=\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{Hy}$$
 
-Where $\mathbf{H}=\mathbf{X(X'X)}^{-1}\mathbf{X}$ is called a hat matrix. 
+Where $\mathbf{H}=\mathbf{X(X'X)}^{-1}\mathbf{X'}$ is called a hat matrix. 
 
 ---
 ### Residuals
@@ -1557,7 +1557,7 @@ x_{02}  \\
 x_{0k} \\
 \end{bmatrix}$$
 
-Ex: What's average income ( $y$ ), for people who whave 12 years of education $x_{01}=12$ (2 other people are there) and are age 50 $x_{02}=50$ 
+Ex: What's average wait time if $x_{01}=10 (10 other people are there) and are age 52 $x_{02}=52$ 
 
 
 How accurate is our prediction?  $$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$$ 
@@ -1742,7 +1742,7 @@ linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
 ![](ANOVA.png)
 
 ---
-### Adding a coefficient 
+### Adding a coefficient (skip)
 
 - We can use the above logic to test how much more we can explain by including one more coeffcient
 
@@ -1757,7 +1757,7 @@ $$\small F_{2}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of S
 - In our case $k=2$ and $k_0=1$, so the null distribution is $F_{1, n-3}$
 
 ---
-### Adding a coefficient 
+### Adding a coefficient (skip)
 ```{r, echo = FALSE, message = FALSE}
 lm_model <- lm(Duration ~Occupancy+EDAD, data = Sample_urg)
 anova(lm_model)
@@ -1777,7 +1777,7 @@ anova(lm_model)
 
 
 ---
-### Adding a coefficient 
+### Adding a coefficient (skip)
 - $F_k$ (last coef) is equivalent to $t_k^2$ in our full model
 - But $F_1$ is not equivalent to $t_1^2$ in our full model
 
@@ -1791,7 +1791,7 @@ anova(lm_model)
 ```
 
 ---
-### Adding a coefficient 
+### Adding a coefficient  (skip)
 
 - Why reordering variables changes $F_{stats}$? 
 
@@ -1809,7 +1809,7 @@ anova(lm_model)
 - Do squares always add up to the same thing?
 
 ---
-### Testing multiple coefficients
+### Testing multiple coefficients (skip)
 
 Suppose we have a model with three predictors 
 
@@ -1957,7 +1957,7 @@ $$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
 $$T_{test}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{SE(\hat{\beta_1}+\hat{\beta_2})}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})+2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
 --
 
-- Calculate p-value as $P(t_{n-k-1}>T_{test})$
+- Calculate p-value as $2P(|t_{n-k-1}|>T_{test})$
 
 - If $H_A: \beta_1+\beta_2 < c$, then $P(t_{n-k-1}<T_{test})$
 - If $H_A: \beta_1+\beta_2 > c$, then $P(t_{n-k-1}>T_{test})$

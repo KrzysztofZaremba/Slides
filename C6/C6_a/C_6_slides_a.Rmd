@@ -327,7 +327,7 @@ w
 
 ---
 
-```{r, fig.height=6, fig.width=12, echo=FALSE, warning=FALSE, out.width="15cm"}
+```{r, fig.height=6, fig.width=12, echo=FALSE, warning=FALSE}
 cowtemp <- as_tsibble(fma::cowtemp)
 USAccDeaths <- as_tsibble(USAccDeaths)
 AirPassengers <- as_tsibble(AirPassengers)
@@ -430,7 +430,7 @@ SS|>ACF(M)|>autoplot()
 ```
 
 --
-- Is there a way to transform the data, so it's stationary?
+- Is there a way to transform the data to remove the trend?
 
 ---
 ### First differencing
@@ -438,7 +438,7 @@ SS|>ACF(M)|>autoplot()
 - Take the first differences
 
 $$\Delta y_t=y_t-y_{t-1}$$
-- First differences approximate how much data growth in each period
+- First differences approximate how much data grows in each period
 - If trend is linear, this variable should have more or less constant mean
 
 ---
@@ -1004,10 +1004,10 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 
 --
 
-- Let $\sigma_h=\sigma_u\sqrt{h}$ be the h-step forecast error sd
+- Let $\sigma_h$ be the h-step forecast error sd
 - Let $k$ be the number of seasonal cycles in the forecast prior to forecast time
-  - If it's the first January since time T, k+1=1
-  - If it's the second January since time T, k+1=2
+  - If it's the first January since time T, no full cycle has passed k=0, k+1=1
+  - If it's the second January since time T, 1 full cycle has passed k=1, k+1=2
 
 
  $$CI_{95}=\hat{y}_{T+h|T} \pm 1.96\hat{\sigma}_u\sqrt{k+1}$$
@@ -1176,11 +1176,11 @@ $$ME=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})}{T-h}$$
 
 - You can test for the existence of bias with a usual t test:
 
-  - $H_0:E(e_t)=0$
-  - $H_A:E(e_t) \neq 0$ (or inequality)
+  - $\small H_0:E(e_t)=0$
+  - $\small H_A:E(e_t) \neq 0$ (or inequality)
 
 - Test statistic and the null distribution:
-  $$T_{test}=\frac{\bar e-0}{\frac{\hat{\sigma}_e}{\sqrt n}} \sim t_{n-1}$$
+  $$\small T_{test}=\frac{\bar e-0}{\frac{\hat{\sigma}_e}{\sqrt n}} \sim t_{n-1}$$
 
 --
 - Positive and negative values can add up to 0
@@ -1787,3 +1787,7 @@ $$CI_{95}=(31187*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}}, 450
 ### Practice
 - last question final 2023 fall
 - lista 04.4: ex 8, 10
+
+
+##calculate cumulative ormal at 1%
+
