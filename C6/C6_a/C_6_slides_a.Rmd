@@ -1269,9 +1269,9 @@ forecast::accuracy(FC, HT)
 ---
 ### Mean Percentage Error
 
-$$MPE=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})/y_{t+h}}{T-h}$$
+$$MPE=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})/|y_{t+h}|}{T-h}$$
 - Answers the question:
-  - on average, my forecast is x% wrong
+  - on average, my forecast is x% wrong (deviates x% from true value)
   
 --
 - It's unitless, so I can compare forecasts of different measures
@@ -1294,7 +1294,7 @@ forecast::accuracy(FC, HT)
 
 
 
-$$MAPE=\frac{\sum^{T-h}_{t=1}|y_{t+h}-\hat{y}_{t+h|t}|/y_{t+h}}{T-h}$$
+$$MAPE=\frac{\sum^{T-h}_{t=1}|y_{t+h}-\hat{y}_{t+h|t}|/|y_{t+h}|}{T-h}$$
 - Similar as before, but we take the absolute value
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
