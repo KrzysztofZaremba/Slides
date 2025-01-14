@@ -450,6 +450,27 @@ datatable(frequency_table,
 <center>
 <img src=mode.jpg width="400">
 </center>
+
+---
+## Percentiles
+
+
+<center>
+<img src=Natalie.jpg width="300">
+</center>
+
+
+---
+## Percentiles
+
+
+<center>
+<img src=TSwift.jpg width="300">
+</center>
+
+
+
+
 ---
 ## Percentiles
 

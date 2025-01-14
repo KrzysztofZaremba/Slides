@@ -1080,7 +1080,7 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 
 --
 
-- Generally, average value acros 20 years is not a good prediction
+- Generally, average value across 20 years is not a good prediction
 
 ---
 
@@ -1090,6 +1090,7 @@ $$CI_{95}=\hat{y}_{T+1|T} \pm 1.96\hat{\sigma}_u$$
 Consider an average of the last $k$ observations:
 
 $$MA(k)_t: \frac{\sum^k_{j=1} y_{t+1-j} }{k}=\frac{y_{t}+y_{t-1}..+y_{t+1-k}}{k}$$
+
 
 - How many? Usually equal to number of seasons, so the seasonal variation smoothed out
 
@@ -1712,7 +1713,7 @@ grid.arrange(x, y, ncol=1)
 
 - Once we identified all the elements, we can make predictions for the original variable using the model:
 
-$$y_t=S_tT_tC_cR_t$$
+$$y_t=S_tT_tC_tR_t$$
 
 
 ---

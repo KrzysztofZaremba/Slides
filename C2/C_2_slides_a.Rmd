@@ -86,23 +86,60 @@ library(MASS) # for truehist function
 
 ---
 
-### Scenario
+#### Why do we care?
 
-- Nowadays, many online pharmacies appeared which write prescriptions and make drugs subscriptions 
-    - Example in Mexico: *Choiz*
-    
---
+- Any advanced analysis always starts with describing the data
 
-- At the same time, a new wave of very effective anti-diabetes drugs appeared which help to lose weight
-    - Example: *Ozempik*
+ 1. **Cambridge Analytica**
+- Analyzed voter demographics and turnout patterns to target swing voters with tailored political ads.
 
 --
 
-- You are consulting a business which wants to provide subscription services for these drugs in Mexico
+ 2. **Tesla**
+- Summarized battery efficiency and charging times to improve EV performance and user experience.
 
 --
 
-- Your boss asks you to do exploratory market research for potential sales forecast
+ 3. **Walmart**
+- Optimized opening hours and staffing by analyzing distribution
+
+--
+
+ 4. **BBVA**
+- Analyzed average credit card balances and repayment trends to design tailored credit offers and improve customer retention.
+
+
+--
+Basically any modern company relies on summarizing data to make decisions
+
+---
+
+### Specific Scenario
+
+**The Opportunity**
+- Online pharmacies are rapidly growing, offering convenience and accessibility to customers.
+  - Example in Mexico: *Choiz*, which provides prescription services and drug subscriptions.
+
+--
+
+**The Trend**
+- A new generation of highly effective anti-diabetes medications, like *Ozempic*, is gaining popularity for dual benefits: managing diabetes and aiding weight loss.
+
+---
+**Search Interest in Ozempic**  
+![Ozempic Google Search Trends](Ozempic_google.png)
+
+---
+
+**Your Role**
+- You have been hired as a consultant for a start-up aiming to launch a subscription service for these medications in Mexico.
+
+<img src="Ozempic_ad.jpg" alt="Ozempic Advertisement" style="width:50%;"/>
+
+--
+
+**The Challenge**
+- Your boss needs a detailed exploratory market analysis to forecast sales and identify key customer segments
 
 
 ---
@@ -128,6 +165,8 @@ library(MASS) # for truehist function
   
 
 ---
+![Sample](Par_stat.png)
+---
 
 ### Parameters vs Statistics
 
@@ -146,12 +185,12 @@ library(MASS) # for truehist function
 --
 - You want to know the variance of internet speed during in Mexico City. You visit 500 households and calculate the variance of their internet speed.
 
-
 ---
 
+### Parameters vs Statistics
 
-
-
+- To find these numbers, you need data.
+- what are types of data we can encounter?
 
 ---
 layout: false
@@ -195,6 +234,8 @@ datatable(longitudinal_data,
 )
 ```
 
+- Another Example: Share of people with Diabetes in Mexico in years 2010, 2015, 2020
+
 ---
 
 ### Cross-Sectional Data
@@ -226,6 +267,8 @@ datatable(cross_sectional_data,
           rownames = FALSE
 )
 ```
+
+- Another Example: Share of people with Diabetes in 2010 in Mexico, USA, Canada, Brazil
 
 ---
 
@@ -265,6 +308,8 @@ datatable(panel_data,
           rownames = FALSE
 )
 ```
+
+- Another Example: Share of people with Diabetes in Mexico, USA, Canada, Brazil, each country in years 2010, 2015, 2020
 
 ---
 ## Q1
@@ -478,10 +523,9 @@ We have two general types: .blue[Categorical] and .blue[Numerical] variables
   
   
 ---
-
 ### Mexican Health Survey
-
-Representative sample of the Mexican population .red[n=37858]
+- Representative sample of the Mexican population .red[n=37858]. 
+- We will use it to investigate market for Ozempic
 
 ```{r Sales_forecast_3, echo=FALSE, warning=FALSE}
 
@@ -538,6 +582,7 @@ class: inverse, middle
 ###Frequency Tables
 
 **Frequency table**: present the absolute frequencies (counts) and relative frequencies (shares) of each category. 
+- Categories are mutually exclusive and collectively exhaustive
 - Relative frequency of category $i$: $p_i=\frac{n_i}{N}$
     - $n_i$ is count of category $i$
     - $N$ is total count in the sample
@@ -1743,6 +1788,8 @@ cdf_plot3 <- ggplot() +
 
 grid.arrange(pdf_plot3, cdf_plot3, ncol = 2)
 ```
+
+Never integrate a CDF!
 
 ---
 ### Empirical CDF

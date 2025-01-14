@@ -73,20 +73,7 @@ colors = c(
   - **Office:** In Santa Teresa Campus
   
 --
-  - **Office hours:** on zoom, choose timing: http://whenisgood.net/mhn9dy3
-  
-<center>
-<img src=QR_Code_1723494552.png width="300">
-</center>
-  
-  
----
-
-## Who are you?
-
-<center>
-<img src=qr-code.png width="500">
-</center>
+  - **Office hours:** on zoom, Monday 2pm-3pm, email me if different time needed
 
 ---
 
@@ -148,6 +135,129 @@ colors = c(
 4. **Strategic Investment Decisions**: Forecast market trends to predict suitability for investments (Example: Electric Cars)
 
 --
+5. **Improving Advertizement**: Idenfitying which elements of the ad are most effective (Example: AirBnB) 
+
+--
+
+6. **Suggesting Products**: Recommending products to customers based on their past behavior (Example: Amazon, Netflix)
+
+---
+
+#### Learning to Predict Real World Scenarios: Predicting Demand for Public Transportation in New York  
+
+**Final Project Context**
+- The NYC Department of Transportation is forecasting number of customers to optimize resources:
+  - How many buses are needed on a given day?
+  - How many drivers should be scheduled?
+
+**Project Goal**
+- Predict the **number of passengers using buses in NYC on December 3rd** (after the submission day).
+
+**Data Insights**
+- Rich quantitative data: Each payment generates a datapoint on customer bus usage.
+- External factors affecting demand include:
+  - School and holiday calendars
+  - Weather conditions
+  - City events
+  - Road repairs
+
+---
+
+
+```{r Sales_forecast_bla, echo=FALSE, show=FALSE, warning=FALSE, fig.width=10, fig.height=7}
+
+m=read.csv("C:/Users/kzysi/Dropbox/Itam_teaching/Final_project_2024_2/data_final_project.csv")
+m$Date=as.Date(m$Date)
+         
+ggplot(data = m, aes(x = Date, y = Bus_ridership)) +
+  geom_point(alpha = 0.6, shape = 21, color = "#d95f0e", fill = "blue", size = 3) + # Points
+  theme_minimal() +
+  labs(
+    title = "Daily Bus Ridership in NYC",
+    subtitle = "Trends in passenger numbers over time",
+    x = "Date",
+    y = "Number of Passengers"
+  ) +
+  theme(
+    plot.title = element_text(size = 18, face = "bold"),
+    plot.subtitle = element_text(size = 14),
+    axis.title = element_text(size = 16),
+    axis.text = element_text(size = 12),
+    legend.position = "none"
+  )+ylim(0,NA)
+  
+```
+
+
+
+---
+```{r Sales_forecast_bla3, echo=FALSE, show=FALSE, warning=FALSE, fig.width=10, fig.height=5}
+
+data <- data.frame(
+  Group = c("Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6"),
+  Prediction = c(1403556, 1392246, 1440286, 1326506, 1083278, 1386326),
+  Lower_95 = c(1384299, 1223949, 1415528, 1108415, 864703.2, 1367545),
+  Upper_95 = c(1422813, 1560543, 1465044, 1544596, 1301852, 1405107)
+)
+
+# Actual value
+actual_value <- 1340570
+lower_2_percent <- actual_value * 0.99
+upper_2_percent <- actual_value * 1.01
+lower_5_percent <- actual_value * 0.95
+upper_5_percent <- actual_value * 1.05
+# Create the plot
+p <- ggplot(data, aes(x = Group)) +
+  # Add shaded area for 5% off
+  geom_rect(
+    aes(xmin = -Inf, xmax = Inf, ymin = lower_5_percent, ymax = upper_5_percent),
+    fill = "lightblue", alpha = 0.2
+  ) +
+  # Add shaded area for 2% off
+  geom_rect(
+    aes(xmin = -Inf, xmax = Inf, ymin = lower_2_percent, ymax = upper_2_percent),
+    fill = "lightgreen", alpha = 0.3
+  ) +
+  # Add 95% CI
+  # Add prediction points
+  geom_point(aes(y = Prediction), size = 4, shape = 21, fill = "#FF5733", color = "black") +
+  # Add the actual value as a bold dashed line
+  geom_hline(yintercept = actual_value, linetype = "dashed", color = "darkgreen", size = 1.2) +
+  # Flip axes for horizontal comparison
+  coord_flip() +
+  # Customize axis limits
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.1)), limits = c(0, NA)) +
+  # Add labels and themes
+  labs(
+    title = "Predictions with 95% Confidence Intervals",
+    subtitle = "Group-wise predictions with actual value as reference\nShaded areas: 2% (green) and 5% (blue) off actual value",
+    x = "Groups",
+    y = "Number of Passengers"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    panel.grid.major = element_line(color = "gray85"),
+    panel.grid.minor = element_blank()
+  )
+
+# Display the plot
+print(p)
+  
+```
+
+
+#### **Key Outcome**
+
+- Students built a **linear regression model** combining multiple data sources to generate forecasts.
+- **Closest prediction was within 1% of the actual number of riders!**
+- A reliable tool to improve resource allocation and decision-making.
+
 
 ---
 
@@ -182,16 +292,18 @@ colors = c(
 ### Organization
 
 - **Lectures Schedule**: 
-      - Tuesday 8:00 - 11:30 hrs. Room: RH B5
+      - Tuesday & Thursday morning RH308
 
 - **TA schedule**: 
   - Weekly 1 hour lab session - timing/location to be determined
-  - Office Hours with TAs - timing/location to be determined\
+  - Office Hours with TAs - timing/location to be determined
   - Canvas Discussion Board
 
 - **Textbooks**
   - See canvas course materials and syllabus
-  
+
+- **Organization**
+  - see the website
   
 ---
 
@@ -199,22 +311,25 @@ colors = c(
 
 - 20% 2x Midterms 
 - 30% Final Exam - you need at east 60 to pass the class
-- 15% Quizzes 
-  - *Type 1 Quiz*: In-class, individual, theory + some calculations, 30 min max, one week notice, around 4-6 per semester. You can bring one page of handwritten notes. Printed or electronic notes will not be accepted. 
-  - *Type 2 Quiz*: At home, individually or in pairs, practice with data, 24h to complete, around 3-4 per semester, open book.
+- 10% Quizzes 
+  - *Type 1 Quiz*: In-class, individual, theory + some calculations, 30 min max, one week notice, around 3 per semester. You can bring one page of handwritten notes. Printed or electronic notes will not be accepted. 
+  - *Type 2 Quiz*: At home, individually or in pairs, practice with data, 24h to complete, 2 per semester, open book.
   - Lowest grade among all is dropped
 - 15% Final Project (In groups of 3)
-- 0% Homeworks
+- 5% Homework
+  - Graded on completion, not correctness, but you need to show an attempt to solve
+  - You can skip one
 
 ---
 
-### Last Year Median Grades
+### Last Semester Median Grades
 
-- Midterm 1: 55
+- Midterm 1: 70
 - Midterm 2: 57
-- Final Exam: 60
+- Final Exam: 62.5
 - Quiz: 81
-- Final Project: 82
+- Final Project: 84
+- Final Grade: 68.5
 
 --
 
@@ -248,6 +363,7 @@ colors = c(
 
 ---
 ### ChatGPT Policy 
+
 - We are not trying to fight the technology
 
 --
@@ -258,12 +374,12 @@ colors = c(
 
 --
 
-    - Just copying and pasting the answer without understanding what's going on will not get you any points
-    - Just copying and pasting without reading the context shows you don't care
+    - Just copying directly the ouput from CHATGPT is plagiarism
+    - I sometimes ask to explain the code you submitted, so you need to understand everything you put in an assignment
 
 --
 
-- Good for coding, but not for math. 
+- Use it wisely to learn, and then inform your own answers with its ouput
 
 --
 
@@ -293,7 +409,7 @@ colors = c(
 --
 - **Cheating is easy to discover**:
   - Questions are usually randomized
-  - The on screen activity in quizes is logged-on. If you leave the tab of the quiz, you get 0.
+  - We will use lockdown browser for the quizes
   - If you access the quiz in a place other than the classroom, you get 0 (unless agreed beforehand)
 
 --
@@ -390,41 +506,10 @@ p
 ```
 
 
----
-### Public Wifi Antennas in Mexico City
-
-
-```{r mexico_city_map, width = 40, height = 10, echo=FALSE, fig.height=8, fig.width=10, warning=FALSE, show=FALSE}
-
-# Read CSV file
-file_url <- "https://datos.cdmx.gob.mx/dataset/aa2ff336-b4aa-44f3-b38a-f303ef0f7673/resource/98f51fe2-18cb-4f50-a989-b9f81a2b5a76/download/2023-08-03-puntos_de_acceso_wifi.csv"
-wifi_data <- read_csv(file_url,show_col_types = FALSE)
-# 
-# #aliminatre latutides different larger than 20 and smaller than 18
-# #eliminates longitudes larger than 100 and smaller than 97
-# wifi_data=wifi_data%>%filter(latitud<20)%>%filter(latitud>18)%>%filter(longitud<(-97))%>%filter(longitud>(-100))
-# 
-# # Create a Leaflet map with clustering
-# wifi_map <- leaflet(wifi_data, width="60%", height="60%") %>%
-#  addTiles() %>%
-#  addCircleMarkers(lng = ~longitud, lat = ~latitud, popup = ~programa, radius = 5, color = "blue", clusterOptions = markerClusterOptions()) %>%
-#  addProviderTiles(providers$Stamen.TonerLite, group = "Greyscale") %>%
-#  addLayersControl(
-#    baseGroups = c("Greyscale"),
-#    options = layersControlOptions(collapsed = FALSE)
-#  ) %>%
-#  setView(lng = mean(as.numeric(wifi_data$longitud), na.rm = TRUE),
-#          lat = mean(as.numeric(wifi_data$latitud), na.rm = TRUE), zoom = 10)
-# 
-# # Print the map
-# wifi_map
-```
-
-
 
 ---
   
-  ### Remarks
+### Remarks
   - We will use it for practical exercises with data
   - You will use it for the final project
   - We will learn some of it together in class
@@ -731,19 +816,19 @@ class: inverse, middle
 
 #### Quantatitve Forecasting
 
-0. Ungraded quiz next week or week after
+0. Ungraded quiz next class
 --
 
-1. Review of Statistics *(Midterm 1: Tuesday September 17th: 14:30-16)*
+1. Review of Statistics 
 --
    
-2. Simple linear regression *(Midterm 2: Wednesday October 23rd: 14-16)*
+2. Simple linear regression 
 --
 
 3. Multiple linear regression
 --
 
-4. Time Series *(Final: December)*
+4. Time Series 
 
 --
 
