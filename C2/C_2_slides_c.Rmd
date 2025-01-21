@@ -760,6 +760,16 @@ Then
 
 $$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x+a|} \neq C.V._x$$
 ---
+## Percentiles
+
+
+<center>
+<img src=Exam_q_CV.jpg width="800">
+</center>
+
+
+
+---
 
 ### Box and Whiskers plot 
 
@@ -866,6 +876,13 @@ Health_data %>%
   theme(legend.position = "none")
 
 ```
+
+---
+
+<center>
+<img src=Exam_q_bw.jpg width="800">
+</center>
+
 
 ---
 ### Exercises:

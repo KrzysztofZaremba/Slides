@@ -5,7 +5,7 @@
 #remotes::install_github('yihui/servr')
 
 library(renderthis)
-to_pdf("C_2_slides_a.html")
+#to_pdf("C_2_slides_a.html")
 pagedown::chrome_print(input = "C_2_slides_a.html", output = "C_2_slides_a.pdf", timeout = 300)
 # 
 # usethis::git_sitrep()

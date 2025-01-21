@@ -520,9 +520,22 @@ We have two general types: .blue[Categorical] and .blue[Numerical] variables
     - We could say 1=Very unsatisfied, 2=Unsatisfied
     - But we cannot say that very unsatisfied has half of satisfaction of person who is just unsatisfied!
     - We can order, but these numbers don't have meaning in terms of distance between them
-  
+
+---
+### Scales of Measurements
+
+1. Nominal
+2. Ordinal
+3. Interval (Numerical)
+  - No true zero point, ex: temperature
+  - Differences between 5 and 10 is same as 25 and 30
+  - We can't say that 10 is twice as cold as 5
+4. Ratio (Numerical)
+  - True zero point, ex: weight, height, age
+  - If you are 20 years old, you are twice as old as your 10 years old brother
   
 ---
+
 ### Mexican Health Survey
 - Representative sample of the Mexican population .red[n=37858]. 
 - We will use it to investigate market for Ozempic
@@ -1333,7 +1346,7 @@ To calculate the probability of X falling within a specific range [a, b], you ne
 
 $P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
 
-The total area under the PDF curve is equal to 1
+What is the share of population with weight between 65kg and 75kg?
 
 ```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
 # Load the required libraries
@@ -1420,8 +1433,7 @@ To calculate the probability of X falling within a specific range [a, b], you ne
 
 $P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
 
-The total area under the PDF curve is equal to 1
-
+What is the share of population with weight between 40 and 50kg?
 ```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
 
 # Example 4: Shaded interval [10, 50]
@@ -1465,7 +1477,7 @@ To calculate the probability of X falling within a specific range [a, b], you ne
 
 $P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
 
-The total area under the PDF curve is equal to 1
+What is the share of population with weight between 66.99 and 67 kg?
 
 ```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
 
@@ -1510,7 +1522,7 @@ To calculate the probability of X falling within a specific range [a, b], you ne
 
 $P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
 
-The total area under the PDF curve is equal to 1
+What is the share of population with weight between 40 and 100 kg?
 
 ```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
 
@@ -1607,11 +1619,18 @@ ggplot(df_combined, aes(x = Value, fill = Distribution)) +
 
 ## Which is uniformaly distributed
 
- 1. weights of adult females
- 2. salaries of a random sample of people from CDMX
- 3. House prices in CDMX
- 4. birthdays of classmates (day of the month)
+ 1. Weights of Adult Females
+ 2. Salaries in Mexico
+ 3. Airbnb prices in CDMX
+ 4. Birthdays of Classmates (day of the month)
 
+
+
+---
+
+<center>
+<img src=Distributions_q_data.png width="800">
+</center>
 
 
 ---
@@ -1667,7 +1686,7 @@ ggplot(df_combined_skewed, aes(x = Value, fill = Distribution)) +
 
 ---
 
-## We want to know how many people weight more than 100kg
+#### What if we want to calculate proportion of people who weight less or equal to 50kg?
 
 ---
 
@@ -1685,108 +1704,151 @@ Characteristics:
 - It approaches 1 as x approaches infinity (maximum)
 - It is non decreasing
 - It is right continuous
+
 ---
 
+## Example 1: Normal Variable (weight in the population)
 
-## Trransform these so they are commuting times, not abstract standard normals?
-## Example 1: Standard Normal
-
-$F(-2) = \int_{-\infty}^{-2} f(t) \, dt = P(X \leq -2)=0.02$
+$F(50) = \int_{-\infty}^{50} f(t) \, dt = P(X \leq 50)=0.02$
 
 ```{r example1, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
 
+# Define the transformed PDF and CDF functions
+mean_new <- 70
+sd_new <- 10
 
-# Define the PDF and CDF functions for standard normal distribution
-pdf_func <- function(x) {
-  dnorm(x, mean = 0, sd = 1)
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
 }
 
-cdf_func <- function(x) {
-  pnorm(x, mean = 0, sd = 1)
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
 }
 
-# Generate data for plotting
-x <- seq(-3, 3, length.out = 100)
-pdf_y <- pdf_func(x)
-cdf_y <- cdf_func(x)
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
 
-# Create the combined plot for Example 1
-pdf_plot1 <- ggplot() +
-  geom_line(aes(x, pdf_y), color = "blue", size = 1.5) +
-  geom_area(aes(x = x[x <= -2], y = pdf_y[x <= -2]), fill = "lightblue") +
-  labs(title = NULL, x = NULL, y = NULL) +
-  theme_xaringan()
+# Create the combined plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new - 2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new - 2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
 
-cdf_plot1 <- ggplot() +
-  geom_line(aes(x, cdf_y), color = "red", size = 1.5) +
-  geom_hline(yintercept = cdf_func(-2), linetype = "dashed", color = "black") +
-  geom_vline(xintercept = -2, linetype = "dashed", color = "black") +
-  annotate("text", x = -2, y = cdf_func(-2) + 0.01, label = sprintf("%.2f", cdf_func(-2)), vjust = -1, size = 5) +
-  labs(title = NULL, x = NULL, y = NULL) +
-  theme_xaringan()
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new - 2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new - 2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new - 2 * sd_new, 
+           y = cdf_func_transformed(mean_new - 2 * sd_new) + 0.01, 
+           label = sprintf("%.2f", cdf_func_transformed(mean_new - 2 * sd_new)), 
+           vjust = -1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
 
-
-grid.arrange(pdf_plot1, cdf_plot1, ncol = 2)
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
 ```
 
 ---
 
-## Example 2: Standard Normal
+## Example 2: Normal Variable (weight in the population)
 
-$F(0.2) = \int_{-\infty}^{0.2} f(t) \, dt = P(X \leq 0.2)=0.58$
+$F(72) = \int_{-\infty}^{72} f(t) \, dt = P(X \leq 72)=0.58$
 
 ```{r example2, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
 # Generate data for plotting
-x <- seq(-3, 3, length.out = 100)
-pdf_y <- pdf_func(x)
-cdf_y <- cdf_func(x)
-pdf_plot2 <- ggplot() +
-  geom_line(aes(x, pdf_y), color = "blue", size = 1.5) +
-  geom_area(aes(x = x[x <= 0.2], y = pdf_y[x <= 0.2]), fill = "lightblue") +
-  labs(title = NULL, x = NULL, y = NULL) +
-  theme_xaringan()
+# Define the transformed PDF and CDF functions
+mean_new <- 70
+sd_new <- 10
 
-cdf_plot2 <- ggplot() +
-  geom_line(aes(x, cdf_y), color = "red", size = 1.5) +
-  geom_hline(yintercept = cdf_func(0.2), linetype = "dashed", color = "black") +
-  geom_vline(xintercept = 0.2, linetype = "dashed", color = "black") +
-  annotate("text", x = 0.2, y = cdf_func(0.2) + 0.01, label = sprintf("%.2f", cdf_func(0.2)), vjust = -1, size = 5) +
-  labs(title = NULL, x = NULL, y = NULL) +
-  theme_xaringan()
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
+}
 
-grid.arrange(pdf_plot2, cdf_plot2, ncol = 2)
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
+}
+
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
+
+# Create the PDF plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new + 0.2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new + 0.2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
+
+# Create the CDF plot for the transformed distribution
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new + 0.2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new + 0.2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new + 0.2 * sd_new, 
+           y = cdf_func_transformed(mean_new + 0.2 * sd_new) + 0.01, 
+           label = sprintf("%.2f", cdf_func_transformed(mean_new + 0.2 * sd_new)), 
+           vjust = -1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
+
+# Combine the plots
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
 ```
 
 ---
 
-## Example 3: Standard Normal
+## Example 3: Normal Variable (weight in the population)
 
-$F(3.2) = \int_{-\infty}^{3.2} f(t) \, dt = P(X \leq 3.2)=0.99$
+$F(102) = \int_{-\infty}^{102} f(t) \, dt = P(X \leq 102)=0.99$
 
 
 ```{r example3, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
 # Generate data for plotting
 # Generate data for plotting
-x <- seq(-3, 3, length.out = 100)
-pdf_y <- pdf_func(x)
-cdf_y <- cdf_func(x)
+mean_new <- 70
+sd_new <- 10
 
-# Create the combined plot for Example 3
-pdf_plot3 <- ggplot() +
-  geom_line(aes(x, pdf_y), color = "blue", size = 1.5) +
-  geom_area(aes(x = x[x <= 3.2], y = pdf_y[x <= 3.2]), fill = "lightblue") +
-  labs(title = NULL, x = NULL, y = NULL) +
-  theme_xaringan()
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
+}
 
-cdf_plot3 <- ggplot() +
-  geom_line(aes(x, cdf_y), color = "red", size = 1.5) +
-  geom_hline(yintercept = cdf_func(3.2), linetype = "dashed", color = "black") +
-  geom_vline(xintercept = 3.2, linetype = "dashed", color = "black") +
-  annotate("text", x = 3.2, y = 0.99, label = sprintf("%.2f", 0.99), vjust = 1, size = 5) +
-  labs(title = NULL, x = NULL, y = NULL)+
-  theme_xaringan()
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
+}
 
-grid.arrange(pdf_plot3, cdf_plot3, ncol = 2)
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
+
+# Create the PDF plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new + 3.2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new + 3.2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
+
+# Create the CDF plot for the transformed distribution
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new + 3.2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new + 3.2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new + 3.2 * sd_new, 
+           y = cdf_func_transformed(mean_new + 3.2 * sd_new) + 0.01, 
+           label = sprintf("%.2f", cdf_func_transformed(mean_new + 3.2 * sd_new)), 
+           vjust = 1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
+
+# Combine the plots
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
 ```
 
 Never integrate a CDF!
@@ -1794,7 +1856,7 @@ Never integrate a CDF!
 ---
 ### Empirical CDF
 
-We can do similar thing with our weight data. 
+What if we only have a sample and we don't know the true pdf?
 
 Intuition on how it comes up:
  
@@ -1832,7 +1894,7 @@ p2
 ---
 ### Empirical CDF
 
-We can do similar thing with our weight data. 
+What if we only have a sample and we don't know the true pdf?
 
 Intuition on how it comes up:
  
@@ -1886,7 +1948,7 @@ $ECDF(x)=\frac{\sum I(w_i\leq x)}{N}=\frac{\text{Number of people with weight lo
 
 
 
-```{r example4b, echo=FALSE, fig.width=12, fig.height=4, warning=FALSE}
+```{r example4b, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
 ecdf_data <- ecdf(Health_data$weight)
 
 # Plot the cumulative distribution
@@ -1904,9 +1966,24 @@ ggplotly(cdf_plot,
 
 
 --
-- So how do we calculate share of people with weight>100kg?
+- So how do we calculate share of people with weight=<50kg?
+
+--
+$P(weight\leq50)=ECDF(50)$
+
+--
+- What about more than 100?
+
+--
 $P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
 
+---
+<center>
+<img src=Exam_q_dist.png width="800">
+</center>
+
+- Is $F_x(X)$ a valid distribution function?
+- What's the probability that the rent is larger than 10 000?
 
 ---
 ### Exercises:
