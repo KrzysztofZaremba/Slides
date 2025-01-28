@@ -1841,8 +1841,8 @@ cdf_plot_transformed <- ggplot() +
   geom_hline(yintercept = cdf_func_transformed(mean_new + 3.2 * sd_new), linetype = "dashed", color = "black") +
   geom_vline(xintercept = mean_new + 3.2 * sd_new, linetype = "dashed", color = "black") +
   annotate("text", x = mean_new + 3.2 * sd_new, 
-           y = cdf_func_transformed(mean_new + 3.2 * sd_new) + 0.01, 
-           label = sprintf("%.2f", cdf_func_transformed(mean_new + 3.2 * sd_new)), 
+           y = cdf_func_transformed(mean_new + 3.2 * sd_new) +0.01, 
+           label = sprintf("%.2f", round(cdf_func_transformed(mean_new + 3.2 * sd_new)),3), 
            vjust = 1, size = 5) +
   labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
   theme_minimal()

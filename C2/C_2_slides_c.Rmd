@@ -82,8 +82,16 @@ class: inverse, middle
 ---
 # Measures of Dispersion
 
-- How much variation there is in the data?
 
+--
+
+- Suppose a store has an average daily revenue of 10 000 pesos
+- It could be that on each day it has exactly 10 000 pesos revenue
+- Or it could be that on half of days it gets 20 000 pesos but on other half it gets 0 pesos
+- Dispersion makes a big difference, especially when trying to understand risk! 
+
+
+--
 ## Range
 
 - **Range** the difference between minimum and maximum value in the data 
@@ -365,18 +373,25 @@ print(combined_plot)
 
 ### Variance & Standard Deviation
 
-**Variance** measures how much observations deviate from the mean:
+**Variance** measures how far an average observation is from the mean:
 
 - **Population variance**: 
 $$\sigma^2=E[(X-\mu)^2]=E[X^2]-\mu^2 =\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2=\frac{1}{N} (\sum^N_{i=1}x^2_i-N\mu^2)$$
+For Discrete Variables it can be: $\sigma^2=\sum_k P(X=k)(k-\mu)^2$, where k is any possible value that X can take. 
 
 --
-- But this does not have the right units...
+- But variance does not have the right units since it squares everything...
 
 --
 - **Population standard deviation** deviation:
 
 $$\sigma=\sqrt{\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2}$$
+---
+
+
+### Variance & Standard Deviation
+
+
 --
 - Why do we first take squares and then take square root? 
 
@@ -385,6 +400,26 @@ $$\sigma=\sqrt{\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2}$$
 
 --
 - NO! Because $\sum^N_{i=1}(x_i-\mu)=0$
+
+--
+
+- Why don't we just do Mean Absolute Deviation?
+ - $MAD=\sum^N_{i=1}|(x_i-\mu)|$
+ 
+ 
+--
+- MAD is not differentiable at 0 :( 
+- You can use it, but it's a different measure and will give different numbers. Why?
+
+
+--
+- Variance puts more weight on far away observations. 
+- It's a weighted average distance, where weights are distances themselves. 
+
+--
+$$\sigma^2=\sum^N_{i=1}(x_i-\mu)^2=\frac{1}{N}\sum^N_{i=1} \underbrace{|(x_i-\mu)|}_{Weight}*\underbrace{|(x_i-\mu)|}_{Distance}$$
+- It makes it very sensitive to outliers, which get a lot of weight!
+- Standard deviation retains this property
 
 
 ---
@@ -477,16 +512,48 @@ print(p)
 
 ```
 
+
+---
+
+
+### Variance & Standard Deviation
+
+Consider two bets/situations:
+- Bet A: with 75% you get 200 pesos and with 25% you lose me 200 pesos
+  - 75% chance your life goes normal and you keep making money
+  - 25% change your house burns down
+
+
+--
+- Bet B: with 75% you get 110 pesos and with 25% you get 70
+  -  When your life goes normal you get 110 (you pay 90 for insurance)
+  -  When your house burns down you are  paid some compensation (70)
+
+
+--
+- Compute expected value and variance of each bet
+- Which one would you prefer?
+
+
+--
+- What if I change Bet B:
+  - Bet B: with 75% you get 109 pesos and with 25% you get 69
+
+
+--
+- That's how insurance companies make profits
+
+
 ---
 
 ### Sample equivalents
 
 - **Sample variance**: 
-$$s^2=\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2=\frac{1}{n-1} \sum^n_{i=1}(x_i^2-n\bar{x}^2)$$
+$$s^2=\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2=\frac{1}{n-1}( \sum^n_{i=1}x_i^2-n\bar{x}^2)$$
 --
 - **Sample standard deviation** deviation:
 
-$$s=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2}=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i^2-n\bar{x}^2)}$$
+$$s=\sqrt{\frac{1}{n-1}( \sum^n_{i=1}x_i-\bar{x})^2}=\sqrt{\frac{1}{n-1}( \sum^n_{i=1}x_i^2-n\bar{x}^2)}$$
 --
 - Why we divide by $n-1$ rather than $n$?
 
@@ -494,7 +561,7 @@ $$s=\sqrt{\frac{1}{n-1} \sum^n_{i=1}(x_i-\bar{x})^2}=\sqrt{\frac{1}{n-1} \sum^n_
 
 
 ---
-- **Intuition** - observed values usually fall closer to the sample mean than to the population mean
+- **Intuition** - observed values usually fall closer to the sample mean than to the population mean. Distances are artificially small. 
 
 ```{r 4, out.width='100%', fig.height=5, warning=FALSE}
 ### Show a vizualization illustrating this, population curve on the top (with mean marked), and below it three samples with their means marked 
@@ -621,58 +688,105 @@ arranged_plots <- grid.arrange(grobs = dotplot_layers_1, ncol = 1)
 ```
 
 ---
+### Standard Deviation
+
+Consider a random variable X with $E(X)=\mu_x$ and standard deviation $\sigma_x$.
+
+Ex: X is number of instagram followers distributed like this:
+
+```{r 5aag, out.width='100%', fig.height=2, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
 
 
-### Sample equivalents
+# Generate normal distributed data with mean 40 and sd 10
 
-Are they robust to outliers?
+data_initial <- data.frame(VideoTitle = video_names, OldViews = views, NewViews=views*3+1000)
 
-- Very sensitive because squaring deviation amplifies large deviation more than small deviations. 
+# Calculate interquartile range (IQR) for initial dataset
+iqr_initial <- IQR(data_initial$OldViews)
+
+plot_initial <-  ggplot(data_initial, aes(x = OldViews)) +
+  geom_dotplot(binwidth = 2, method = 'histodot', show.legend = FALSE) +
+  labs(title = "", x = "Values", y = "Density") + theme_xaringan() +
+  xlim(0,150)
+
+# Print the combined plot
+print(plot_initial)
+
+```
 
 
-```{r 5, out.width='100%', fig.height=3.5 , warning=FALSE}
-### Illustration of how variance is sensitive to outliers because squaring amplifies large deviation more than small deviations
+---
+### Standard Deviation
 
-library(ggplot2)
+- What happens to mean and standard deviation if everyone gets 40 more followers?
+- $Y=X+40$
 
-# Create a function to calculate squared deviations
-calculate_squared_deviations <- function(data, mean_value) {
-  deviations <- data - mean_value
-  squared_deviations <- deviations^2
-  return(squared_deviations)
-}
+```{r 5aagfb, out.width='100%', fig.height=2, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
 
-# Create a dataset with more data and an outlier
-num_samples <- 1
-data_with_outlier <- c(70, 75, 80, 85, 88, 90, 92, 150)
-outlier_mean <- mean(data_with_outlier)
-outlier_squared_deviations <- calculate_squared_deviations(data_with_outlier, outlier_mean)
 
-# Create a dotplot with data and an outlier
-dotplot <- ggplot(data.frame(Value = data_with_outlier), aes(x = Value)) +
-  geom_dotplot(binwidth = 1, stackdir = "center", dotsize = 0.5) +
-  geom_vline(aes(xintercept = outlier_mean), linetype = "dashed", color = "red") +
-  labs(x = NULL, y = NULL) +
+# Generate normal distributed data with mean 40 and sd 10
+
+data_initial <- data.frame(VideoTitle = video_names, OldViews = views, NewViews=views+40)
+
+
+plot_modified <- ggplot(data_initial) +
+  # Original OldViews in gray
+  geom_dotplot(aes(x = OldViews), binwidth = 2, method = 'histodot', fill = "gray", alpha = 0.4, color=NA, show.legend = FALSE) +
+  # NewViews
+  geom_dotplot(aes(x = NewViews), binwidth = 2, method = 'histodot', fill = "blue", show.legend = FALSE) +
+  labs(title = "", x = "Values", y = "Density") +
   theme_xaringan() +
-  theme(legend.position = "none")
+  xlim(0, 150)
 
-scatter_plot_data <- data.frame(
-  Value = data_with_outlier,
-  SquaredDeviation = outlier_squared_deviations
-)
+plot_modified
+```
 
-# Create a dotplot for squared deviations
-scatter_plot <- ggplot(scatter_plot_data, aes(x = Value, y = SquaredDeviation)) +
-  geom_point() +
-  labs(x = "Observation Value", y = "Sq. Dev.") +
-  theme_xaringan()
+--
 
-# Arrange the plots using cowplot
-library(cowplot)
-plot_grid(scatter_plot, dotplot, ncol = 1)
+$$\scriptsize \mu_Y=E(Y)=\frac{\sum_{i=1}^N(y_i+40)}{N}=\frac{\sum_{i=1}^N(x_i+40)}{N}=\frac{\sum_{i=1}^Nx_i+N*40}{N}=E(X)+40=\mu_X+40$$
+
+--
+
+$$\scriptsize \sigma_Y=\sqrt{Var(Y)}=\sqrt{\frac{\sum_i(y_i-\mu_y)^2}{N}}=\sqrt{\frac{\sum_i((x_i+40)-(\mu_x+40))^2}{N}}=\sqrt{\frac{\sum_i(x_i-\mu_x)^2}{N}}=\sqrt{Var(X)}=\sigma_X$$
+$$\scriptsize E(X+c)=E(X)+c \quad\text{and} \quad Var(X+c)=Var(X)$$
+
+---
+### Standard Deviation
+
+- What happens to mean and standard deviation if everyone followers get multiplied by 3? (without addition)
+- $Y=3*X$
+
+```{r 5aagf, out.width='100%', fig.height=2, warning=FALSE}
+### Illustrate with two dotplots, where I just change one observation at the end
+
+
+# Generate normal distributed data with mean 40 and sd 10
+
+data_initial <- data.frame(VideoTitle = video_names, OldViews = views, NewViews=views*3)
+
+plot_modified <- ggplot(data_initial) +
+  # Original OldViews in gray
+  geom_dotplot(aes(x = OldViews), binwidth = 2, method = 'histodot', fill = "gray", alpha = 0.4, color=NA, show.legend = FALSE) +
+  # NewViews
+  geom_dotplot(aes(x = NewViews), binwidth = 2, method = 'histodot', fill = "blue", show.legend = FALSE) +
+  labs(title = "", x = "Values", y = "Density") +
+  theme_xaringan() +
+  xlim(0, 150)
+
+plot_modified
 
 
 ```
+--
+
+$$\scriptsize \mu_Y=E(Y)=\frac{\sum_iy_i}{N}=\frac{\sum_i3x_i}{N}=3\frac{\sum_ix_i}{N}=3E(X)=3\mu_X$$
+
+--
+$$\scriptsize \sigma_Y=\sqrt{Var(Y)}=\sqrt{\frac{\sum_i(y_i-\mu_y)^2}{N}}=\sqrt{\frac{\sum_i(3x_i-3\mu_x)^2}{N}}=\sqrt{3^2\frac{\sum_i(x_i-\mu_x)^2}{N}}=\sqrt{3^2Var(X)}=3\sigma_X$$
+--
+$$\scriptsize E(cX)=cE(X) \quad\text{and} \quad Var(cX)=c^2Var(X)$$
 
 ---
 
@@ -756,6 +870,7 @@ $$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x|}=C.V._x$$
 What if $y_i=bx_i+a$?
 
 --
+
 Then 
 
 $$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x+a|} \neq C.V._x$$
@@ -764,7 +879,7 @@ $$C.V._y=\frac{\sigma_y}{|\mu_y|}=\frac{|b|\sigma_x}{|b\mu_x+a|} \neq C.V._x$$
 
 
 <center>
-<img src=Exam_q_CV.jpg width="800">
+<img src=Exam_q_CV.png width="800">
 </center>
 
 
@@ -880,7 +995,7 @@ Health_data %>%
 ---
 
 <center>
-<img src=Exam_q_bw.jpg width="800">
+<img src=Exam_q_bw.png width="800">
 </center>
 
 

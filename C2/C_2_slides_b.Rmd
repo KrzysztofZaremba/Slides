@@ -220,7 +220,7 @@ The **mean** is:
 
 \begin{align*}
     \bar{x} & =\frac{10 + 20 + 30 + 40 + 50 + 60000}{6} \\
-    & = 100025 \\
+    & = 10025 \\
 \end{align*}
 
 
@@ -537,13 +537,6 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 - What is the age, such that 50% of people die before that age?
 
 
----
-## Percentiles
-
-
-<center>
-<img src=Exam_q_top5.png width="800">
-</center>
 
 
 ---
@@ -562,7 +555,8 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 4. If it's not, take the average between ith rounded down and ith rounded up 
     - In our example it would be the average of 950th and 951th observation
  
----
+ 
+ --
 
 ## Or use the CDF
 
@@ -716,6 +710,16 @@ datatable(tiktok_dataset,
   - First decile is the average of the 20th and 21st observation
 - Index for the 95th percentile is: $i = \left(\frac{95}{100}\right)(200+1)=190.95$
   - 95th percentile is the average of the at 190th and 191st observation
+
+
+---
+## Percentiles
+
+
+<center>
+<img src=Exam_q_top5.png width="800">
+</center>
+
 
 
 ---

@@ -545,6 +545,86 @@ ggplotly(p,
 ```
 
 ---
+### Associations
+
+- Scatterplots become very messy if you have a lot of observations
+
+```{r 2za, out.width='90%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
+
+set.seed(123)
+
+# Number of observations per city
+n <- 5000
+
+# Create data for Mexico City
+mexico_city <- data.frame(
+  City = rep("Mexico City", n),
+  BMI = round(rnorm(n, mean = 24, sd = 8),2),   # Mean BMI around 25, SD = 3
+  Education = round(rnorm(n, mean = 12, sd = 2.5),1),  # Mean Education around 12 years, SD = 2
+  Income = round(rnorm(n, mean = 180000, sd = 10000),2)  # Mean Income around 40000, SD = 10000
+)
+
+# Create data for Guadalajara
+guadalajara <- data.frame(
+  City = rep("Guadalajara", n),
+  BMI = round(rnorm(n, mean = 26, sd = 8),2),   # Mean BMI around 25, SD = 3
+  Education = round(rnorm(n, mean = 12, sd = 2.5),1),  # Mean Education around 12 years, SD = 2
+  Income = round(rnorm(n, mean = 120000, sd = 8000),2)  # Mean Income around 60000, SD = 8000
+)
+
+
+# Add some positive correlation to the Income and Education variables in Guadalajara
+guadalajara$Income <- guadalajara$Income - 5000 * guadalajara$BMI + 16000 * guadalajara$Education
+mexico_city$Income <- mexico_city$Income - 2000 * mexico_city$BMI + 16000 * mexico_city$Education
+
+
+
+# Combine the updated Guadalajara data with Mexico City data
+dataset2 <- rbind(mexico_city, guadalajara)
+
+p=ggplot(data = dataset2, aes(x = BMI, y = Income)) +
+  geom_point() +
+  labs(x = "BMI", y = "Income",
+       color = "City") +
+  theme_xaringan()+
+   geom_segment(data = dataset[100, ],
+               aes(xend = BMI, yend = Income, x = BMI, y = 0), 
+               linetype = "dashed", color = "blue") +
+  geom_segment(data = dataset[100, ],
+               aes(xend = BMI, yend = Income, x = 0, y = Income), 
+               linetype = "dashed", color = "blue") +
+  geom_point(data = dataset[100, ],
+             aes(x = BMI, y = Income), color = "red", size = 3) +
+  geom_text(data = dataset[100, ],
+            aes(label = paste("(", BMI, ",", Income, ")")), 
+            vjust = -1, size=7) +
+  theme(legend.position = "none")
+
+ggplotly(p,
+        width = 500,   # Adjust the width according to your preference
+        height = 500)
+
+```
+---
+
+### Associations
+
+- If n is larger, better to use binscatter: 
+  - Group x variable into quantiles (ex: 10 deciles)
+  - Calculate average of y in each decile
+  - Plot
+
+```{r 2zf, out.width='90%', fig.height=4, warning=FALSE, echo=FALSE, message=FALSE}
+
+library(binsreg)
+
+binsreg(x=dataset2$BMI, y=dataset2$Income, nbins=10)
+
+
+```
+---
+
+
 ### Assocations
 
 - Would you say that the relationship is stronger in Guadalajara or in Mexico City?
@@ -669,8 +749,24 @@ print(combined_plot)
 - All else equal, larger standard deviation implies larger covariance
   - The squares are just bigger
 
----
 
+---
+### Reminder
+
+We often use it to calculate variance of a sum or difference of two random variables
+
+$$Var(X+Y)=Var(X)+Var(Y)+2Cov(X,Y)$$
+
+$$Var(X-Y)=Var(X)+Var(Y)-2Cov(X,Y)$$
+
+Reminder: if a is a constant
+$$E(aX)=aE(X) \quad and \quad E(a+X)=E(X)+a$$
+And 
+$$E(X+Y)=E(X)+E(Y)$$
+
+More on that in the homework!
+
+---
 ### Correlation
 
 - **Correlation measures** the strength of a linear relationship between two variables.
