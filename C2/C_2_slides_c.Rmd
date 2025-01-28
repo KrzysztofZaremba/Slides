@@ -399,7 +399,7 @@ $$\sigma=\sqrt{\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2}$$
 - Can't we just do $\frac{1}{N}\sum^N_{i=1}(x_i-\mu)$?
 
 --
-- NO! Because $\sum^N_{i=1}(x_i-\mu)=0$
+- NO! Because $\frac{1}{N}\sum^N_{i=1}(x_i-\mu)=0$
 
 --
 
