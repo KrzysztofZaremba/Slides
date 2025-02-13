@@ -363,7 +363,7 @@ text(position, 0.21, expression(bar(x)), col = "red", cex = 1.2)
 
 ### Calculation Procedure
 
-Use this procedure if $n>30$
+Use this procedure if $n>40$
 1. Take an IID sample
 
 --
@@ -548,28 +548,9 @@ Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, 
 ---
 ### Practice
 
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
-
-<center>
-<img src=Standard_deviation.png width="400">
-</center>
-
----
-### Practice
-
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
+Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
 
 
-<iframe src="https://embed.polleverywhere.com/free_text_polls/76zHlSi0gHvRlzJYvACp1?controls=none&short_poll=true" width="800px" height="460px"></iframe>
-
----
-### Practice
-
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
-
-<center>
-<img src=Interpretation.png width="400">
-</center>
 
 ---
 ### Practice

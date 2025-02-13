@@ -1,0 +1,12 @@
+name: T_tests_tradeoff
+title: T_tests_tradeoff
+username: kzaremba
+account: kzaremba
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13997129
+bundleId: 9796999
+url: https://kzaremba.shinyapps.io/T_tests_tradeoff/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

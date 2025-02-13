@@ -799,8 +799,7 @@ The probability that a statistic we calculated (or more extreme value) could ari
 ---
 ### P-value in two-sided test
 
-`r knitr::include_url('https://rpsychologist.com/pvalue/', height='400px')`
-Source: https://rpsychologist.com/pvalue/
+#Source: https://rpsychologist.com/pvalue/
 
 ---
 ### P-Values and test significance

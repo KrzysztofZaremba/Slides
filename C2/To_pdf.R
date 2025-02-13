@@ -6,7 +6,7 @@
 
 library(renderthis)
 to_pdf("C_2_slides_c.html")
-pagedown::chrome_print(input = "C_2_slides_d.html", output = "C_2_slides_d.pdf", timeout = 300)
+pagedown::chrome_print(input = "C_2_slides_c.html", output = "C_2_slides_c.pdf", timeout = 300)
 # 
 # usethis::git_sitrep()
 # 

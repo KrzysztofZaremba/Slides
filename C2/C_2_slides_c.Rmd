@@ -399,12 +399,12 @@ $$\sigma=\sqrt{\frac{1}{N} \sum^N_{i=1}(x_i-\mu)^2}$$
 - Can't we just do $\frac{1}{N}\sum^N_{i=1}(x_i-\mu)$?
 
 --
-- NO! Because $\frac{1}{N}\sum^N_{i=1}(x_i-\mu)=0$
+- NO! Because $\\sum^N_{i=1}(x_i-\mu)=0$
 
 --
 
 - Why don't we just do Mean Absolute Deviation?
- - $MAD=\sum^N_{i=1}|(x_i-\mu)|$
+ - $MAD=frac{1}{N}\sum^N_{i=1}|(x_i-\mu)|$
  
  
 --
