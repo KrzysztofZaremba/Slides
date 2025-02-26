@@ -796,6 +796,10 @@ $$p-value=P(Z>\frac{5.5-5}{2/6})=P(Z>1.5)=0.066$$
 **Intuitively:**
 The probability that a statistic we calculated (or more extreme value) could arise just by chance if null is true
 
+
+
+
+
 ---
 ### P-value in two-sided test
 
@@ -814,6 +818,8 @@ The probability that a statistic we calculated (or more extreme value) could ari
 **Another way to think about p-values**
 - The P-value is the smallest significance level $\alpha$ at which the $H_0$
 can be rejected
+
+![plot](P_value.png)
 
 
 ---
