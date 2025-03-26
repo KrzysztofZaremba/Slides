@@ -688,12 +688,38 @@ Suppose that we used $x$ and $y$ in our sample to estimate $\hat{\beta}_1$ and $
 ---
 ### Scaling of variables:
 
-Exact formulas:
+Effect on slope is easiest derived using the definition with correlation:
 
-- $\hat{\beta}'_1=\frac{b}{a}\hat{\beta}_1$ 
+$$\begin{aligned}
+\hat{\beta}'_1 &= \text{cor}(z, y') \cdot \frac{\text{sd}(y')}{\text{sd}(z)} \\
+               &= \text{cor}(a x + c, b y + d) \cdot \frac{\text{sd}(b y + d)}{\text{sd}(a x + c)} \\
+               &= \text{cor}(x, y) \cdot \frac{b \cdot \text{sd}(y)}{a \cdot \text{sd}(x)} \\
+               &= \frac{b}{a} \hat{\beta}_1
+\end{aligned}$$
 
-- $\hat{\beta}'_0=b\hat{\beta}_0+d-\frac{b}{a}\hat{\beta}_1c$ 
-  
+- correlation does not change when we scale variables
+- adding constants does not matter for the slope
+- multiplication of y or x changes the slope
+
+---
+### Scaling of variables:
+
+Effect on the intercept is easiest seen through its formula:
+
+
+$$
+\begin{aligned}
+\hat{\beta}_0' &= \bar{y}' - \hat{\beta}_1' \bar{z} \\
+               &= (b \bar{y} + d) - \left( \frac{b}{a} \hat{\beta}_1 \right)(a \bar{x} + c) \\
+               &= b \bar{y} + d - b \hat{\beta}_1 \bar{x} - \frac{b}{a} \hat{\beta}_1 c \\
+               &= b(\bar{y} - \hat{\beta}_1 \bar{x}) + d - \frac{b}{a} \hat{\beta}_1 c \\
+               &= b \hat{\beta}_0 + d - \frac{b}{a} \hat{\beta}_1 c
+\end{aligned}
+$$
+- multiplying y changes the intercept
+- adding a constant to y changes the intercept
+- adding a constant to x changes the intercept
+- multiplying x only changes the intercept if we also add a constant to x
 
 ---
 

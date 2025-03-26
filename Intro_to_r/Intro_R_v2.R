@@ -148,6 +148,11 @@ Upper=m+z*sd/sqrt(n)
 Lower=m-z*sd/sqrt(n)
 
 ##calculate confidence interval for the mean price
-t.test(sample$price, conf.level = 0.95) ##this one uses student t!
+t.test(sample$price, conf.level = 0.95, mu=0) ##this one uses student t!
 
 
+#find top 5 most affordable places with rating 4.5 or higher and at least 100 reviews 
+
+#what determines the price?  divide into high and low prices and try to vizualize differences
+
+#availability last 30 days
