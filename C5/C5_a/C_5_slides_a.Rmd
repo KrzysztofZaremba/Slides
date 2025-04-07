@@ -41,6 +41,8 @@ library(knitr)
 library(car)
 library(kableExtra)
 library(DT)
+library(Lock5Data)
+library(wooldridge)
 
 ```
 
@@ -77,20 +79,20 @@ Sample_urg=Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",]
 ---
 ### Motivation
 
-- Suppose that you are administering a hospital
-- You need to know how many doctors, nurses and beds you need
-- So you want to predict how long a patient will stay at the urgent care
+- Suppose that you are managing a hospital
+- You want to predict how long a patient will stay at the urgent care 
+  - You need this information to see how many rescources you need (doctors, beds, etc)
 
 --
 - You collect the data on 
     - The Duration of the visit
-    - The type of patient
-    - How many other people there are currently at urgent care
-    - What kind of problem they came with
+    - Characteristics of the patient
+    - What kind of problem the patient came with
     - What type of bed they got
+    - How many other patients there are currently at urgent care
 
 --
-- If we know these factors, can we predict how long patient will stay?
+- If we know these values, can we predict how long patient will stay?
 
 ---
 ### Data
@@ -117,20 +119,106 @@ datatable(Sample_urg,
 )
 ```
 
+---
+
+### Multiple linear regression
+
+- Multiple linear regression is similar to single linear regression
+
+--
+
+- But you can use more than just one x (predictor)
+
+--
+
+- We model y as a linear function of multiple variables
+
+--
+
+- Since you can use many explanatory variables (Xs) you can usually get much better predictions
 
 ---
 
 ### Multiple linear regression
 
-Suppose that the outcome $y_i$ (duration) is a linear function of $x_1$ (occupancy) and $x_2$ (age)
+- Back to hospital example:
+
+Suppose that the outcome $y_i$ (duration) is a linear function of $x_1$ (Occupancy) and $x_2$ (age)
 
 $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+u_i$$
-- $\beta_0$ represents the value of $y_i$ when $x_1$ and $x_2$ are 0. 
+- $\beta_0$ represents the average value of $y_i$ when $x_1$ and $x_2$ are 0. 
 - $\beta_1$ represents the change in $y_i$ while changing $x_1$ by one unit and keeping $x_2$ constant
 - $\beta_2$ represents the change in $y_i$ while changing $x_2$ by one unit and keeping $x_1$ constant
 
+
+--
+Once I estimated the parameters, I can predict how long a patient will stay. Consider a patient who is 20 years old (age) and there are 5 other people in the urgent care at the same time (occupancy), then predicted stay is:
+
+$$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1*5+\hat{\beta}_2*10$$
+
+---
+### Example 1
+
+What can predict hourly wage in the US?
+
+--
+```{r, echo=FALSE}
+# Fit a linear regression model
+lm_model <- lm(wage ~ exper+looks+female+married+educ, data = beauty)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+---
+### Example 2
+
+What can predict prices of houses in the US?
+
+
+--
+```{r, echo=FALSE}
+# Fit a linear regression model
+lm_model <- lm(price ~ rooms+baths+age+land, data = hprice3)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+
+---
+### Example 3
+
+What can predict whether you liked someone romantically?
+
+--
+
+```{r, echo=FALSE}
+
+SpeedDating2 <- SpeedDating %>%
+  pivot_longer(
+    cols = ends_with("M") | ends_with("F"),
+    names_to = c(".value", "gender"),
+    names_pattern = "(.*)([MF])"
+  ) 
+
+# Fit a linear regression model
+lm_model <- lm(Like ~ Attractive+Intelligent+Fun+Ambitious+SharedInterests, data = SpeedDating2)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+
 ---
 ### Multiple linear regression
+
+- With one regressor, relationship was visualized with a line, what about now?
+
+--
 
 100 observations simulated from an a regression line:
 $$y_i=5+2x_{i1}+1x_{i2}+u_i$$
@@ -179,7 +267,9 @@ plot_ly(my_df, x = ~x1, y = ~x2, z = ~y, text = ~paste("x1:", round(x1,2), "<br>
 ---
 ### Multiple linear regression
 
-100 observations simulated from an a regression line: $$y_i=5+2x_{i}-1x_i^2+u_i$$
+100 observations simulated from an a regression line: $$y_i=5+2\underbrace{x_{i}}_{x_{i1}}-1\underbrace{x_i}_{x_{i2}}^2+u_i$$
+
+
 ```{r, warning=FALSE,message=FALSE,fig.height=4, out.width='100%'}
 set.seed(123)
 
@@ -424,6 +514,8 @@ $$\begin{align*}
 \end{align*}$$
 
 
+
+
 ---
 ### Multiple linear regression
 
@@ -475,9 +567,14 @@ n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
 </div>
 
 ---
+Example:
+
+<img src="Exam_f_ols.png" width="80%">
+
+---
 ### Practice theory
 
-Lista 5.1 Q9
+Lista 5.1 Q9 and 6a
 
 ---
 
@@ -559,6 +656,8 @@ $$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mat
 
 - We are trying to find $\beta$s which minimize the prediction error
 - It turns out that we get minimal errors when we set $\beta$ to be: $\hat{\beta}=(X'X)^{-1}X'y$
+- If we have just one regressors, we get back the same formular as we already derived
+-  
 
 ### Practice Theory
 Lista 5.1 Q7
@@ -601,7 +700,7 @@ $$\small \begin{align*}
 ---
 ## What these matrices mean and do?!
 
-- Now we have more, and we want to know SEPARATE impact of each. 
+- Now we have more regressors, and we want to know SEPARATE impact of each. 
 - What would happen if we change just that one thing (hours of sleep) and keep everything else constant (hours studied)?
 
 --
@@ -1370,6 +1469,33 @@ $$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\be
 
 ---
 
+
+---
+### Example
+
+When choosing a partner, do women or men care more about physical attractivness?
+
+--
+
+```{r, echo=FALSE}
+
+SpeedDating2 <- SpeedDating %>%
+  pivot_longer(
+    cols = ends_with("M") | ends_with("F"),
+    names_to = c(".value", "gender"),
+    names_pattern = "(.*)([MF])"
+  ) 
+
+# Fit a linear regression model
+lm_model <- lm(Like ~ Attractive*gender, data = SpeedDating2)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+
+
+---
+
 ### Goodness of fit
 
 - We can use again the R square to measure the goodness of fit.
@@ -1595,12 +1721,12 @@ XTX <- t(X) %*% X
 XTX_inv <- solve(XTX)
 ```
 
-What's the 95% CI for average wait time when there is 10 people at the Urgent Care $x_{occupancy}=10$ for a person who is of age 52  $x_{age}=52$ ?
+What's the 95% CI for average wait time when there is 10 people at the Urgent Care $x_{Occupancy}=10$ for a person who is of age 52  $x_{age}=52$ ?
 
 - What do we need to answer this question?
 
 
-  - $\hat{\beta}=\{\hat{\beta_0}, \hat{\beta}_{occupancy}, \hat{\beta}_{age}\}=\{23.236, 3.7, 0.2\}$
+  - $\hat{\beta}=\{\hat{\beta_0}, \hat{\beta}_{Occupancy}, \hat{\beta}_{age}\}=\{23.236, 3.7, 0.2\}$
 
 
   - $\hat{\sigma}=98.97$
@@ -1748,7 +1874,7 @@ linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
 
 
 --
-- Suppose we want to compare a regression model with only occupancy vs both occupancy and age
+- Suppose we want to compare a regression model with only Occupancy vs both Occupancy and age
 
 - $\small H_0: y=\beta_0+\beta_1Occupancy+u$ restricted model
 - $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
@@ -1965,7 +2091,7 @@ $$T_{test}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{SE(\hat{\beta_1}+\hat{\beta_2})}
 ---
 ### Example
 
-- Test if the total impact of increasing occupancy by one person and being male is larger than 17
+- Test if the total impact of increasing Occupancy by one person and being male is larger than 17
 
 
 ```{r, echo = FALSE, message = FALSE}
@@ -2055,7 +2181,7 @@ knitr::include_graphics("Exam_fq.png")
 Lista 05.1
 
 - Changing age by one standard deviation increases duration by 3.8% of a standard deviation
-- Changing occupancy one standard deviation increases duration by 46% of a standard deviation
+- Changing Occupancy one standard deviation increases duration by 46% of a standard deviation
 
 ---
 
