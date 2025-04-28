@@ -43,7 +43,7 @@ library(kableExtra)
 library(DT)
 library(Lock5Data)
 library(wooldridge)
-
+library(tidyverse)
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
@@ -1583,7 +1583,7 @@ Under the above assumptions:
 $$\hat{\beta}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}})$$
 And 
 
-$$\hat{\beta_j}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}_{j+1,j+1}})$$
+$$\hat{\beta_j}\sim N(\beta_j, \sigma\sqrt{(X'X)^{-1}_{j+1,j+1}})$$
 --
 Normalizing we get that:
 
@@ -1706,7 +1706,7 @@ $\hat{y}_0 \sim N(\mathbf{x_0}'\beta, \sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\ma
 
 Hence:
 
-$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}\}$
+$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}\}$
 ]
 
 
@@ -1777,7 +1777,7 @@ $$\begin{align*}var(y_0-\hat{y}_0)& =var(x_0\beta+u_i-x_0\hat{\beta})  \\ & =var
 
 So the confidence interval for a single observation is slightly wider:
 
-$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-2,\frac{\alpha}{2}}\sqrt{\sigma^2(1+\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0})}\}$
+$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\sqrt{\sigma^2(1+\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0})}\}$
 
 
 We are less certain about predicting outcome for a single person, compared to average outcome among namy people. 

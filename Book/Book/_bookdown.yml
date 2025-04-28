@@ -1,0 +1,3 @@
+book_filename: "business_forecasting"
+rmd_files: ["index.Rmd", "01-multiple-regression.Rmd"]
+delete_merged_file: true

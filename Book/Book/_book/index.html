@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Business Forecasting</title>
+  <meta name="description" content="Business Forecasting" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Business Forecasting" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Business Forecasting" />
+  
+  
+  
+
+<meta name="author" content="Krzysztof Zaremba" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+<link rel="next" href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression: Model Evaluation and Hypothesis Testing</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#anova-and-f-test-for-overall-significance"><i class="fa fa-check"></i><b>2.2</b> ANOVA and F-Test for Overall Significance</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#why-do-we-need-the-f-test"><i class="fa fa-check"></i><b>2.2.1</b> Why Do We Need the F-Test?</a></li>
+<li class="chapter" data-level="2.2.2" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#intuition-behind-the-f-test"><i class="fa fa-check"></i><b>2.2.2</b> Intuition Behind the F-Test</a></li>
+<li class="chapter" data-level="2.2.3" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#degrees-of-freedom"><i class="fa fa-check"></i><b>2.2.3</b> Degrees of Freedom</a></li>
+<li class="chapter" data-level="2.2.4" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#understanding-the-f-statistic"><i class="fa fa-check"></i><b>2.2.4</b> Understanding the F-Statistic</a></li>
+<li class="chapter" data-level="2.2.5" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#intuitive-explanation-of-the-f-test"><i class="fa fa-check"></i><b>2.2.5</b> Intuitive Explanation of the F-Test</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#alternative-perspective-extra-sum-of-squares-approach"><i class="fa fa-check"></i><b>2.3</b> Alternative Perspective: Extra Sum of Squares Approach</a></li>
+<li class="chapter" data-level="2.4" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#example-with-marketing-data"><i class="fa fa-check"></i><b>2.4</b> Example with Marketing Data</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#step-by-step-regression-in-r"><i class="fa fa-check"></i><b>2.4.1</b> Step-by-Step Regression in R</a></li>
+<li class="chapter" data-level="2.4.2" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#interpreting-the-model-output"><i class="fa fa-check"></i><b>2.4.2</b> Interpreting the Model Output</a></li>
+<li class="chapter" data-level="2.4.3" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#anova-table-for-detailed-insights"><i class="fa fa-check"></i><b>2.4.3</b> ANOVA Table for Detailed Insights</a></li>
+<li class="chapter" data-level="2.4.4" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#understanding-the-anova-output"><i class="fa fa-check"></i><b>2.4.4</b> Understanding the ANOVA Output</a></li>
+<li class="chapter" data-level="2.4.5" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#clearly-formulated-hypotheses"><i class="fa fa-check"></i><b>2.4.5</b> Clearly Formulated Hypotheses</a></li>
+<li class="chapter" data-level="2.4.6" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#distribution-of-the-f-statistic-under-the-null"><i class="fa fa-check"></i><b>2.4.6</b> Distribution of the F-Statistic Under the Null</a></li>
+<li class="chapter" data-level="2.4.7" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#calculating-the-f-statistic-manually"><i class="fa fa-check"></i><b>2.4.7</b> Calculating the F-Statistic Manually</a></li>
+<li class="chapter" data-level="2.4.8" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#conclusion"><i class="fa fa-check"></i><b>2.4.8</b> Conclusion</a></li>
+<li class="chapter" data-level="2.4.9" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#relationships-between-coefficients"><i class="fa fa-check"></i><b>2.4.9</b> Relationships between coefficients</a></li>
+<li class="chapter" data-level="2.4.10" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#test-statistic-and-its-distribution-under-the-null"><i class="fa fa-check"></i><b>2.4.10</b> Test Statistic and Its Distribution Under the Null</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#testing-inequalities-between-coefficients"><i class="fa fa-check"></i><b>2.5</b> Testing Inequalities Between Coefficients</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#test-statistic-and-p-value"><i class="fa fa-check"></i><b>2.5.1</b> Test Statistic and p-Value</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#application-example-testing-equality-of-facebook-and-newspaper-effects"><i class="fa fa-check"></i><b>2.6</b> Application Example: Testing Equality of Facebook and Newspaper Effects</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#manual-calculation-step-by-step"><i class="fa fa-check"></i><b>2.6.1</b> Manual Calculation: Step-by-Step</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#additional-examples-testing-linear-combinations-of-coefficients"><i class="fa fa-check"></i><b>2.7</b> Additional Examples: Testing Linear Combinations of Coefficients</a>
+<ul>
+<li class="chapter" data-level="2.7.1" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook"><i class="fa fa-check"></i><b>2.7.1</b> Additional example: Comparing 4 Dollars in YouTube to 1 Dollar in Facebook</a></li>
+<li class="chapter" data-level="2.7.2" data-path="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html"><a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html#example-2-testing-if-the-combined-effect-of-youtube-and-facebook-exceeds-0.22"><i class="fa fa-check"></i><b>2.7.2</b> Example 2: Testing if the Combined Effect of YouTube and Facebook Exceeds 0.22</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Business Forecasting</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Business Forecasting</h1>
+<p class="author"><em>Krzysztof Zaremba</em></p>
+</div>
+<div id="preface" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">1</span> Preface<a href="index.html#preface" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Welcome to <em>Business Forecasting</em>!</p>
+<p>This book is designed to serve as the core material for the Business Forecasting course. It introduces key concepts, statistical methods, and practical tools for analyzing and predicting business trends based on historical data.</p>
+<p>You will learn how to:</p>
+<ul>
+<li>Understand time series structures and components</li>
+<li>Build and evaluate forecasting models</li>
+<li>Apply multiple linear regression and time series techniques</li>
+<li>Assess forecast accuracy</li>
+<li>Use forecasting for better business decision-making</li>
+</ul>
+<p>Throughout the course, we will combine theoretical explanations with real-world applications and practical examples in R.</p>
+<p>Happy forecasting!</p>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+<a href="multiple-linear-regression-model-evaluation-and-hypothesis-testing.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/index.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["business_forecasting.pdf", "business_forecasting.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+</body>
+
+</html>
