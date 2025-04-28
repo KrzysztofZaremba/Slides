@@ -18,15 +18,17 @@ distribution-of-the-f-statistic-under-the-null
 calculating-the-f-statistic-manually
 conclusion
 relationships-between-coefficients
+difference-between-coefficients
 test-statistic-and-its-distribution-under-the-null
 testing-inequalities-between-coefficients
 test-statistic-and-p-value
+testing-the-sum-of-the-coefficients
+test-statistic-and-its-distribution-under-the-null-1
 application-example-testing-equality-of-facebook-and-newspaper-effects
 manual-calculation-step-by-step
 step-1-calculate-the-standard-error
 step-2-calculate-the-test-statistic
 step-3-find-the-p-value
-additional-examples-testing-linear-combinations-of-coefficients
 additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook
 step-1-calculate-the-estimate-of-the-linear-combination
 step-2-calculate-the-standard-error
@@ -37,6 +39,3 @@ step-1-calculate-the-estimate-of-the-linear-combination-1
 step-2-calculate-the-standard-error-1
 step-3-calculate-the-test-statistic-1
 step-4-find-the-p-value-1
-difference-between-coefficients
-testing-the-sum-of-the-coefficients
-test-statistic-and-its-distribution-under-the-null-1
