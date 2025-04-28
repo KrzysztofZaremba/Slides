@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Multiple Linear Regression | Business Forecasting</title>
+  <meta name="description" content="2 Multiple Linear Regression | Business Forecasting" />
+  <meta name="generator" content="bookdown 0.42 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Multiple Linear Regression | Business Forecasting" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Multiple Linear Regression | Business Forecasting" />
+  
+  
+  
+
+<meta name="author" content="Krzysztof Zaremba" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html"><i class="fa fa-check"></i><b>2</b> Multiple Linear Regression</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#testing-significance-of-the-regression"><i class="fa fa-check"></i><b>2.1</b> Testing significance of the regression</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#why-do-we-need-the-f-test"><i class="fa fa-check"></i><b>2.1.1</b> Why Do We Need the F-Test?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#intuition-behind-the-f-test"><i class="fa fa-check"></i><b>2.1.2</b> Intuition Behind the F-Test</a></li>
+<li class="chapter" data-level="2.1.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#understanding-the-f-statistic"><i class="fa fa-check"></i><b>2.1.3</b> Understanding the F-Statistic</a></li>
+<li class="chapter" data-level="2.1.4" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#intuitive-explanation-of-the-f-test"><i class="fa fa-check"></i><b>2.1.4</b> Intuitive Explanation of the F-Test</a></li>
+<li class="chapter" data-level="2.1.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#alternative-perspective-extra-sum-of-squares-approach"><i class="fa fa-check"></i><b>2.1.5</b> Alternative Perspective: Extra Sum of Squares Approach</a></li>
+<li class="chapter" data-level="2.1.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#example-with-marketing-data"><i class="fa fa-check"></i><b>2.1.6</b> Example with Marketing Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#relationships-between-coefficients"><i class="fa fa-check"></i><b>2.2</b> Relationships between coefficients</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#difference-between-coefficients"><i class="fa fa-check"></i><b>2.2.1</b> Difference between coefficients</a></li>
+<li class="chapter" data-level="2.2.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#testing-inequalities-between-coefficients"><i class="fa fa-check"></i><b>2.2.2</b> Testing Inequalities Between Coefficients</a></li>
+<li class="chapter" data-level="2.2.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#testing-the-sum-of-the-coefficients"><i class="fa fa-check"></i><b>2.2.3</b> Testing the sum of the coefficients:</a></li>
+<li class="chapter" data-level="2.2.4" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#application-example-testing-equality-of-facebook-and-newspaper-effects"><i class="fa fa-check"></i><b>2.2.4</b> Application Example: Testing Equality of Facebook and Newspaper Effects</a></li>
+<li class="chapter" data-level="2.2.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook"><i class="fa fa-check"></i><b>2.2.5</b> Additional example: Comparing 4 Dollars in YouTube to 1 Dollar in Facebook</a></li>
+<li class="chapter" data-level="2.2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#example-2-testing-if-the-combined-effect-of-youtube-and-facebook-exceeds-0.22"><i class="fa fa-check"></i><b>2.2.6</b> Example 2: Testing if the Combined Effect of YouTube and Facebook Exceeds 0.22</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Business Forecasting</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="multiple-linear-regression" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Multiple Linear Regression<a href="multiple-linear-regression.html#multiple-linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="testing-significance-of-the-regression" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Testing significance of the regression<a href="multiple-linear-regression.html#testing-significance-of-the-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In multiple linear regression, we model the relationship between a dependent variable <span class="math inline">\(y\)</span> and multiple independent variables <span class="math inline">\(x_1, x_2, \dots, x_k\)</span>. Our goal is not only to predict <span class="math inline">\(y\)</span> but also to understand how each predictor influences it.</p>
+<p>In this chapter, we will carefully explore how to evaluate the significance of the overall model and how to test specific hypotheses about individual or groups of coefficients. We’ll use the <code>marketing</code> dataset from the <code>datarium</code> package as an illustrative example. This dataset includes information on the budget allocated to advertising through YouTube, Facebook, and newspaper platforms, along with the corresponding sales generated.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="multiple-linear-regression.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(datarium)</span></code></pre></div>
+<pre><code>## Warning: package &#39;datarium&#39; was built under R version 4.4.3</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="multiple-linear-regression.html#cb3-1" tabindex="-1"></a><span class="fu">data</span>(marketing)</span>
+<span id="cb3-2"><a href="multiple-linear-regression.html#cb3-2" tabindex="-1"></a><span class="fu">head</span>(marketing)</span></code></pre></div>
+<pre><code>##   youtube facebook newspaper sales
+## 1  276.12    45.36     83.04 26.52
+## 2   53.40    47.16     54.12 12.48
+## 3   20.64    55.08     83.16 11.16
+## 4  181.80    49.56     70.20 22.20
+## 5  216.96    12.96     70.08 15.48
+## 6   10.44    58.68     90.00  8.64</code></pre>
+<p>Businesses frequently invest in advertising across various media channels, and it’s essential to understand which channels effectively drive sales. This understanding helps optimize advertising budgets and maximize return on investment (ROI).</p>
+<div id="why-do-we-need-the-f-test" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Why Do We Need the F-Test?<a href="multiple-linear-regression.html#why-do-we-need-the-f-test" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The F-test in multiple regression helps us determine whether our model provides a significantly better fit than a model with no predictors. It is also called testing the significance of the regreession.</p>
+<p>Formally, the null hypothesis is:</p>
+<p><span class="math display">\[
+H_0: \beta_1 = \beta_2 = \dots = \beta_k = 0
+\]</span></p>
+<p>In words, none of the independent variables have an effect on <span class="math inline">\(y\)</span>. That is, the model is useless. None of the variables can predict y.</p>
+<p>Under <span class="math inline">\(H_0\)</span>, the model reduces to:</p>
+<p><span class="math display">\[
+y = \beta_0 + u
+\]</span></p>
+<p>which is simply a horizontal line at the mean of <span class="math inline">\(y\)</span>. In this case, the regression is useless for explaining <span class="math inline">\(y\)</span>.</p>
+<p>The alternative hypothesis is:</p>
+<p><span class="math display">\[
+H_A: \text{At least one } \beta_j \neq 0
+\]</span></p>
+<p>Rejecting <span class="math inline">\(H_0\)</span> suggests that at least one predictor significantly explains variation in <span class="math inline">\(y\)</span>. So the model is helpful in predicting y.</p>
+</div>
+<div id="intuition-behind-the-f-test" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Intuition Behind the F-Test<a href="multiple-linear-regression.html#intuition-behind-the-f-test" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>If our model is useful, it should explain a large proportion of the total variability in <span class="math inline">\(y\)</span>.</p>
+<p>To evaluate this, we decompose the total variability into:</p>
+<ul>
+<li><strong>Explained variation</strong> (SSR): how much variability the regression explains</li>
+<li><strong>Unexplained variation</strong> (SSE): how much variability remains unexplained (residuals)</li>
+</ul>
+<p>Thus, we have:</p>
+<p><span class="math display">\[
+TSS = SSR + SSE
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><strong>TSS</strong>: Total Sum of Squares (total variation around the mean)</li>
+<li><strong>SSR</strong>: Regression Sum of Squares (variation explained by the model)</li>
+<li><strong>SSE</strong>: Error Sum of Squares (residual variation)</li>
+</ul>
+<div id="degrees-of-freedom" class="section level4 hasAnchor" number="2.1.2.1">
+<h4><span class="header-section-number">2.1.2.1</span> Degrees of Freedom<a href="multiple-linear-regression.html#degrees-of-freedom" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The decomposition and degrees of freedom (df) are summarized in the table:</p>
+<div class="line-block">Component | Formula | Interpretation | Degrees of Freedom |</div>
+<p>|–||–|–|
+| TSS | <span class="math inline">\(\sum (y_i - \bar{y})^2\)</span> | Total variation around the mean | <span class="math inline">\(n - 1\)</span> |
+| SSR | <span class="math inline">\(\sum (\hat{y}_i - \bar{y})^2\)</span> | Explained variation | <span class="math inline">\(k\)</span> |
+| SSE | <span class="math inline">\(\sum (y_i - \hat{y}_i)^2\)</span> | Unexplained (residual) variation | <span class="math inline">\(n - k - 1\)</span> |</p>
+<p>Note:
+- The degrees of freedom add up: <span class="math inline">\((k) + (n - k - 1) = (n - 1)\)</span>.
+- SSR + SSE = TSS.</p>
+</div>
+</div>
+<div id="understanding-the-f-statistic" class="section level3 hasAnchor" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Understanding the F-Statistic<a href="multiple-linear-regression.html#understanding-the-f-statistic" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The F-statistic compares the mean explained variation to the mean unexplained variation:</p>
+<p><span class="math display">\[
+F = \frac{SSR / k}{SSE / (n - k - 1)}
+\]</span></p>
+<p>If the model is useless (all <span class="math inline">\(\beta_j = 0\)</span>), then SSR will be small, and the F-statistic will be close to 1.</p>
+<p>If the model is useful (some <span class="math inline">\(\beta_j \neq 0\)</span>), SSR will be large compared to SSE, and the F-statistic will be significantly greater than 1.</p>
+</div>
+<div id="intuitive-explanation-of-the-f-test" class="section level3 hasAnchor" number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span> Intuitive Explanation of the F-Test<a href="multiple-linear-regression.html#intuitive-explanation-of-the-f-test" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>If <span class="math inline">\(H_0\)</span> is true, <span class="math inline">\(F\)</span> should be small.</li>
+<li>A large F-statistic provides evidence to reject <span class="math inline">\(H_0\)</span>.</li>
+</ul>
+<p>The p-value associated with the F-statistic is:</p>
+<ul>
+<li><span class="math inline">\(p = P(F_{k, n-k-1} &gt; F_{\text{observed}})\)</span></li>
+</ul>
+<p>where <span class="math inline">\(F_{k, n-k-1}\)</span> denotes the F-distribution with <span class="math inline">\(k\)</span> and <span class="math inline">\(n-k-1\)</span> degrees of freedom.</p>
+<p><strong>Important</strong>:
+- This is a <strong>one-sided test</strong>.
+- We only reject <span class="math inline">\(H_0\)</span> if the F-statistic is sufficiently large (no need to double the p-value).</p>
+</div>
+<div id="alternative-perspective-extra-sum-of-squares-approach" class="section level3 hasAnchor" number="2.1.5">
+<h3><span class="header-section-number">2.1.5</span> Alternative Perspective: Extra Sum of Squares Approach<a href="multiple-linear-regression.html#alternative-perspective-extra-sum-of-squares-approach" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Another way to understand the F-test is to think in terms of comparing two models:</p>
+<ul>
+<li><strong>Restricted model</strong> (under <span class="math inline">\(H_0\)</span>): only includes the intercept.
+<span class="math display">\[
+H_0: y = \beta_0 + u
+\]</span></li>
+<li><strong>Unrestricted model</strong> (under <span class="math inline">\(H_A\)</span>): includes all predictors.
+<span class="math display">\[
+H_A: y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+\]</span></li>
+</ul>
+<p>If <span class="math inline">\(H_A\)</span> is true, the unrestricted model should explain significantly more variation than the restricted model.</p>
+<p>Thus, the F-statistic can also be written as:</p>
+<p><span class="math display">\[
+F = \frac{
+\left( \text{SSE}_{\text{restricted}} - \text{SSE}_{\text{unrestricted}} \right) / (k - k_0)
+}{
+\text{SSE}_{\text{unrestricted}} / (n - k)
+}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\text{SSE}_{\text{restricted}}\)</span>: residual sum of squares from the restricted model (intercept only)</li>
+<li><span class="math inline">\(\text{SSE}_{\text{unrestricted}}\)</span>: residual sum of squares from the full model</li>
+<li><span class="math inline">\(k_0\)</span>: number of predictors in the restricted model (typically 0)</li>
+</ul>
+<p>Because the restricted model explains nothing (only the mean), <span class="math inline">\(SSR_{H_0} = 0\)</span>, and the difference simplifies to <span class="math inline">\(SSR\)</span> of the unrestricted model.</p>
+<p>Thus, this “extra sum of squares” formulation is mathematically equivalent to the earlier F-formula based on explained and unexplained variation.</p>
+</div>
+<div id="example-with-marketing-data" class="section level3 hasAnchor" number="2.1.6">
+<h3><span class="header-section-number">2.1.6</span> Example with Marketing Data<a href="multiple-linear-regression.html#example-with-marketing-data" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Let’s apply our detailed understanding of multiple regression analysis using the <code>marketing</code> dataset from the <code>datarium</code> package. Specifically, we want to examine how advertising expenditures on YouTube, Facebook, and newspapers influence product sales.</p>
+<p>We will estimate the following regression equation:</p>
+<p><span class="math display">\[
+sales_i = \beta_0 + \beta_1 \, youtube_i + \beta_2 \, facebook_i + \beta_3 \, newspaper_i + u_i
+\]</span></p>
+<p>Each coefficient <span class="math inline">\(\beta\)</span> measures the change in sales associated with each additional dollar invested in the respective advertising platform, holding the others constant.</p>
+<div id="step-by-step-regression-in-r" class="section level4 hasAnchor" number="2.1.6.1">
+<h4><span class="header-section-number">2.1.6.1</span> Step-by-Step Regression in R<a href="multiple-linear-regression.html#step-by-step-regression-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Here’s how we perform this regression analysis using R:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="multiple-linear-regression.html#cb5-1" tabindex="-1"></a><span class="co"># Fit the multiple regression model</span></span>
+<span id="cb5-2"><a href="multiple-linear-regression.html#cb5-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> youtube <span class="sc">+</span> facebook <span class="sc">+</span> newspaper, <span class="at">data =</span> marketing)</span>
+<span id="cb5-3"><a href="multiple-linear-regression.html#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="multiple-linear-regression.html#cb5-4" tabindex="-1"></a><span class="co"># Display detailed summary</span></span>
+<span id="cb5-5"><a href="multiple-linear-regression.html#cb5-5" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sales ~ youtube + facebook + newspaper, data = marketing)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.5932  -1.0690   0.2902   1.4272   3.3951 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.526667   0.374290   9.422   &lt;2e-16 ***
+## youtube      0.045765   0.001395  32.809   &lt;2e-16 ***
+## facebook     0.188530   0.008611  21.893   &lt;2e-16 ***
+## newspaper   -0.001037   0.005871  -0.177     0.86    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.023 on 196 degrees of freedom
+## Multiple R-squared:  0.8972, Adjusted R-squared:  0.8956 
+## F-statistic: 570.3 on 3 and 196 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="interpreting-the-model-output" class="section level4 hasAnchor" number="2.1.6.2">
+<h4><span class="header-section-number">2.1.6.2</span> Interpreting the Model Output<a href="multiple-linear-regression.html#interpreting-the-model-output" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Let’s carefully interpret the output:</p>
+<p>*Coefficients:**</p>
+<ol style="list-style-type: decimal">
+<li><strong>Intercept:</strong> 3.5267 — the expected sales when there is no spending on any platform.</li>
+<li><strong>YouTube coefficient:</strong> 0.0458 — each additional dollar spent on YouTube advertising increases sales by approximately 0.0458 units, holding Facebook and newspaper spending constant.</li>
+<li><strong>Facebook coefficient:</strong> 0.1885 — each additional dollar spent on Facebook advertising increases sales by about 0.1885 units, ceteris paribus.</li>
+<li><strong>Newspaper coefficient:</strong> -0.0010 — spending on newspaper advertising shows a very small, statistically insignificant, negative effect on sales.</li>
+</ol>
+<p><strong>Statistical significance:</strong></p>
+<ol style="list-style-type: decimal">
+<li>YouTube and Facebook coefficients are highly statistically significant (p-values &lt; 0.001), indicating strong evidence that these platforms positively influence sales.</li>
+<li>Newspaper advertising is not statistically significant (p-value ≈ 0.86), suggesting no effect.</li>
+</ol>
+</div>
+<div id="anova-table-for-detailed-insights" class="section level4 hasAnchor" number="2.1.6.3">
+<h4><span class="header-section-number">2.1.6.3</span> ANOVA Table for Detailed Insights<a href="multiple-linear-regression.html#anova-table-for-detailed-insights" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The Analysis of Variance (ANOVA) table summarizes how much of the variability in sales is explained by the model.</p>
+<p>The <code>anova()</code> function in R provides a decomposition of sum of squares for each predictor separately. To get the total explained variation (SSR), we add the sum of squares for YouTube, Facebook, and Newspaper.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="multiple-linear-regression.html#cb7-1" tabindex="-1"></a><span class="fu">anova</span>(model)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: sales
+##            Df Sum Sq Mean Sq   F value Pr(&gt;F)    
+## youtube     1 4773.1  4773.1 1166.7308 &lt;2e-16 ***
+## facebook    1 2225.7  2225.7  544.0501 &lt;2e-16 ***
+## newspaper   1    0.1     0.1    0.0312 0.8599    
+## Residuals 196  801.8     4.1                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><strong>Note:</strong><br />
+- R reports the <strong>Sum of Squares</strong> for each predictor separately (e.g., YouTube, Facebook, Newspaper).<br />
+- <strong>Adding them together</strong> gives the total explained sum of squares (SSR).</p>
+<p>To obtain a simplified classic ANOVA table (model vs residuals), we can use a custom function like <code>simpleAnova(model)</code></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="multiple-linear-regression.html#cb9-1" tabindex="-1"></a><span class="fu">simpleAnova</span>(model)</span></code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: sales
+##             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## Predictors   3 6998.9 2332.96  570.27 &lt; 2.2e-16 ***
+## Residuals  196  801.8    4.09                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="understanding-the-anova-output" class="section level4 hasAnchor" number="2.1.6.4">
+<h4><span class="header-section-number">2.1.6.4</span> Understanding the ANOVA Output<a href="multiple-linear-regression.html#understanding-the-anova-output" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>From the ANOVA table:</p>
+<ul>
+<li><strong>Sum of Squares Regression (SSR):</strong> Add contributions from YouTube, Facebook, and Newspaper.<br />
+SSR ≈ 6,998.9</li>
+<li><strong>Sum of Squares Error (SSE):</strong> Residuals ≈ 801.8</li>
+<li><strong>Degrees of Freedom:</strong>
+<ul>
+<li>Regression df = 3 (number of predictors)</li>
+<li>Residual df = 196 (total observations - predictors - 1)</li>
+</ul></li>
+<li><strong>Mean Squares:</strong>
+<ul>
+<li>MSR = SSR / df_regression</li>
+<li>MSE = SSE / df_residuals</li>
+</ul></li>
+<li><strong>F-statistic:</strong>
+<ul>
+<li>Reported as 570.3</li>
+</ul></li>
+<li><strong>P-value:</strong>
+<ul>
+<li>Less than 2.2e-16 (very strong evidence against <span class="math inline">\(H_0\)</span>).</li>
+</ul></li>
+</ul>
+</div>
+<div id="clearly-formulated-hypotheses" class="section level4 hasAnchor" number="2.1.6.5">
+<h4><span class="header-section-number">2.1.6.5</span> Clearly Formulated Hypotheses<a href="multiple-linear-regression.html#clearly-formulated-hypotheses" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Let’s explicitly write the ANOVA F-test hypotheses:</p>
+<p><span class="math display">\[
+H_0: \beta_{\text{youtube}} = \beta_{\text{facebook}} = \beta_{\text{newspaper}} = 0
+\]</span></p>
+<p><span class="math display">\[
+H_A: \text{At least one } \beta_j \neq 0
+\]</span></p>
+<p>Decision rule:
+- <strong>Reject <span class="math inline">\(H_0\)</span></strong> if the F-statistic is larger than the critical F-value (or if the p-value is smaller than 0.05).
+- <strong>Rejecting <span class="math inline">\(H_0\)</span></strong> confirms that advertising expenditures (at least on one platform) significantly affect sales.</p>
+</div>
+<div id="distribution-of-the-f-statistic-under-the-null" class="section level4 hasAnchor" number="2.1.6.6">
+<h4><span class="header-section-number">2.1.6.6</span> Distribution of the F-Statistic Under the Null<a href="multiple-linear-regression.html#distribution-of-the-f-statistic-under-the-null" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Given that we have 200 observations, under <span class="math inline">\(H_0\)</span> (no advertising effect):</p>
+<ul>
+<li>Numerator degrees of freedom = 3 (predictors)</li>
+<li>Denominator degrees of freedom = <span class="math inline">\(n - k - 1 = 200 - 3 - 1 = 196\)</span></li>
+</ul>
+<p>At a 5% significance level, the critical value of the F-distribution <span class="math inline">\(F(3, 196)\)</span> is approximately 2.65.</p>
+</div>
+<div id="calculating-the-f-statistic-manually" class="section level4 hasAnchor" number="2.1.6.7">
+<h4><span class="header-section-number">2.1.6.7</span> Calculating the F-Statistic Manually<a href="multiple-linear-regression.html#calculating-the-f-statistic-manually" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Recall:</p>
+<p><span class="math display">\[
+F = \frac{SSR/k}{SSE/(n-k-1)}
+\]</span></p>
+<p>Substituting the numbers:</p>
+<p><span class="math display">\[
+F = \frac{6998.9/3}{801.8/196} = 570.3
+\]</span></p>
+<p>However, because in R’s calculation each contribution to SSR is added separately, and model fitting automatically adjusts for estimation, the reported F-statistic (570.3) corresponds correctly to the model summary and internal variance estimates.</p>
+<p>(You can double-check by looking at Mean Squares: MSR / MSE.)</p>
+</div>
+<div id="conclusion" class="section level4 hasAnchor" number="2.1.6.8">
+<h4><span class="header-section-number">2.1.6.8</span> Conclusion<a href="multiple-linear-regression.html#conclusion" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>The calculated F-statistic (570.3) is far larger than the critical value (2.65).</li>
+<li>The p-value is extremely small (0).</li>
+<li>Thus, we <strong>strongly reject the null hypothesis</strong>.</li>
+<li>Conclusion: Advertising spending on at least one platform significantly influences product sales.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="relationships-between-coefficients" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Relationships between coefficients<a href="multiple-linear-regression.html#relationships-between-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Sometimes we are interested in testing the relationships between coefficients in the model. That allows us to compare effects of different variables or look at their sums.</p>
+<p>Consider a model:
+<span class="math display">\[
+y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_k x_k + u
+\]</span></p>
+<div id="difference-between-coefficients" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Difference between coefficients<a href="multiple-linear-regression.html#difference-between-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>We are interested in testing whether the <strong>difference between the impact of</strong> <span class="math inline">\(x_1\)</span> <strong>and</strong> <span class="math inline">\(x_2\)</span> <strong>is equal to a constant</strong> <span class="math inline">\(c\)</span>.</li>
+</ul>
+<p><strong>Hypotheses:</strong>
+- <span class="math inline">\(H_0: \beta_1 - \beta_2 = c\)</span>
+- <span class="math inline">\(H_A: \beta_1 - \beta_2 \neq c\)</span></p>
+<ul>
+<li>A <strong>special case</strong> is when <span class="math inline">\(c = 0\)</span>, meaning we are testing whether the coefficients are equal:</li>
+</ul>
+<p><span class="math display">\[
+H_0: \beta_1 - \beta=0
+\]</span>
+Which is the same as:
+<span class="math display">\[
+H_0: \beta_1 = \beta_2
+\]</span></p>
+<div id="test-statistic-and-its-distribution-under-the-null" class="section level4 hasAnchor" number="2.2.1.1">
+<h4><span class="header-section-number">2.2.1.1</span> Test Statistic and Its Distribution Under the Null<a href="multiple-linear-regression.html#test-statistic-and-its-distribution-under-the-null" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The test statistic is:</p>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{ \hat{\beta}_1 - \hat{\beta}_2 - c }{ SE(\hat{\beta}_1 - \hat{\beta}_2) }
+\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
+SE(\hat{\beta}_1 - \hat{\beta}_2) = \sqrt{ \text{Var}(\hat{\beta}_1) + \text{Var}(\hat{\beta}_2) - 2\text{Cov}(\hat{\beta}_1, \hat{\beta}_2) }
+\]</span></p>
+<p>Under <span class="math inline">\(H_0\)</span>, the test statistic follows a t-distribution:</p>
+<p><span class="math display">\[
+T_{\text{test}} \sim t_{n-k-1}
+\]</span></p>
+<p>where:
+- <span class="math inline">\(n\)</span> is the number of observations
+- <span class="math inline">\(k\)</span> is the number of predictors (excluding intercept)</p>
+<p>We calculate the p-value as:</p>
+<p><span class="math display">\[
+\text{p-value} = 2P(t_{n-k-1} &gt; |T_{\text{test}}|)
+\]</span></p>
+</div>
+</div>
+<div id="testing-inequalities-between-coefficients" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Testing Inequalities Between Coefficients<a href="multiple-linear-regression.html#testing-inequalities-between-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Similarly, we can test whether <strong>one coefficient is greater than</strong> another by a given amount.</p>
+<p><strong>Hypotheses:</strong>
+- <span class="math inline">\(H_0: \beta_1 - \beta_2 = c\)</span>
+- <span class="math inline">\(H_A: \beta_1 - \beta_2 &gt; c\)</span></p>
+<ul>
+<li>Special case when <span class="math inline">\(c = 0\)</span>: testing whether <span class="math inline">\(\beta_1 &gt; \beta_2\)</span>.</li>
+</ul>
+<div id="test-statistic-and-p-value" class="section level4 hasAnchor" number="2.2.2.1">
+<h4><span class="header-section-number">2.2.2.1</span> Test Statistic and p-Value<a href="multiple-linear-regression.html#test-statistic-and-p-value" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The test statistic remains:</p>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{ \hat{\beta}_1 - \hat{\beta}_2 - c }{ SE(\hat{\beta}_1 - \hat{\beta}_2) }
+\]</span></p>
+<p>and under <span class="math inline">\(H_0\)</span>:</p>
+<p><span class="math display">\[
+T_{\text{test}} \sim t_{n-k-1}
+\]</span></p>
+<p>The p-value depends on the direction of the alternative hypothesis:</p>
+<ul>
+<li>For <span class="math inline">\(H_A: \beta_1 - \beta_2 &gt; c\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+\text{p-value} = P(t_{n-k-1} &gt; T_{\text{test}})
+\]</span></p>
+<ul>
+<li>For <span class="math inline">\(H_A: \beta_1 - \beta_2 &lt; c\)</span>:</li>
+</ul>
+<p><span class="math display">\[
+\text{p-value} = P(t_{n-k-1} &lt; T_{\text{test}})
+\]</span></p>
+</div>
+</div>
+<div id="testing-the-sum-of-the-coefficients" class="section level3 hasAnchor" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Testing the sum of the coefficients:<a href="multiple-linear-regression.html#testing-the-sum-of-the-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<ul>
+<li>We are interested in testing whether the <strong>sum of the impacts of</strong> <span class="math inline">\(x_1\)</span> <strong>and</strong> <span class="math inline">\(x_2\)</span> <strong>is equal to a constant</strong> <span class="math inline">\(c\)</span>.</li>
+</ul>
+<p><strong>Hypotheses:</strong>
+- <span class="math inline">\(H_0: \beta_1 + \beta_2 = c\)</span>
+- <span class="math inline">\(H_A: \beta_1 + \beta_2 \neq c\)</span></p>
+<ul>
+<li>Helps to answer
+<ul>
+<li>Is combined effect bigger than some number?</li>
+<li>Does increasing both at the same time has positive or negative effect (if coefficients have opposite signs)?</li>
+</ul></li>
+</ul>
+<p><span class="math display">\[
+H_0: \beta_1 + \beta=0
+\]</span></p>
+<p>vs</p>
+<p><span class="math display">\[
+H_A: \beta_1 + \beta \neq 0
+\]</span></p>
+<p>or for one sided tests:</p>
+<p><span class="math display">\[
+H_A: \beta_1 + \beta &gt;0
+\]</span></p>
+<p>or</p>
+<p><span class="math display">\[
+H_A: \beta_1 + \beta &lt;0
+\]</span></p>
+<div id="test-statistic-and-its-distribution-under-the-null-1" class="section level4 hasAnchor" number="2.2.3.1">
+<h4><span class="header-section-number">2.2.3.1</span> Test Statistic and Its Distribution Under the Null<a href="multiple-linear-regression.html#test-statistic-and-its-distribution-under-the-null-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The test statistic is:</p>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{ \hat{\beta}_1 + \hat{\beta}_2 - c }{ SE(\hat{\beta}_1 + \hat{\beta}_2) }
+\]</span></p>
+<p>where (sings on covariance changes):</p>
+<p><span class="math display">\[
+SE(\hat{\beta}_1 + \hat{\beta}_2) = \sqrt{ \text{Var}(\hat{\beta}_1) + \text{Var}(\hat{\beta}_2) + 2\text{Cov}(\hat{\beta}_1, \hat{\beta}_2) }
+\]</span></p>
+<p>Under <span class="math inline">\(H_0\)</span>, the test statistic follows a t-distribution:</p>
+<p><span class="math display">\[
+T_{\text{test}} \sim t_{n-k-1}
+\]</span></p>
+<p>where:
+- <span class="math inline">\(n\)</span> is the number of observations
+- <span class="math inline">\(k\)</span> is the number of predictors (excluding intercept)</p>
+<p>We calculate the p-value for two sided test as:</p>
+<p><span class="math display">\[
+\text{p-value} = 2P(t_{n-k-1} &gt; |T_{\text{test}}|)
+\]</span></p>
+<p>And for one sided test we don’t mulitply by 2.</p>
+</div>
+</div>
+<div id="application-example-testing-equality-of-facebook-and-newspaper-effects" class="section level3 hasAnchor" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> Application Example: Testing Equality of Facebook and Newspaper Effects<a href="multiple-linear-regression.html#application-example-testing-equality-of-facebook-and-newspaper-effects" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Suppose we want to test whether the effect of Facebook advertising is <strong>equal to</strong> the effect of Newspaper advertising.</p>
+<p>As a reminder:</p>
+<div class="line-block">Coefficient | Estimate | Std. Error |</div>
+<p>|–|-||
+| (Intercept) | 3.526667 | 0.374290 |
+| YouTube | 0.045765 | 0.001395 |
+| Facebook | 0.188530 | 0.008611 |
+| Newspaper | -0.001037 | 0.005871 |</p>
+<p>Formally:</p>
+<p><span class="math display">\[
+H_0: \beta_{\text{facebook}} = \beta_{\text{newspaper}}
+\]</span></p>
+<p>This is equivalent to testing:</p>
+<p><span class="math display">\[
+H_0: \beta_{\text{facebook}} - \beta_{\text{newspaper}} = 0
+\]</span></p>
+<p>against the alternative:</p>
+<p><span class="math display">\[
+H_A: \beta_{\text{facebook}} - \beta_{\text{newspaper}} \neq 0
+\]</span></p>
+<div id="manual-calculation-step-by-step" class="section level4 hasAnchor" number="2.2.4.1">
+<h4><span class="header-section-number">2.2.4.1</span> Manual Calculation: Step-by-Step<a href="multiple-linear-regression.html#manual-calculation-step-by-step" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We can calculate the test manually. Extract the variance-covariance matrix of estimated coefficients:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="multiple-linear-regression.html#cb11-1" tabindex="-1"></a><span class="fu">vcov</span>(model)</span></code></pre></div>
+<pre><code>##               (Intercept)       youtube      facebook     newspaper
+## (Intercept)  0.1400929170 -3.188728e-04 -1.338587e-03 -7.092255e-04
+## youtube     -0.0003188728  1.945737e-06 -4.470395e-07 -3.265950e-07
+## facebook    -0.0013385874 -4.470395e-07  7.415335e-05 -1.780062e-05
+## newspaper   -0.0007092255 -3.265950e-07 -1.780062e-05  3.446875e-05</code></pre>
+<ul>
+<li><span class="math inline">\(\text{Var}(\hat{\beta}_{\text{facebook}}) = 7.415335 \times 10^{-5}\)</span></li>
+<li><span class="math inline">\(\text{Var}(\hat{\beta}_{\text{newspaper}}) = 3.446875 \times 10^{-5}\)</span></li>
+<li><span class="math inline">\(\text{Cov}(\hat{\beta}_{\text{facebook}}, \hat{\beta}_{\text{newspaper}}) = -1.780062 \times 10^{-5}\)</span></li>
+</ul>
+<p><em>Remember</em>: In the variance-covariance matrix, the first row/column corresponds to the intercept!</p>
+</div>
+<div id="step-1-calculate-the-standard-error" class="section level4 hasAnchor" number="2.2.4.2">
+<h4><span class="header-section-number">2.2.4.2</span> Step 1: Calculate the Standard Error<a href="multiple-linear-regression.html#step-1-calculate-the-standard-error" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>We use the formula:</p>
+<p><span class="math display">\[
+SE(\hat{\beta}_{\text{facebook}} - \hat{\beta}_{\text{newspaper}})
+= \sqrt{ \text{Var}(\hat{\beta}_{\text{facebook}}) + \text{Var}(\hat{\beta}_{\text{newspaper}}) - 2\text{Cov}(\hat{\beta}_{\text{facebook}}, \hat{\beta}_{\text{newspaper}}) }
+\]</span></p>
+<p>Substituting values:</p>
+<p><span class="math display">\[
+SE = \sqrt{ (7.415335 \times 10^{-5}) + (3.446875 \times 10^{-5}) - 2(-1.780062 \times 10^{-5}) }
+\]</span>
+<span class="math display">\[
+SE = \sqrt{ (7.415335 + 3.446875 - 2 \times -1.780062) \times 10^{-5} }
+\]</span>
+<span class="math display">\[
+SE = \sqrt{ 0.0001442233 }
+\]</span>
+<span class="math display">\[
+SE \approx 0.0120093
+\]</span></p>
+<p>Thus:</p>
+<p><span class="math display">\[
+SE(\hat{\beta}_{\text{facebook}} - \hat{\beta}_{\text{newspaper}}) \approx 0.0120093
+\]</span></p>
+</div>
+<div id="step-2-calculate-the-test-statistic" class="section level4 hasAnchor" number="2.2.4.3">
+<h4><span class="header-section-number">2.2.4.3</span> Step 2: Calculate the Test Statistic<a href="multiple-linear-regression.html#step-2-calculate-the-test-statistic" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The formula for the test statistic is:</p>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{ \hat{\beta}_{\text{facebook}} - \hat{\beta}_{\text{newspaper}} - 0 }{ SE(\hat{\beta}_{\text{facebook}} - \hat{\beta}_{\text{newspaper}}) }
+\]</span></p>
+<p>Substituting in the estimates:</p>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{ 0.188530 - (-0.001037) }{ 0.0120093 }
+\]</span>
+<span class="math display">\[
+T_{\text{test}} = \frac{ 0.189567 }{ 0.0120093 }
+\]</span>
+<span class="math display">\[
+T_{\text{test}} \approx 15.78
+\]</span></p>
+</div>
+<div id="step-3-find-the-p-value" class="section level4 hasAnchor" number="2.2.4.4">
+<h4><span class="header-section-number">2.2.4.4</span> Step 3: Find the p-value<a href="multiple-linear-regression.html#step-3-find-the-p-value" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Under <span class="math inline">\(H_0\)</span>, the test statistic follows a <span class="math inline">\(t\)</span>-distribution with <span class="math inline">\(n - k - 1\)</span> degrees of freedom.</p>
+<p>In this case:
+- <span class="math inline">\(n = 200\)</span> observations
+- <span class="math inline">\(k = 3\)</span> predictors (YouTube, Facebook, Newspaper)</p>
+<p>Thus:</p>
+<p><span class="math display">\[
+\text{Degrees of Freedom} = 200 - 3 - 1 = 196
+\]</span></p>
+<p>The p-value for a two-sided test is:</p>
+<p><span class="math display">\[
+\text{p-value} = 2P(t_{196} &gt; 15.78)
+\]</span></p>
+<p>Given that 15.78 is extremely large, the p-value is effectively close to zero (<span class="math inline">\(&lt; 0.0001\)</span>).</p>
+<p>Thus, we <strong>strongly reject</strong> the null hypothesis that the effect of Facebook equals the effect of Newspaper.</p>
+</div>
+</div>
+<div id="additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook" class="section level3 hasAnchor" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> Additional example: Comparing 4 Dollars in YouTube to 1 Dollar in Facebook<a href="multiple-linear-regression.html#additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We want to test whether <strong>spending 4 dollars on YouTube has the same effect as spending 1 dollar on Facebook</strong>.</p>
+<p>In other words, we want to test:</p>
+<p><span class="math display">\[
+H_0: 4\beta_{\text{youtube}} = \beta_{\text{facebook}}
+\]</span></p>
+<p>This can be rearranged into the standard form:</p>
+<p><span class="math display">\[
+H_0: 4\beta_{\text{youtube}} - \beta_{\text{facebook}} = 0
+\]</span></p>
+<p><strong>Alternative Hypothesis:</strong></p>
+<p><span class="math display">\[
+H_A: 4\beta_{\text{youtube}} - \beta_{\text{facebook}} \neq 0
+\]</span></p>
+<div id="step-1-calculate-the-estimate-of-the-linear-combination" class="section level4 hasAnchor" number="2.2.5.1">
+<h4><span class="header-section-number">2.2.5.1</span> Step 1: Calculate the Estimate of the Linear Combination<a href="multiple-linear-regression.html#step-1-calculate-the-estimate-of-the-linear-combination" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>From the regression output:</p>
+<ul>
+<li><span class="math inline">\(\hat{\beta}_{\text{youtube}} = 0.045765\)</span></li>
+<li><span class="math inline">\(\hat{\beta}_{\text{facebook}} = 0.188530\)</span></li>
+</ul>
+<p>Thus:</p>
+<p><span class="math display">\[
+4\hat{\beta}_{\text{youtube}} - \hat{\beta}_{\text{facebook}} = 4(0.045765) - 0.188530
+\]</span>
+<span class="math display">\[
+= 0.18306 - 0.188530 = -0.00547
+\]</span></p>
+</div>
+<div id="step-2-calculate-the-standard-error" class="section level4 hasAnchor" number="2.2.5.2">
+<h4><span class="header-section-number">2.2.5.2</span> Step 2: Calculate the Standard Error<a href="multiple-linear-regression.html#step-2-calculate-the-standard-error" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The variance of the linear combination <span class="math inline">\(4\hat{\beta}_{\text{youtube}} - \hat{\beta}_{\text{facebook}}\)</span> is:</p>
+<p><span class="math display">\[
+\text{Var}(4\hat{\beta}_{\text{youtube}} - \hat{\beta}_{\text{facebook}}) = 4^2 \times \text{Var}(\hat{\beta}_{\text{youtube}}) + (-1)^2 \times \text{Var}(\hat{\beta}_{\text{facebook}}) + 2 \times 4 \times (-1) \times \text{Cov}(\hat{\beta}_{\text{youtube}}, \hat{\beta}_{\text{facebook}})
+\]</span></p>
+<p>Substituting the given values from above variance covariance matrix:</p>
+<p><span class="math display">\[
+= 16 \times 1.945737\times 10^{-6} + 1 \times 7.415335\times 10^{-5} + 2 \times 4 \times (-1) \times (-4.470395\times 10^{-7})
+\]</span>
+<span class="math display">\[
+= 16 \times 0.000001945737 + 0.00007415335 + 2 \times 4 \times 0.0000004470395
+\]</span>
+<span class="math display">\[
+= 0.000031131792 + 0.00007415335 + 0.000003576316
+\]</span>
+<span class="math display">\[
+= 0.00010886146
+\]</span></p>
+<p>Thus:</p>
+<p><span class="math display">\[
+SE = \sqrt{0.00010886146} \approx 0.01043
+\]</span></p>
+</div>
+<div id="step-3-calculate-the-test-statistic" class="section level4 hasAnchor" number="2.2.5.3">
+<h4><span class="header-section-number">2.2.5.3</span> Step 3: Calculate the Test Statistic<a href="multiple-linear-regression.html#step-3-calculate-the-test-statistic" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{-0.00547 - 0}{0.01043} \approx -0.524
+\]</span></p>
+</div>
+<div id="step-4-find-the-p-value" class="section level4 hasAnchor" number="2.2.5.4">
+<h4><span class="header-section-number">2.2.5.4</span> Step 4: Find the p-value<a href="multiple-linear-regression.html#step-4-find-the-p-value" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<ul>
+<li>Degrees of freedom = <span class="math inline">\(200 - 3 - 1 = 196\)</span></li>
+<li>The p-value for a two-sided test is:</li>
+</ul>
+<p><span class="math display">\[
+\text{p-value} = 2P(t_{196} &gt; 0.524)=0.7
+\]</span></p>
+<p>Since <span class="math inline">\(T_{\text{test}}\)</span> is small in absolute value, the p-value will be large (&gt;0.5).</p>
+<p><strong>Conclusion:</strong><br />
+We <strong>fail to reject</strong> <span class="math inline">\(H_0\)</span>. There is no evidence that the effect of 4 dollars in YouTube is different from 1 dollar in Facebook.</p>
+</div>
+</div>
+<div id="example-2-testing-if-the-combined-effect-of-youtube-and-facebook-exceeds-0.22" class="section level3 hasAnchor" number="2.2.6">
+<h3><span class="header-section-number">2.2.6</span> Example 2: Testing if the Combined Effect of YouTube and Facebook Exceeds 0.22<a href="multiple-linear-regression.html#example-2-testing-if-the-combined-effect-of-youtube-and-facebook-exceeds-0.22" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Now, we want to test whether <strong>the sum of the effects of 1 dollar in YouTube and 1 dollar in Facebook</strong> is <strong>greater than</strong> 0.22.</p>
+<p>Formally:</p>
+<p><span class="math display">\[
+H_0: \beta_{\text{youtube}} + \beta_{\text{facebook}} = 0.22
+\]</span>
+<span class="math display">\[
+H_A: \beta_{\text{youtube}} + \beta_{\text{facebook}} &gt; 0.22
+\]</span></p>
+<div id="step-1-calculate-the-estimate-of-the-linear-combination-1" class="section level4 hasAnchor" number="2.2.6.1">
+<h4><span class="header-section-number">2.2.6.1</span> Step 1: Calculate the Estimate of the Linear Combination<a href="multiple-linear-regression.html#step-1-calculate-the-estimate-of-the-linear-combination-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><span class="math display">\[
+\hat{\beta}_{\text{youtube}} + \hat{\beta}_{\text{facebook}} = 0.045765 + 0.188530 = 0.234295
+\]</span></p>
+</div>
+<div id="step-2-calculate-the-standard-error-1" class="section level4 hasAnchor" number="2.2.6.2">
+<h4><span class="header-section-number">2.2.6.2</span> Step 2: Calculate the Standard Error<a href="multiple-linear-regression.html#step-2-calculate-the-standard-error-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The variance of the linear combination <span class="math inline">\(\hat{\beta}_{\text{youtube}} + \hat{\beta}_{\text{facebook}}\)</span> is:</p>
+<p><span class="math display">\[
+\text{Var}(\hat{\beta}_{\text{youtube}} + \hat{\beta}_{\text{facebook}}) = \text{Var}(\hat{\beta}_{\text{youtube}}) + \text{Var}(\hat{\beta}_{\text{facebook}}) + 2\text{Cov}(\hat{\beta}_{\text{youtube}}, \hat{\beta}_{\text{facebook}})
+\]</span></p>
+<p>Substituting values:</p>
+<p><span class="math display">\[
+= 1.945737\times 10^{-6} + 7.415335\times 10^{-5} + 2 \times (-4.470395\times 10^{-7})
+\]</span>
+<span class="math display">\[
+= 0.000001945737 + 0.00007415335 - 0.000000894079
+\]</span>
+<span class="math display">\[
+= 0.000075205008
+\]</span></p>
+<p>Thus:</p>
+<p><span class="math display">\[
+SE = \sqrt{0.000075205008} \approx 0.008673
+\]</span></p>
+</div>
+<div id="step-3-calculate-the-test-statistic-1" class="section level4 hasAnchor" number="2.2.6.3">
+<h4><span class="header-section-number">2.2.6.3</span> Step 3: Calculate the Test Statistic<a href="multiple-linear-regression.html#step-3-calculate-the-test-statistic-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p><span class="math display">\[
+T_{\text{test}} = \frac{0.234295 - 0.22}{0.008673} = \frac{0.014295}{0.008673} \approx 1.648
+\]</span></p>
+</div>
+<div id="step-4-find-the-p-value-1" class="section level4 hasAnchor" number="2.2.6.4">
+<h4><span class="header-section-number">2.2.6.4</span> Step 4: Find the p-value<a href="multiple-linear-regression.html#step-4-find-the-p-value-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Since this is a <strong>one-sided test</strong> (greater than), we compute:</p>
+<p><span class="math display">\[
+\text{p-value} = P(t_{196} &gt; 1.648)=0.0504
+\]</span></p>
+<p>Consulting the t-distribution, the p-value is approximately 0.05.</p>
+<p><strong>Conclusion:</strong>
+- The p-value is slightly above 0.05.
+- Thus, there is no evidence to reject <span class="math inline">\(H_0\)</span> at the 5% level, but you could reject at 10%
+- <strong>Interpretation</strong>: There is weak evidence that the combined effect exceeds 0.22. Or you could say there is no strong evidence to reject.</p>
+
+</div>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": "https://github.com/USERNAME/REPO/edit/BRANCH/01-multiple-regression.Rmd",
+    "text": "Edit"
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["business_forecasting.pdf", "business_forecasting.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -39,3 +39,5 @@ step-1-calculate-the-estimate-of-the-linear-combination-1
 step-2-calculate-the-standard-error-1
 step-3-calculate-the-test-statistic-1
 step-4-find-the-p-value-1
+multiple-linear-regression
+testing-significance-of-the-regression

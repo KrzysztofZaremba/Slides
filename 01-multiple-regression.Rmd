@@ -30,9 +30,9 @@ simpleAnova <- function(object, ...) {
 ```
 
 
-# Multiple Linear Regression: Model Evaluation and Hypothesis Testing
+# Multiple Linear Regression
 
-## Introduction
+## Testing significance of the regression
 
 In multiple linear regression, we model the relationship between a dependent variable \( y \) and multiple independent variables \( x_1, x_2, \dots, x_k \). Our goal is not only to predict \( y \) but also to understand how each predictor influences it.
 
@@ -47,12 +47,9 @@ head(marketing)
 Businesses frequently invest in advertising across various media channels, and it’s essential to understand which channels effectively drive sales. This understanding helps optimize advertising budgets and maximize return on investment (ROI).
 
 
-
-## ANOVA and F-Test for Overall Significance
-
 ### Why Do We Need the F-Test?
 
-The F-test in multiple regression helps us determine whether our model provides a significantly better fit than a model with no predictors.
+The F-test in multiple regression helps us determine whether our model provides a significantly better fit than a model with no predictors. It is also called testing the significance of the regreession. 
 
 Formally, the null hypothesis is:
 
@@ -60,7 +57,7 @@ Formally, the null hypothesis is:
 H_0: \beta_1 = \beta_2 = \dots = \beta_k = 0
 \]
 
-In words, none of the independent variables have an effect on \( y \).
+In words, none of the independent variables have an effect on \( y \). That is, the model is useless. None of the variables can predict y.
 
 Under \( H_0 \), the model reduces to:
 
@@ -76,7 +73,7 @@ The alternative hypothesis is:
 H_A: \text{At least one } \beta_j \neq 0
 \]
 
-Rejecting \( H_0 \) suggests that at least one predictor significantly explains variation in \( y \).
+Rejecting \( H_0 \) suggests that at least one predictor significantly explains variation in \( y \). So the model is helpful in predicting y. 
 
 
 
@@ -103,7 +100,7 @@ where:
 
 
 
-### Degrees of Freedom
+#### Degrees of Freedom
 
 The decomposition and degrees of freedom (df) are summarized in the table:
 
@@ -148,7 +145,7 @@ where \( F_{k, n-k-1} \) denotes the F-distribution with \( k \) and \( n-k-1 \)
 - This is a **one-sided test**.
 - We only reject \( H_0 \) if the F-statistic is sufficiently large (no need to double the p-value).
 
-## Alternative Perspective: Extra Sum of Squares Approach
+### Alternative Perspective: Extra Sum of Squares Approach
 
 Another way to understand the F-test is to think in terms of comparing two models:
 
@@ -184,7 +181,7 @@ Because the restricted model explains nothing (only the mean), \( SSR_{H_0} = 0 
 Thus, this "extra sum of squares" formulation is mathematically equivalent to the earlier F-formula based on explained and unexplained variation.
 
 
-## Example with Marketing Data
+### Example with Marketing Data
 
 Let's apply our detailed understanding of multiple regression analysis using the `marketing` dataset from the `datarium` package. Specifically, we want to examine how advertising expenditures on YouTube, Facebook, and newspapers influence product sales.
 
@@ -198,7 +195,7 @@ Each coefficient \( \beta \) measures the change in sales associated with each a
 
 
 
-### Step-by-Step Regression in R
+#### Step-by-Step Regression in R
 
 Here's how we perform this regression analysis using R:
 
@@ -212,7 +209,7 @@ summary(model)
 
 
 
-### Interpreting the Model Output
+#### Interpreting the Model Output
 
 Let's carefully interpret the output:
 
@@ -229,7 +226,7 @@ Let's carefully interpret the output:
 2. Newspaper advertising is not statistically significant (p-value ≈ 0.86), suggesting no effect.
 
 
-### ANOVA Table for Detailed Insights
+#### ANOVA Table for Detailed Insights
 
 The Analysis of Variance (ANOVA) table summarizes how much of the variability in sales is explained by the model.
 
@@ -243,7 +240,7 @@ anova(model)
 - R reports the **Sum of Squares** for each predictor separately (e.g., YouTube, Facebook, Newspaper).  
 - **Adding them together** gives the total explained sum of squares (SSR).
 
-To obtain a simplified classic ANOVA table (model vs residuals), we can use a custom function like `simpleAnova(model)` (assuming it's pre-written).
+To obtain a simplified classic ANOVA table (model vs residuals), we can use a custom function like `simpleAnova(model)`
 
 ```{r}
 simpleAnova(model)
@@ -251,7 +248,7 @@ simpleAnova(model)
 
 
 
-### Understanding the ANOVA Output
+#### Understanding the ANOVA Output
 
 From the ANOVA table:
 
@@ -271,7 +268,7 @@ From the ANOVA table:
 
 
 
-### Clearly Formulated Hypotheses
+#### Clearly Formulated Hypotheses
 
 Let’s explicitly write the ANOVA F-test hypotheses:
 
@@ -289,7 +286,7 @@ Decision rule:
 
 
 
-### Distribution of the F-Statistic Under the Null
+#### Distribution of the F-Statistic Under the Null
 
 Given that we have 200 observations, under \( H_0 \) (no advertising effect):
 
@@ -300,7 +297,7 @@ At a 5% significance level, the critical value of the F-distribution \( F(3, 196
 
 
 
-### Calculating the F-Statistic Manually
+#### Calculating the F-Statistic Manually
 
 Recall:
 
@@ -320,7 +317,7 @@ However, because in R’s calculation each contribution to SSR is added separate
 
 
 
-### Conclusion
+#### Conclusion
 
 - The calculated F-statistic (570.3) is far larger than the critical value (2.65).
 - The p-value is extremely small (0).
@@ -329,7 +326,7 @@ However, because in R’s calculation each contribution to SSR is added separate
 
 
 
-### Relationships between coefficients 
+## Relationships between coefficients 
 Sometimes we are interested in testing the relationships between coefficients in the model. That allows us to compare effects of different variables or look at their sums. 
 
 Consider a model: 
@@ -437,7 +434,7 @@ The p-value depends on the direction of the alternative hypothesis:
 
 
 
-## Testing the sum of the coefficients: 
+### Testing the sum of the coefficients: 
 
 
 - We are interested in testing whether the **sum of the impacts of** \( x_1 \) **and** \( x_2 \) **is equal to a constant** \( c \).
@@ -508,7 +505,7 @@ And for one sided test we don't mulitply by 2.
 
 
 
-## Application Example: Testing Equality of Facebook and Newspaper Effects
+### Application Example: Testing Equality of Facebook and Newspaper Effects
 
 Suppose we want to test whether the effect of Facebook advertising is **equal to** the effect of Newspaper advertising.
 
@@ -541,7 +538,7 @@ H_A: \beta_{\text{facebook}} - \beta_{\text{newspaper}} \neq 0
 
 
 
-### Manual Calculation: Step-by-Step
+#### Manual Calculation: Step-by-Step
 
 We can calculate the test manually. Extract the variance-covariance matrix of estimated coefficients:
 
