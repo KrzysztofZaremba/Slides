@@ -1,6 +1,8 @@
 
 ```{r include=FALSE}
 library(car)
+library(wooldridge)
+library(datarium)
 simpleAnova <- function(object, ...) {
 
   # Compute anova table
@@ -39,7 +41,7 @@ In multiple linear regression, we model the relationship between a dependent var
 In this chapter, we will carefully explore how to evaluate the significance of the overall model and how to test specific hypotheses about individual or groups of coefficients. We'll use the `marketing` dataset from the `datarium` package as an illustrative example. This dataset includes information on the budget allocated to advertising through YouTube, Facebook, and newspaper platforms, along with the corresponding sales generated.
 
 ```{r}
-library(datarium)
+
 data(marketing)
 head(marketing)
 ```
@@ -806,4 +808,219 @@ Consulting the t-distribution, the p-value is approximately 0.05.
 - The p-value is slightly above 0.05.
 - Thus, there is no evidence to reject \( H_0 \) at the 5% level, but you could reject at 10\%
 - **Interpretation**: There is weak evidence that the combined effect exceeds 0.22. Or you could say there is no strong evidence to reject. 
+
+
+
+## Standarized Coefficients
+
+### Why Standardized Coefficients?
+
+Sometimes, when you run a regression, the variables you include have very different units or vary at very different scales. For instance, consider a company trying to predict **employee turnover** based on the following predictors:
+
+- **Salary** in **dollars**,
+- **Tenure - Years at the company**,
+- **Satisfaction score** on a **1–5 scale**.
+
+You might estimate:
+
+\[
+\text{Turnover}_i = \alpha + \beta_1 (\text{Salary}_i) + \beta_2 (\text{Tenure}_i) + \beta_3 (\text{Satisfaction Score}_i) + \varepsilon_i
+\]
+
+where:
+- Salary is in dollars (e.g., 55,000),
+- Tenure is in years (e.g., 3.5),
+- Satisfaction Score is on a small discrete scale (1 to 5).
+
+Comparing coefficients across variables that are in such different units makes interpretation difficult. A one-dollar increase in salary is not easy to compare to a one-point increase in satisfaction or one more year in a company, because they have different units. These comparisons are technically possible. But they don't necessarily help to understand which of the variables are most important in determining the turnover. To see what's important, we need to see how much variables change and what units they have, not only their coefficients. 
+
+### Why Variability Matters
+
+When we think about the "importance" of a variable in explaining an outcome, we need to consider **two things**:
+
+- The **beta coefficient**: how much \( Y \) changes when the predictor increases by one unit.
+- The **variability** of the predictor: how much the predictor itself varies. Does it usually increase by one unit? by more or by less?
+
+Even if a variable has a large effect for individuals (large beta), if it hardly varies in the population, it will explain very little of the total variation in the outcome.
+
+
+Consider a simple model predicting **expected age at death**:
+
+\[
+\text{Expected Age at Death}_i = 70  -30 (\text{Genetic Disease}_i) - 0.5 (\text{Smoking Intensity}_i) + 0.01 (\text{Income}_i) + \varepsilon_i
+\]
+
+where:
+
+- **Genetic Disease** is a binary indicator (1 if the individual carries a rare genetic mutation, 0 otherwise),
+- **Smoking Intensity** is the number of cigarettes smoked per day,
+- **Income** is the annual income in dollars.
+
+Suppose the following facts:
+
+- **Rare Genetic Disease**:  
+  - Increases mortality risk dramatically (beta is large, e.g., reduces expected age at death by 40 years).
+  - But it occurs in only with very small probability.  
+  - Standard deviation is very close to zero because almost no one carries the mutation.
+
+- **Smoking Intensity**:  
+  - Each additional cigarette smoked per day reduces life expectancy slightly (e.g., beta = \(-0.5\) years).
+  - But people differ widely in how much they smoke — some smoke 0, others smoke 10, 20, or more cigarettes per day.
+  - Standard deviation is large.
+
+- **Income**:  
+  - Each extra $1 of income increases expected life by only a tiny amount (beta is small, e.g., \(0.01\) years).
+  - But income varies a lot across people, from very low to very high, by tens of thousands of dollars.
+  
+While the rare genetic disease has a **huge individual effect**, it affects so few people that it contributes **very little** to explaining differences in life expectancy **across the population**.
+
+In contrast, smoking has a **small per-unit effect**, but because smoking behavior **varies a lot** among individuals, it explains **much more** of the variability in expected age at death.
+
+Similarly, **income** has a very small beta, but because income **varies widely**, it can still be an important predictor overall.
+
+When comparing importance of predictors, we care about **both**:
+
+- How much an additional unit matters (beta),
+- How much the predictor varies across individuals (standard deviation).
+
+Standardizing variables solves this: it puts everything on the **same scale** — standard deviation units — so we can **compare** the relative importance of predictors fairly.
+
+Instead of looking at "effect per $1" or "effect per cigarette," we look at "effect per one standard deviation change," making the different predictors directly comparable.
+
+### How Do We Standardize?
+
+To put all variables on a common, comparable scale, we **standardize** them.
+
+Standardizing means expressing variables in terms of their **standard deviation**:
+
+\[
+X_j^{*} = \frac{X_j - \text{Mean}(X_j)}{\text{SD}(X_j)}
+\]
+
+where:
+
+- \(X_j^{*}\) is the **standardized version** of variable \(X_j\),
+- \(\text{Mean}(X_j)\) is the **mean** of \(X_j\),
+- \(\text{SD}(X_j)\) is the **standard deviation** of \(X_j\).
+
+
+In a **standardized regression**, the coefficients tell us:
+
+- How many standard deviations the outcome changes when the predictor increases by one standard deviation.
+
+This transformation allows us to compare predictors fairly, even when they originally have very different units or ranges.
+
+
+### Regression with Standardized Variables
+
+When we standardize all variables — both the predictors and the outcome — the regression model becomes:
+
+\[
+Y^{*} = \gamma_1 X_1^{*} + \gamma_2 X_2^{*} + \cdots + \gamma_N X_N^{*} + \varepsilon
+\]
+
+Notice that there is **no intercept** in a standardized regression.  
+**Why?**  
+Because when all variables (including the outcome) are standardized to have **mean zero**, the intercept automatically becomes zero: the best-fitting line must pass through the origin. (Think to the formulat for intercept in simple linear regression with one variable). R will sometimes show intercept in standardized regression, but it is a rounding mistake and it should be close to 0. 
+
+Each \(\gamma_j\) tells us:
+
+> How many standard deviations the outcome changes when the predictor increases by one standard deviation, holding other variables constant.
+
+This makes coefficients directly comparable, even when variables originally had different units or variability.
+
+### Example: Predicting Birth Weight
+
+We use the **`bwght`** dataset from Wooldridge's textbook. It contains information about mothers and their children, including:
+
+- **bwght** — birth weight (ounces) of the child,
+- **motheduc** — mother's years of education,
+- **faminc** — family income (thousands of dollars),
+- **cigs** — average number of cigarettes smoked per day during pregnancy.
+- **white** — is mother white
+
+Suppose we want to predict child birth weight based on these characteristics:
+
+\[
+\text{bwght}_i = \alpha + \beta_1 (\text{motheduc}_i) + \beta_2 (\text{faminc}_i) + \beta_3 (\text{cigs}_i) + \varepsilon_i
+\]
+
+```{r}
+# Load the data
+data("bwght")
+
+# Raw regression
+model_raw <- lm(bwght ~ motheduc + faminc + cigs+white, data = bwght)
+summary(model_raw)
+```
+Clearly, the biggest coefficient comes on white. That is, white mothers generally have children with higher birth weight. Then we also see importance of the cigs, which shows that smoking one more cigarette a day is associated witha  weight decrease of the child by 0.475 ounce (one ounce is 28.3 grams). But race and smoking come in very different units. 
+
+Next, we standardize both the outcome and the predictors and run the standardized model:
+
+```{r}
+# Standardizing variables manually
+bwght$bwght_std <- scale(bwght$bwght)
+bwght$motheduc_std <- scale(bwght$motheduc)
+bwght$faminc_std <- scale(bwght$faminc)
+bwght$cigs_std <- scale(bwght$cigs)
+bwght$white_std <- scale(bwght$white)
+
+# Regression with standardized variables
+model_std <- lm(bwght_std ~ motheduc_std + faminc_std + cigs_std+white_std, data = bwght)
+summary(model_std)
+```
+The coefficients changed (and statistical significance didn't). Standardizing affects only coefficient sizes. The comparison shows us that smoking is actually more important in explaining the weight differences between children. One standard deviation increase in number of cigarettes smoked per day is associated with a decrease in birth weight of 0.14 standard deviations. The coefficient on white is now smaller (in absolute terms). This is because cigarettes can change by 5 or more, why the indicator for race can maximally change by one. So although it had bigger effect per one unit change, the total importance is smaller because that variable doesn't vary as much.
+
+**Note:** When comparing importance of the coefficients, we mostly care about size in absolute terms.  
+
+### Shortcut to calculate standardized coefficients.
+
+Do we always have to run a new regression to calculate standardized coefficients? No! All you need is your regular regression and standard deviations of the variables. 
+
+We can calculate standardized coefficients directly from the original regression using the following formula:
+
+\[
+\beta_j^* = \beta_j \times \frac{\text{SD}(X_j)}{\text{SD}(Y)}
+\]
+
+where:
+
+- \(\beta_j\) is the **raw (unstandardized) coefficient** from the original regression,
+- \(\text{SD}(X_j)\) is the **standard deviation** of predictor \(X_j\),
+- \(\text{SD}(Y)\) is the **standard deviation** of the outcome variable \(Y\).\
+
+This formula rescales each coefficient based on how much its corresponding predictor and the outcome vary in the data.  
+It produces the **same result** as manually standardizing all variables before running the regression.
+
+In our example, the original coefficient on **cigarettes** was:
+
+\[
+\beta_{\text{cigs}} = -0.47552
+\]
+
+The standard deviation of **cigarettes** was:
+
+\[
+\text{SD}(\text{cigs}) = 5.972688
+\]
+
+The standard deviation of **birth weight** was:
+
+\[
+\text{SD}(\text{bwght}) = 20.35396
+\]
+
+Plugging these values into the formula:
+
+\[
+\beta_{\text{cigs}}^* = -0.47552 \times \frac{5.972688}{20.35396}
+\]
+
+Simplifying:
+
+\[
+\beta_{\text{cigs}}^* \approx -0.139536
+\]
+
+We got the same standarized coefficient as from the standarized regression. 
 

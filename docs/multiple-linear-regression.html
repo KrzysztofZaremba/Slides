@@ -160,6 +160,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.2.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#additional-example-comparing-4-dollars-in-youtube-to-1-dollar-in-facebook"><i class="fa fa-check"></i><b>2.2.5</b> Additional example: Comparing 4 Dollars in YouTube to 1 Dollar in Facebook</a></li>
 <li class="chapter" data-level="2.2.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#example-2-testing-if-the-combined-effect-of-youtube-and-facebook-exceeds-0.22"><i class="fa fa-check"></i><b>2.2.6</b> Example 2: Testing if the Combined Effect of YouTube and Facebook Exceeds 0.22</a></li>
 </ul></li>
+<li class="chapter" data-level="2.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#standarized-coefficients"><i class="fa fa-check"></i><b>2.3</b> Standarized Coefficients</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#why-standardized-coefficients"><i class="fa fa-check"></i><b>2.3.1</b> Why Standardized Coefficients?</a></li>
+<li class="chapter" data-level="2.3.2" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#why-variability-matters"><i class="fa fa-check"></i><b>2.3.2</b> Why Variability Matters</a></li>
+<li class="chapter" data-level="2.3.3" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#how-do-we-standardize"><i class="fa fa-check"></i><b>2.3.3</b> How Do We Standardize?</a></li>
+<li class="chapter" data-level="2.3.4" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#regression-with-standardized-variables"><i class="fa fa-check"></i><b>2.3.4</b> Regression with Standardized Variables</a></li>
+<li class="chapter" data-level="2.3.5" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#example-predicting-birth-weight"><i class="fa fa-check"></i><b>2.3.5</b> Example: Predicting Birth Weight</a></li>
+<li class="chapter" data-level="2.3.6" data-path="multiple-linear-regression.html"><a href="multiple-linear-regression.html#shortcut-to-calculate-standardized-coefficients."><i class="fa fa-check"></i><b>2.3.6</b> Shortcut to calculate standardized coefficients.</a></li>
+</ul></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -187,10 +196,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">2.1</span> Testing significance of the regression<a href="multiple-linear-regression.html#testing-significance-of-the-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In multiple linear regression, we model the relationship between a dependent variable <span class="math inline">\(y\)</span> and multiple independent variables <span class="math inline">\(x_1, x_2, \dots, x_k\)</span>. Our goal is not only to predict <span class="math inline">\(y\)</span> but also to understand how each predictor influences it.</p>
 <p>In this chapter, we will carefully explore how to evaluate the significance of the overall model and how to test specific hypotheses about individual or groups of coefficients. We’ll use the <code>marketing</code> dataset from the <code>datarium</code> package as an illustrative example. This dataset includes information on the budget allocated to advertising through YouTube, Facebook, and newspaper platforms, along with the corresponding sales generated.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="multiple-linear-regression.html#cb1-1" tabindex="-1"></a><span class="fu">library</span>(datarium)</span></code></pre></div>
-<pre><code>## Warning: package &#39;datarium&#39; was built under R version 4.4.3</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="multiple-linear-regression.html#cb3-1" tabindex="-1"></a><span class="fu">data</span>(marketing)</span>
-<span id="cb3-2"><a href="multiple-linear-regression.html#cb3-2" tabindex="-1"></a><span class="fu">head</span>(marketing)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="multiple-linear-regression.html#cb1-1" tabindex="-1"></a><span class="fu">data</span>(marketing)</span>
+<span id="cb1-2"><a href="multiple-linear-regression.html#cb1-2" tabindex="-1"></a><span class="fu">head</span>(marketing)</span></code></pre></div>
 <pre><code>##   youtube facebook newspaper sales
 ## 1  276.12    45.36     83.04 26.52
 ## 2   53.40    47.16     54.12 12.48
@@ -315,11 +322,11 @@ sales_i = \beta_0 + \beta_1 \, youtube_i + \beta_2 \, facebook_i + \beta_3 \, ne
 <div id="step-by-step-regression-in-r" class="section level4 hasAnchor" number="2.1.6.1">
 <h4><span class="header-section-number">2.1.6.1</span> Step-by-Step Regression in R<a href="multiple-linear-regression.html#step-by-step-regression-in-r" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>Here’s how we perform this regression analysis using R:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="multiple-linear-regression.html#cb5-1" tabindex="-1"></a><span class="co"># Fit the multiple regression model</span></span>
-<span id="cb5-2"><a href="multiple-linear-regression.html#cb5-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> youtube <span class="sc">+</span> facebook <span class="sc">+</span> newspaper, <span class="at">data =</span> marketing)</span>
-<span id="cb5-3"><a href="multiple-linear-regression.html#cb5-3" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="multiple-linear-regression.html#cb5-4" tabindex="-1"></a><span class="co"># Display detailed summary</span></span>
-<span id="cb5-5"><a href="multiple-linear-regression.html#cb5-5" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="multiple-linear-regression.html#cb3-1" tabindex="-1"></a><span class="co"># Fit the multiple regression model</span></span>
+<span id="cb3-2"><a href="multiple-linear-regression.html#cb3-2" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> youtube <span class="sc">+</span> facebook <span class="sc">+</span> newspaper, <span class="at">data =</span> marketing)</span>
+<span id="cb3-3"><a href="multiple-linear-regression.html#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="multiple-linear-regression.html#cb3-4" tabindex="-1"></a><span class="co"># Display detailed summary</span></span>
+<span id="cb3-5"><a href="multiple-linear-regression.html#cb3-5" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = sales ~ youtube + facebook + newspaper, data = marketing)
@@ -361,7 +368,7 @@ sales_i = \beta_0 + \beta_1 \, youtube_i + \beta_2 \, facebook_i + \beta_3 \, ne
 <h4><span class="header-section-number">2.1.6.3</span> ANOVA Table for Detailed Insights<a href="multiple-linear-regression.html#anova-table-for-detailed-insights" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The Analysis of Variance (ANOVA) table summarizes how much of the variability in sales is explained by the model.</p>
 <p>The <code>anova()</code> function in R provides a decomposition of sum of squares for each predictor separately. To get the total explained variation (SSR), we add the sum of squares for YouTube, Facebook, and Newspaper.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="multiple-linear-regression.html#cb7-1" tabindex="-1"></a><span class="fu">anova</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="multiple-linear-regression.html#cb5-1" tabindex="-1"></a><span class="fu">anova</span>(model)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: sales
@@ -376,7 +383,7 @@ sales_i = \beta_0 + \beta_1 \, youtube_i + \beta_2 \, facebook_i + \beta_3 \, ne
 - R reports the <strong>Sum of Squares</strong> for each predictor separately (e.g., YouTube, Facebook, Newspaper).<br />
 - <strong>Adding them together</strong> gives the total explained sum of squares (SSR).</p>
 <p>To obtain a simplified classic ANOVA table (model vs residuals), we can use a custom function like <code>simpleAnova(model)</code></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="multiple-linear-regression.html#cb9-1" tabindex="-1"></a><span class="fu">simpleAnova</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="multiple-linear-regression.html#cb7-1" tabindex="-1"></a><span class="fu">simpleAnova</span>(model)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: sales
@@ -620,7 +627,7 @@ H_A: \beta_{\text{facebook}} - \beta_{\text{newspaper}} \neq 0
 <div id="manual-calculation-step-by-step" class="section level4 hasAnchor" number="2.2.4.1">
 <h4><span class="header-section-number">2.2.4.1</span> Manual Calculation: Step-by-Step<a href="multiple-linear-regression.html#manual-calculation-step-by-step" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>We can calculate the test manually. Extract the variance-covariance matrix of estimated coefficients:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="multiple-linear-regression.html#cb11-1" tabindex="-1"></a><span class="fu">vcov</span>(model)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="multiple-linear-regression.html#cb9-1" tabindex="-1"></a><span class="fu">vcov</span>(model)</span></code></pre></div>
 <pre><code>##               (Intercept)       youtube      facebook     newspaper
 ## (Intercept)  0.1400929170 -3.188728e-04 -1.338587e-03 -7.092255e-04
 ## youtube     -0.0003188728  1.945737e-06 -4.470395e-07 -3.265950e-07
@@ -821,8 +828,231 @@ T_{\text{test}} = \frac{0.234295 - 0.22}{0.008673} = \frac{0.014295}{0.008673} \
 - The p-value is slightly above 0.05.
 - Thus, there is no evidence to reject <span class="math inline">\(H_0\)</span> at the 5% level, but you could reject at 10%
 - <strong>Interpretation</strong>: There is weak evidence that the combined effect exceeds 0.22. Or you could say there is no strong evidence to reject.</p>
-
 </div>
+</div>
+</div>
+<div id="standarized-coefficients" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Standarized Coefficients<a href="multiple-linear-regression.html#standarized-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="why-standardized-coefficients" class="section level3 hasAnchor" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Why Standardized Coefficients?<a href="multiple-linear-regression.html#why-standardized-coefficients" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Sometimes, when you run a regression, the variables you include have very different units or vary at very different scales. For instance, consider a company trying to predict <strong>employee turnover</strong> based on the following predictors:</p>
+<ul>
+<li><strong>Salary</strong> in <strong>dollars</strong>,</li>
+<li><strong>Tenure - Years at the company</strong>,</li>
+<li><strong>Satisfaction score</strong> on a <strong>1–5 scale</strong>.</li>
+</ul>
+<p>You might estimate:</p>
+<p><span class="math display">\[
+\text{Turnover}_i = \alpha + \beta_1 (\text{Salary}_i) + \beta_2 (\text{Tenure}_i) + \beta_3 (\text{Satisfaction Score}_i) + \varepsilon_i
+\]</span></p>
+<p>where:
+- Salary is in dollars (e.g., 55,000),
+- Tenure is in years (e.g., 3.5),
+- Satisfaction Score is on a small discrete scale (1 to 5).</p>
+<p>Comparing coefficients across variables that are in such different units makes interpretation difficult. A one-dollar increase in salary is not easy to compare to a one-point increase in satisfaction or one more year in a company, because they have different units. These comparisons are technically possible. But they don’t necessarily help to understand which of the variables are most important in determining the turnover. To see what’s important, we need to see how much variables change and what units they have, not only their coefficients.</p>
+</div>
+<div id="why-variability-matters" class="section level3 hasAnchor" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> Why Variability Matters<a href="multiple-linear-regression.html#why-variability-matters" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When we think about the “importance” of a variable in explaining an outcome, we need to consider <strong>two things</strong>:</p>
+<ul>
+<li>The <strong>beta coefficient</strong>: how much <span class="math inline">\(Y\)</span> changes when the predictor increases by one unit.</li>
+<li>The <strong>variability</strong> of the predictor: how much the predictor itself varies. Does it usually increase by one unit? by more or by less?</li>
+</ul>
+<p>Even if a variable has a large effect for individuals (large beta), if it hardly varies in the population, it will explain very little of the total variation in the outcome.</p>
+<p>Consider a simple model predicting <strong>expected age at death</strong>:</p>
+<p><span class="math display">\[
+\text{Expected Age at Death}_i = 70  -30 (\text{Genetic Disease}_i) - 0.5 (\text{Smoking Intensity}_i) + 0.01 (\text{Income}_i) + \varepsilon_i
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><strong>Genetic Disease</strong> is a binary indicator (1 if the individual carries a rare genetic mutation, 0 otherwise),</li>
+<li><strong>Smoking Intensity</strong> is the number of cigarettes smoked per day,</li>
+<li><strong>Income</strong> is the annual income in dollars.</li>
+</ul>
+<p>Suppose the following facts:</p>
+<ul>
+<li><strong>Rare Genetic Disease</strong>:
+<ul>
+<li>Increases mortality risk dramatically (beta is large, e.g., reduces expected age at death by 40 years).</li>
+<li>But it occurs in only with very small probability.<br />
+</li>
+<li>Standard deviation is very close to zero because almost no one carries the mutation.</li>
+</ul></li>
+<li><strong>Smoking Intensity</strong>:
+<ul>
+<li>Each additional cigarette smoked per day reduces life expectancy slightly (e.g., beta = <span class="math inline">\(-0.5\)</span> years).</li>
+<li>But people differ widely in how much they smoke — some smoke 0, others smoke 10, 20, or more cigarettes per day.</li>
+<li>Standard deviation is large.</li>
+</ul></li>
+<li><strong>Income</strong>:
+<ul>
+<li>Each extra $1 of income increases expected life by only a tiny amount (beta is small, e.g., <span class="math inline">\(0.01\)</span> years).</li>
+<li>But income varies a lot across people, from very low to very high, by tens of thousands of dollars.</li>
+</ul></li>
+</ul>
+<p>While the rare genetic disease has a <strong>huge individual effect</strong>, it affects so few people that it contributes <strong>very little</strong> to explaining differences in life expectancy <strong>across the population</strong>.</p>
+<p>In contrast, smoking has a <strong>small per-unit effect</strong>, but because smoking behavior <strong>varies a lot</strong> among individuals, it explains <strong>much more</strong> of the variability in expected age at death.</p>
+<p>Similarly, <strong>income</strong> has a very small beta, but because income <strong>varies widely</strong>, it can still be an important predictor overall.</p>
+<p>When comparing importance of predictors, we care about <strong>both</strong>:</p>
+<ul>
+<li>How much an additional unit matters (beta),</li>
+<li>How much the predictor varies across individuals (standard deviation).</li>
+</ul>
+<p>Standardizing variables solves this: it puts everything on the <strong>same scale</strong> — standard deviation units — so we can <strong>compare</strong> the relative importance of predictors fairly.</p>
+<p>Instead of looking at “effect per $1” or “effect per cigarette,” we look at “effect per one standard deviation change,” making the different predictors directly comparable.</p>
+</div>
+<div id="how-do-we-standardize" class="section level3 hasAnchor" number="2.3.3">
+<h3><span class="header-section-number">2.3.3</span> How Do We Standardize?<a href="multiple-linear-regression.html#how-do-we-standardize" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To put all variables on a common, comparable scale, we <strong>standardize</strong> them.</p>
+<p>Standardizing means expressing variables in terms of their <strong>standard deviation</strong>:</p>
+<p><span class="math display">\[
+X_j^{*} = \frac{X_j - \text{Mean}(X_j)}{\text{SD}(X_j)}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(X_j^{*}\)</span> is the <strong>standardized version</strong> of variable <span class="math inline">\(X_j\)</span>,</li>
+<li><span class="math inline">\(\text{Mean}(X_j)\)</span> is the <strong>mean</strong> of <span class="math inline">\(X_j\)</span>,</li>
+<li><span class="math inline">\(\text{SD}(X_j)\)</span> is the <strong>standard deviation</strong> of <span class="math inline">\(X_j\)</span>.</li>
+</ul>
+<p>In a <strong>standardized regression</strong>, the coefficients tell us:</p>
+<ul>
+<li>How many standard deviations the outcome changes when the predictor increases by one standard deviation.</li>
+</ul>
+<p>This transformation allows us to compare predictors fairly, even when they originally have very different units or ranges.</p>
+</div>
+<div id="regression-with-standardized-variables" class="section level3 hasAnchor" number="2.3.4">
+<h3><span class="header-section-number">2.3.4</span> Regression with Standardized Variables<a href="multiple-linear-regression.html#regression-with-standardized-variables" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When we standardize all variables — both the predictors and the outcome — the regression model becomes:</p>
+<p><span class="math display">\[
+Y^{*} = \gamma_1 X_1^{*} + \gamma_2 X_2^{*} + \cdots + \gamma_N X_N^{*} + \varepsilon
+\]</span></p>
+<p>Notice that there is <strong>no intercept</strong> in a standardized regression.<br />
+<strong>Why?</strong><br />
+Because when all variables (including the outcome) are standardized to have <strong>mean zero</strong>, the intercept automatically becomes zero: the best-fitting line must pass through the origin. (Think to the formulat for intercept in simple linear regression with one variable). R will sometimes show intercept in standardized regression, but it is a rounding mistake and it should be close to 0.</p>
+<p>Each <span class="math inline">\(\gamma_j\)</span> tells us:</p>
+<blockquote>
+<p>How many standard deviations the outcome changes when the predictor increases by one standard deviation, holding other variables constant.</p>
+</blockquote>
+<p>This makes coefficients directly comparable, even when variables originally had different units or variability.</p>
+</div>
+<div id="example-predicting-birth-weight" class="section level3 hasAnchor" number="2.3.5">
+<h3><span class="header-section-number">2.3.5</span> Example: Predicting Birth Weight<a href="multiple-linear-regression.html#example-predicting-birth-weight" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We use the <strong><code>bwght</code></strong> dataset from Wooldridge’s textbook. It contains information about mothers and their children, including:</p>
+<ul>
+<li><strong>bwght</strong> — birth weight (ounces) of the child,</li>
+<li><strong>motheduc</strong> — mother’s years of education,</li>
+<li><strong>faminc</strong> — family income (thousands of dollars),</li>
+<li><strong>cigs</strong> — average number of cigarettes smoked per day during pregnancy.</li>
+<li><strong>white</strong> — is mother white</li>
+</ul>
+<p>Suppose we want to predict child birth weight based on these characteristics:</p>
+<p><span class="math display">\[
+\text{bwght}_i = \alpha + \beta_1 (\text{motheduc}_i) + \beta_2 (\text{faminc}_i) + \beta_3 (\text{cigs}_i) + \varepsilon_i
+\]</span></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="multiple-linear-regression.html#cb11-1" tabindex="-1"></a><span class="co"># Load the data</span></span>
+<span id="cb11-2"><a href="multiple-linear-regression.html#cb11-2" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bwght&quot;</span>)</span>
+<span id="cb11-3"><a href="multiple-linear-regression.html#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="multiple-linear-regression.html#cb11-4" tabindex="-1"></a><span class="co"># Raw regression</span></span>
+<span id="cb11-5"><a href="multiple-linear-regression.html#cb11-5" tabindex="-1"></a>model_raw <span class="ot">&lt;-</span> <span class="fu">lm</span>(bwght <span class="sc">~</span> motheduc <span class="sc">+</span> faminc <span class="sc">+</span> cigs<span class="sc">+</span>white, <span class="at">data =</span> bwght)</span>
+<span id="cb11-6"><a href="multiple-linear-regression.html#cb11-6" tabindex="-1"></a><span class="fu">summary</span>(model_raw)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = bwght ~ motheduc + faminc + cigs + white, data = bwght)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -92.081 -11.784   0.614  13.200 149.378 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 113.46963    3.23602  35.065  &lt; 2e-16 ***
+## motheduc      0.03408    0.25669   0.133    0.894    
+## faminc        0.05345    0.03370   1.586    0.113    
+## cigs         -0.47552    0.09231  -5.151 2.97e-07 ***
+## white         5.40316    1.37051   3.942 8.47e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 19.97 on 1382 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.04056,    Adjusted R-squared:  0.03779 
+## F-statistic: 14.61 on 4 and 1382 DF,  p-value: 1.086e-11</code></pre>
+<p>Clearly, the biggest coefficient comes on white. That is, white mothers generally have children with higher birth weight. Then we also see importance of the cigs, which shows that smoking one more cigarette a day is associated witha weight decrease of the child by 0.475 ounce (one ounce is 28.3 grams). But race and smoking come in very different units.</p>
+<p>Next, we standardize both the outcome and the predictors and run the standardized model:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="multiple-linear-regression.html#cb13-1" tabindex="-1"></a><span class="co"># Standardizing variables manually</span></span>
+<span id="cb13-2"><a href="multiple-linear-regression.html#cb13-2" tabindex="-1"></a>bwght<span class="sc">$</span>bwght_std <span class="ot">&lt;-</span> <span class="fu">scale</span>(bwght<span class="sc">$</span>bwght)</span>
+<span id="cb13-3"><a href="multiple-linear-regression.html#cb13-3" tabindex="-1"></a>bwght<span class="sc">$</span>motheduc_std <span class="ot">&lt;-</span> <span class="fu">scale</span>(bwght<span class="sc">$</span>motheduc)</span>
+<span id="cb13-4"><a href="multiple-linear-regression.html#cb13-4" tabindex="-1"></a>bwght<span class="sc">$</span>faminc_std <span class="ot">&lt;-</span> <span class="fu">scale</span>(bwght<span class="sc">$</span>faminc)</span>
+<span id="cb13-5"><a href="multiple-linear-regression.html#cb13-5" tabindex="-1"></a>bwght<span class="sc">$</span>cigs_std <span class="ot">&lt;-</span> <span class="fu">scale</span>(bwght<span class="sc">$</span>cigs)</span>
+<span id="cb13-6"><a href="multiple-linear-regression.html#cb13-6" tabindex="-1"></a>bwght<span class="sc">$</span>white_std <span class="ot">&lt;-</span> <span class="fu">scale</span>(bwght<span class="sc">$</span>white)</span>
+<span id="cb13-7"><a href="multiple-linear-regression.html#cb13-7" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="multiple-linear-regression.html#cb13-8" tabindex="-1"></a><span class="co"># Regression with standardized variables</span></span>
+<span id="cb13-9"><a href="multiple-linear-regression.html#cb13-9" tabindex="-1"></a>model_std <span class="ot">&lt;-</span> <span class="fu">lm</span>(bwght_std <span class="sc">~</span> motheduc_std <span class="sc">+</span> faminc_std <span class="sc">+</span> cigs_std<span class="sc">+</span>white_std, <span class="at">data =</span> bwght)</span>
+<span id="cb13-10"><a href="multiple-linear-regression.html#cb13-10" tabindex="-1"></a><span class="fu">summary</span>(model_std)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = bwght_std ~ motheduc_std + faminc_std + cigs_std + 
+##     white_std, data = bwght)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.5240 -0.5790  0.0301  0.6485  7.3390 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   0.0004501  0.0263453   0.017    0.986    
+## motheduc_std  0.0039794  0.0299738   0.133    0.894    
+## faminc_std    0.0492113  0.0310260   1.586    0.113    
+## cigs_std     -0.1395360  0.0270890  -5.151 2.97e-07 ***
+## white_std     0.1091730  0.0276918   3.942 8.47e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9812 on 1382 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.04056,    Adjusted R-squared:  0.03779 
+## F-statistic: 14.61 on 4 and 1382 DF,  p-value: 1.086e-11</code></pre>
+<p>The coefficients changed (and statistical significance didn’t). Standardizing affects only coefficient sizes. The comparison shows us that smoking is actually more important in explaining the weight differences between children. One standard deviation increase in number of cigarettes smoked per day is associated with a decrease in birth weight of 0.14 standard deviations. The coefficient on white is now smaller (in absolute terms). This is because cigarettes can change by 5 or more, why the indicator for race can maximally change by one. So although it had bigger effect per one unit change, the total importance is smaller because that variable doesn’t vary as much.</p>
+<p><strong>Note:</strong> When comparing importance of the coefficients, we mostly care about size in absolute terms.</p>
+</div>
+<div id="shortcut-to-calculate-standardized-coefficients." class="section level3 hasAnchor" number="2.3.6">
+<h3><span class="header-section-number">2.3.6</span> Shortcut to calculate standardized coefficients.<a href="multiple-linear-regression.html#shortcut-to-calculate-standardized-coefficients." class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Do we always have to run a new regression to calculate standardized coefficients? No! All you need is your regular regression and standard deviations of the variables.</p>
+<p>We can calculate standardized coefficients directly from the original regression using the following formula:</p>
+<p><span class="math display">\[
+\beta_j^* = \beta_j \times \frac{\text{SD}(X_j)}{\text{SD}(Y)}
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\beta_j\)</span> is the <strong>raw (unstandardized) coefficient</strong> from the original regression,</li>
+<li><span class="math inline">\(\text{SD}(X_j)\)</span> is the <strong>standard deviation</strong> of predictor <span class="math inline">\(X_j\)</span>,</li>
+<li><span class="math inline">\(\text{SD}(Y)\)</span> is the <strong>standard deviation</strong> of the outcome variable <span class="math inline">\(Y\)</span>.<br />
+</li>
+</ul>
+<p>This formula rescales each coefficient based on how much its corresponding predictor and the outcome vary in the data.<br />
+It produces the <strong>same result</strong> as manually standardizing all variables before running the regression.</p>
+<p>In our example, the original coefficient on <strong>cigarettes</strong> was:</p>
+<p><span class="math display">\[
+\beta_{\text{cigs}} = -0.47552
+\]</span></p>
+<p>The standard deviation of <strong>cigarettes</strong> was:</p>
+<p><span class="math display">\[
+\text{SD}(\text{cigs}) = 5.972688
+\]</span></p>
+<p>The standard deviation of <strong>birth weight</strong> was:</p>
+<p><span class="math display">\[
+\text{SD}(\text{bwght}) = 20.35396
+\]</span></p>
+<p>Plugging these values into the formula:</p>
+<p><span class="math display">\[
+\beta_{\text{cigs}}^* = -0.47552 \times \frac{5.972688}{20.35396}
+\]</span></p>
+<p>Simplifying:</p>
+<p><span class="math display">\[
+\beta_{\text{cigs}}^* \approx -0.139536
+\]</span></p>
+<p>We got the same standarized coefficient as from the standarized regression.</p>
+
 </div>
 </div>
 </div>

@@ -41,3 +41,10 @@ step-3-calculate-the-test-statistic-1
 step-4-find-the-p-value-1
 multiple-linear-regression
 testing-significance-of-the-regression
+standarized-coefficients
+why-standardized-coefficients
+why-variability-matters
+how-do-we-standardize
+regression-with-standardized-variables
+example-predicting-birth-weight
+shortcut-to-calculate-standardized-coefficients.
