@@ -956,7 +956,7 @@ cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & ... & va
 
 First, note that: 
 
-$$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{X}\beta + \mathbf{u} = \beta + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
+$$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\beta + \mathbf{u}) = \beta + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
 Let's use this
 
 
