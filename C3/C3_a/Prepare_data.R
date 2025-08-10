@@ -10,6 +10,9 @@ listings=listings%>%
 
 listings$review_scores_cleanliness=as.numeric(listings$review_scores_cleanliness)
 listings$clean=listings$review_scores_cleanliness>4.5
+listings=listings[listings$price<10000,]
+
+save(listings,file="listing_full_price.Rda")
 
 
 ggplot(listings[listings$price<10000,], aes(x = price)) +
@@ -42,6 +45,7 @@ ggplot(Sample_list, aes(x = price)) +
 t.test(sample_clean_1$price, sample_clean_0$price)
 
 save(Sample_list,file="sample_listing.Rda")
+
 
 ###create a loop. Take 5000 samples of 100 units of clean apartments. Calculate the mean 
 

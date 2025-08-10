@@ -1,0 +1,331 @@
+---
+title: "LearnR Tutorial: Sampling and Estimation with Airbnb Prices"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(ggplot2)
+library(dplyr)
+load("listing_full_price.Rda")  # assumes it loads `listings` with column `price`
+```
+
+---
+
+## 📦 Section 1: Explore One Sample
+
+### ✏️ Choose a sample size and draw a sample
+
+Use the widget below to set your sample size. Then write code to:
+
+- Filter out invalid prices (e.g., NA, 0, too high)
+- Draw a sample of `n` listings from the price data
+- Show the distribution of the full data and of your sample
+- Calculate the sample mean
+
+
+```{r one_sample_exercise, exercise=TRUE}
+# Filter the data
+n=100 #choose sample size
+
+# Draw one sample
+
+my_sample <- sample(listings$price, size = n, replace = FALSE)
+
+# Plot full data vs sample
+par(mfrow = c(1, 2))
+hist(listings$price, breaks = 30, main = "Full Population", col = "lightgray", xlab = "Price")
+hist(my_sample, breaks = 15, main = paste("Sample (n =", n, ")"), col = "skyblue", xlab = "Sample Price")
+
+# Show the sample mean
+paste("Sample mean is",mean(my_sample,na.rm=TRUE))
+```
+
+---
+
+## 📊 Section 2: Sampling Distribution (Shiny)
+
+Explore the **sampling distribution** of the sample mean across many samples.
+
+```{r sample_ui2, context="render"}
+fluidPage(
+  sliderInput("n2", "Sample Size", min = 5, max = 200, value = 30, step = 5),
+  numericInput("reps", "Number of Replications", value = 1000, min = 100),
+  actionButton("resample2", "Generate Sampling Distribution")
+)
+```
+
+```{r show_sd, context="server"}
+output$sd_prices <- renderText({
+  paste0("Population SD of prices: ", round(sd(listings$price, na.rm = TRUE), 2))
+})
+```
+
+```{r show_sd_output, context="render", echo=FALSE}
+verbatimTextOutput("sd_prices")
+```
+
+Calculate the theoretical variance of the estimator
+
+```{r two_sample_exercise, exercise=TRUE}
+
+```
+
+```{r sample_dist_logic, context="server"}
+observeEvent(input$resample2, {
+  prices <- listings$price
+
+  set.seed(123)
+  sample_means <- replicate(input$reps, {
+    mean(sample(prices, size = input$n2, replace = FALSE))
+  })
+
+  true_mean <- mean(prices)
+
+  output$sampdist_plot2 <- renderPlot({
+    ggplot(data.frame(sample_means), aes(x = sample_means)) +
+      geom_histogram(bins = 200, fill = "steelblue", color = "white") +
+      geom_vline(xintercept = true_mean, col = "red", linetype = "dashed", linewidth = 1.2) +
+      labs(title = "Sampling Distribution of the Sample Mean",
+           subtitle = paste0("True Mean: ", round(true_mean, 2), " MXN"),
+           x = "Sample Mean", y = "Frequency") +
+      theme_minimal()+xlim(0,10000)
+  })
+
+  output$sampdist_stats2 <- renderText({
+    paste0("Mean of sample means: ", round(mean(sample_means, na.rm=TRUE), 2), "\n",
+           "True mean: ", round(mean(prices,na.rm=TRUE), 2), "\n",
+           "SD of sample means: ", round(sd(sample_means, na.rm=TRUE), 2), "\n",
+           "Theoretical SE: ", round(sd(prices, na.rm=TRUE) / sqrt(input$n2), 2))
+  })
+})
+```
+
+```{r sample_dist_output2, context="render"}
+plotOutput("sampdist_plot2")
+verbatimTextOutput("sampdist_stats2")
+```
+
+
+
+## 🧪 Bernoulli to Normal: Step-by-Step Visualization
+
+### From 0/1 Decisions to Continuous Approximations
+
+We simulate calls in Cancun and Puerto Vallarta:
+
+- Each user makes a **Bernoulli decision**: call (1) or not (0)
+- As we sample more users, the **sum** of Bernoullis becomes approximately normal
+- The **sum of two normals** is also normal
+
+---
+
+```{r bern_ui, context="render", echo=FALSE}
+fluidPage(
+  sliderInput("n_cancun", "Number of users in Cancun", min = 1, max = 1000, value = 100, step = 10),
+  sliderInput("p_cancun", "Prob(Call) in Cancun", min = 0, max = 1, value = 0.4, step = 0.01),
+  sliderInput("n_pv", "Number of users in Puerto Vallarta", min = 1, max = 1000, value = 80, step = 10),
+  sliderInput("p_pv", "Prob(Call) in Puerto Vallarta", min = 0, max = 1, value = 0.6, step = 0.01),
+  numericInput("cutoff", "Cutoff: Total Calls >", value = 100, min = 0),
+  checkboxInput("use_normal", "Use normal approximation", value = TRUE),
+  actionButton("simulate", "Simulate and Show")
+)
+```
+
+```{r bern_logic, context="server"}
+observeEvent(input$simulate, {
+  n1 <- input$n_cancun
+  p1 <- input$p_cancun
+  n2 <- input$n_pv
+  p2 <- input$p_pv
+  k <- input$cutoff
+
+  reps <- 10000
+
+  # Step 1: Simulate Bernoulli outcomes
+  bern1 <- rbinom(reps, size = n1, prob = p1)
+  bern2 <- rbinom(reps, size = n2, prob = p2)
+  total <- bern1 + bern2
+
+  mu_total <- n1 * p1 + n2 * p2
+  sd_total <- sqrt(n1 * p1 * (1 - p1) + n2 * p2 * (1 - p2))
+
+  output$bernoulli_plot <- renderPlot({
+    par(mfrow = c(2, 2))
+
+    barplot(c(1 - p1, p1), names.arg = c("0", "1"), main = "Bernoulli: Cancun", col = "lightblue")
+    barplot(c(1 - p2, p2), names.arg = c("0", "1"), main = "Bernoulli: PV", col = "orange")
+
+    hist(bern1, breaks = 40, main = paste0("Distribution of Sum of ", n1, " Bernoullis (Cancun)"),
+         col = "lightblue", xlab = "# Calls", xlim= c(0, n1))
+    hist(bern2, breaks = 40, main = paste0("Distribution of Sum of ", n2, " Bernoullis (PV)"),
+         col = "orange", xlab = "# Calls", xlim= c(0, n2))
+
+    par(mfrow = c(1, 1))
+  })
+
+output$total_plot <- renderPlot({
+  df <- data.frame(total = total)
+  g <- ggplot(df, aes(x = total)) +
+    geom_histogram(aes(y = ..density..), bins = 100, fill = "purple", alpha = 0.7, color = "white") +
+    labs(title = "Distribution of Total Calls (Cancun + PV)",
+         x = "Total Calls", y = "Density") +
+    theme_minimal()
+
+  if (input$use_normal) {
+    xseq <- seq(0, n1 + n2, length.out = 400)
+    norm_density <- dnorm(xseq, mean = mu_total, sd = sd_total)
+    g <- g + geom_line(data = data.frame(x = xseq, y = norm_density),
+                       aes(x = x, y = y), color = "red", linewidth = 1.2)
+  }
+
+  g + geom_vline(xintercept = k, linetype = "dashed", color = "red") +
+    annotate("text", x = k + 3, y = max(density(total)$y), label = paste0("Cutoff: ", k),
+             hjust = 0, vjust = 1.5, color = "red") +
+    xlim(0, n1 + n2)
+})
+
+  output$tail_prob <- renderText({
+    if (input$use_normal) {
+      prob <- pnorm(k, mean = mu_total, sd = sd_total, lower.tail = FALSE)
+      paste0("Using normal approximation:\nP(total > ", k, ") ≈ ", round(prob, 4))
+    } else {
+      empirical <- mean(total > k)
+      paste0("Using simulation:\nP(total > ", k, ") ≈ ", round(empirical, 4))
+    }
+  })
+})
+```
+
+```{r bern_outputs, context="render", echo=FALSE}
+plotOutput("bernoulli_plot")
+plotOutput("total_plot")
+verbatimTextOutput("tail_prob")
+```
+
+## 📊 Section 3: Comparing Sampling Distributions of Sample Variance
+
+Explore how the sampling distribution of **sample variance** depends on the shape of the population. Compare the results from a **normal distribution** and a **skewed distribution** (exponential). We also overlay the theoretical chi-squared distribution scaled by the population variance.
+
+```{r var_ui_outputs_compare, context="render", echo=FALSE}
+fluidPage(
+  sliderInput("n_var", "Sample Size", min = 5, max = 200, value = 20, step = 5),
+  numericInput("reps_var", "Number of Replications", value = 10000, min = 100),
+  actionButton("resample_var", "Generate Sampling Distributions"),
+  h4("Sample Variance from Normal Distribution"),
+  plotOutput("sampdist_plot_norm"),
+  verbatimTextOutput("sampdist_stats_norm"),
+  h4("Sample Variance from Non-Normal (Exponential) Distribution"),
+  plotOutput("sampdist_plot_skewed"),
+  verbatimTextOutput("sampdist_stats_skewed")
+)
+```
+
+```{r var_server_logic_compare, context="server"}
+observeEvent(input$resample_var, {
+  set.seed(123)
+
+  # Normal distribution
+  population_norm <- rnorm(100000, mean = 50, sd = 20)
+  true_var_norm <- var(population_norm)
+  sample_vars_norm <- replicate(input$reps_var, {
+    var(sample(population_norm, size = input$n_var, replace = FALSE))
+  })
+
+  output$sampdist_plot_norm <- renderPlot({
+    df <- input$n_var - 1
+    x_vals <- seq(0, quantile(sample_vars_norm, 0.999, na.rm = TRUE), length.out = 400)
+    chi_scaled <- dchisq(x_vals / true_var_norm * df, df = df) * df / true_var_norm
+
+    ggplot(data.frame(sample_vars = sample_vars_norm), aes(x = sample_vars)) +
+      geom_histogram(aes(y = ..density..), bins = 60, fill = "steelblue", color = "white") +
+      geom_line(data = data.frame(x = x_vals, y = chi_scaled), aes(x = x, y = y), color = "red", linewidth = 1) +
+      geom_vline(xintercept = true_var_norm, col = "black", linetype = "dashed", linewidth = 1) +
+      labs(title = "Normal Distribution", x = "Sample Variance", y = "Density") +
+      theme_minimal()
+  })
+
+
+  # Exponential distribution
+  population_skewed <- rexp(100000, rate = 1/50)
+  true_var_skewed <- var(population_skewed)
+  sample_vars_skewed <- replicate(input$reps_var, {
+    var(sample(population_skewed, size = input$n_var, replace = FALSE))
+  })
+
+  output$sampdist_plot_skewed <- renderPlot({
+    df <- input$n_var - 1
+    x_vals <- seq(0, quantile(sample_vars_skewed, 0.999, na.rm = TRUE), length.out = 400)
+    chi_scaled <- dchisq(x_vals / true_var_skewed * df, df = df) * df / true_var_skewed
+
+    ggplot(data.frame(sample_vars = sample_vars_skewed), aes(x = sample_vars)) +
+      geom_histogram(aes(y = ..density..), bins = 60, fill = "darkorange", color = "white") +
+      geom_line(data = data.frame(x = x_vals, y = chi_scaled), aes(x = x, y = y), color = "red", linewidth = 1) +
+      geom_vline(xintercept = true_var_skewed, col = "black", linetype = "dashed", linewidth = 1) +
+      labs(title = "Exponential Distribution", x = "Sample Variance", y = "Density") +
+      theme_minimal()
+  })
+
+})
+```
+
+## 📊 Visualizing the Connection (Interactive)
+
+Adjust the cutoff to see how the shaded area under the standard normal corresponds to the right-tail of the chi-squared distribution.  
+Also verify that:  
+\[
+P(Z^2 > c) = P(|Z| > \sqrt{c}) = P(Z < -\sqrt{c}) + P(Z > \sqrt{c})
+\]
+
+```{r ui_chi_visual, context="render", echo=FALSE}
+sliderInput("cutoff", "Cutoff value (Z² > ?)", min = 0.1, max = 5, value = 1, step = 0.1)
+```
+
+```{r server_chi_visual, context="server"}
+observe({
+  cutoff <- input$cutoff
+  set.seed(42)
+  z <- rnorm(100000)
+  x <- z^2
+
+  # Breakpoint
+  sqrt_c <- sqrt(cutoff)
+
+  # Plot 1: Standard Normal with shaded tails where Z² > cutoff
+  hist_z <- hist(z, breaks = 200, plot = FALSE)
+  hist_z$counts <- hist_z$counts / sum(hist_z$counts)
+  cols_z <- ifelse(hist_z$breaks < -sqrt_c | hist_z$breaks > sqrt_c, "purple", rgb(0.2, 0.2, 0.2, 0.2))
+
+  # Plot 2: Chi-squared with X > cutoff
+  hist_x <- hist(x, breaks = 200, plot = FALSE)
+  hist_x$counts <- hist_x$counts / sum(hist_x$counts)
+  cols_x <- ifelse(hist_x$breaks > cutoff, "purple", rgb(0.2, 0.2, 0.2, 0.2))
+
+  # Numerical check: empirical and theoretical
+  prob_empirical <- mean(x > cutoff)
+  prob_equivalent <- mean(z < -sqrt_c | z > sqrt_c)
+  prob_theoretical <- 2 * pnorm(-sqrt_c)
+
+  output$chi_connection_plot <- renderPlot({
+    par(mfrow = c(1, 2))
+    plot(hist_z, col = cols_z, border = FALSE, main = "Standard Normal", ylab = "Density", xlab = "z", xlim = c(-4, 4))
+    plot(hist_x, col = cols_x, border = FALSE, main = expression(Chi^2 * "(1)"), ylab = "Density", xlab = "x", xlim = c(0, 6))
+    par(mfrow = c(1, 1))
+  })
+
+  output$chi_connection_test <- renderText({
+    paste0(
+      "Cutoff: Z² > ", round(cutoff, 2), "   (|Z| > ", round(sqrt_c, 2), ")\n\n",
+      "Empirical P(Z² > c): ", round(prob_empirical, 4), "\n",
+      "Empirical P(Z < -sqrt(c) or Z > sqrt(c)): ", round(prob_equivalent, 4), 
+    )
+  })
+})
+```
+
+```{r render_chi_visual, context="render"}
+plotOutput("chi_connection_plot")
+verbatimTextOutput("chi_connection_test")
+```

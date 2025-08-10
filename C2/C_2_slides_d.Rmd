@@ -65,6 +65,1677 @@ load("Data/Health_data.Rda")
 
 ```
 
+
+---
+
+layout: false
+class: inverse, middle
+# Methods of Qualitative Forecasting
+
+
+
+---
+### Delphi Method
+- A structured communication process to reach a consensus for complex, uncertain and long terms forecasting tasks
+  1. Select a group of experts
+  2. Invite them to the study. They are anonymous and don't talk to each other!
+  3. Ask them to answer a questionnaire
+  4. Get initial responses
+  5. Compile them into summary
+  6. Send them summary and get their feedback with refined answers
+  7. Reiterate until consensus is reached or no further improvement
+
+
+
+--
+#### Example: Determining AI threats
+- What are the risks of AI developments?
+- Panel of experts from academia and industry
+  - Computer scientists, engineers, CEOs of AI companies, ethic experts
+- Send them questionnaires asking about potential threats
+- Compile responses into summary and send them back
+- Get more rounds of responses until consensus
+- Identify the most probable risks
+
+---
+
+### Brainstorming
+- Creative technique for generating ideas.
+- Encourages free thinking and building on suggestions.
+- Appropriate for exploring possibilities.
+  - Form a group (no need for experts)
+  - State the problem
+  - Encourage ideas, no matter how crazy
+  - Build and combine each others' ideas
+  - Document the ideas and synthesize them
+
+
+--
+#### Example: Enhancing Employee Engagement
+- Tech company's HR department.
+- Representatives from HR, IT, and different departments.
+- Generate ideas for a mobile app to enhance employee engagement.
+- Write them down and implement the relevant ones
+
+---
+
+### Panel of Experts
+- Assemble knowledgeable individuals
+  - At the same time and spot
+- They meet,  offer insights and expertise, and discuss
+- Aid in well-informed decisions.
+- Sometimes ends up with a report with conculsions
+
+
+--
+#### Example: Environmental Policy Formulation
+- Government agency want to find identify and address most pressing environmental issues
+- Environmental scientists, economists, conservationists, and policymakers.
+- Discuss policy options.
+- Create comprehensive environmental policies.
+
+---
+
+### Focus Groups
+- Gather diverse participant - not necessarily experts
+- Share perceptions, attitudes, and opinions.
+- Provide qualitative data and consumer insights.
+
+
+--
+#### Example: Market Research for a New TV SHOW
+- Proposing a new TV Show and trying to see how well it will do
+- Participants from various demographics.
+- Understand consumers' preferences and perceptions about the TV show
+- Fine-tune the product and marketing strategy.
+
+---
+
+
+
+---
+layout: false
+class: inverse, middle
+
+# Types of Data
+
+---
+
+### Longitudinal Data
+- Observations are collected for the same subject (entity) over a period of time
+- Same as time series data
+- Example: Tracking a company's annual revenue and number of employees over several years
+
+#### Longitudinal Data Example
+
+```{r}
+# Load the DT package
+library(DT)
+
+# Create the data frame
+longitudinal_data <- data.frame(
+  Year = 2018:2022,
+  Revenue = c(50000, 52000, 55000, 58000, 60000),
+  Employees = c(50, 55, 60, 65, 70)
+)
+
+# Display the data table
+datatable(longitudinal_data,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+- Another Example: Share of people with Diabetes in Mexico in years 2010, 2015, 2020
+
+---
+
+### Cross-Sectional Data
+- Observations are collected at a single point in time
+- Example: A survey of customers' satisfaction with a product and likelihood of repurchase at a certain point in time
+
+#### Cross-Sectional Data Example
+
+```{r}
+# Create the data frame
+cross_sectional_data <- data.frame(
+  Customer_ID = 1:4,
+  Satisfaction_Score = c(7, 8, 5, 9),
+  Repurchase_Likelihood = c('Likely', 'Unlikely', 'Likely', 'Likely')
+)
+
+# Display the data table
+datatable(cross_sectional_data,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+- Another Example: Share of people with Diabetes in 2010 in Mexico, USA, Canada, Brazil
+
+---
+
+### Panel Data
+- Combines both longitudinal and cross-sectional data 
+- Observations are collected for multiple subjects over multiple points in time
+- Example: Tracking the annual revenue and number of employees of several companies over a few years
+
+#### Panel Data Example
+
+
+```{r}
+# Create the data frame
+panel_data <- data.frame(
+  Year = rep(2018:2022, each = 3),
+  Company = rep(c('A', 'B', 'C'), times = 5),
+  Revenue = c(50000, 52000, 55000, 58000, 60000,
+              60000, 63000, 65000, 68000, 70000,
+              70000, 72000, 75000, 78000, 80000),
+  Employees = c(50, 55, 60, 65, 70,
+                100, 105, 110, 115, 120,
+                150, 155, 160, 165, 170)
+)
+
+# Display the data table
+datatable(panel_data,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+- Another Example: Share of people with Diabetes in Mexico, USA, Canada, Brazil, each country in years 2010, 2015, 2020
+
+---
+## Q1
+
+```{r}
+# Create the data frame
+data1 <- data.frame(
+  Month = rep(c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'), each = 3),
+  Cryptocurrency = rep(c('Bitcoin', 'Ethereum', 'Dogecoin'), times = 12),
+  Market_Cap = c(60000, 40000, 10000, 62000, 41000, 10500, 63000, 42000, 11000, 
+                  64000, 43000, 11500, 65000, 44000, 12000, 66000, 45000, 12500, 
+                  67000, 46000, 13000, 68000, 47000, 13500, 69000, 48000, 14000, 
+                  70000, 49000, 14500, 71000, 50000, 15000, 72000, 51000, 15500)
+)
+
+# Display the data table
+datatable(data1,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+
+
+--
+
+**Panel data**
+- Multiple time observation per subject (currency) and multiple subjects
+
+---
+
+## Q2
+
+
+```{r}
+# Create the data frame
+data2 <- data.frame(
+  Country = c('United States', 'China', 'India', 'Brazil', 'Russia'),
+  Population_Millions = c(331, 1439, 1380, 213, 145),
+  GDP_Billions = c(21433, 15308, 3160, 1848, 1690),
+  Internet_Users_Millions = c(246, 904, 560, 126, 116)
+)
+
+# Display the data table
+datatable(data2,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+
+--
+
+**Cross-sectional data**
+- Single (time) observation per subject (user), many subjects
+
+---
+
+## Q3
+
+
+```{r}
+# Create the data frame
+data3 <- data.frame(
+  Year = 2020:2024,
+  Electric_Car_Sales = c(20000, 30000, 40000, 50000, 60000)
+)
+
+# Display the data table
+datatable(data3,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+--
+
+**Longitudinal data** 
+- Multiple (time) observations of a single subject
+
+
+---
+
+layout: false
+class: inverse, middle
+## Variable Types
+
+---
+
+
+
+## Variable Types
+
+We have two general types: .blue[Categorical] and .blue[Numerical] variables
+
+### Categorical Variables
+
+- Variables that can be divided into one or more groups or categories.
+  - **Ordinal:** These variables can be logically ordered or ranked. 
+      - *Variable:* Customer Satisfaction Survey Results
+      - *Example:* Very Unsatisfied, Unsatisfied, Neutral, Satisfied, Very Satisfied
+
+  - **Nominal:** These variables cannot be ordered or ranked. 
+      - *Variable:* Social Media Platforms Used
+      - *Example:* Facebook, Instagram, Twitter, LinkedIn, TikTok, Snapchat
+
+---
+
+### Numerical Variables
+
+- Variables that hold numeric value and ordering is possible
+  - **Discrete:** These variables can only take certain values
+      - *Example*: Number of App Downloads from App Store
+      - *Example*: Number of children you have
+      - *Example*: Size of coke products: 0.33L, 0.5L, 1L, 2.25L 
+      
+      
+<center>
+<img src=coke_sizes.jpg width="500">
+</center>
+
+---
+### Numerical Variables
+
+- Variables that hold numeric value and ordering is possible
+  - **Discrete:** These variables can only take certain values
+      - *Example*: Number of App Downloads from App Store
+      - *Example*: Number of children you have
+      - *Example*: Size of coke products
+      
+
+
+  - **Continuous:** These variables can take any value within a range
+      - *Example*: Time spent on a Webpage
+      - *Example*: Exchange rate between MXN and USD
+
+--
+
+  - What's the main difference between ordinal and discrete?
+    - We could say 1=Very unsatisfied, 2=Unsatisfied
+    - But we cannot say that very unsatisfied has half of satisfaction of person who is just unsatisfied!
+    - We can order, but these numbers don't have meaning in terms of distance between them
+
+
+---
+
+### Mexican Health Survey
+- Representative sample of the Mexican population .red[n=37858]. 
+- We will use it to investigate market for Ozempic
+
+```{r Sales_forecast_3, echo=FALSE, warning=FALSE}
+
+
+datatable(Health_data,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 5,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+
+```
+
+--
+- *Age*: Numerical, Discrete
+
+--
+- *Gender*: Categorical, Nominal
+
+--
+- *Weight*: Numerical, Continuous
+
+--
+- *Location_type*: Categorical, Nominal
+
+--
+- *Diabetes*: Categorical, Nominal
+
+--
+- *Mother_diabetes*: Categorical, Nominal
+
+--
+- *Difficulty_walking*: Categorical, Ordinal
+
+
+---
+layout: false
+class: inverse, middle
+
+# Summarizing Data 
+
+## Graphical summaries
+
+---
+
+### Categorical variables
+###Frequency Tables
+
+**Frequency table**: present the absolute frequencies (counts) and relative frequencies (shares) of each category. 
+- Categories are mutually exclusive and collectively exhaustive
+- Relative frequency of category $i$: $p_i=\frac{n_i}{N}$
+    - $n_i$ is count of category $i$
+    - $N$ is total count in the sample
+
+.pull-left[
+```{r, warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(knitr)
+
+# Assume we have a categorical variable in a data frame
+frequency_table <- table(Health_data$location)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Category', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+frequency_table$Category=as.character(frequency_table$Category)
+frequency_table_l=frequency_table
+# Generate frequency table
+total_row <- c('Total', sum(frequency_table$n_i), sum(frequency_table$p_i))
+frequency_table1 <- rbind(frequency_table, total_row)
+
+
+# Display the table
+datatable(frequency_table1,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 8,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '15px'});",
+              "$(this.api().table().container()).find('caption').css({'font-size': '18px'});", # Add this line for caption size
+              "}"
+            )
+          ),
+          rownames = FALSE, caption = "Location")
+```
+]
+
+.pull-right[
+```{r, warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(knitr)
+
+# Assume we have a categorical variable in a data frame
+frequency_table <- table(Health_data$Difficulty_walking)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Category', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+frequency_table$Category=as.character(frequency_table$Category)
+frequency_table_o=frequency_table
+# Generate frequency table
+total_row <- c('Total', sum(frequency_table$n_i), sum(frequency_table$p_i))
+frequency_table1 <- rbind(frequency_table, total_row)
+
+
+# Display the table
+datatable(frequency_table1,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 8,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '15px'});",
+              "$(this.api().table().container()).find('caption').css({'font-size': '18px'});", # Add this line for caption size
+              "}"
+            )
+          ),
+          rownames = FALSE, caption = "Difficulty Waking")
+```
+]
+---
+###Bar Charts
+**Bar charts** visually represents the frequency count of each category
+
+.center[
+```{r, warning=FALSE, fig.height=4.2}
+# Load necessary libraries
+frequency_table <- frequency_table %>%
+  arrange(desc(n_i))
+
+# Generate interactive bar chart
+ggplot(frequency_table, aes(x = reorder(Category, -n_i), y = n_i, fill = Category)) +
+  geom_bar(stat = 'identity', width = 0.7, color = 'white') +
+  geom_text(aes(label = n_i), vjust = -0.01, size = 4, color = 'black') +
+  labs( x = "Category", y = "Count") +
+  theme_xaringan() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )+ scale_xaringan_fill_discrete()
+
+```
+]
+---
+###Bar Charts
+**Bar charts** visually represents the frequency count of each category
+
+.center[
+```{r, warning=FALSE, fig.height=4.2}
+# Load necessary libraries
+frequency_table <- frequency_table %>%
+  arrange(desc(n_i))
+
+# Generate interactive bar chart
+ggplot(frequency_table, aes(x = reorder(Category, -p_i), y = p_i, fill = Category)) +
+  geom_bar(stat = 'identity', width = 0.7, color = 'white') +
+  geom_text(aes(label = p_i), vjust = -0.01, size = 4, color = 'black') +
+  labs( x = "Category", y = "Share") +
+  theme_xaringan() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  )+ scale_xaringan_fill_discrete()
+
+
+
+```
+]
+---
+
+
+### More Creative Bar Chart
+
+<center>
+<img src=Bar_chart_food_poisoning.png width="800">
+</center>
+
+
+---
+###Pie Charts
+**Pie chart**: Each slice is proportional to the category's frequency
+
+
+.center[
+```{r, warning=FALSE}
+# Generate interactive pie chart
+plot_ly(frequency_table_l, labels = ~Category, values = ~n_i, type = 'pie',
+        textposition = 'inside', insidetextorientation = 'radial',
+        width = 800,   # Adjust the width according to your preference
+        height = 400) %>%
+  layout(title = list(text = "Location", y = 0.95),  # Move title slightly up
+         font = list(size = 18),  # Increase font size here as needed
+         legend = list(orientation = 'h', y = -0.2),  # Set y to negative value for bottom position
+         margin = list(l = 50, r = 50, b = 50, t = 100),  # Adjust margins
+         showlegend = TRUE  # Ensure legend is shown
+  )
+```
+]
+---
+###Pie Charts
+**Pie chart**: (Angle of) Each slice is proportional to the category's frequency
+
+
+.center[
+```{r, warning=FALSE}
+# Generate interactive pie chart
+plot_ly(frequency_table_o, labels = ~Category, values = ~n_i, type = 'pie',
+        textposition = 'inside', insidetextorientation = 'radial',
+        width = 800,   # Adjust the width according to your preference
+        height = 400) %>%
+  layout(title = list(text = "Difficulty Walking", y = 0.95),  # Move title slightly up
+         font = list(size = 18),  # Increase font size here as needed
+         legend = list(orientation = 'h', y = -0.2),  # Set y to negative value for bottom position
+         margin = list(l = 50, r = 50, b = 50, t = 100),  # Adjust margins
+         showlegend = TRUE  # Ensure legend is shown
+  )
+```
+]
+---
+
+### My favorite pie chart
+
+<center>
+<img src=Netflix_pie_chart.jpg width="800">
+</center>
+
+---
+
+### Frequency Distribution
+Suppose we survey people age 30-50 how many partners they had in their life. 
+- What's the distribution of partners?
+- Calculate relative frequencies
+- Show them on a bar graph
+
+.pull-left[
+#### Data
+
+```{r}
+# Load necessary libraries
+library(dplyr)
+library(knitr)
+
+## Set seed for reproducibility
+set.seed(42)
+
+# Create a dataset with 50 observations
+small_data <- data.frame(
+  Physician = factor(paste("Dr.", 1:150, sep = "")),  # Unique physician name
+Lifelong_Partners = c(sample(c(0, 1), 10, replace = TRUE), round(rlnorm(130, meanlog = 1.5, sdlog = 0.5)), round(runif(10, min = 1, max = 50))) # Synthetic data for number of lifelong sexual partners
+)
+
+frequency_table <- table(small_data$Lifelong_Partners)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Number_of_partners', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+frequency_table$Number_of_partners=as.character(frequency_table$Number_of_partners)
+frequency_table_o=frequency_table
+# Generate frequency table
+total_row <- c('Total', sum(frequency_table$n_i), sum(frequency_table$p_i))
+frequency_table1 <- rbind(frequency_table, total_row)
+frequency_table$Number_of_partners=as.numeric(frequency_table$Number_of_partners)
+frequency_table$p_i=as.numeric(frequency_table$p_i)
+
+# Display the data
+datatable(frequency_table1,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+
+.pull-right[
+####Distribution
+
+```{r, out.width='100%', fig.height=6, warning=FALSE}
+
+ggplot(frequency_table[frequency_table$Number_of_partners!="Total",], aes(x = Number_of_partners, y = p_i, fill = factor(Number_of_partners)))+
+  geom_bar(stat = "identity") +
+  labs(title = "Frequency of Number of Partners", x = "Number of partners", y = "Frequency")+
+  theme_xaringan()+
+  theme(legend.position="none")+ scale_xaringan_fill_discrete()
+
+```
+]
+
+---
+
+### Frequency Distribution
+We can also show frequency of age of people who have diabetes from our data
+
+```{r, out.width='100%', fig.height=4, warning=FALSE}
+frequency_table <- table(Health_data[Health_data$diabetes==1,]$age)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Age', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+
+ggplot(frequency_table, aes(x = as.numeric(as.character(Age)), y = p_i))+
+  geom_bar(stat = "identity", position = "identity") +
+  labs(title = "Frequency of Age", x = "Age", y = "Frequency")+
+  theme_xaringan()+
+  theme(legend.position="none")+xlim(15,100)+ylim(0,0.035)
+
+```
+
+
+
+---
+
+
+### Frequency Distribution
+Compare it to the age distribution in the adult population (20+)
+
+
+```{r, out.width='100%', fig.height=4, warning=FALSE}
+frequency_table <- table(Health_data$age)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('Age', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 3)
+
+ggplot(frequency_table, aes(x = as.numeric(as.character(Age)), y = p_i))+
+  geom_bar(stat = "identity", position = "identity") +
+  labs(title = "Frequency of Age", x = "Age", y = "Frequency")+
+  theme_xaringan()+
+  theme(legend.position="none")+xlim(15,100)+ylim(0,0.035)
+
+```
+
+
+---
+
+
+## Numerical Variables: Continuous
+- What about continuous values? Why can't we do the same?
+
+.pull-left[
+```{r, echo=FALSE, fig.height=7, warning=FALSE}
+# Assuming Health_data is the dataset with 'weight' variable
+
+frequency_table <- table(Health_data$weight)
+frequency_table <- as.data.frame(frequency_table)
+colnames(frequency_table) <- c('weight', 'n_i')
+
+# Adding relative frequencies (p_i)
+frequency_table$p_i <- prop.table(frequency_table$n_i)
+frequency_table1=frequency_table
+
+frequency_table$p_i <- round(prop.table(frequency_table$n_i), 7)
+
+ggplot(frequency_table1, aes(x = as.numeric(as.character(weight)), y = p_i))+
+  geom_bar(stat = "identity", position = "identity") +
+  labs(title = "Frequency of weight", x = "weight", y = "Frequency")+
+  theme_xaringan()+
+  theme(legend.position="none")
+
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.height=7,  warning=FALSE}
+
+datatable(frequency_table,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+]
+
+
+- Most values never repeat, so they have very low relative frequency
+
+---
+## Histograms
+
+**Solution**: Group similar values together
+- Construct intervals and show how many observations are in a given interval
+
+--
+
+**Process**
+  1. Decide how many intervals 
+  2. And how wide they are
+  3. Then calculate the absolute and relative frequencies of each interval
+  4. Plot it with bars 
+  
+--
+
+---
+
+**My approach**
+  - I want $k$ (example $k$=5) equal intervals
+  
+--
+  
+  - Divide the range of the data into $k$ equal intervals
+    
+--
+  
+      - *Range* is max-min of the data
+        
+--
+  
+```{r, echo=TRUE}
+# Calculate max and min
+max_value <- max(Health_data$weight)
+min_value <- min(Health_data$weight)
+
+# Calculate the difference
+range <- max_value - min_value
+```
+  
+--
+  
+```{r}
+# Calculate the difference
+print(paste("Range=",max_value,"-",min_value,"=",range))
+```
+  
+--
+  
+- With 5 intervals, each will be 32kg wide
+--
+  
+- The first one starts at the minimum value (30.3745)
+--
+  
+- The last one ends at the maximum value (190.8078)
+--
+
+- Calculate how many observations I have in each interval and what's the relative frequency
+
+---
+
+## Histograms
+
+- Midpoint represents middle of the interval - center of the bar
+- $P_i$ is cumulative frequency: share of observations in this or smaller interval
+  - *Example*: $P_{(62.46-94.55)}=0.911$  
+  - *Interpretation*: 91.1% of people have weight lower than 94.55kg
+
+
+.pull-left[
+```{r, echo=FALSE, fig.height=7, warning=FALSE}
+# Assuming Health_data is the dataset with 'weight' variable
+ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(aes(y = after_stat(count / sum(count))),breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =6), color = "black") +
+  labs(title = "Histogram with 5 Classes", x = "Weight", y = "Frequency") +
+  theme_xaringan()
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.height=7,  warning=FALSE}
+
+# Create the frequency table
+hist_data <- ggplot_build(ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =6)))
+interval_values <- paste(round(hist_data$data[[1]]$xmin, 2), "-", round(hist_data$data[[1]]$xmax, 2))
+freq_table <- data.frame(
+  Interval = interval_values,
+  Midpoint = round(round(hist_data$data[[1]]$xmin, 2)+round(round(hist_data$data[[1]]$xmax, 2) - round(hist_data$data[[1]]$xmin, 2),2)/2,2),
+  n_i = hist_data$data[[1]]$count,
+  p_i = round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7),
+  P_i =cumsum(round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7))
+)
+
+datatable(freq_table,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+]
+
+
+---
+## Histogram with 10 Classes
+
+Now, let's increase the number of classes to 10. 
+
+.pull-left[
+```{r, echo=FALSE, fig.height=7, warning=FALSE}
+# Assuming Health_data is the dataset with 'weight' variable
+ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(aes(y = after_stat(count / sum(count))), breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =11), color = "black") +
+  labs(title = "", x = "Weight", y = "Absolute Frequency") +
+  theme_xaringan()
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.height=7,  warning=FALSE}
+
+# Create the frequency table
+hist_data <- ggplot_build(ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =11)))
+interval_values <- paste(round(hist_data$data[[1]]$xmin, 2), "-", round(hist_data$data[[1]]$xmax, 2))
+freq_table <- data.frame(
+  Interval = interval_values,
+  Midpoint = round(round(hist_data$data[[1]]$xmin, 2)+round(round(hist_data$data[[1]]$xmax, 2) - round(hist_data$data[[1]]$xmin, 2),2)/2,2),
+  n_i = hist_data$data[[1]]$count,
+  p_i = round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7),
+  P_i =cumsum(round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7))
+)
+
+datatable(freq_table,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+
+]
+---
+## Histogram with 100 Classes
+
+.pull-left[
+```{r, echo=FALSE, fig.height=7, warning=FALSE}
+# Assuming Health_data is the dataset with 'weight' variable
+ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(aes(y = after_stat(count / sum(count))), breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =101), color = "black") +
+  labs(title = "", x = "Weight", y = "Frequency") +
+  theme_xaringan()
+```
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.height=7,  warning=FALSE}
+
+# Create the frequency table
+hist_data <- ggplot_build(ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(breaks = seq(min(Health_data$weight), max(Health_data$weight), length.out =101)))
+interval_values <- paste(round(hist_data$data[[1]]$xmin, 2), "-", round(hist_data$data[[1]]$xmax, 2))
+freq_table <- data.frame(
+  Interval = interval_values,
+  Midpoint = round(round(hist_data$data[[1]]$xmin, 2)+round(round(hist_data$data[[1]]$xmax, 2) - round(hist_data$data[[1]]$xmin, 2),2)/2,2),
+  n_i = hist_data$data[[1]]$count,
+  p_i = round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7),
+  P_i =cumsum(round(hist_data$data[[1]]$count / sum(hist_data$data[[1]]$count),7))
+)
+
+datatable(freq_table,
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 6,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+
+
+- Helps to see the distribution and outliers 
+- Is more always better?
+- With smaller intervals, histogram tends to the **probability density function** 
+
+
+
+---
+
+## Probability Density Function (PDF)
+
+### Definition
+- **Probability Density Function (pdf)**  describes the probability distribution of a continuous random variable. 
+- It **does not** give probability at a given value (this is always 0 for continous variable)
+- It shows which in which intervals that variable the most often appears
+- It is used to calculate the probability of the random variable being in a given interval
+- Area under it always adds up to 1
+
+--
+
+### Example
+We have a random variable X representing the weight of adults in Mexican population. The PDF of X  helps to describe the likelihood of finding a person of a specific weight within a range (e.g., between 58kg and 60kg).
+
+---
+
+### How They Work
+To calculate the probability of X falling within a specific range [a, b], you need to integrate the PDF from a to b:
+
+$P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
+
+What is the share of population with weight between 65kg and 75kg?
+
+```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
+# Load the required libraries
+library(plotly)
+
+# Function to calculate PDF for the normal distribution
+pdf_normal <- function(x, mean, sd) {
+  return(dnorm(x, mean = mean, sd = sd))
+}
+
+# Function to calculate the probability of X falling within a specific range [a, b]
+prob_within_range <- function(a, b, mean, sd) {
+  return(integrate(pdf_normal, lower = a, upper = b, mean = mean, sd = sd)$value)
+}
+
+# Parameters for the weight distribution in Mexico
+mean_weight <- 70
+sd_weight <- 10
+
+# Generate x values for the plot (weight range from 40 kg to 100 kg)
+x <- seq(40, 100, length.out = 100)
+
+# Calculate the PDF values
+pdf_values <- pdf_normal(x, mean_weight, sd_weight)
+
+# Create the interactive plot
+p <- plot_ly(x = x, y = pdf_values, type = 'scatter', mode = 'lines', line = list(color = 'blue'),
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+
+# Function to create filled curve plot for shaded intervals
+add_filled_curve <- function(p, a, b) {
+  x_fill <- c(a, x[x >= a & x <= b], b)
+  y_fill <- c(0, pdf_values[x >= a & x <= b], 0)
+  p <- p %>% add_trace(
+    x = x_fill,
+    y = y_fill,
+    type = "scatter",
+    fill = "tozeroy",
+    fillcolor = "rgba(100, 100, 100, 0.3)",
+    line = list(color = "transparent"),
+    showlegend = FALSE,
+    hoverinfo = "none"
+  )
+}
+
+# Example 1: Shaded interval [65, 75]
+interval_1_prob <- prob_within_range(65, 75, mean_weight, sd_weight)
+p <- add_filled_curve(p, 65, 75)
+p <- p %>% layout(annotations = list(
+  list(
+    x = 70,
+    y = pdf_normal(70, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = paste("Probability:", round(interval_1_prob, 4)),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -40
+  ),
+  list(
+    x = 70,
+    y = pdf_normal(70, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = "Interval: [65, 75]",
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -60
+  )
+))
+p
+```
+
+
+
+---
+
+
+### How They Work
+To calculate the probability of X falling within a specific range [a, b], you need to integrate the PDF from a to b:
+
+$P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
+
+What is the share of population with weight between 40 and 50kg?
+```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
+
+# Example 4: Shaded interval [10, 50]
+interval_4_prob <- prob_within_range(40, 50, mean_weight, sd_weight)
+p <- plot_ly(x = x, y = pdf_values, type = 'scatter', mode = 'lines', line = list(color = 'blue'),
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+p <- add_filled_curve(p, 40, 50)
+p <- p %>% layout(annotations = list(
+  list(
+    x = 45,
+    y = pdf_normal(45, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = paste("Probability:", round(interval_4_prob, 4)),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -40
+  ),
+  list(
+    x = 45,
+    y = pdf_normal(45, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = "Interval: [40, 50]",
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -60
+  )
+))
+p
+```
+
+
+---
+
+### How They Work
+To calculate the probability of X falling within a specific range [a, b], you need to integrate the PDF from a to b:
+
+$P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
+
+What is the share of population with weight between 66.99 and 67 kg?
+
+```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
+
+
+# Example 5: Shaded interval [66, 67]
+interval_5_prob <- prob_within_range(66.99, 67, mean_weight, sd_weight)
+p <- plot_ly(x = x, y = pdf_values, type = 'scatter', mode = 'lines', line = list(color = 'blue'),
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+p <- add_filled_curve(p, 66.99, 67)
+p <- p %>% layout(annotations = list(
+  list(
+    x = 66.99,
+    y = pdf_normal(66.99, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = paste("Probability:", round(interval_5_prob, 4)),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -40
+  ),
+  list(
+    x = 66.99,
+    y = pdf_normal(66.99, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = "Interval: [66.99, 67]",
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -60
+  )
+))
+p
+```
+
+---
+
+### How They Work
+To calculate the probability of X falling within a specific range [a, b], you need to integrate the PDF from a to b:
+
+$P(a \leq X \leq b) = \int_{a}^{b} f(x) \, dx$
+
+What is the share of population with weight between 40 and 100 kg?
+
+```{r, echo=FALSE, fig.height=5, out.width='100%',  warning=FALSE}
+
+
+# Example 6: Shaded whole interval [0, 190]
+interval_6_prob <- prob_within_range(40, 100, mean_weight, sd_weight)
+p <- plot_ly(x = x, y = pdf_values, type = 'scatter', mode = 'lines', line = list(color = 'blue'),
+        width = 800,   # Adjust the width according to your preference
+        height = 400)
+p <- add_filled_curve(p, 40, 100)
+p <- p %>% layout(annotations = list(
+  list(
+    x = 70,
+    y = pdf_normal(70, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = paste("Probability:", round(interval_6_prob, 4)),
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -40
+  ),
+  list(
+    x = 70,
+    y = pdf_normal(70, mean_weight, sd_weight),
+    xref = "x",
+    yref = "y",
+    text = "Interval: [40, 100]",
+    showarrow = TRUE,
+    arrowhead = 2,
+    ax = 0,
+    ay = -60
+  )
+))
+
+# Display the plot
+p
+
+
+```
+
+
+
+---
+
+
+
+## Distribution Shapes: Modality
+
+```{r, echo=FALSE, fig.height=4.5, out.width='100%',  warning=FALSE}
+
+# Load the required libraries
+library(ggplot2)
+
+# Set a seed for reproducibility
+set.seed(42)
+
+# Generate data for each distribution
+# Unimodal (Normal Distribution)
+unimodal_data <- rnorm(1000, mean = 50, sd = 10)
+
+# Bimodal Distribution
+bimodal_data <- c(rnorm(500, mean = 30, sd = 5), rnorm(500, mean = 70, sd = 10))
+
+# Multimodal Distribution
+multimodal_data <- c(rnorm(300, mean = 20, sd = 5), rnorm(500, mean = 50, sd = 10), rnorm(200, mean = 80, sd = 5))
+
+# Uniform Distribution
+uniform_data <- runif(1000, min = 0, max = 100)
+
+# Create data frames
+df_unimodal <- data.frame(Value = unimodal_data, Distribution = "Unimodal")
+df_bimodal <- data.frame(Value = bimodal_data, Distribution = "Bimodal")
+df_multimodal <- data.frame(Value = multimodal_data, Distribution = "Multimodal")
+df_uniform <- data.frame(Value = uniform_data, Distribution = "Uniform")
+
+# Combine data frames
+df_combined <- rbind(df_unimodal, df_bimodal, df_multimodal, df_uniform)
+
+# Plot the Probability Density Functions (PDFs)
+ggplot(df_combined, aes(x = Value, fill = Distribution)) +
+  geom_density(alpha = 0.6) +
+  labs(title = "",
+       x = "Value", y = "Density") +
+  theme_xaringan()+facet_grid(rows=~Distribution)+
+  theme(legend.position = "none", axis.text.x = element_blank())
+
+
+```
+
+
+
+---
+
+## Which is uniformaly distributed
+
+ 1. Weights of Adult Females
+ 2. Salaries in Mexico
+ 3. Airbnb prices in CDMX
+ 4. Birthdays of Classmates (day of the month)
+
+
+
+---
+
+<center>
+<img src=Distributions_q_data.png width="800">
+</center>
+
+
+---
+
+## Distribution Shapes: Skewness
+
+```{r, echo=FALSE, fig.height=4.5, out.width='100%',  warning=FALSE}
+
+# Load the required libraries
+library(ggplot2)
+
+# Set a seed for reproducibility
+set.seed(42)
+
+# Generate data for each distribution
+# Skewed Right (Positively Skewed)
+skewed_right_data <- c(rexp(1000, rate = 0.2), rexp(200, rate = 0.1))
+
+# Skewed Left (Negatively Skewed, similar to age at death)
+skewed_left_data <- -skewed_right_data
+
+
+
+# Symmetric Distribution (Triangular Distribution)
+symmetric_data <- c(rnorm(1000, mean = 50, sd = 10))
+
+# Create data frames
+df_skewed_right <- data.frame(Value = skewed_right_data, Distribution = "Skewed Right")
+df_skewed_left <- data.frame(Value = skewed_left_data, Distribution = "Skewed Left")
+df_symmetric <- data.frame(Value = symmetric_data, Distribution = "Symmetric")
+
+# Combine data frames
+df_combined_skewed <- rbind(df_skewed_right, df_skewed_left, df_symmetric)
+
+# Plot the Probability Density Functions (PDFs) using facet_grid
+ggplot(df_combined_skewed, aes(x = Value, fill = Distribution)) +
+  geom_density(alpha = 0.6) +
+  labs(title = "",
+       x = NULL, y = "Density") +  # Set x = NULL to remove x-axis label
+  theme_xaringan() +
+  facet_grid(rows = ~Distribution, scales = "free_x") +
+  theme(legend.position = "none", axis.text.x = element_blank()) 
+
+```
+
+---
+
+### Age at death
+
+<center>
+<img src=Age_at_death.jpeg width="800">
+</center>
+
+---
+
+#### What if we want to calculate proportion of people who weight less or equal to 50kg?
+
+---
+
+## Cumulative Distribution Function (CDF)
+
+
+The .blue[Cumulative Distribution Function] (CDF) gives the probability that a random variable X will take on a value less than or equal to a specific value.
+
+For a continuous random variable X with PDF f(x), the CDF F(x) is defined as:
+
+$F(x) = \int_{-\infty}^{x} f(t) \, dt = P(X \leq x)$
+
+Characteristics:
+- The CDF starts (for minus infinity) at 0 (minimum)
+- It approaches 1 as x approaches infinity (maximum)
+- It is non decreasing
+- It is right continuous
+
+---
+
+## Example 1: Normal Variable (weight in the population)
+
+$F(50) = \int_{-\infty}^{50} f(t) \, dt = P(X \leq 50)=0.02$
+
+```{r example1, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
+
+# Define the transformed PDF and CDF functions
+mean_new <- 70
+sd_new <- 10
+
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
+}
+
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
+}
+
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
+
+# Create the combined plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new - 2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new - 2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
+
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new - 2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new - 2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new - 2 * sd_new, 
+           y = cdf_func_transformed(mean_new - 2 * sd_new) + 0.01, 
+           label = sprintf("%.2f", cdf_func_transformed(mean_new - 2 * sd_new)), 
+           vjust = -1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
+
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
+```
+
+---
+
+## Example 2: Normal Variable (weight in the population)
+
+$F(72) = \int_{-\infty}^{72} f(t) \, dt = P(X \leq 72)=0.58$
+
+```{r example2, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
+# Generate data for plotting
+# Define the transformed PDF and CDF functions
+mean_new <- 70
+sd_new <- 10
+
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
+}
+
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
+}
+
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
+
+# Create the PDF plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new + 0.2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new + 0.2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
+
+# Create the CDF plot for the transformed distribution
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new + 0.2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new + 0.2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new + 0.2 * sd_new, 
+           y = cdf_func_transformed(mean_new + 0.2 * sd_new) + 0.01, 
+           label = sprintf("%.2f", cdf_func_transformed(mean_new + 0.2 * sd_new)), 
+           vjust = -1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
+
+# Combine the plots
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
+```
+
+---
+
+## Example 3: Normal Variable (weight in the population)
+
+$F(102) = \int_{-\infty}^{102} f(t) \, dt = P(X \leq 102)=0.99$
+
+
+```{r example3, echo=FALSE, fig.width=12, fig.height=5, warning=FALSE}
+# Generate data for plotting
+# Generate data for plotting
+mean_new <- 70
+sd_new <- 10
+
+pdf_func_transformed <- function(x) {
+  dnorm(x, mean = mean_new, sd = sd_new)
+}
+
+cdf_func_transformed <- function(x) {
+  pnorm(x, mean = mean_new, sd = sd_new)
+}
+
+# Generate data for plotting the transformed distribution
+x_transformed <- seq(mean_new - 3 * sd_new, mean_new + 3 * sd_new, length.out = 100)
+pdf_y_transformed <- pdf_func_transformed(x_transformed)
+cdf_y_transformed <- cdf_func_transformed(x_transformed)
+
+# Create the PDF plot for the transformed distribution
+pdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, pdf_y_transformed), color = "blue", size = 1.5) +
+  geom_area(aes(x = x_transformed[x_transformed <= mean_new + 3.2 * sd_new], 
+                y = pdf_y_transformed[x_transformed <= mean_new + 3.2 * sd_new]), fill = "lightblue") +
+  labs(title = "PDF of Transformed Distribution", x = "X'", y = "Density") +
+  theme_minimal()
+
+# Create the CDF plot for the transformed distribution
+cdf_plot_transformed <- ggplot() +
+  geom_line(aes(x_transformed, cdf_y_transformed), color = "red", size = 1.5) +
+  geom_hline(yintercept = cdf_func_transformed(mean_new + 3.2 * sd_new), linetype = "dashed", color = "black") +
+  geom_vline(xintercept = mean_new + 3.2 * sd_new, linetype = "dashed", color = "black") +
+  annotate("text", x = mean_new + 3.2 * sd_new, 
+           y = cdf_func_transformed(mean_new + 3.2 * sd_new) +0.01, 
+           label = sprintf("%.2f", round(cdf_func_transformed(mean_new + 3.2 * sd_new)),3), 
+           vjust = 1, size = 5) +
+  labs(title = "CDF of Transformed Distribution", x = "X'", y = "Cumulative Probability") +
+  theme_minimal()
+
+# Combine the plots
+grid.arrange(pdf_plot_transformed, cdf_plot_transformed, ncol = 2)
+```
+
+Never integrate a CDF!
+
+---
+### Empirical CDF
+
+What if we only have a sample and we don't know the true pdf?
+
+Intuition on how it comes up:
+ 
+```{r example40, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+Health_data$nr=1:nrow(Health_data)
+
+# Create the first plot: Bars of participant height by participant number
+p1 <- ggplot(Health_data, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual\nnumber", y = "Weight", title = "Individual's weight") +
+  coord_flip()+
+  theme_xaringan()
+
+p1
+
+```
+
+```{r example401, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+
+#Sort the data by weight:
+Health_data_s <- Health_data[order(Health_data$weight),]
+Health_data_s$nr=1:nrow(Health_data_s)
+
+# Create the second plot: Sorted participants by height
+p2 <-  ggplot(Health_data_s, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual\nWeight Rank", y = "Weight", title = "Sorted by weight") +
+  coord_flip() +
+  theme_xaringan()
+
+# Arrange the plots side by side
+p2
+
+```
+---
+### Empirical CDF
+
+What if we only have a sample and we don't know the true pdf?
+
+Intuition on how it comes up:
+ 
+```{r example4034, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+Health_data$nr=1:nrow(Health_data)
+
+# Create the first plot: Bars of participant height by participant number
+p1 <- ggplot(Health_data, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  labs(x = "Individual\nnumber", y = "Weight", title = "Individual's weight") +
+  coord_flip()+
+  theme_xaringan()
+
+p1
+
+```
+
+```{r example4013, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+
+#Sort the data by weight:
+Health_data_s <- Health_data[order(Health_data$weight),]
+Health_data_s$nr=1:nrow(Health_data_s)
+
+rank_75kg <- Health_data_s$nr[min(which(round(Health_data_s$weight) == 75))]
+
+# Create the second plot: Sorted participants by height with a mark for 75 kg
+p2 <- ggplot(Health_data_s, aes(x = nr, y = weight)) +
+  geom_segment(aes(x = nr, xend = nr, y = 0, yend = weight), color = "steelblue", size = 1.5) +
+  geom_point(data = subset(Health_data_s, weight == 75), aes(x = nr, y = weight), color = "red", size = 3) +
+  geom_text(aes(x = rank_75kg, y = 75, label = paste("75 kg\nRank:", rank_75kg)), hjust = -0.2, color = "red") +
+  labs(x = "Individual\nWeight Rank", y = "Weight", title = "Sorted by weight") +
+  coord_flip() +
+  theme_xaringan()
+
+# Arrange the plots side by side
+p2
+
+```
+
+
+---
+### Empirical CDF
+
+$ECDF(x)=\frac{\sum I(w_i\leq x)}{N}=\frac{\text{Number of people with weight lower than x}}{N}$
+ 
+<small>
+- $I(w_i<x)=1$ if weight of person $i$ is lower than $x$ (*Indicator Function*)
+- $N$ is total number of people (*Sample Size*)
+- Share of people with weight lower than x
+</small>
+
+
+
+```{r example4b, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+ecdf_data <- ecdf(Health_data$weight)
+
+# Plot the cumulative distribution
+cdf_plot <- ggplot(data.frame(weight = c(min(Health_data$weight), sort(Health_data$weight))), aes(x = weight)) +
+  stat_ecdf(geom = "line", size = 1.5) +
+  labs(title = "Cumulative Distribution Function ", x = "Weight", y = "Cumulative Probability") +
+  theme_xaringan() 
+
+# Display the plot
+ggplotly(cdf_plot,
+        width = 800,   # Adjust the width according to your preference
+        height = 300)
+```
+
+
+
+--
+- So how do we calculate share of people with weight=<50kg?
+
+--
+$P(weight\leq50)=ECDF(50)$
+
+--
+- What about more than 100?
+
+--
+$P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
+
+---
+<center>
+<img src=Exam_q_dist.png width="800">
+</center>
+
+- Is $F_x(X)$ a valid distribution function?
+- What's the probability that the rent is larger than 10 000?
+
+---
+
+
 ---
 
 layout: false

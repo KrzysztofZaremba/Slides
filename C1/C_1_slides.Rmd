@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,dpi=300)
+knitr::opts_chunk$set(echo = TRUE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -30,8 +30,6 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
-library(ggplot2)
-library(dplyr)
 library(hrbrthemes)
 library(viridis)
 library(gapminder)
@@ -56,94 +54,99 @@ colors = c(
 
 ## Who am I?
 
-
-
-  - Krzysztof Zaremba
-
---
-    - **Education**: PhD in Economics from Columbia University
-  
---
-  - **Research focus**: Applied Econometrics, Health Economics
-  
---
+- **Krzysztof Zaremba**
+  - **Education:** PhD in Economics, Columbia University
+  - **Research Focus:** Applied Econometrics, Health Economics
   - **Email:** .blue[zaremba@itam.mx]
-  
---
-  - **Office:** In Santa Teresa Campus
-  
---
-  - **Office hours:** on zoom, Monday 2pm-3pm, email me if different time needed
+  - **Office:** Santa Teresa Campus
+  - **Office Hours:** Mondays 2–3pm on Zoom (email for other times)
 
 ---
 
 
 
 ### What Is This Class About? 
-**Forecasting** involves making predictions about future events based on historical data and relevant information
 
-  
+**Forecasting** is the science and art of making predictions about future events using historical data and relevant information.
+
+--
+
+In this class, you will learn how to turn data into actionable insights that drive better decisions in business and beyond.
 ---
+
+#### Why is Forecasting Important?
+
+--
 1. **Weather Forecasting**
-   - Predicting hurricanes &rarr; timely reactions and preparations.
+   - Predicting hurricanes → timely reactions and preparations.
    
 
 <center>
 <img src="https://ral.ucar.edu/sites/default/files/public/images/features/hfip1.png" />
 </center>
 ---
-
 2. **Epidemic Forecasting**
-   - Predicting disease outbreaks &rarr; effective public health responses.
+   - Predicting disease outbreaks → effective public health responses.
    
 <center>
-<img src=https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/RA3SMOZBVRAKREEJ7HBLLRITEI.png&w=1440 width="600">
+<img src="https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/RA3SMOZBVRAKREEJ7HBLLRITEI.png&w=1440" width="600">
 </center>
 ---
-
-
-3. **Criminal Activity Forecasting**
-   - Identifying crime hot-spots &rarr; increase the number of patrols.
-   - Identifying individuals at risk of committing crimes &rarr; sending warning letters.
+3. **Crime Forecasting**
+   - Identifying crime hot spots → more effective police patrols.
+   - Identifying individuals at risk → targeted interventions.
 
 <center>
-<img src=Crime_prediction.png width="600">
+<img src="Crime_prediction.png" width="600">
+</center>
+
+---
+One of your tasks later in class: **Predict 911 calls in Mexico City**
+
+--
+
+<center>
+<img src="choropleth_investigations_quantiles.png" width="600">
 </center>
 
 
-
 ---
-### What Is This Class About? 
+
+### What Is This Class About?
 
 #### Forecasting in Business
 
-- Improve decision making 
-- With increasing availability of data, firms rely on almost scientific methods to make decisions
-
---
-#### Applications
-
-1. **Pricing**: Optimize pricing (Example: Health Insurance, Uber)
-
---
-2. **Employee Churn**: Identify factors predicting employees leaving the company and implement measures to retain valuable talent (Example: EC)
-
---
-3. **Anticipating Demand**: Adjust inventory management to minimize waste and meet customer needs effectively (Example: Meal Kits)
-
---
-4. **Strategic Investment Decisions**: Forecast market trends to predict suitability for investments (Example: Electric Cars)
-
---
-5. **Improving Advertizement**: Idenfitying which elements of the ad are most effective (Example: AirBnB) 
-
---
-
-6. **Suggesting Products**: Recommending products to customers based on their past behavior (Example: Amazon, Netflix)
+- With the increasing availability of data, firms rely on rigorous data-driven methods to make decisions.  
+- Many business decisions depend on anticipating future events.  
+- In this course, you’ll learn how to use data to make informed predictions about the future.
 
 ---
 
-#### Learning to Predict Real World Scenarios: Predicting Demand for Public Transportation in New York  
+### Applications of Forecasting
+
+1. **Anticipating Demand**  
+   Adjust inventory to minimize waste and meet customer needs effectively  
+   _Example: Meal kits, retail chains_
+
+
+2. **Employee Churn**  
+   Predict which employees are likely to leave and develop strategies to retain talent  
+   _Example: HR analytics in consulting firms_
+
+3. **Strategic Investment Decisions**  
+   Use market forecasts to guide investment timing and location  
+   _Example: Expansion of electric vehicle infrastructure_
+
+4. **Improving Advertisement Effectiveness**  
+   Identify which components of an ad drive conversions  
+   _Example: A/B testing by Airbnb_
+
+5. **Product Recommendations**  
+   Forecast customer preferences based on past behavior  
+   _Example: Amazon, Netflix recommendation systems_
+
+---
+#### Learning to Predict Real World Scenarios: Predicting Bus Ridership in NYC
 
 **Final Project Context**
 - The NYC Department of Transportation is forecasting number of customers to optimize resources:
@@ -292,7 +295,7 @@ print(p)
 ### Organization
 
 - **Lectures Schedule**: 
-      - Tuesday & Thursday morning RH308
+      - Tuesday morning RH SA2
 
 - **TA schedule**: 
   - Weekly 1 hour lab session - timing/location to be determined
@@ -308,30 +311,39 @@ print(p)
 ---
 
 ### Grading
+--
 
-- 20% 2x Midterms 
-- 30% Final Exam - you need at east 60 to pass the class
-- 10% Quizzes 
-  - *Type 1 Quiz*: In-class, individual, theory + some calculations, 30 min max, one week notice, around 3 per semester. You can bring one page of handwritten notes. Printed or electronic notes will not be accepted. 
-  - *Type 2 Quiz*: At home, individually or in pairs, practice with data, 24h to complete, 2 per semester, open book.
-  - Lowest grade among all is dropped
-- 15% Final Project (In groups of 3)
-- 5% Homework
-  - Graded on completion, not correctness, but you need to show an attempt to solve
-  - You can skip one
 
----
-
-### Last Semester Median Grades
-
-- Midterm 1: 70
-- Midterm 2: 57
-- Final Exam: 62.5
-- Quiz: 81
-- Final Project: 84
-- Final Grade: 68.5
+- **70% In-Class Exams & Assignments**  
+  - 3 total exams (including final)  
+  - Combination of applied (in computer lab) and paper-based formats  
 
 --
+
+- **20% Projects & Presentations**  
+  - 3 group-based take-home projects  
+  - Analyze data, write a short summary  
+  - Present findings briefly in class  
+
+
+--
+
+- **5% In-Class Assignments**  
+  - 2 group forecasting competitions using real-world data  
+  - 2 individual theoretical quizzes (1 cheat sheet allowed)  
+  - **Lowest score among these 4 assignments will be dropped**  
+ 
+  
+--
+
+- **5% Participation & Engagement**  
+  - 2.5%: Flipped tasks and short homeworks (graded for completion)  
+  - 2.5%: Preparedness checks at the beginning of class  
+    - Random students selected in the first 5 minutes  
+    - Zero credit if absent or unprepared  
+
+
+---
 
 ### Pre-requisites
 
@@ -352,42 +364,39 @@ print(p)
 - If you don't know a word, feel free to ask
 
 --
-- Exams will be available in both languages but you have to answer in English
-
---
-- I will understand your English
-
---
 - Great occasion to learn vocabulary useful for interviews
 
 
 ---
-### ChatGPT Policy 
-
-- We are not trying to fight the technology
+### ChatGPT & AI Tools Policy
 
 --
 
-- You are allowed to use ChatGPT/other language models for your advantage
-
-  - You can use it for at home quizzes and final project to improve your code and writing, but...
-
---
-
-    - Just copying directly the ouput from CHATGPT is plagiarism
-    - I sometimes ask to explain the code you submitted, so you need to understand everything you put in an assignment
+- **You are allowed to use ChatGPT and other language models.**  
+  - Especially useful for refining code, summarizing concepts, and improving writing in projects.
 
 --
 
-- Use it wisely to learn, and then inform your own answers with its ouput
+- **But be careful — copying output directly is plagiarism.**  
+  - You must **understand and be able to explain** anything you include in your work.  
+  - During presentations, you will be expected to explain your project. If you can't, you’ll receive **zero credit** for that assignment.
 
 --
 
-- I recommend it for learning:
-  - Try typing in: 
-    - Why we cannot say that the confidence interval contains the true value with 95%
-    - What the relationship between type 1 and type 2 errors
-    - What is a p-value?
+- **ChatGPT is not allowed during exams.**  
+
+--
+
+- **Use AI tools wisely — to learn, not to outsource thinking.**  
+
+
+--
+
+- **Recommended for learning and review. Try asking:**  
+  - "Why can’t we say a 95% confidence interval contains the true value with 95% probability?"  
+  - "What’s the relationship between Type I and Type II errors?"  
+  - "What is a p-value and what is it not?"
+
 
 ---
 
@@ -398,42 +407,60 @@ print(p)
 
 
 ---
-### Integrity
-
-- Cheating is disrespectful for your study sponsors, you are not learning anything, and you risk getting kicked out
-- Cheating is disrespectful to your peer students, who make effort in the class
-- Cheating is disrespectful to the professor
-
-
+### Academic Integrity
 
 --
-- **Cheating is easy to discover**:
-  - Questions are usually randomized
-  - We will use lockdown browser for the quizes
-  - If you access the quiz in a place other than the classroom, you get 0 (unless agreed beforehand)
+  - It disrespects those supporting your education — you are not learning anything.
+  - It is unfair to your peers who put in genuine effort.
+  - It disrespects the professor and the academic environment.
 
 --
-- **Penalties are very strong**
-  - I take cheating extremely seriously
-   - When discovered cheating, I will report you to the administration. You will fail the class and have to retake it. At the second time, you are expelled. 
-   - I did report cheating in this course before.
 
-
+- **Cheating is easy to detect**:
+  - Quiz and exam questions are randomized.
+  - A LockDown Browser will be used during quizzes.
+  - Accessing quizzes outside the classroom without prior approval = **0 credit**.
+  - Canvas access logs will be reviewed during assessments.
+  - In-class assignments are recorded.
+  - Anonymous reporting of cheating is available.
 
 --
-- If you are honest, you don't have to worry about all the above
-   
+
+- **Penalties are severe**:
+  - If caught cheating:
+    - You will be reported to the administration.
+    - You will automatically fail the course and must retake it.
+    - On a second offense, **you will be expelled**.  
+  - Cheating has been reported in this course before.
+
+--
+
+- If you act with honesty and integrity, **you have nothing to worry about**.
 
 ---
-### Software - R
+### Software: R
 
-**Performing actual forecasts with data**
+**Performing Real Forecasts with Real Data**
 
-- Widely Used: R is a popular language for data analysis and statistical computing
-- Open-Source: R is free!
-- Community Support: You can easily find plenty of tutorials and help
-- Data Visualization: Amazing vizualizations and ways to communicate your findings
+--
 
+- **Widely Used**  
+  R is one of the most popular languages for data analysis, statistical modeling, and forecasting — especially in academia and industry.
+
+--
+
+- **Free and Open-Source**  
+  R is completely free to use and supported by a large global community.
+
+--
+
+- **Great Community Support**  
+  Thousands of tutorials, packages, and forums are available — it’s easy to find help when you're stuck.
+
+--
+
+- **Powerful Data Visualization**  
+  R includes powerful tools (like `ggplot2`) to create clear, publication-quality visualizations that help you communicate your insights effectively.
 
 
 
@@ -510,8 +537,10 @@ p
 ---
   
 ### Remarks
-  - We will use it for practical exercises with data
+  - Knowledge of theoretical statistics does not matter much if you can't apply it using modern tools
+  - We will use it for practical exercises with data 
   - You will use it for the final project
+  - You will use it for the applied exams
   - We will learn some of it together in class
   - TA lab sessions will further help with this
   - Chatgpt is your friend
@@ -527,17 +556,14 @@ Tools will often depend on the horizon and data availability
 #### Forecasting Horizons
 - .blue[Very Short Horizon:]
   - High-Frequency Trading: Real-time price predictions for financial trading
-  - Traffic Flow Management: Optimizing traffic signals based on real-time data
 --
 
 - .blue[Short Horizon]:
-  - Retail Store: Forecasting cashier scheduling based on historical data
   - Public bikes: Predict the availability of bikes at bike station and adjust the number
 --
 
 - .blue[Long Horizon]:
   - New obesity drug: Forecasting number of potential patients and their resources
-  - Investing in new country: Forecasting political stability
 ---
 
 ### Overview of Forecasting Techniques
@@ -704,111 +730,108 @@ datatable(
 
 1. **Problem Definition**
    - Clearly define the forecasting objective.
-   - Example: Forecasting ride demand during holidays for Uber.
 2. **Gather Data**
    - Identify and collect relevant data.
-   - Example: Historical ride data and local event information.
 3. **Preliminary Explanatory Analysis**
    - Understand data characteristics and relationships.
-   - Example: Analyzing trends and patterns in ride demand during holidays.
-4. **Choosing and Fitting the Model**
+  4. **Choosing and Fitting the Model**
    - Select and fit the appropriate forecasting model.
-   - Example: Estimate multiple linear regression or time series forecasting.
 5. **Evaluating the Model**
    - Assess the model's performance using historical data.
-   - Example: Comparing model predictions with actual ride demand during past holidays.
+6. **Communicate the results**
+  - Visualize and interpret the outcomes and write a report or presentation
 
 ---
 
 
 
-layout: false
-class: inverse, middle
-# Methods of Qualitative Forecasting
+<!-- layout: false -->
+<!-- class: inverse, middle -->
+<!-- # Methods of Qualitative Forecasting -->
 
----
+<!-- --- -->
 
-<center>
-<img src=Delphi.jpg width="600">
-</center>
-
-
----
-### Delphi Method
-- A structured communication process to reach a consensus for complex, uncertain and long terms forecasting tasks
-  1. Select a group of experts
-  2. Invite them to the study. They are anonymous and don't talk to each other!
-  3. Ask them to answer a questionnaire
-  4. Get initial responses
-  5. Compile them into summary
-  6. Send them summary and get their feedback with refined answers
-  7. Reiterate until consensus is reached or no further improvement
-  
+<!-- <center> -->
+<!-- <img src=Delphi.jpg width="600"> -->
+<!-- </center> -->
 
 
---
-#### Example: Determining AI threats
-- What are the risks of AI developments?
-- Panel of experts from academia and industry
-  - Computer scientists, engineers, CEOs of AI companies, ethic experts
-- Send them questionnaires asking about potential threats
-- Compile responses into summary and send them back
-- Get more rounds of responses until consensus
-- Identify the most probable risks
-
----
-
-### Brainstorming
-- Creative technique for generating ideas.
-- Encourages free thinking and building on suggestions.
-- Appropriate for exploring possibilities.
-  - Form a group (no need for experts)
-  - State the problem
-  - Encourage ideas, no matter how crazy
-  - Build and combine each others' ideas
-  - Document the ideas and synthesize them 
+<!-- --- -->
+<!-- ### Delphi Method -->
+<!-- - A structured communication process to reach a consensus for complex, uncertain and long terms forecasting tasks -->
+<!--   1. Select a group of experts -->
+<!--   2. Invite them to the study. They are anonymous and don't talk to each other! -->
+<!--   3. Ask them to answer a questionnaire -->
+<!--   4. Get initial responses -->
+<!--   5. Compile them into summary -->
+<!--   6. Send them summary and get their feedback with refined answers -->
+<!--   7. Reiterate until consensus is reached or no further improvement -->
 
 
---
-#### Example: Enhancing Employee Engagement
-- Tech company's HR department.
-- Representatives from HR, IT, and different departments.
-- Generate ideas for a mobile app to enhance employee engagement.
-- Write them down and implement the relevant ones
 
----
+<!-- -- -->
+<!-- #### Example: Determining AI threats -->
+<!-- - What are the risks of AI developments? -->
+<!-- - Panel of experts from academia and industry -->
+<!--   - Computer scientists, engineers, CEOs of AI companies, ethic experts -->
+<!-- - Send them questionnaires asking about potential threats -->
+<!-- - Compile responses into summary and send them back -->
+<!-- - Get more rounds of responses until consensus -->
+<!-- - Identify the most probable risks -->
 
-### Panel of Experts
-- Assemble knowledgeable individuals
-  - At the same time and spot
-- They meet,  offer insights and expertise, and discuss
-- Aid in well-informed decisions.
-- Sometimes ends up with a report with conculsions
+<!-- --- -->
 
-
---
-#### Example: Environmental Policy Formulation
-- Government agency want to find identify and address most pressing environmental issues
-- Environmental scientists, economists, conservationists, and policymakers.
-- Discuss policy options.
-- Create comprehensive environmental policies.
-
----
-
-### Focus Groups
-- Gather diverse participant - not necessarily experts
-- Share perceptions, attitudes, and opinions.
-- Provide qualitative data and consumer insights.
+<!-- ### Brainstorming -->
+<!-- - Creative technique for generating ideas. -->
+<!-- - Encourages free thinking and building on suggestions. -->
+<!-- - Appropriate for exploring possibilities. -->
+<!--   - Form a group (no need for experts) -->
+<!--   - State the problem -->
+<!--   - Encourage ideas, no matter how crazy -->
+<!--   - Build and combine each others' ideas -->
+<!--   - Document the ideas and synthesize them  -->
 
 
---
-#### Example: Market Research for a New TV SHOW
-- Proposing a new TV Show and trying to see how well it will do
-- Participants from various demographics.
-- Understand consumers' preferences and perceptions about the TV show
-- Fine-tune the product and marketing strategy.
+<!-- -- -->
+<!-- #### Example: Enhancing Employee Engagement -->
+<!-- - Tech company's HR department. -->
+<!-- - Representatives from HR, IT, and different departments. -->
+<!-- - Generate ideas for a mobile app to enhance employee engagement. -->
+<!-- - Write them down and implement the relevant ones -->
 
----
+<!-- --- -->
+
+<!-- ### Panel of Experts -->
+<!-- - Assemble knowledgeable individuals -->
+<!--   - At the same time and spot -->
+<!-- - They meet,  offer insights and expertise, and discuss -->
+<!-- - Aid in well-informed decisions. -->
+<!-- - Sometimes ends up with a report with conculsions -->
+
+
+<!-- -- -->
+<!-- #### Example: Environmental Policy Formulation -->
+<!-- - Government agency want to find identify and address most pressing environmental issues -->
+<!-- - Environmental scientists, economists, conservationists, and policymakers. -->
+<!-- - Discuss policy options. -->
+<!-- - Create comprehensive environmental policies. -->
+
+<!-- --- -->
+
+<!-- ### Focus Groups -->
+<!-- - Gather diverse participant - not necessarily experts -->
+<!-- - Share perceptions, attitudes, and opinions. -->
+<!-- - Provide qualitative data and consumer insights. -->
+
+
+<!-- -- -->
+<!-- #### Example: Market Research for a New TV SHOW -->
+<!-- - Proposing a new TV Show and trying to see how well it will do -->
+<!-- - Participants from various demographics. -->
+<!-- - Understand consumers' preferences and perceptions about the TV show -->
+<!-- - Fine-tune the product and marketing strategy. -->
+
+<!-- --- -->
 
 
 
@@ -816,7 +839,7 @@ class: inverse, middle
 
 #### Quantatitve Forecasting
 
-0. Ungraded quiz next class
+0. Ungraded quiz
 --
 
 1. Review of Statistics 
@@ -829,13 +852,6 @@ class: inverse, middle
 --
 
 4. Time Series 
-
---
-
-**Fundamental tools to:**
-- Make predictions, 
-- Quantify uncertainty, 
-- Intepret it and communicate it
 
 
 ---

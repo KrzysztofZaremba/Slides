@@ -1,0 +1,305 @@
+---
+title: "LearnR Tutorial: Data Types and Visualizations"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(tidyverse)
+library(DT)
+library(MASS)
+load("Health_data.Rda")
+```
+
+# 📊 Introduction
+
+Welcome to this interactive **LearnR** tutorial on **data types** and **visualizations**. In this hands-on lesson, you will:
+
+- Learn to distinguish between data types.
+- Explore a real health survey dataset.
+- Create and customize visualizations.
+- Practice classifying variables interactively.
+
+
+## 🧮 Exercise 0: Explore the Data Table
+
+Let's start by viewing the dataset. This helps you understand the variables and their structure.
+
+```{r ex0_table, exercise=TRUE}
+# Show the first 10 rows of Health_data
+head(Health_data, 10)
+```
+
+
+## 🧠 Exercise 1: Categorical vs Numerical Variables
+
+Now try identifying whether a variable is categorical or numerical. We'll start with 'Gender'.
+
+```{r ex1_question}
+question("Is 'Gender' categorical or numerical?",
+  answer("Categorical", correct = TRUE),
+  answer("Numerical", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+
+## 📈 Exercise 2: Frequency Table for Categorical Data
+
+We often summarize categorical variables using frequency and proportion tables. Let’s see how often each value of `location_type` occurs.
+
+```{r ex2_table, exercise=TRUE}
+# Frequency and proportion of a categorical variable
+table(Health_data$location_type)
+
+prop.table(table(Health_data$location_type))
+```
+
+
+## 📊 Exercise 3: Bar Plot of Categorical Data
+
+Bar plots are commonly used to visualize counts for categorical variables. Here we create one for `Difficulty_walking`.
+
+```{r ex3_barplot, exercise=TRUE}
+# Basic bar plot of Difficulty_walking
+ggplot(data = Health_data, aes(x = Difficulty_walking)) +
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(title = "Bar Plot of Difficulty Walking", x = "Difficulty Walking", y = "Count") +
+  theme_minimal()
+```
+
+
+## 📊 Exercise 4: Bar Plot with Relative Frequencies
+
+To better compare categories, we can display **proportions** instead of raw counts. This plot uses relative frequencies.
+
+```{r ex4_barplot_prop, exercise=TRUE}
+# Relative frequency bar plot
+ggplot(Health_data, aes(x = Difficulty_walking)) +
+  geom_bar(aes(y = ..prop.., group = 1), fill = "lightblue", color = "black") +
+  labs(title = "Relative Frequency of Difficulty Walking",
+       x = "Difficulty Walking", y = "Proportion") +
+  theme_minimal()
+```
+
+
+## 🥧 Exercise 5: Pie Chart of Categorical Data
+
+Another way to visualize proportions is with a pie chart. Let’s create one for `Difficulty_walking`.
+
+```{r ex5_pie, exercise=TRUE}
+# Pie chart of Difficulty_walking
+ggplot(Health_data, aes(x = "", fill = Difficulty_walking)) +
+  geom_bar(width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  labs(title = "Proportion of Difficulty Walking Responses", x = NULL, y = NULL) +
+  theme_void() +
+  theme(legend.title = element_blank())
+```
+
+
+## 📊 Exercise 6: What About Age?
+
+Let’s examine the `age` variable. How many unique values are there? This helps determine whether it's categorical or continuous.
+
+```{r ex6_age_levels, exercise=TRUE}
+
+```
+
+
+## 🧾 Exercise 7: Age as a Pie Chart 
+
+Although we can create a pie chart for numeric variables, it usually isn't a good idea. Try it and see why.
+
+```{r ex7_pie_age, exercise=TRUE}
+# Pie chart of age — usually not recommended for numeric variables
+ggplot(Health_data, aes(x = "", fill = factor(age))) +
+  geom_bar(width = 1, color = "white") +
+  coord_polar(theta = "y") +
+  labs(title = "Age Distribution (as Pie)", x = NULL, y = NULL) +
+  theme_void() +
+  theme(legend.title = element_blank())
+```
+
+
+## 📉 Exercise 8: Histogram of a Numerical Variable
+
+Histograms are a better way to visualize the distribution of numerical variables. Let’s create one for `weight`.
+
+```{r ex8_histogram, exercise=TRUE}
+# Histogram of weight
+ggplot(Health_data, aes(x = weight)) +
+  geom_histogram(bins = 30, fill = "skyblue", color = "white") +
+  labs(title = "Histogram of Weight", x = "Weight", y = "Frequency") +
+  theme_minimal()
+```
+
+
+## 📦 Exercise 9: Summary Statistics and Boxplot
+
+Let’s look at some key percentiles and visualize the distribution of `weight` with a boxplot.
+
+```{r ex9_boxplot, exercise=TRUE}
+# Summary statistics
+
+quantile(Health_data$weight, c(0.7))
+
+# Boxplot
+ggplot(Health_data, aes(x = "", y = weight)) +
+  geom_boxplot(fill = "lightblue", color = "black") +
+  labs(title = "Box Plot of Weight", x = NULL, y = "Weight") +
+  theme_minimal()
+```
+
+Let’s explore how quantiles divide a distribution. Move the slider to select a quantile. The histogram will update to highlight the proportion of data below the selected cutoff.
+
+```{r ex9_ui, context="render"}
+sliderInput("quantile_val", "Choose a Quantile:",
+            min = 0.0001, max = 1, value = 0.5, step = 0.0001)
+```
+
+```{r ex9_quantile_plot, context="render"}
+plotOutput("quantile_hist")
+```
+
+```{r ex9_quantile_server, context="server"}
+output$quantile_hist <- renderPlot({
+  q <- input$quantile_val
+  x <- Health_data$weight
+  q_val <- quantile(x, probs = q, na.rm = TRUE)
+  df <- data.frame(x = x)
+
+  ggplot(df, aes(x = x)) +
+    geom_histogram(aes(y = ..density..,
+                       fill = after_stat(x <= q_val)),
+                   bins = 40, color = "white") +
+    scale_fill_manual(values = c("TRUE" = "steelblue", "FALSE" = "grey80"), guide = "none") +
+    geom_vline(xintercept = q_val, color = "red", linetype = "dashed", linewidth = 1) +
+    annotate("text", x = q_val, y = 0.02,
+             label = paste0("q = ", round(q, 2), "\nvalue = ", round(q_val, 1)),
+             vjust = -1, hjust = 0, color = "red", size = 4) +
+    labs(title = "Weight Distribution with Quantile Cutoff",
+         x = "Weight", y = "Density") +
+    theme_minimal()
+})
+```
+
+
+## 📦 Contingency table
+
+Contingency tables help summarize the relationship between two categorical variables. Here, we examine whether having a mother with diabetes is associated with having diabetes oneself.
+```{r ex10_data, exercise=TRUE}
+# let's look at frequency of tables
+table(Health_data$Mother_diabetes)
+table(Health_data$diabetes) 
+```
+
+```{r ex10_contingency, exercise=TRUE}
+# Create a contingency table between Mother's diabetes and respondent's diabetes status
+table(Health_data$Mother_diabetes, Health_data$diabetes) #rows is whether mom has diabetes, and columns is whether respondent has diabetes
+```
+
+```{r ex10_prop, exercise=TRUE}
+# View proportions within the entire sample
+prop.table(table(Health_data$Mother_diabetes, Health_data$diabetes))
+```
+
+```{r ex10_prop_row, exercise=TRUE}
+# View row-wise proportions (conditional on Mother_diabetes status)
+prop.table(table(Health_data$Mother_diabetes, Health_data$diabetes), margin = 1)
+```
+
+
+## 🧪 Interactive Exploration: Covariance, Correlation, and Transformations
+
+We’ll simulate variables \(X\) and \(Y\), then explore how adding or scaling affects their **covariance** and **correlation**.
+
+---
+
+### 🔧 Choose Parameters
+
+```{r ui_covariance, context="render", echo=FALSE}
+fluidPage(
+  numericInput("mu_x", "Mean of X:", value = 80),
+  numericInput("mu_y", "Mean of Y:", value = 50),
+  numericInput("var_x", "Variance of X:", value = 225, min = 1),
+  numericInput("var_y", "Variance of Y:", value = 100, min = 1),
+  sliderInput("cov_xy", "Covariance between X and Y:", min = -150, max = 150, value = 100, step = 10),
+  numericInput("add_const", "Add constant to X:", value = 0),
+  numericInput("scale_x", "Scale factor for X:", value = 1),
+  numericInput("scale_y", "Scale factor for Y:", value = 1)
+)
+```
+
+---
+
+### 📊 Output: Scatterplot and Summary
+
+```{r plot_covariance, context="server", echo=FALSE}
+output$plot_covariance <- renderPlot({
+  library(MASS)
+  set.seed(123)
+
+  mu <- c(input$mu_x, input$mu_y)
+  Sigma <- matrix(c(input$var_x, input$cov_xy,
+                    input$cov_xy, input$var_y), nrow = 2, byrow = TRUE)
+
+  data <- as.data.frame(mvrnorm(n = 1000, mu = mu, Sigma = Sigma))
+  names(data) <- c("X", "Y")
+
+  data$X_trans <- data$X * input$scale_x + input$add_const
+  data$Y_trans <- data$Y * input$scale_y
+
+  cov_val <- cov(data$X_trans, data$Y_trans)
+  cor_val <- cor(data$X_trans, data$Y_trans)
+
+  ggplot(data, aes(x = X_trans, y = Y_trans)) +
+    geom_point(alpha = 0.3) +
+    labs(
+      title = paste0("Cov = ", round(cov_val, 2),
+                     " | Cor = ", round(cor_val, 2)),
+      x = "Transformed X", y = "Transformed Y"
+    ) +
+    theme_minimal()+
+    xlim(0,150)+ylim(0,150)
+})
+```
+
+```{r render_plot_covariance, context="render", echo=FALSE}
+plotOutput("plot_covariance")
+```
+
+---
+
+### 📉 Output: Histogram of X + Y
+
+```{r hist_covariance, context="server", echo=FALSE}
+output$hist_covariance <- renderPlot({
+  library(MASS)
+  set.seed(123)
+
+  mu <- c(input$mu_x, input$mu_y)
+  Sigma <- matrix(c(input$var_x, input$cov_xy,
+                    input$cov_xy, input$var_y), nrow = 2, byrow = TRUE)
+
+  data <- as.data.frame(mvrnorm(n = 1000, mu = mu, Sigma = Sigma))
+  names(data) <- c("X", "Y")
+
+  data$X_trans <- data$X * input$scale_x + input$add_const
+  data$Y_trans <- data$Y * input$scale_y
+
+  data$sum <- data$X_trans + data$Y_trans
+
+  ggplot(data, aes(x = sum)) +
+    geom_histogram(bins = 30, fill = "skyblue", color = "white") +
+    labs(title = "Histogram of Transformed X + Y", x = "X + Y", y = "Frequency") +
+    theme_minimal()
+})
+```
+
+```{r render_hist_covariance, context="render", echo=FALSE}
+plotOutput("hist_covariance")
+```
