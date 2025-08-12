@@ -522,21 +522,8 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 
 ---
 
-### Example 1: Estimator = 570
-#### Expectation
-- Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
-- We want to estimate this mean
-- The estimator: $\hat{\theta}_1 = 570$
 
---
-- Expected Value: $E(\hat{\theta}_1) = 570$
-
---
-- Bias: $E(\hat{\theta}_1)-\mu\neq 0$ if $\mu \neq 570$ (biased)
-
----
-
-### Example 2: Estimator = $X_i$
+### Example 1: Estimator = $X_i$
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
@@ -552,7 +539,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - Is it a good estimator?
 ---
 
-### Example 3: Estimator = $(3X_1 + X_2)/5$
+### Example 2: Estimator = $(3X_1 + X_2)/5$
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
@@ -565,7 +552,7 @@ $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - Bias: $E(\hat{\theta}_3) - \mu= \frac{4}{5}\mu - \mu=-\frac{1}{5}\mu$ (biased)
 
 ---
-### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
+### Example 3: Estimator = $\frac{\sum{X_i}}{n}$
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
@@ -644,19 +631,14 @@ $$Eff_{\hat\mu_1,\hat\mu_2}=\frac{var(\frac{3X_1 + X_2}{4})}{var(\frac{X_1+X_2+X
 
 ---
 
-### Variance of estimators
-
-####Example 1: Estimator = 570
--  $\small Var(\hat{\theta}_1) = E[(\hat{\theta}_1 - E[\hat{\theta}_1])^2]=E[(570 - E[570])^2] = 0$
-
 --
-#### Example 2: Estimator = $X_i$
+#### Example 1: Estimator = $X_i$
 
 --
 - $\small  Var(\hat{\theta}_2) = E[(X_i - \mu)^2]=\sigma^2$
 
 --
-#### Example 4: Estimator = $\frac{\sum{X_i}}{n}$
+#### Example 2: Estimator = $\frac{\sum{X_i}}{n}$
 
 --
 - $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$

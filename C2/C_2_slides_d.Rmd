@@ -7,7 +7,7 @@ output:
     lib_dir: libs
     nature:
       highlightStyle: github
-      countIncremdata:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVR42mNgGPTAxsZmJsVqQApgmGw1yApwKcQiT7phRBuCzzCSDSHGMKINIeDNmWQlA2IigKJwIssQkHdINgxfmBBtGDEBS3KCxBc7pMQgMYE5c/AXPwAwSX4lV3pTWwAAAABJRU5ErkJggg==entalSlides: true
+      countIncrementalSlides: true
       fig.retina: 2
 ---   
 <style type="text/css">
@@ -1725,18 +1725,38 @@ $P(weight\leq50)=ECDF(50)$
 --
 $P(weight>100)=1-P(weight\leq100)=1-ECDF(100)$
 
----
-<center>
-<img src=Exam_q_dist.png width="800">
-</center>
-
-- Is $F_x(X)$ a valid distribution function?
-- What's the probability that the rent is larger than 10 000?
 
 ---
 
+### Empirical CDF
+
+How to find percentiles using CDF?
+
+
+```{r example4bc, echo=FALSE, fig.width=12, fig.height=3, warning=FALSE}
+ecdf_data <- ecdf(Health_data$weight)
+
+# Plot the cumulative distribution
+cdf_plot <- ggplot(data.frame(weight = c(min(Health_data$weight), sort(Health_data$weight))), aes(x = weight)) +
+  stat_ecdf(geom = "line", size = 1.5) +
+  labs(title = "Cumulative Distribution Function ", x = "Weight", y = "Cumulative Probability") +
+  theme_xaringan() 
+
+# Display the plot
+ggplotly(cdf_plot,
+        width = 800,   # Adjust the width according to your preference
+        height = 300)
+```
+
+- Say we are looking for 25th percentile (1st quartile.)
+- call it $v_{25}$
+- By definition: $P(X\leq v_{25})=25\%$
+- So 1st quartile is value for which CDF is equal to 25%. 
+- More generally for percentile Z: $P(X\leq v_{Z})=Z\%$
+
 
 ---
+
 
 layout: false
 class: inverse, middle
@@ -1764,9 +1784,13 @@ class: inverse, middle
 
 ###Comparing categorical variables
 
-####Do people living in rural areas are more likely to have diabetes?
+####Are people living in rural areas more likely to have diabetes?
 
 - We have two categorical variables
+  - Having Diabetes or not
+  - Living in Rural Area or not
+  
+--
 - We can use frequency table to see how diabetes is distributed among the two types of areas:
 
 ```{r 1, out.width='100%', fig.height=3, warning=FALSE}
@@ -1839,9 +1863,110 @@ table_output
 --
 - So we want to see whether: $$ \scriptsize P(Diabetes_i=1|Area_i=Rural)>P(Diabetes_i=1|Area_i=Urban)$$
 
---
+
+```{r 4nfs, out.width='100%', fig.height=3.5, warning=FALSE, echo=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(scales)
+library(patchwork)
+
+# 1) Counts and proportions
+ft <- table(Area = Health_data$location_type, Diabetes = Health_data$diabetes)
+colnames(ft) <- c("No Diabetes","Has Diabetes")
+rownames(ft) <- c("Rural","Urban")
+
+counts <- as.data.frame(ft) |>
+  pivot_wider(names_from = Diabetes, values_from = Freq) |>
+  mutate(N     = `No Diabetes` + `Has Diabetes`,
+         p_has = `Has Diabetes` / N)
+
+# 2) Allocate a manageable number of tiles proportional to N
+total_tiles_target <- 400  # adjust granularity here
+counts <- counts |>
+  mutate(n_tiles_area = pmax(1, round(total_tiles_target * N / sum(N))),
+         tiles_has    = pmin(n_tiles_area, round(p_has * n_tiles_area)),
+         tiles_no     = n_tiles_area - tiles_has)
+
+# 3) Build tile grids
+make_tiles <- function(area, tiles_has, tiles_no) {
+  n_tiles <- tiles_has + tiles_no
+  ncol <- ceiling(sqrt(n_tiles))
+  nrow <- ceiling(n_tiles / ncol)
+  tibble(
+    Area   = area,
+    idx    = seq_len(n_tiles),
+    Status = c(rep("Has Diabetes", tiles_has), rep("No Diabetes", tiles_no))
+  ) |>
+    mutate(
+      x = (idx - 1) %% ncol,
+      y = (nrow - 1) - floor((idx - 1) / ncol),
+      ncol = ncol, nrow = nrow, n_tiles = n_tiles
+    )
+}
+
+tiles_rural <- make_tiles(
+  "Rural",
+  tiles_has = counts$tiles_has[counts$Area == "Rural"],
+  tiles_no  = counts$tiles_no[counts$Area == "Rural"]
+) |>
+  left_join(counts |> select(Area, N, p_has), by = "Area")
+
+tiles_urban <- make_tiles(
+  "Urban",
+  tiles_has = counts$tiles_has[counts$Area == "Urban"],
+  tiles_no  = counts$tiles_no[counts$Area == "Urban"]
+) |>
+  left_join(counts |> select(Area, N, p_has), by = "Area")
+
+# 4) Plot builders (each with coord_equal)
+plot_tiles <- function(df) {
+  ggplot(df, aes(x = x, y = y, fill = Status)) +
+    geom_tile(width = 0.9, height = 0.9) +
+    coord_equal() +
+    scale_x_continuous(NULL, breaks = NULL, expand = expansion(mult = 0.02)) +
+    scale_y_continuous(NULL, breaks = NULL, expand = expansion(mult = 0.02)) +
+    labs(
+      title    = unique(df$Area),
+      subtitle = paste0(
+        "N = ", comma(unique(df$N))
+      ),
+      fill = NULL
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+      panel.grid = element_blank(),
+      plot.title = element_text(face = "bold", hjust = 0.5),
+      legend.position = "top"
+    )
+}
+
+p_rural <- plot_tiles(tiles_rural)
+p_urban <- plot_tiles(tiles_urban)
+
+# 5) Combine with widths ∝ sample size (keeps coord_equal in each panel)
+w_rural <- counts$N[counts$Area == "Rural"]
+w_urban <- counts$N[counts$Area == "Urban"]
+
+(p_rural + p_urban) +
+  plot_layout(widths = c(w_rural, w_urban), guides = "collect") &
+  theme(legend.position = "top")
+```
+
+
+
+
+---
+
+#### Table of frequency
+
+
 - We want to look at the **relative conditional frequencies**
-- They are usually in **contingency tables**
+- Conditional on the group they belong to. 
+- Intuition: re-scale by group size and calculate number of diabetics per 100 in each group.
+
+--
+- These are usually framed as **contingency tables**
   - Share with diabetes within urban sample
   - Share with diabetes within rural sample
 

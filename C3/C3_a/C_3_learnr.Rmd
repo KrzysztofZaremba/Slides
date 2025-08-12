@@ -1,0 +1,665 @@
+---
+title: "LearnR Tutorial: Estimators"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(ggplot2)
+library(dplyr)
+
+set.seed(123)
+
+# ---- Extremely non-normal population: Zero-Inflated Pareto ----
+POP_SIZE <- 5e5
+EXP_RATE <- 2
+population <- rexp(POP_SIZE, rate = EXP_RATE)
+
+# Population benchmarks
+pop_sd    <- sd(population)
+pop_iqr   <- IQR(population)
+pop_q995  <- as.numeric(quantile(population, 0.99))
+pop_median <- median(population)
+pop_mean   <- 1 / EXP_RATE   # true mu = E[X] for Exp(rate)
+pop_median <- median(population)
+
+set.seed(2025)
+N <- 20000
+base <- rnorm(N, mean = 120, sd = 18)
+surge <- rlnorm(N, meanlog = log(1.10), sdlog = 0.25)
+noise <- rnorm(N, mean = 0, sd = 8)
+orders_pop <<- pmax(35, base * surge + noise)
+true_mu <<- mean(orders_pop)
+true_sd <<- sd(orders_pop)
+
+spend_free <- c(157.80, 192.45, 210.20, 175.60, 198.30,
+                       180.90, 205.75, 185.20, 177.40, 195.60)
+
+```
+
+## Population
+```{r pop_plot, context="render"}
+plotOutput("pop_hist", height = 300)
+```
+```{r pop_plot_server, context="server"}
+output$pop_hist <- renderPlot({
+  df <- data.frame(x = population)
+  xmax <- pop_q995
+  ggplot(df, aes(x = x)) +
+    geom_histogram(aes(y = ..density..), bins = 120, color = "white", fill = "grey70") +
+    coord_cartesian(xlim = c(0, xmax)) +
+    labs(title = paste0("Exponential"),
+         x = "Value", y = "Density") +
+    theme_minimal()
+})
+```
+
+---
+
+## Panel A — Standard Deviation
+```{r ui_sd, context="render"}
+fluidPage(
+  numericInput("n_sd", "Sample size (n):", value = 30, min = 2, step = 1),
+  numericInput("B_sd", "Number of samples (B):", value = 1000, min = 50, step = 50),
+  actionButton("go_sd", "Simulate SD", class = "btn-primary"),
+  plotOutput("sd_dist", height = 280)
+)
+```
+```{r server_sd, context="server"}
+observeEvent(input$go_sd, {
+  n <- input$n_sd; B <- input$B_sd
+  sds <- replicate(B, sd(sample(population, size = n, replace = TRUE)))
+  output$sd_dist <- renderPlot({
+    ggplot(data.frame(stat = sds), aes(x = stat)) +
+      geom_histogram(bins = 50, fill = "steelblue", color = "white") +
+      geom_vline(xintercept = pop_sd, linetype = "dashed") +
+      labs(title = paste0("Sampling Distribution of SD (n=", n, ", B=", B, ")"),
+           x = "Sample SD", y = "Count") +
+      theme_minimal()+xlim(0,1)
+  })
+})
+```
+
+---
+
+## Panel B — Interquartile Range (IQR)
+```{r ui_iqr, context="render"}
+fluidPage(
+  numericInput("n_iqr", "Sample size (n):", value = 30, min = 2, step = 1),
+  numericInput("B_iqr", "Number of samples (B):", value = 1000, min = 50, step = 50),
+  actionButton("go_iqr", "Simulate IQR", class = "btn-primary"),
+  plotOutput("iqr_dist", height = 280)
+)
+```
+```{r server_iqr, context="server"}
+observeEvent(input$go_iqr, {
+  n <- input$n_iqr; B <- input$B_iqr
+  iqrs <- replicate(B, IQR(sample(population, size = n, replace = TRUE)))
+  output$iqr_dist <- renderPlot({
+    ggplot(data.frame(stat = iqrs), aes(x = stat)) +
+      geom_histogram(bins = 50, fill = "seagreen", color = "white") +
+      geom_vline(xintercept = pop_iqr, linetype = "dashed") +
+      labs(title = paste0("Sampling Distribution of IQR (n=", n, ", B=", B, ")"),
+           x = "Sample IQR", y = "Count") +
+      theme_minimal()+xlim(0,1)
+  })
+})
+```
+
+---
+
+## Panel C — 99th percentile
+```{r ui_max, context="render"}
+fluidPage(
+  numericInput("n_max", "Sample size (n):", value = 30, min = 2, step = 1),
+  numericInput("B_max", "Number of samples (B):", value = 1000, min = 50, step = 50),
+  actionButton("go_max", "Simulate 99th percentile", class = "btn-primary"),
+  plotOutput("max_dist", height = 280)
+)
+```
+
+```{r server_max, context="server"}
+observeEvent(input$go_max, {
+  n <- input$n_max; B <- input$B_max
+  maxs <- replicate(B, max(sample(population, size = n, replace = TRUE)))
+  output$max_dist <- renderPlot({
+    ggplot(data.frame(stat = maxs), aes(x = stat)) +
+      geom_histogram(bins = 50, fill = "tomato", color = "white") +
+      geom_vline(xintercept = pop_q995, linetype = "dashed") +
+      labs(title = paste0("Sampling Distribution of Max (n=", n, ", B=", B, ")"),
+           x = "Sample Max", y = "Count") +
+      theme_minimal()+xlim(0,5)
+  })
+})
+```
+
+---
+
+## Example 1: Estimator \( \hat{\theta}_2 = X_i \)
+- \( E(\hat{\theta}_2) = E(X_i) = \mu \) → **unbiased**.
+
+```{r ui_theta2, context="render"}
+fluidPage(
+  numericInput("B_t2", "Number of repetitions (B):", value = 3000, min = 100, step = 100),
+  actionButton("go_t2", "Simulate θ2 = Xᵢ", class = "btn-primary"),
+  plotOutput("theta2_plot", height = 300),
+  verbatimTextOutput("theta2_stats")
+)
+```
+
+```{r server_theta2, context="server"}
+observeEvent(input$go_t2, {
+  B <- input$B_t2
+  theta2 <- rexp(B, rate = EXP_RATE)
+  emp_mean <- mean(theta2)
+  emp_bias <- emp_mean - pop_mean
+  E_theta2 <- pop_mean
+
+  output$theta2_plot <- renderPlot({
+    ggplot(data.frame(theta = theta2), aes(x = theta)) +
+      geom_histogram(bins = 80, fill = "mediumpurple", color = "white") +
+      geom_vline(xintercept = pop_mean, linetype = "dashed", linewidth = 1) +
+      geom_vline(xintercept = emp_mean, linetype = "solid", linewidth = 0.8) +
+      labs(
+        title = expression(paste("Sampling Dist. of ", hat(theta)[2], " = X" [i] )),
+        x = expression(hat(theta)[2]), y = "Count"
+      ) +
+      theme_minimal()+xlim(0,2)
+  })
+
+  output$theta2_stats <- renderText({
+    paste0(
+      "True μ = ", round(pop_mean, 4),
+      "\nE[θ̂₂] (theoretical) = ", round(E_theta2, 4),
+      "\nSample mean of θ̂₂ = ", round(emp_mean, 4),
+      "\nEstimated bias = ", round(emp_bias, 4), "  (should be ~ 0)"
+    )
+  })
+})
+```
+
+---
+
+## Example 2: Estimator \( \hat{\theta}_3 = \frac{3X_1 + X_2}{5} \)
+- \( E(\hat{\theta}_3) = \frac{4}{5}\mu \) → **biased** (downward).
+- Bias \( = -\frac{1}{5}\mu \).
+
+```{r ui_theta3, context="render"}
+fluidPage(
+  numericInput("B_t3", "Number of repetitions (B):", value = 3000, min = 100, step = 100),
+  actionButton("go_t3", "Simulate θ3 = (3X₁ + X₂)/5", class = "btn-primary"),
+  plotOutput("theta3_plot", height = 300),
+  verbatimTextOutput("theta3_stats")
+)
+```
+
+```{r server_theta3, context="server"}
+observeEvent(input$go_t3, {
+  B <- input$B_t3
+  x1 <- rexp(B, rate = EXP_RATE)
+  x2 <- rexp(B, rate = EXP_RATE)
+  theta3 <- (3 * x1 + x2) / 5
+
+  E_theta3 <- (4/5) * pop_mean
+  emp_mean <- mean(theta3)
+  emp_bias <- emp_mean - pop_mean
+
+  output$theta3_plot <- renderPlot({
+    ggplot(data.frame(theta = theta3), aes(x = theta)) +
+      geom_histogram(bins = 80, fill = "goldenrod", color = "white") +
+      geom_vline(xintercept = pop_mean, linetype = "dashed", linewidth = 1) +
+      geom_vline(xintercept = emp_mean, linetype = "solid", linewidth = 0.8) +
+      labs(
+        title = expression(paste("Sampling Dist. of ", hat(theta)[3], " = (3X"[1], " + X"[2], ")/5")),
+        x = expression(hat(theta)[3]), y = "Count"
+      ) +
+      theme_minimal()+xlim(0,2)
+  })
+
+  output$theta3_stats <- renderText({
+    paste0(
+      "True μ = ", round(pop_mean, 4),
+      "\nE[θ̂₃] (theoretical) = ", round(E_theta3, 4), "  (= 4/5 μ)",
+      "\nSample mean of θ̂₃ = ", round(emp_mean, 4),
+      "\nEstimated bias = ", round(emp_bias, 4),
+      "  (theoretical bias = -μ/5 = ", round(-pop_mean/5, 4), ")"
+    )
+  })
+})
+```
+
+---
+
+## Example 3: Estimator = mean of 50 observations
+```{r ui_theta4, context="render"}
+fluidPage(
+  numericInput("B_t4", "Number of repetitions (B):", value = 3000),
+  actionButton("go_t4", "Simulate mean of 50 obs", class = "btn-primary"),
+  plotOutput("theta4_plot"),
+  verbatimTextOutput("theta4_stats")
+)
+```
+```{r server_theta4, context="server"}
+observeEvent(input$go_t4, {
+  B <- input$B_t4
+  theta4 <- replicate(B, mean(rexp(50, rate = EXP_RATE)))
+  emp_mean <- mean(theta4)
+  emp_bias <- emp_mean - pop_mean
+  output$theta4_plot <- renderPlot({
+    ggplot(data.frame(theta = theta4), aes(x = theta)) +
+      geom_histogram(bins = 80, fill = "skyblue", color = "white") +
+      geom_vline(xintercept = pop_mean, linetype = "dashed") +
+            geom_vline(xintercept = emp_mean, linetype = "solid") +
+      theme_minimal()+xlim(0,2)
+  })
+  output$theta4_stats <- renderText({
+    paste0("True μ = ", round(pop_mean, 4),
+           "\nSample mean = ", round(emp_mean, 4),
+           "\nEstimated bias = ", round(emp_bias, 4))
+  })
+})
+```
+
+---
+
+## Normal Approximation Problem — DiDi App Example
+```{r ui_didi, context="render"}
+fluidPage(
+  h3("DiDi Calls: Two Cities → One Total"),
+  fluidRow(
+    column(3, sliderInput("n_cancun", "Cancún sample size n₁:", min = 10, max = 500, value = 100, step = 10)),
+    column(3, sliderInput("n_pv",    "Puerto Vallarta sample size n₂:", min = 10, max = 500, value = 80,  step = 10)),
+    column(3, numericInput("p_cancun", "P(call) Cancún p₁:", value = 0.4, min = 0, max = 1, step = 0.01)),
+    column(3, numericInput("p_pv",     "P(call) PV p₂:",     value = 0.6, min = 0, max = 1, step = 0.01))
+  ),
+  fluidRow(
+    column(3, numericInput("threshold_calls", "Threshold T (more than T calls):", value = 100, min = 0, step = 1)),
+    column(3, numericInput("B_didi", "Number of samples (B):", value = 1, min = 1, step = 1)),
+    column(3, actionButton("sample_didi", "Draw B Samples",  class = "btn-info"))
+  ),
+  plotOutput("didi_plot_cancun", height = 280),
+  plotOutput("didi_plot_pv",     height = 280),
+  plotOutput("didi_plot_sum",    height = 280),
+  verbatimTextOutput("didi_stats"),
+  tags$small(HTML("All x-axes fixed to <b>[0, 120]</b>. Only simulated histograms shown."))
+)
+```
+```{r server_didi, context="server"}
+rv_didi <- reactiveValues(samp_x = NULL, samp_y = NULL, samp_s = NULL)
+
+render_all_didi <- function(){
+  emp_cancun <- NULL; emp_pv <- NULL; emp_sum <- NULL
+  if(!is.null(rv_didi$samp_x)){
+    emp_cancun <- data.frame(x = rv_didi$samp_x)
+  }
+  if(!is.null(rv_didi$samp_y)){
+    emp_pv <- data.frame(x = rv_didi$samp_y)
+  }
+  if(!is.null(rv_didi$samp_s)){
+    emp_sum <- data.frame(x = rv_didi$samp_s)
+  }
+
+  output$didi_plot_cancun <- renderPlot({
+    g <- ggplot(emp_cancun, aes(x = x)) +
+      geom_histogram(binwidth = 1, fill = "steelblue", alpha = 0.7, boundary = 0) +
+      scale_x_continuous(limits = c(0, 120)) +
+      labs(title = "Cancún: Calls", x = "Calls", y = "Frequency") +
+      theme_minimal()
+    g
+  })
+
+  output$didi_plot_pv <- renderPlot({
+    g <- ggplot(emp_pv, aes(x = x)) +
+      geom_histogram(binwidth = 1, fill = "darkorange", alpha = 0.7, boundary = 0) +
+      scale_x_continuous(limits = c(0, 120)) +
+      labs(title = "Puerto Vallarta: Calls", x = "Calls", y = "Frequency") +
+      theme_minimal()
+    g
+  })
+
+  output$didi_plot_sum <- renderPlot({
+    g <- ggplot(emp_sum, aes(x = x)) +
+      geom_histogram(binwidth = 1, fill = "purple", alpha = 0.7, boundary = 0) +
+      scale_x_continuous(limits = c(0, 120)) +
+      labs(title = "Total Calls: X+Y", x = "Total Calls", y = "Frequency") +
+      theme_minimal()
+    g
+  })
+
+  output$didi_stats <- renderText({
+    if(!is.null(rv_didi$samp_s)){
+      paste0("B = ", length(rv_didi$samp_s),
+             "\nMean total calls = ", mean(rv_didi$samp_s))
+    } else {
+      "No samples yet."
+    }
+  })
+}
+
+observeEvent(input$sample_didi, {
+  B <- input$B_didi
+  n1 <- input$n_cancun; p1 <- input$p_cancun
+  n2 <- input$n_pv;     p2 <- input$p_pv
+  rv_didi$samp_x <- rbinom(B, n1, p1)
+  rv_didi$samp_y <- rbinom(B, n2, p2)
+  rv_didi$samp_s <- rv_didi$samp_x + rv_didi$samp_y
+  render_all_didi()
+})
+```
+
+
+
+---
+
+## Visualizing the Connection: Normal vs Chi-square(1)
+```{r ui_norm_chi, context="render"}
+fluidPage(
+  sliderInput("t_chi", "Threshold t for X = Z² > t:", min = 0, max = 9, value = 1, step = 0.1),
+  actionButton("go_chi", "Update", class = "btn-primary"),
+  plotOutput("norm_chi_plot", height = 400),
+  verbatimTextOutput("norm_chi_stats")
+)
+```
+```{r server_norm_chi, context="server"}
+observeEvent(input$go_chi, {
+  tval <- input$t_chi
+  zc <- sqrt(tval)
+
+  # Densities for Normal and Chi-square(1)
+  zgrid <- seq(-4, 4, length.out = 1000)
+  dn <- dnorm(zgrid)
+
+  xmax <- max(8, 3*tval)
+  xgrid <- seq(0, xmax, length.out = 1000)
+  dchi <- dchisq(xgrid, df = 1)
+
+  # Probabilities (should match)
+  p_norm <- 2 * pnorm(-zc)                         # P(|Z| > sqrt(t))
+  p_chis <- pchisq(tval, df = 1, lower.tail = FALSE)  # P(X > t)
+
+  # Build tail data frames to avoid filling across the center
+  dfN_all   <- data.frame(x = zgrid, y = dn)
+  dfN_left  <- subset(dfN_all, x <= -zc)
+  dfN_right <- subset(dfN_all, x >=  zc)
+
+  dfC_all   <- data.frame(x = xgrid, y = dchi)
+  dfC_tail  <- subset(dfC_all, x > tval)
+
+  output$norm_chi_plot <- renderPlot({
+    # Side-by-side without extra packages
+    library(grid)
+
+    p1 <- ggplot() +
+      geom_line(data = dfN_all, aes(x = x, y = y)) +
+      geom_area(data = dfN_left,  aes(x = x, y = y), alpha = 0.6) +
+      geom_area(data = dfN_right, aes(x = x, y = y), alpha = 0.6) +
+      geom_vline(xintercept = c(-zc, zc), linetype = "dashed") +
+      labs(title = "Normal: tails P(|Z| > sqrt(t))", x = "z", y = "density") +
+      theme_minimal()
+
+    p2 <- ggplot() +
+      geom_line(data = dfC_all, aes(x = x, y = y)) +
+      geom_area(data = dfC_tail, aes(x = x, y = y), alpha = 0.6) +
+      geom_vline(xintercept = tval, linetype = "dashed") +
+      labs(title = expression(chi^2*"(1): P(X > t)"), x = "x", y = "density") +
+      theme_minimal()
+
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(1, 2)))
+    print(p1, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
+    print(p2, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
+  })
+
+  output$norm_chi_stats <- renderText({
+    paste0(
+      "P(|Z| > sqrt(t)) = ", signif(p_norm, 6),
+      "\nP(X > t)      = ", signif(p_chis, 6),
+      "\nDifference     = ", signif(abs(p_norm - p_chis), 6)
+    )
+  })
+})
+```
+
+---
+
+## Confidence interval
+
+```{r ui_ci_distance, context="render"}
+fluidPage(
+  h3("Distance of Sample Mean from Population Mean"),
+  fluidRow(
+    column(3, numericInput("mu_dist", HTML("&mu; (Population Mean)"), value = 50, step = 0.1)),
+    column(3, numericInput("sigma_dist", HTML("&sigma; (Population SD)"), value = 10, min = 0.0001, step = 0.1)),
+    column(3, numericInput("n_dist", HTML("n (Sample Size)"), value = 30, min = 1, step = 1)),
+    column(3, sliderInput("conf_level", "Confidence Level", min = 0.5, max = 0.999, value = 0.95, step = 0.005))
+  ),
+  fluidRow(
+    column(3, actionButton("draw_sample_dist", "Draw One Sample", class = "btn-primary"))
+  ),
+  plotOutput("dist_plot", height = 350),
+  verbatimTextOutput("dist_stats")
+)
+```
+
+```{r server_ci_distance, context="server"}
+observeEvent(input$draw_sample_dist, {
+  mu <- input$mu_dist; sig <- input$sigma_dist; n <- input$n_dist
+  se <- sig / sqrt(n)
+  conf <- input$conf_level
+  zcrit <- qnorm((1 + conf) / 2)
+
+  xbar <- mean(rnorm(n, mean = mu, sd = sig))
+  zval <- (xbar - mu) / se
+
+  output$dist_plot <- renderPlot({
+    curve(dnorm(x),
+          xlim = c(-3, 3),
+          main = "",
+          yaxs = "i",
+          xlab = "Standard Errors",
+          ylab = "",
+          lwd = 2,
+          axes = FALSE)
+
+    # Axis labels for μ ± z*·SE
+axis(1,
+     at = c(-1.96, 0, 1.96),
+     labels = c(
+       expression(mu - z[alpha/2] %*% frac(s, sqrt(n))),
+       expression(mu),
+       expression(mu + z[alpha/2] %*% frac(s, sqrt(n)))
+     ),
+     padj = 0.75
+)
+
+    # Shade CI around μ
+    transparent_color <- rgb(70, 130, 180, alpha = 50, maxColorValue = 255)
+    polygon(x = c(-zcrit, seq(-zcrit, zcrit, 0.01), zcrit),
+            y = c(0, dnorm(seq(-zcrit, zcrit, 0.01)), 0),
+            col = transparent_color)
+
+    # μ line
+    abline(v = 0, col = "red", lwd = 2)
+    # Sample mean line
+    abline(v = zval, col = "darkgreen", lwd = 2, lty = 2)
+
+    # Axis labels for x̄ ± z*·SE (centered on x̄)
+
+axis(3,
+     at = c(zval - zcrit, zval, zval + zcrit),
+     padj = -0.75,
+     labels = c(
+  expression(bar(x) - z[alpha/2] %*% frac(s, sqrt(n))),
+  expression(bar(x)),
+  expression(bar(x) + z[alpha/2] %*% frac(s, sqrt(n)))
+)
+)
+    text(zval, 0.05, bquote(bar(x) == .(round(xbar, 2))), pos = ifelse(zval > 0, 4, 2))
+    text(0, 0.2, paste0(round(conf*100, 1), "%"), col = "black", cex = 1.3)
+  })
+
+  L <- mu - zcrit*se; U <- mu + zcrit*se
+  L_xbar <- xbar - zcrit*se; U_xbar <- xbar + zcrit*se
+  output$dist_stats <- renderText({
+    paste0(
+      "x̄ = ", round(xbar, 3),
+      ",  μ = ", mu,
+      ",  SE = ", round(se, 3),
+      ",  z = ", round(zval, 3),
+      "\nInterval around μ: [", round(L,3), ", ", round(U,3), "]",
+      "\nInterval around x̄: [", round(L_xbar,3), ", ", round(U_xbar,3), "]",
+      "  at ", round(conf*100,1), "% confidence"
+    )
+  })
+})
+```
+
+
+---
+
+## Finding critical values in normal
+
+Find the critical values for a 99% confidence interval in a normal distribution.
+
+```{r addition, exercise=TRUE}
+
+qnorm(0.995) #quantiles from normal distribution
+
+```
+
+
+---
+
+## Practice
+
+Product analytics at a ride‑hailing company wants to estimate the **average ride fare** in a city this month. You’ll take a random sample of rides and build a 95% confidence interval for the mean fare.
+
+> You’ll get a hidden population `orders_pop` (thousands of past rides). Your job is to sample from it and compute a CI. At the end, you can click a button to reveal the true mean \(\mu\).
+
+
+
+```{r addition22, exercise=TRUE}
+# 0) Set seed to your student ID
+# set.seed(YOUR_STUDENT_ID)
+
+# 1) Take a random sample of 100 observations from orders_pop (without replacement)
+# sample_orders <- sample(orders_pop, size = _____, replace = _____)
+
+# 2) Calculate the sample mean and standard deviation
+# xbar <- _____(sample_orders)
+# s    <- _____(sample_orders)
+
+#xbar (you can see these values)
+#s
+
+# 3) Find the two-sided critical value for a 90% CI
+
+
+# 4) Compute the confidence interval for the mean
+# se <- 
+
+# 5) show your CI endpoints
+
+
+```
+
+### 🔎 Reveal the True Mean (after you try!)
+```{r ui_reveal_mean, context="render"}
+fluidPage(
+  actionButton("reveal_mean", "Reveal true mean μ", class = "btn-warning"),
+  verbatimTextOutput("true_mean_out")
+)
+```
+
+```{r server_reveal_mean, context="server"}
+observeEvent(input$reveal_mean, {
+  output$true_mean_out <- renderText({
+    paste0("True population mean μ = ", round(true_mu, 3),
+           "  (SD = ", round(true_sd, 3), ")")
+  })
+})
+```
+
+---
+
+## Finding critical values in student t 
+
+Find critical value for 80% confidence interval for data with 20 observations. How does it differ from the normal critical value?
+
+```{r addition56745, exercise=TRUE}
+
+qt(0.99,100) #quantiles from normal distribution
+
+```
+
+
+---
+
+## Practice with student T
+
+Your company implemented **free shipping** for a random group of customers and wants to know whether it **increased spending**.
+
+**Data (free‑shipping group, n = 10):** `spend_free`
+
+
+a) **Compute a 90% confidence interval** for the mean spending.
+
+```{r free_ship_ex, exercise=TRUE}
+# a) 90% confidence interval for the mean (t-based)
+# 1) n, x̄, s
+
+
+# 2) t critical value for 90% CI (two-sided)
+
+
+# 3) Standard error and CI
+
+
+# Print CI
+# c(ci_lower, ci_upper)
+
+```
+
+---
+
+## Finding critical values in chi square
+
+Find critical values for 90% confidence interval for variance for data with 20 observations.
+
+```{r addition5674523, exercise=TRUE}
+
+qchisq(0.11, 111) #these represent quantiles from chi square. First number is quantile, second number is degree of freedom. 
+qchisq(0.11, 111)
+
+```
+
+---
+
+## Practice for confidence interval of variance
+
+```{r sausage_variance_ci, exercise=TRUE}
+# Scenario: Sausage production quality control
+# We measure the fat content in sausages (in grams) and want a 99% CI for the variance.
+# Data: sample size n = 12, sample variance s2 = 20 (grams^2)
+# Assumption: ?
+
+
+##save statistics you need (n,s2 etc)
+
+
+# Find Chi-square critical values
+lower_crit <- 
+upper_crit <- 
+
+# Compute 99% confidence interval for variance
+lower_ci <- 
+upper_ci <- 
+
+lower_ci
+upper_ci
+```
+

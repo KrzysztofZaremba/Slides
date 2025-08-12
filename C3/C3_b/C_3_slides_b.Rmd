@@ -148,120 +148,6 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 ```
 
-
----
-### Sampling distribution
-
-- Assume we have $n>30$
-  - CLT applies and $\bar{X} \sim N(\mu_X, \frac{\sigma_X}{\sqrt n})$ 
-
---
-- We want to find $k_1$ and $k_2$, such that:
-  - $P(k_1<\bar{X}<k_2)=0.95$, so
-  
---
-  - $P(\bar{X}<k_1)=0.025$ and $P(\bar{X}>k_2)=0.025$  (or  $P(\bar{X}<k_2)=0.975$)
-  
---
-- Trick is to standardize the variable:
-  
-$$P(\bar{X}<k_2)=P(\bar{X}-\mu_X<k_2-\mu_X)=P(\underbrace{\frac{\bar{X}-\mu_X}{ \frac{\sigma_X}{\sqrt n}}}_{Z \sim N(0,1)}<\underbrace{\frac{k_2-\mu_X}{ \frac{\sigma_X}{\sqrt  n}}}_{k_2'})$$
---
-In probability tables, we can find $k_2'$, such that $P(Z<k_2')=0.975$ 
-
----
-```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
-
-curve(dnorm(x),
-      xlim = c(-3, 3),
-      main = "Standard normal",
-      yaxs = "i",
-      xlab = "z",
-      ylab = "",
-      lwd = 2,
-      axes = "F")
-
-# add x-axis
-axis(1, 
-     at = c(-1.96, 0, 1.96), 
-     padj = 0.75,
-     labels = c(expression(-1.96),
-                expression(mu),
-                expression(1.96)))
-
-# shade the tails for the 2.5% regions
-polygon(x = c(-3, seq(-3, -1.96, 0.01), -1.96),
-        y = c(0, dnorm(seq(-3, -1.96, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
-
-polygon(x = c(1.96, seq(1.96, 3, 0.01), 3),
-        y = c(0, dnorm(seq(1.96, 3, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
-
-# add vertical line at the mean (mu)
-abline(v = 0, col = "red", lwd = 2)
-
-# add the "2.5%" labels on tails
-text(-2.2, 0.1, "2.5%", col = "black", cex = 1.5)
-text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
-
-```
-
-- It's 97.5% quantile of standard normal: $k_2'=v_{0.975}^Z=1.96$. $P(Z<v_{0.975})=P(Z<1.96)=0.975$
-
---
-- Let's go back to $k_2'=\frac{k_2-\mu_X}{ \frac{\sigma_X}{\sqrt n}}$, from which we can back-out $k_2$
-
---
-  - $k_2=\mu_X+k_2'\frac{\sigma_X}{\sqrt n} =\mu_X+1.96\frac{\sigma_X}{\sqrt n}$
-
---
-- By symmetry of normal, $k'_1=-k'_2$, so $k_1=\mu_X+\frac{\sigma_X}{\sqrt n} k_1'=\mu_X-1.96\frac{\sigma_X}{\sqrt n}$
-
-
----
-```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
-
-curve(dnorm(x),
-      xlim = c(-3, 3),
-      main = "Standard normal",
-      yaxs = "i",
-      xlab = "z",
-      ylab = "",
-      lwd = 2,
-      axes = "F")
-
-# add x-axis
-axis(1, 
-     at = c(-1.96, 0, 1.96), 
-     padj = 0.75,
-     labels = c(expression(-1.96),
-                expression(mu),
-                expression(1.96)))
-
-# shade the tails for the 2.5% regions
-polygon(x = c(-3, seq(-3, -1.96, 0.01), -1.96),
-        y = c(0, dnorm(seq(-3, -1.96, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
-
-polygon(x = c(1.96, seq(1.96, 3, 0.01), 3),
-        y = c(0, dnorm(seq(1.96, 3, 0.01)), 0),
-        col = "steelblue", alpha = 0.2)
-
-# add vertical line at the mean (mu)
-abline(v = 0, col = "red", lwd = 2)
-
-# add the "2.5%" labels on tails
-text(-2.2, 0.1, "2.5%", col = "black", cex = 1.5)
-text(2.2, 0.1, "2.5%", col = "black", cex = 1.5)
-
-```
-
-- Another way to see it: 
-  - Our variable is a linear transformation of a standard normal: $\bar{X}=\mu_X+\frac{\sigma_X}{ \sqrt  n} Z$
-  
---
-  - So its percentiles are linear transformation of st.nor. quantiles:  $v_{0.975}^\bar{X}=\mu_X+\frac{\sigma_X}{\sqrt  n}v_{0.975}^Z$
 ---
 
 ### Yet another way to see it
@@ -474,10 +360,6 @@ abline(v = 0, col = "red", lwd = 2)
 text(0, 0.2, "99.5%", col = "black", cex = 1.5)
 text(3.5, 0.1, "0.5%", col = "black", cex = 1.5)
 ```
-<center>
-<img src=prob_table_normal.png width="800">
-</center>
-
 
 ---
 ### Constructing CI: example
@@ -548,16 +430,14 @@ Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, 
 ---
 ### Practice
 
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
+In learnr:
 
+0. Set seed to to your student id. 
+1. Take a sample of 100 observations from the data
+2. Calculate the mean and standard deviation of the sample
+3. Find critical value
+4. Compute confidence interval
 
-
----
-### Practice
-
-Suppose we want to know what is the average commute time for ITAM students. We take a sample of 60 students. We calculate sample mean to be $\bar{x}=23$ and sample standard deviation to be $\sum x^2=35516$. Calculate 99% confidence interval and say whether interpratation is correct:
-
-<iframe src="https://embed.polleverywhere.com/multiple_choice_polls/jQZ2Q2wEZCkCFm9nyHpSp?controls=none&short_poll=true" width="800px" height="450px"></iframe>
 ---
 
 ### What critical values?
@@ -689,12 +569,13 @@ text(3, 0.2, "2.5%", col = "black", cex = 1.5)
 ---
 ### Example
 
-- $n=10 \rightarrow df=9$
-- Confidence level is 95% $\rightarrow1-\alpha=0.95$ and $\frac{\alpha}{2}=0.025$
-- What's $t_{0.025,9}$ such that $P(T<t_{0.025,9})=0.975$
-<center>
-<img src=t_student_table.png width="1000">
-</center>
+- Practice in learnr finding critical values using the code:
+
+```r
+qt(quantile, degrees_of_freedom)
+#ex
+qt(0.975, 9)
+```
 
 ---
 - $n=10 \rightarrow df=9$
@@ -747,7 +628,7 @@ $$\small \{\bar{x}- t_{\frac{\alpha}{2},n-1}*\frac{s}{\sqrt n}, \bar{x}+ t_{\fra
 
 
 ---
-### Practice:
+### Practice in learnr:
 
 Your company implemented free shipping for a random group of customers. They want to know whether it increased spending.
 Here is your data:
@@ -756,11 +637,6 @@ $157.80, $192.45, $210.20, $175.60, $198.30, $180.90, $205.75, $185.20, $177.40,
 
 
 a) Calculate 90% confidence interval. What assumptions you need?
-
---
-
-- Hint 1: $\sum_ix_i=1869.80$
-- Hint 2: $\sum_ix_i^2=361752.55$
 
 --
 
@@ -832,17 +708,15 @@ So more generally, the confidence interval for the sample variance is
 
 $$CI_{1-\alpha}=\{\frac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2},n-1}}, \frac{(n-1)S^2}{\chi_{\frac{\alpha}{2},n-1}}\}$$
 - Where $\chi_{1-\frac{\alpha}{2},n-1}$ and $\chi_{\frac{\alpha}{2},n-1}$ are quantiles of $\chi_{n-1}$ distribution, such that $P(X<\chi_{1-\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$ and $P(X<\chi_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$
-- You can read them off the tables
+- You can find them in R using: 
+
+```r
+qchisq(alpha, df)
+```
 
 ---
-### Practice
+### Practice in learnr
 
 Suppose you produce sausages. As a quality control, you measure the level of fat in your sausages. You take a random sample of 12 sausages and you find the variance of 20  ( $grams^2$ ). Find 99% confidence interval for the variance. What assumptions you need?
 
 ---
-### Exercises:
-
-- Review Exercises:
-  - PDF 4: 1,2,3,4,5,6,7,8,9
-  
-
