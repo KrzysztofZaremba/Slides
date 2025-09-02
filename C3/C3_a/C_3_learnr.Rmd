@@ -5,6 +5,7 @@ output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
+## Population
 
 ```{r setup, include=FALSE}
 library(learnr)
@@ -41,7 +42,7 @@ spend_free <- c(157.80, 192.45, 210.20, 175.60, 198.30,
 
 ```
 
-## Population
+
 ```{r pop_plot, context="render"}
 plotOutput("pop_hist", height = 300)
 ```
@@ -59,6 +60,7 @@ output$pop_hist <- renderPlot({
 ```
 
 ---
+
 
 ## Panel A — Standard Deviation
 ```{r ui_sd, context="render"}
@@ -663,3 +665,363 @@ lower_ci
 upper_ci
 ```
 
+---
+
+## Testing intuition 
+Take a sample of 36 when true mean is 98
+
+```{r t1, exercise=TRUE}
+# 0) Set seed to your student ID
+set.seed(3)
+x_98 <- rnorm(n =36, mean = 100, sd = 20) # take a sample of 10 from normal with mean of 98 and sd of 15
+mean(x_98)
+
+```
+Take a sample of 36 when true mean is 108
+
+```{r t2, exercise=TRUE}
+
+x_108 <- rnorm(n = 36, mean = 108, sd = 20) # take a sample of 10 from normal with mean of 98
+mean(x_108)
+
+```
+
+
+
+---
+
+## Probability of incorrectly rejecting the null (Type 1 error)
+
+
+```{r t123, exercise=TRUE}
+
+# Generate sample means
+means_98 <- replicate(1000, mean(rnorm(36, mean = 100, sd = 20))) # generate 100 samples and calculate mean in each of them
+head(means_98)
+
+
+hist(means_98, main="Sampling Distribution of Mean (μ=98)", xlab="Sample mean")
+
+#standardize them
+#standardized_means=
+#head(standardized_means)
+
+#sum(standardized_means>1.645)
+```
+
+---
+
+## Critical values
+
+Finding critical value for a given level of type 1 error
+
+```{r error_prob, exercise=TRUE}
+qnorm(0.95) #quantiles from normal distribution
+
+```
+
+---
+
+## Probability of incorrectly rejecting the null (Type 2 error)
+
+
+```{r t1234, exercise=TRUE}
+
+# Generate sample means
+means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20))) # generate 100 samples and calculate mean in each of them
+head(means_110)
+
+
+hist(means_110, main="Sampling Distribution of Mean (μ=105)", xlab="Sample mean")
+
+#standardize them
+#standardized_means=  #note that you standarize them accoring to your null hypothesis. You don't know the true mean in  real life
+#head(standardized_means)
+
+#sum(standardized_means<1.645)
+```
+
+---
+
+## Type 2 error
+
+```{r t12345, exercise=TRUE}
+
+pnorm(-1)
+```
+
+---
+
+## Power
+
+
+```{r t1233234, exercise=TRUE}
+
+# Generate sample means
+means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20))) # generate 100 samples and calculate mean in each of them
+head(means_110)
+
+
+hist(means_110, main="Sampling Distribution of Mean (μ=105)", xlab="Sample mean")
+
+#standardize them
+#standardized_means=  #note that you standarize them accoring to your null hypothesis. You don't know the true mean in  real life
+#head(standardized_means)
+
+#sum(standardized_means>1.645)
+```
+
+---
+
+
+## Power exercise:
+
+Airbnb wants to test whether offering professional photographic services to hosts increases weekly revenue per listing.
+
+You need to design the test which will have a good power and will be cheap to make (low n). 
+
+- Design. Run an A/B experiment with equal-sized groups:
+  - Control (A): no photos (baseline) $\mu_0=2000$.
+  - Treatment (B): professional photos. You suspect it increases revenue by to $\mu_a=2200$.
+
+- Assume that standard deviation of weekly revenue is $\sigma=600$.
+- Suppose your take a sample of 100
+- And you want type one error probability to be 1% 
+
+
+#### Step 0 — State the hypotheses 
+
+
+#### Step 1 - Find the critical value
+
+```{r ex_power_1, exercise=TRUE}
+
+```
+
+
+#### Step 2 — Write down the formula for the power
+
+```{r ex_power_2, exercise=TRUE}
+n=100
+sigma=600
+u0=2000
+ua=2200
+crit_value=qnorm(0.99)
+
+
+```
+
+
+Providing photographic services is costly, what is the minimum $n$ so you still get power of 80%?
+
+#### Step 3 — Find relevant n
+
+```{r ex_power_3, exercise=TRUE}
+
+
+```
+
+
+What if we flip the hypothesis? - We want to check whether it decreases revenue?
+
+```{r ex_power_4, exercise=TRUE}
+n=100
+sigma=600
+u0=2000
+ua=2200
+crit_value=qnorm(0.99)
+
+
+```
+
+---
+
+## One-Sample t-test: Tweet Engagement
+
+Suppose the marketing team at **Twitter/X** wants to test whether  
+their new campaign is generating at least **200 likes per tweet** on average.  
+
+We collect a random sample of 50 tweets from the campaign and measure their number of likes. Suppose 5% significance level. 
+
+ 
+```{r setup-tweets, include=FALSE}
+set.seed(124)
+
+# Generate synthetic tweet likes around mean ~210 with some variation
+tweets <- data.frame(
+  likes = rnbinom(50, size = 20, mu = 190)  # 50 tweets
+)
+```
+
+Step 1. Set up the hypothesis
+
+
+Step 2. Calculate the test statistic
+
+```{r ex_tw1, exercise=TRUE , exercise.setup="setup-tweets"}
+
+Mean=___ # mean of tweets
+S=___ # standard deviation of tweets
+SE=_____ #standard error of the estimator
+
+Test_stat=(M-200)/SE
+
+
+
+```
+
+
+Step 3. Find the critical value
+
+```{r ex_tw2, exercise=TRUE , exercise.setup="setup-tweets"}
+
+
+
+```
+
+Step 4. Conclude
+
+
+
+Would you reject at 1%?
+What is the smallest alpha at which you would still reject?
+
+```{r ex_tw3, exercise=TRUE , exercise.setup="setup-tweets"}
+
+
+```
+
+
+---
+
+## P values
+
+
+We want to test weather a coin is fair:  
+
+- **H₀:** π = 0.50 (the coin is fair)  
+- **H₁:** π ≠ 0.50 (the coin is biased)  
+
+Suppose we toss a coin 100 times and observe **58 heads**.  What is the p-value?
+
+```{r ex_coin_1, exercise=TRUE}
+
+# Proportion of heads observed
+
+
+# What's the variance if the null is true?
+
+
+# What's the Standard error of the estimator
+
+
+# Test statistic
+
+
+# p-value
+
+
+```
+
+
+
+---
+
+## Two Sample Difference, Airbnb Example
+
+Find the p-value fort the hypothesis that they mean prices are equal.
+
+```{r ex_0131, exercise=TRUE}
+
+C=1245
+D=869
+SDC=962
+SDD=693
+nC=100
+nD=100
+
+
+
+
+
+```
+
+Do we reject at 10%, 5%, 1%?
+
+---
+
+## AB Testing Randomization
+
+Before this exercise - load the data on airbnb Listings
+
+Step 1: Let's first take a random sample of 2000 listings for our experiment
+```{r ex_AB_1, exercise=TRUE}
+#load your listing data - replace with your directory
+load("C:/Users/kzysi/Dropbox/Itam_teaching/Markdowns/Intro_to_r/listings.Rda")
+
+listings$bed_num=as.numeric(listings$beds) ##transform number of beds to numeric and 
+listings=listings[!is.na(listings$bed_num),] ### keep only those with a valid number of beds
+exp_listings <- listings[sample(nrow(listings), size = 2000, replace = FALSE), ]
+
+
+```
+
+Step 2: Let's randomize them into treatment and control group
+  - With 50% probability you are in the treatment, otherwise in control
+```{r ex_AB_2, exercise=TRUE, exercise.setup="ex_AB_1"}
+
+exp_listings$group <- ifelse(rbinom(nrow(exp_listings), 1, 0.5) == 1, "Treatment", "Control") #I draw a bernouill variable (binomial with n=1) for everyone. If you got 1, you are treated, if 0 you got control
+
+table(exp_listings$group)
+
+```
+
+
+Step 3: Let's check if number of beds and neighborhoods are more or else equally distributed among the two groups
+```{r ex_AB_3, exercise=TRUE, exercise.setup="ex_AB_2"}
+##transform to numeric
+A=exp_listings$bed_num[exp_listings$group=="Treatment"]
+B=exp_listings$bed_num[exp_listings$group=="Control"]
+
+(mean(A)-___)/sqrt(var(A)/___+var(B)/___) #t statistic for difference in means
+
+
+#how would you check if the distribution across neighborhoods is equal?
+table(exp_listings$neighbourhood_cleansed,exp_listings$group) 
+
+```
+
+Now we can organize photography for the treatment group and run the experiment! After a month we run a test to see if they have higher number of bookings. This would be a causal difference due to photography, because everything else is the same across the two groups!
+
+---
+
+## Paired Data test for means
+
+A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using  α=0.01 test the hypothesis that IQ decreases with age.
+ 
+
+```{r ex_0131342342, exercise=TRUE}
+n=100
+Diff=8
+SD=7
+alpha=0.01
+
+
+```
+
+
+
+
+
+---
+
+## Paired Data Test for Correlation
+
+Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending. You calculated the correlation coefficient of 0.45. Can you reject null of 
+ρ=0 in favor of alternative  ρ≠0 at 5% significance level?
+
+```{r ex_01313423443432, exercise=TRUE}
+
+```
+
+---

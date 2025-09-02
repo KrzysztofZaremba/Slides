@@ -178,7 +178,8 @@ magick::image_read_pdf("Rejection.pdf",
 ---
 ### Testing procedure: Example
 
-- Suppose $\sigma_x=20$. When would we reject?
+- Suppose I reject if $z>1.645$
+- Suppose $\sigma_x=20$. How big needs to be the mean to reject the null?
 
 --
 
@@ -212,27 +213,102 @@ Reject if:
 
 
 ---
+### Testing procedure up to now
+
+1. Set up your hypothesis
+2. Calculate your test statistic
+3. Check it against the rejection region
+4. Decision: Reject or not your null hypothesis
+
+We will now go into details of all these steps. 
+
+---
+layout: false
+class: inverse, middle
+
+# Decision errors
+
+---
 
 ### Decision errors
 
-- Suppose that the null is true and $\mu_s=100$
+
+|             | Do not reject $H_0$ | Reject $H_0$ in favor of $H_A$ |
+| ----------- | ------------------- | ------------------------------- |
+| $H_0$ true  | Okay                | Type 1 Error                    |
+| $H_A$ true  | Type 2 Error        | Okay                            |
+
+- $H_0$: You are not pregnant
+- $H_1$: You are pregnant
+
+--
+.center[
+<img src="pregnancy.jpg" style="width:50%">
+]
+---
+### Decision errors
+
+Do people spend more if they get free shipping? ($H_0$ is that they spend the same)
+
+--
+
+- .blue[Type 1 error]: reject null when $H_0$ is true
+  - Conclude that people spend more when they got free shipping, while in reality they spend the same as those who didn't
+
+--
+- .blue[Type 2 error]: don't reject null when $H_A$ is true
+  - Conclude that people who got free shipping spend the same as those without free shipping, while those with free shipping spend more
+
+--
+- Imagine a trial of a murderer and suppose $H_0$ is innocent, and $H_1$ is guilty. 
+- Describe error type 1 and 2 in these scenarios
+
+--
+  - Type 1: Convict an innocent
+  - Type 2: Do not convict a murderer
+
+--
+- Probability of making type 1 error is $\alpha$
+  - It's also called .blue[size], or .blue[significance level] of the test
+  - We don't want to incorrectly reject null more than $\alpha$*100 percent of times. 
+
+--
+- Probability of making type 2 error is $\beta$
+  - To calculate $\beta$, you need to know the true $\mu$
+
+
+---
+
+### Probability of type 1 error
+
+- In the sugar sticker example, suppose that the null is true and $\mu_s=100$
 
 --
 - You take a sample of 36. 
 
---
-- But you were very unlucky in your sampling, so by chance you actually got a sample with those rare packages with  a lot of sugar and your $\bar{x}=106$
+
 
 --
-- According to the test procedure, you reject the null
+- Example:  You were very unlucky in your sampling, by chance you  got a sample with those rare packages with  a lot of sugar and your $\bar{x}=106$ which means $z=\frac{106-100}{\frac{20}{\sqrt{36}}}=1.8$. According to the test procedure, you reject the null. You make an error.
 
 --
-- You make an error
+- Q: What is the probability that (standarized) mean of these 36 is in the rejection region (larger than 1.645)?
+
 
 --
 - What's the probability of making such error?
 
-$$\alpha=P(\text{Type 1 error})=\underbrace{P_{H_0}(\bar{X}>105.483)}_{\text{Pr. if null is true}}=P(Z>1.645)=1-\underbrace{\Phi(1.645)}_{\text{Normal CDF}}$$
+$$\small 
+\alpha = P(\text{Type I error}) 
+   = \underbrace{P_{H_0}(\bar{X} > 105.483)}_{\text{Pr. if null is true}} 
+   = P_{H_0}\!\left( \frac{\bar{X} - 100}{20/\sqrt{36}} > 
+       \frac{105.483 - 100}{20/\sqrt{36}} \right)$$
+
+$$\small 
+\overset{\text{(CLT)}}{=} P(Z > 1.645) 
+   = 1 - \underbrace{\Phi(1.645)}_{\text{Normal CDF}}$$
+
+---
 
 
 ```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
@@ -266,71 +342,82 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 
 ```
 
----
-
-### Decision errors
-
-
-|             | Do not reject $H_0$ | Reject $H_0$ in favor of $H_A$ |
-| ----------- | ------------------- | ------------------------------- |
-| $H_0$ true  | Okay                | Type 1 Error                    |
-| $H_A$ true  | Type 2 Error        | Okay                            |
-
-- $H_0$: You are not pregnant
-- $H_1$: You are pregnant
+--
+- Higher critical value = lower chance of mistake (lower $\alpha$)
+- Lower critical value = higher chance of mistake (higher $\alpha$)
 
 --
-.center[
-<img src="pregnancy.jpg" style="width:50%">
-]
----
-### Decision errors
 
-Do prople spend more if they get free shipping? ($H_0$ is that they spend the same)
-
-- .blue[Type 1 error]: reject null when $H_0$ is true
-  - Conclude that people spend more when they got free shipping, while in reality they spend the same as those who didn't
+- Choosing critical value determines $\alpha$
+- Or symmetrically, choosing $\alpha$ determines critical value
+- We usually choose $\alpha$ and this will determine the rejection region. 
 
 --
-- .blue[Type 2 error]: don't reject null when $H_A$ is true
-  - Conclude that people who got free shipping spend the same as those without free shipping, while those with free shipping spend more
 
---
-- Imagine a trial of a murderer and suppose $H_0$ is innocent, and $H_1$ is guilty. 
-- Describe error type 1 and 2 in these scenarios
-
---
-  - Type 1: Convict an innocent
-  - Type 2: Do not convict a murderer
-
---
-- Probability of making type 1 error is $\alpha$
-  - It's also called .blue[size], or .blue[significance level] of the test
-  - We don't want to incorrectly reject null more than $\alpha$*100 percent of times. 
-
---
-- Probability of making type 2 error is $\beta$
-  - To calculate $\beta$, you need to know the true $\mu$
+- What would be the critical value for $\alpha=0.1$?
+- What would be the critical value for $\alpha=0.01$?
+- What would be the critical value for $\alpha=0$?
 
 ---
 ### Probability of type 2 error
-- In our example (and valid only for this example): $\mu_s$ is true sugar content
-- We reject if $\scriptsize z=\frac{\bar{x}-100}{\sigma_x/ \sqrt 36}>1.645$
-- Or equivalently if $\scriptsize \bar{X}>105.483=\mu_0+\underbrace{z_{\alpha}}_{Crit.Val:1.645}*\frac{\sigma_x}{\sqrt n}$
 
-- Type 2 error is if we don't reject when alt. is true
+- What's the probability our sample shows mean sugar content below critical value, if the true sugar content is above 100?
+
+--
+- What is the probability we do not reject the null, although the alternative is true?
+- If I take 10000 samples from distribution with true mean>10000, what share of sample means will fall below the rejection region?
+--
+
+- In our example 
+$$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(z<1.645)}_{\text{Pr. if alt is true}}=P_{H_A}(\frac{\bar{x}-100}{20/ \sqrt 36}<1.645)$$
+--
+- Problem: How is $\small \frac{\bar{x}-100}{20/ \sqrt 36}$ distributed if the alternative is true?
+
+--
+- CLT does not apply to: $\small  \frac{\bar{x}-100}{20/ \sqrt 36}$ because 100 is not the true mean under the alternative
+
+
+--
+- To calculate it, we need to specify what is the true mean. Say $\mu_s=110$
+- Then CLT applies to: $\small  \frac{\bar{x}-110}{20/ \sqrt 36}$ 
+
+---
+
+
+### Probability of type 2 error
+
+- We need to rewrite it so we have $\frac{\bar{x}-110}{20/ \sqrt 36}$ on the left hands side. 
+
+
+$$\scriptsize \beta
+= P_{H_A}(\frac{\bar{x}-100}{20/ \sqrt 36}<1.645)=P_{H_A}(\bar X < 105.483)
+= P\!\left(\frac{\bar X-110}{20/\sqrt{36}}
+< \frac{105.483-110}{20/\sqrt{36}}\right)$$
+
+--
+
+- Now this becomes: 
+$$\small P\!\left(z
+< \frac{105.483-110}{20/\sqrt{36}}\right)=P(z<-1.3551)$$
+- Where z is normally distributed thanks to CLT
+
+---
+### Probability of type 2 error
+
+- More generally for this type of test:
+
 $$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(\bar{X}<105.483)}_{\text{Pr. if alt is true}}=\underbrace{P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n})}_{\text{Pr. if alt is true}}=P(\frac{\bar{X}-\mu_s}{\sigma_x/ \sqrt n}<\frac{\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n}-\mu_s}{\sigma_x/ \sqrt n})$$
-Rearranging and applying to our example
-$$\scriptsize \beta=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}==\underbrace{\Phi(\frac{100-\mu_s}{20/ \sqrt{36}}+1.645\frac{20}{\sqrt 36})}_{\text{Normal CDF}}=\underbrace{\Phi(\frac{105.483-\mu_s}{20/ \sqrt{36}})}_{\text{Normal CDF}}$$
 
-- depends on what true $\mu$ is and where our rejection region is!
+- Depends on what true $\mu$ is and where our rejection region is!
+
+
 - When you decrease probability of error type 1, you increase the probability of error type 2
 
 
 ---
 ### Trade-off between type 1 and 2 errors
 
-$$\beta=P(\text{Type 2 error}) \beta=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$
+$$\beta=P(\text{Type 2 error})=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$
 
 $$\alpha=P(\text{Type 1 error})=P(Z>z_{\alpha})=1-\underbrace{\Phi(z_{\alpha})}_{\text{Normal CDF}}$$
 If I change critical value $z_{\alpha}$, it will have the opposite effect on them. 
@@ -343,36 +430,26 @@ Source: https://shiny.rit.albany.edu/stat/betaprob/
 ### Power of a test
 
 - Power of a test is the probability of rejecting if alternative is true
-- Power will be different for any possible value of the alternative
-- Notice that 
+- Power will be different for any possible value of the alternative and hypothesis 
+- Power for one sided test 
 
 $$Power=P_{H_A}(Reject)=1-\underbrace{P_{H_A}(\text{Not Reject})}_{\text{type 2 error}}=1-\beta$$
 
+$$Power=1-P(z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})$$
+
 Source: https://shiny.rit.albany.edu/stat/betaprob/
-
----
-### Power of a test 
-- Let's go back to sugar example. Our rule was reject $H_0$ if $z>1.645$. 
-- Suppose $\mu_s=110$ and $\sigma=20$. Let's calculate power of the test:
-
---
-
-$$\scriptsize P_{H_A}(Z_{test}>1.645)=P_{H_A}(\frac{\bar{X}-100}{\underbrace{ \sigma_x/ \sqrt 36}_{SE}}>1.645)=P_{H_A}(\frac{\bar{X}-\mu_0}{\underbrace{ \sigma_x/ \sqrt n}_{SE}}>z_{\alpha})=P_{H_A}(\bar{X}>\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n})=P_{H_A}(\bar{X}>105.483)$$
---
-
-- To calculate this probability, let's standarize $\bar{X}$:
-  - We subtract the true mean of the distribution and the standard deviation
-
-$$\scriptsize P_{H_A}(\frac{\bar{X}-\mu_s}{ \sigma_x/ \sqrt n}>\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=P_{H_A}(\frac{\bar{X}-\mu_s}{ \sigma_x/ \sqrt n}>\frac{-10}{20/ \sqrt 36}+1.645)=P_{H_A}(\underbrace{\frac{\bar{X}-\mu_s}{ \sigma_x/ \sqrt n}}_{st.normal}>-1.355)=0.9115$$
-Then: $\scriptsize \beta=1-0.9115=0.0885$
- 
---
 
 Power increases if:
 - n increases
 - Alternative is further away from the null
 - $\sigma$ decreases
 - $\alpha$ increases
+
+---
+
+### A/B Test Power: Professional Photos and Weekly Revenue
+
+In Learnr
 
 ---
 
@@ -711,57 +788,6 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 $$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 
----
-### Tests for Variance
-Test for variance has the same idea, but different distribution of the test statistic.
-Suppose you have an IID sample from .blue[normal distribution] 
-
-**Test statistic** for $H_0: \sigma=\sigma_0$  and its distribution if null is true is:
-$$\small \chi_{test}=  \frac{(n-1)S^2}{\sigma _{0}^{2}}\sim \chi_{n-1}$$
-It is distributed as a Chi-square with n-1 degrees of freedom if null is true:
-
---
-**Rejection regions:**
-1. $\small H_A: \sigma \neq\sigma_0$
-  - Reject null if  $\small \chi_{test}<\chi_{\frac{\alpha}{2},n-1}$ or $\small \chi_{test}>\chi_{1-\frac{\alpha}{2},n-1}$
-
---
-2. $\small H_A: \sigma < \sigma_0$
-  - Reject null if $\small \chi_{test}<\chi_{\alpha,n-1}$
-
---
-3. $\small H_A: \sigma > \sigma_0$
-  - Reject null if $\small \chi_{test}>\chi_{1-\alpha,n-1}$
-
---
-Where:
-- $\small \chi_{\alpha,n-1}$ is $\small \alpha$ quantile of $\chi_{n-1}$
-- $\small \chi_{1-\alpha,n-1}$ is $\small 1-\alpha$ quantile of $\chi_{n-1}$
-- $\small \chi_{df}$ distribution is not symmetric around 0!
-
-
----
-
-**Exercise**
-
-Suppose you are a ham producer. As you need to stick to the nutritional guidelines, the standard deviation of the fat content in your product needs cannot be larger than 0.1. You take a sample of 16 hams and you want to test this. Suppose $s=0.2$ and $\alpha=0.05$
-
---
-1. Write down the hypotheses of the test
-
---
-- Remember test statistic is about variance
-
---
-2. What is type 1 and type 2 error in this context
-
-
---
-3. Test the claim at 5% significance level. State assumptions you need to implement it
-
-
---
-4. What is 95% confidence interval for variance
 ---
 
 ### P-values
@@ -1180,143 +1206,125 @@ We suspect Burger King might have larger caloric content for kids' meal. Let's t
 - At which $\alpha$ we reject the null?
 
 
-
 ---
 
-### Comparing variances in two samples
+## A/B Testing: The Business Question
 
-**Example Problem 1:** is price dispersion the same in clean or dirty apartments?
-
-**Example Problem 2:** is variance of prices of two stocks the same?
-
-We need a test for variances in two different samples.
-
-
----
-### Hypothesis testing with variances
-
-- Suppose you have an iid sample $X_1,X_2,...X_n$ and iid sample $Y_1,Y_2,...Y_m$, both from .blue[normal distributions]
-- Denote $s^2_1$ and $s^2_2$ their sample variances and $\sigma^2_1$ and $\sigma^2_2$ their population variances
-
-**Test Statistic** and its distribution under the null is:
-
-Null hypothesis: $\small H_A: \sigma_1 = \sigma_2$
-$$F_{test}=\frac{s^2_1}{s^2_2} \sim F_{n-1,m-1}$$
-
-
-**Rejection region**
-1. $\small H_A: \sigma_1 \neq\sigma_2$
-  - Reject null if  $\small F_{test}<F_{\frac{\alpha}{2},n-1,m-1}$ or $\small F_{test}>F_{1-\frac{\alpha}{2},n-1,m-1}$
-
---
-2. $\small H_A: \sigma_1 < \sigma_2$
-  - Reject null if $\small F_{test}<F_{\alpha,n-1,m-1}$
-
---
-3. $\small H_A: \sigma_1 > \sigma_2$
-  - Reject null if $\small F_{test}>F_{1-\alpha,n-1,m-1}$
-
---
-Where:
-- $\small F_{\alpha,n-1,m-1}$ is $\small \alpha$ quantile of $F_{n-1,m-1}$
-- So $\small P(F<F_{\alpha,n-1,m-1})=\alpha$
-- $\small F_{n-1,m-1}$ distribution is not symmetric around 0!
-- So the notation is slightly different!!!!!
-
-
----
-### F-distribution
-
-If $X_1$ and $X_2$ are chi-square distributed and independent, then the ratio of $X_1$ by its degrees of freedom to $X_2$ by its degrees of freedom is distributed as F. 
-
-$$F=\frac{X1/v_1}{X2/v_2} \sim F_{v1,v2}$$
-```{r abc, warning=FALSE, fig.height=3.5, out.width='100%'}
-df_values <- c(3, 10, 100)  # Different degrees of freedom
-x_vals <- seq(0, 5, length.out = 400)
-
-# Create a data frame for ggplot
-df1 <- data.frame(x = rep(x_vals, length(df_values)),
-                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 10))),  
-                 distribution = rep(paste("F-distribution (df1 =", df_values, ", df2 = 10)"), each = length(x_vals)))
-
-df2 <- data.frame(x = rep(x_vals, length(df_values)),
-                 y = c(sapply(df_values, function(df) df(x_vals, df1 = df, df2 = 3))), 
-                 distribution = rep(paste("F-distribution (df1 =", df_values, ", df2 = 3)"), each = length(x_vals)))
-
-df=rbind(df1,df2)
-
-# Create ggplot object
-gg_plot2 <- ggplot(df, aes(x = x, y = y, color = distribution)) +
-  geom_line() +
-  labs(x = "x",
-       y = "Density") +
-  theme_xaringan()
-
-plotly_object <- ggplotly(gg_plot2,
-                          width = 800,   # Adjust the width according to your preference
-                          height = 400)  # Adjust the height according to your preference
-
-plotly_object
-
+.center[
+```{r, out.height="50%", echo=FALSE}
+knitr::include_graphics("abb.png")
 ```
+]
+
+- Suppose **Airbnb** wants to know:  
+  *Do professional photos increase host revenue?*
+
+- **Historical data**: Listings with better photos show higher revenues.
+
+
+--
+- But… **Correlation ≠ Causation**.
+  - Better photos may be linked to other factors:  
+    - More organized hosts  
+    - Higher quality listings  
+    - Better customer service
+
+--
+- Revenues may reflect these differences, not the photos themselves.  
+- Test doesn't tell us anything about causality, just association.
+---
+
+## The Business Decision
+
+- Should Airbnb **invest in professional photography** for hosts?
+
+
+--
+- If photos aren’t the true driver → investment wastes money.  
+
+We need a method to **isolate the effect of photos**.
+
+
+--
+#### Enter A/B Testing
+
+.pull-left[
+**Definition:**  
+- A method to measure *causal* effects.  
+- Widely used in modern business, especially tech.  
+]
+
+--
+.pull-right[
+**Examples:**  
+- Netflix: Which thumbnail gets more clicks?  
+- Amazon: Does a new checkout button increase sales?  
+- Instagram: Do longer videos increase engagement?  
+]
+
 
 ---
-### Variance test and F-distribution
 
-How come under the null we get F statistics? $s^2$ is not chi square.... but!
+## The Setup
 
-$$\frac{(n-1)s^2_1}{\sigma^2_1} \sim \chi_{n-1}$$
+We divide hosts into **two groups**:
 
-$$F_{test}=\frac{\frac{(n-1)s^2_1}{\sigma^2_1(n-1)}}{\frac{(m-1)s^2_2}{\sigma^2_2(m-1)}} \sim F_{n-1,m-1}$$
+1. **Control group:**  
+   - No intervention (existing photos).  
 
+2. **Treatment group:**  
+   - Airbnb provides **professional photography**.  
 
---
-
-Under null we have that $\sigma_1=\sigma_2$, so
-
-
-$$F_{test}=\frac{\frac{(n-1)s^2_1}{\sigma^2_1(n-1)}}{\frac{(m-1)s^2_2}{\sigma^2_2(m-1)}}=\frac{s^2_1}{s^2_2}$$
-
----
-**Example:**
-
-Let's test the equality of variances of clean and dirty apartments. 
-- $H_0: \sigma^2_c=\sigma^2_d$
-- $H_A: \sigma^2_c \neq \sigma^2_d$
+**The KEY:**  
+- Groups are assigned **randomly**.
 
 --
+#### Why Randomization Matters
 
-- Variances in each samples are: $s^2_c=925255.5$ and $s^2_d=480681.9$
+- Without randomization: groups differ in many ways.  
+- With randomization: groups are (on average) identical, except for photos.  
 
-- We have 100 observations in each sample, so 99 degrees of freedom on each side
-
---
-
-$F_{test}=\frac{s^2_c}{s^2_d}=\frac{925255.5}{480681.9}=1.924$
-
---
-
-Critical regions at 5% are:
-- $\small F_{\frac{\alpha}{2},n-1,m-1}=F_{0.025,99,99}=0.67284$
-- $\small F_{1-\frac{\alpha}{2},n-1,m-1}=F_{0.975,99,99}=1.48623$
-
---
-- We reject the equality at 5%
-
+.center[💡 This is what gives us **causal inference**!]
 
 
 ---
-### Exercise 
 
-The time C is a commute time of itam students distributed as C ∼ N(30, 10). Two random samples of commute times are taken for two days of sizes $n_1 = 15$ and $n_2 = 18$ students. They both come from the same distribution specified above. If sample variances $s_1^2$ and $s_2^2$ are to be reported,  What is the probability that variance in sample one is more than twice as big as sample on day 2?
+# Classroom Exercise 🎯
+
+- Take sample Airbnb listings.  
+- Randomly assign to two groups.  
+- Compare characteristics:  
+  - Beds
+  - Location  
+
+👉 They should look very similar.
 
 --
-$$\small \frac{(n-1)s^2_1}{\sigma^2_1} \sim \chi_{n-1}$$
-$$\small F_{test}=\frac{\frac{(n-1)s^2_1}{\sigma^2_1(n-1)}}{\frac{(m-1)s^2_2}{\sigma^2_2(m-1)}} \sim F_{n-1,m-1}$$
 
-- They are from the same distribution so $\sigma_1=\sigma_2$
+Why? We are practically taking two samples from the same populations.
 
-$P(s_1^2>2s_2^2)=P(\frac{s_1^2}{s_2^2}>2)=P(F_{14,17}>2)$
+- All properties and expectations will be the same for both samples
+
+---
+
+# Measuring the Effect
+
+- After randomization: **the only difference = photos**.  
+
+- Provide photoghraphy to treamtent
+- Wait to see potential effects
+- Collect outcome data (revenue, reviews, bookings)
+- We run a simple two-samples tests between treatment and control
+- If treatment group earns more revenue →  
+  we know it’s **caused by the professional photos**.
+
+.center[**This is the causal effect.**]
+
+--
+
+- Tool extremely often used in modern business, especially in Tech. 
+- We all have been subjects of these experiments, without knowing. 
+
 
 ---
 layout: false
@@ -1509,9 +1517,6 @@ ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
 
 ```
 
----
-### Exercise
-Midterm 2, fall 2023, Q8
 
 
 ---
@@ -1519,11 +1524,4 @@ Midterm 2, fall 2023, Q8
 
 Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending.  You calculated the correlation coefficient of $\hat{\rho}=-0.45$. Can you reject null of $\rho=0$ in favor of alternative $\rho \neq 0$ at 5% significance level?
 
----
-### Exercises
-- Review Exercises:
-  - All the remaining from PDFs 4 and 5
-
-- Homeworks
-  - All the remaining from Lista 00.2
 

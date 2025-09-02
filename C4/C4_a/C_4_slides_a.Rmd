@@ -76,6 +76,7 @@ load("Daily_CMX_means2.Rda")
 - How to estimate it?
 - How to test hypothesis in the regression?
 
+
 ---
 
 ### Motivation
@@ -97,7 +98,49 @@ load("Daily_CMX_means2.Rda")
 1. Suppose you have paired data: $\{(x_1,y_1),(x_2,y_2),...(x_n,y_n)\}$ 
 
 
---
+
+.pull-left[
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
+
+
+# Display the data table
+datatable(Data_BP[,c("fecha_retiro","Trips","TMP","PM2.5")],
+          fillContainer = FALSE,
+          options = list(
+            pageLength = 7,
+            searching = FALSE,
+            initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().container()).css({'font-size': '12px'});",
+              "}"
+            )
+          ),
+          rownames = FALSE
+)
+```
+]
+.pull-right[
+```{r, warning=FALSE,message=FALSE,fig.height=5.5, out.width='80%'}
+
+# Create plot using ggplot2
+p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
+  geom_point() +
+  labs(x = "Temperature", y = "Trips") +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+print(p)
+
+
+```
+]
+
+
+---
+### Simple linear regression
+
 2. In the population, there exists a linear relationship between $x_i$ and $y_i$ of the form:
 
 $$y_i=\beta_0+\beta_1x_i+u_i$$
@@ -111,12 +154,141 @@ Where:
   - $u_i$ is a random error term (unknown)
 
 ---
+
+```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
+
+# Create plot using ggplot2
+p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
+  labs(x = "Temperature", y = "Trips") +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+print(p)
+
+```
+
+---
+
+
+```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
+# Fit the regression to get the slope
+mod <- lm(Trips ~ TMP, data = Data_BP)
+
+# Pick a reference x-value (say 14°C for illustration)
+x0 <- 14
+x1 <- x0 + 1
+
+# Predicted values from the regression line
+y0 <- predict(mod, newdata = data.frame(TMP = x0))
+y1 <- predict(mod, newdata = data.frame(TMP = x1))
+
+# Original plot
+p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(x = "Temperature", y = "Trips") +
+  theme_xaringan() +
+  theme(legend.position = "none")
+
+# Add slope triangle exactly at regression line
+p + 
+  coord_cartesian(xlim = c(13, 16), ylim = c(22000, 30000)) +  # zoom-in window
+  geom_segment(aes(x = x0, y = y0, xend = x1, yend = y0),
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "red", linewidth = 1) +  # horizontal ΔX
+  geom_segment(aes(x = x1, y = y0, xend = x1, yend = y1),
+               arrow = arrow(length = unit(0.2, "cm")),
+               color = "red", linewidth = 1) +  # vertical ΔY
+  geom_point(aes(x = x0, y = y0), color = "red", size = 3) +
+  geom_point(aes(x = x1, y = y1), color = "red", size = 3) +
+  annotate("text", x = x0 + 0.5, y = y0 - 800, 
+           label = "ΔX = 1", color = "red", fontface = "bold") +
+  annotate("text", x = x1 + 0.2, y = (y0 + y1)/2, 
+           label = "ΔY = β", color = "red", fontface = "bold")
+```
+
+---
+
+### Returns to Education  
+ Card (Angrist and Krueger, 1991) 
+
+**Context:**  How additional years of schooling affect workers’ earnings in the labor market?
+
+**Finding:** Each additional year of schooling increases wages by ~6–10%.  
+
+**Question:** “Suppose we see an estimated effect of $100 increase in monthly wages with each additional year of education. What’s the regression equation behind this? What is Y, what is X, and what does β₁ mean in plain business terms?”
+
+---
+
+### Forecasting Demand  
+Dinerstein et al (AER, 2018)
+
+**Context:** How sensitive online consumer demand is to small price change?
+
+**Finding:** Small price changes generate large changes in the demand in online shopping (eBay). 
+
+**Question:** “Suppose that if we increase a price of a keyboard by $1, the demand decreases on average by 200 units. Which variable is Y? Which is X? 
+
+---
+
+### Real Estate & Amenities  
+Glaeser & Kahn (Journal of Transport Geography, 2019) 
+
+**Context:** How proximity to amenities such as schools or subway stations influences housing prices?
+
+**Finding:** Properties prices increase significantly near subways.  
+
+**Question:** “Suppose you’re told: each kilometer closer to a subway increases house price by $1205. What regression line must be behind that claim? What is Y, what is X, and what does β₁ mean?”
+
+---
+### Advertising
+Alpert et al. (Journal of Public Economics, 2023)
+
+**Context:** Does advertising for medication actually increase doctor visits and prescriptions?
+
+**Finding:** A 10% increase in views of ads for medication increased  prescriptions by ~1.7%.  
+
+**Question:** “Suppose we see a finding: one more million views of ads increases monthly  medication sales by 500. What regression did they run? What’s Y? What’s X? How would we interpret β₁?”
+
+---
+
+### Gifts to Physicians  
+Newham & Valente (Journal of Health Economics, 2024), 
+
+**Context:** How payments from pharmaceutical companies to doctors affect prescription drug cost?
+
+**Finding:** Each dollar of gift/payment to doctors leads to approximately $23 in increased prescription drug costs.  
+
+**Question:** “Here, β₁ from regression indicates that every \$1 in gifts yields an extra \$23 in drug costs. What model structure would get you this? Who might be Y, who is X, and what does β₁ mean for policy?”
+
+
+---
+### Assumptions
+
+We can estimate $\beta$ under some assumptions.
+
+$$y_i=\beta_0+\beta_1x_i+u_i$$
+
+Here they are:
+0. Model is linear in the parameter and with additive error term
+1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+\beta_1x_0$
+2. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
+3. $cov(u_i,u_j)=0$
+
+
+
+---
+### General Example
+
+
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 # Generate some sample data
 set.seed(123)
-x <- rnorm(100)
-y <- 2 + 3 * x + rnorm(100, sd=3)
+x <- rnorm(100, mean=100, sd=10)
+y <- 2 + 3 * x + rnorm(100, sd=10)
 
 # Create a data frame
 data <- data.frame(x, y)
@@ -131,28 +303,13 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
   labs(x = "X",
        y = "Y") +
-  theme_xaringan() +
-  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  theme_xaringan() 
 
 print(gg)
 
 ```
 
 
-
-
-
----
-### Assumptions
-
-$$y_i=\beta_0+\beta_1x_i+u_i$$
-
-Assumptions: 
-0. Model is linear in the parameter and with additive error term
-1. $E(u_i)=0\rightarrow E(y_i|x=x_0)=\beta_0+\beta_1x_0$
-2. $Var(u_i)=\sigma^2\rightarrow var(y_i|x=x_0)=\sigma^2$
-3. $cov(u_i,u_j)=0$
 
 ---
 
@@ -169,8 +326,6 @@ Assumptions:
   - $y_i=\beta_0+x^{\beta_1}_i+e_i$
   - $y_i=log(\beta_0+\beta_1x_i+e_i)$
   - $y_i=\beta_0+(\beta_1x_i+e_i)^2$
-
-
 
 ---
 
@@ -227,9 +382,8 @@ Let's go back to our regression line
 
 # Generate some sample data
 set.seed(123)
-x <- rnorm(100)
-y <- 2 + 3 * x + rnorm(100, sd=3)
-
+x <- rnorm(100, mean=100, sd=10)
+y <- 2 + 3 * x + rnorm(100, sd=10)
 # Create a data frame
 data <- data.frame(x, y)
 
@@ -243,27 +397,27 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
   labs(x = "X",
        y = "Y") +
-  theme_xaringan() +
-  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  theme_xaringan() 
 
 print(gg)
 ```
 ---
+### Estimation of the parameters
 
-We want to estimate the parameters in this linear relationship based on our sample.
 
-Once estimated, we can write $y_i$ as
+We want to estimate the parameters in this linear relationship based on our **sample**. 
+
+- Once estimated, we can write $y_i$ as
 
 $$y_i=\hat{\beta}_0+\hat{\beta}_1x_i+e_i$$
 
 --
 
-Error term here reflects both uncertainly about parameters and the random part present in population model
+- Residua term (e) here reflects both uncertainly about parameters and the random part present in population model
 
 --
 
-We can predict $y_i$ for any $x_i$ using our estimates
+- We can predict $y_i$ for any $x_i$ using our estimates
 
 $$\hat{y_i}=\hat{\beta}_0+\hat{\beta}_1x_i$$
 
@@ -273,8 +427,8 @@ $$\hat{y_i}=\hat{\beta}_0+\hat{\beta}_1x_i$$
 
 # Generate some sample data
 set.seed(123)
-x <- rnorm(100)
-y <- 2 + 3 * x + rnorm(100, sd=3)
+x <- rnorm(100, mean=100, sd=10)
+y <- 2 + 3 * x + rnorm(100, sd=10)
 
 # Create a data frame
 data <- data.frame(x, y)
@@ -289,9 +443,7 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
   labs(x = "X",
        y = "Y") +
-  theme_xaringan() +
-  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  theme_xaringan()
 
 print(gg)
 
@@ -299,14 +451,15 @@ print(gg)
 
 
 ---
+
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 # Generate some sample data
 
 # Generate some sample data
 set.seed(123)
-x <- rnorm(100)
-y <- 2 + 3 * x + rnorm(100, sd=3)
+x <- rnorm(100, mean=100, sd=10)
+y <- 2 + 3 * x + rnorm(100, sd=10)
 
 # Create a data frame
 data <- data.frame(x, y)
@@ -320,9 +473,7 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
   labs(x = "X",
        y = "Y") +
-  theme_xaringan() +
-  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  theme_xaringan() 
 
 # Create a filtered dataset for the sample (e.g., the first 40 points)
 sample_size <- 40
@@ -339,14 +490,15 @@ print(gg)
 ```
 
 ---
+ 
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 # Generate some sample data
 
 # Generate some sample data
 set.seed(123)
-x <- rnorm(100)
-y <- 2 + 3 * x + rnorm(100, sd=3)
+x <- rnorm(100, mean=100, sd=10)
+y <- 2 + 3 * x + rnorm(100, sd=10)
 
 # Create a data frame
 data <- data.frame(x, y)
@@ -360,9 +512,7 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
   labs(x = "X",
        y = "Y") +
-  theme_xaringan() +
-  geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  theme_xaringan() 
 
 # Create a filtered dataset for the sample (e.g., the first 40 points)
 sample_size <- 40
@@ -381,17 +531,18 @@ print(gg)
 
 ```
 
+
 --
 
-But how do we find $\hat{\beta}_0$ and $\hat{\beta}_1$?
+- How do we find $\hat{\beta}_0$ and $\hat{\beta}_1$?
 
 ---
 
 ### Best fit line
 
-The best fitting line will minimize the sum of squared residuals $SSE=\sum^n_ie_i^2$
+The best fitting line will minimize the sum of squared residuals $SSE=\sum^n_{i=1}e_i^2$
 
-$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_ie_i^2$$
+$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_{i=1}e_i^2$$
 --
 $$\begin{align*}
 SSE &= \sum_{i=1}^{n} e_i^2 \\
@@ -406,11 +557,35 @@ $$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\le
 
 ---
 
-###OLS 
+### OLS 
 
 We called this estimator **OLS** - .blue[ordinary least squares]
 
 $$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
+---
+### ✏️ Sidenote on Derivatives
+To solve OLS, we’ll need **derivatives**. A key tool is the **chain rule**: if  
+
+$$h(x) = f(g(x)),$$  
+
+then  
+
+$$h'(x) = f'(g(x)) \cdot g'(x).$$  
+
+**Example (square function):**  
+
+
+$$h(x) = (3x+1)^2 = f(g(x)),$$ 
+
+Then
+
+- $f(u) = u^2 \quad \Rightarrow \quad f'(u) = 2u$
+- $g(x) = 3x+1 \quad \Rightarrow \quad g'(x) = 3$  
+
+and  
+
+$$h'(x) = f'(g(x)) \cdot g'(x) = 2(3x+1)\cdot 3.$$  
+
 ---
 ### Best fit line 1
 
@@ -429,7 +604,7 @@ $$\hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
 
 ### Best fit line 2
 
-Partial derivative with respect to $\(\hat{\beta}_1\)$:
+Partial derivative with respect to $\hat{\beta}_1$:
 
 $$\frac{\partial SSE}{\partial \hat{\beta}_1} = 2\sum_{i=1}^{n} x_i\left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_i) \right)$$
 
@@ -546,18 +721,6 @@ summary(lm_model)
 <img src=Exam_qs_to_paste/use_correlation_for_coefficiients.png width="800">
 </center>
 
----
-### Properties of this estimator
-
-Here is a couple of cool useful properties of OLS. Let's derive them:
-
-- $\sum e_i=\sum(y_i-\hat{y_i})=0$
-- $\sum y_i=\sum\hat{y_i}$
-- $\hat{y_i}|(x_i=0)=0*\hat{\beta_1}+\hat{\beta_0}=\hat{\beta_0}$
-- $\sum x_ie_i=0$
-- $\sum \hat y_i e_i=0$
-- $var(e_i)=\frac{\sum_i(y_i-\hat{y_i})^2}{n-2}=\frac{SSE}{n-2}$
-
 
 ---
 ### Fit of linear regression
@@ -603,8 +766,9 @@ library(gridExtra)
 grid.arrange(grobs = plots, ncol = 3)
 ```
 
+---
 
-
+![](Expl_unexpl.png)
 
 ---
 
@@ -634,33 +798,77 @@ Intuition:
 If we have just one regressor, the $R^2$ is related to correlation between x and y.
 
 $$R^2=(\rho(x,y))^2$$
-Moreover, we can show that: 
+```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
+library(ggplot2)
+library(gridExtra)
 
-$$R^2=(\rho(x,y))^2=\hat\beta^2_1\frac{S_{xx}}{S_{yy}}=\hat{\beta}^2_1\frac{\sum(x_i-\bar x)^2}{\sum(y_i-\bar y)^2}$$
-And
-$$SSR=\hat\beta_1*S_{xy}=\hat\beta_1*\sum(x_i-\bar x)(y_i-\bar y)$$
+set.seed(123)
+
+# Generate two datasets
+n <- 50
+x1 <- rnorm(n, 0, 1)
+y1 <- 2*x1 + rnorm(n, 0, 0.3)   # high correlation
+x2 <- rnorm(n, 0, 1)
+y2 <- rnorm(n, 0, 1)            # low correlation
+
+data_high <- data.frame(x = x1, y = y1)
+data_low  <- data.frame(x = x2, y = y2)
+
+# Fit models and compute stats
+lm_high <- lm(y ~ x, data = data_high)
+lm_low  <- lm(y ~ x, data = data_low)
+
+r_high <- cor(data_high$x, data_high$y)
+r_low  <- cor(data_low$x, data_low$y)
+
+r2_high <- summary(lm_high)$r.squared
+r2_low  <- summary(lm_low)$r.squared
+
+# Plot high correlation
+p1 <- ggplot(data_high, aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = paste0("Correlation = ", round(r_high, 3),
+                          "\nR² = ", round(r2_high, 3))) +
+  annotate("text", x = min(data_high$x), y = max(data_high$y),
+           label = paste0("Correlation = ", round(r_high, 3),
+                          "\nR² = ", round(r2_high, 3)),
+           hjust = 0, vjust = 1, size = 5, color = "black") +
+  theme_minimal()+xlim(-2,2)+ylim(-3,3)
+
+# Plot low correlation
+p2 <- ggplot(data_low, aes(x, y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = paste0("Correlation = ", round(r_low, 2),
+                          "\nR² = ", round(r2_low, 2))) +
+  annotate("text", x = min(data_low$x), y = max(data_low$y),
+           label = paste0("Correlation = ", round(r_low, 2),
+                          "\nR² = ", round(r2_low, 2)),
+           hjust = 0, vjust = 1, size = 5, color = "black") +
+  theme_minimal()+xlim(-2,2)+ylim(-3,3)
+
+# Arrange side by side
+grid.arrange(p1, p2, ncol = 2)
+
+
+```
 ---
 
 #### How much of bike usage does the temperature explains?
 
-- $\beta_1=723.55$
-- $S_{xx}=var(x)*(n-1)=4043.965$ 
-- $S_{yy}=var(y)*(n-1)=24012556582$
+ 
+- Total Variation in y: $S_{yy}=\sum(y_i-\bar y)^2=24012556582$
+- Explained Variation in y: $SSR=\sum(\hat y_i-\bar y)^2=2117129482$
+- Unexplained Variation in y: $SSE=\sum\hat e^2=21895427100$
 
 ```{r, warning=FALSE, fig.height=6, out.width='80%'}
 
 # Fit a linear regression model
 lm_model <- lm(Trips ~ TMP, data = Data_BP)
-
 # Display the summary of the linear regression model
 summary(lm_model)
-
 ```
-
----
-### Question
-
-Midterm 2, fall 2022, Long question 2, a) and b)
 
 ---
 ### Scaling of variables:
@@ -728,7 +936,7 @@ $$
 </center>
 
 ---
-### Regression through the origin 
+### Regression through the origin (HOMEWORK)
 
 Suppose the following model:
 
@@ -737,41 +945,247 @@ $$y_i=\beta_1x_i+u_i$$
 
 --
 
-- What happens if we use this estimator when it's not going throuth the origin?
+- What happens if we use this estimator when it's not going through the origin?
+
 
 ---
+### Regression with a Categorical Variable
 
-<center>
-<img src=Exam_qs_to_paste/Origing-abcd.png width="600">
-</center>
+- Very often in data, we work with **binary (dummy) variables**.  
+- A **binary variable** takes the value:  
+  - 1 if the condition is true,  
+  - 0 otherwise.  
 
+.blue[Example 1:]  
+$$x_i = \begin{cases} 
+1 & \text{if individual $i$ is female} \\ 
+0 & \text{if individual $i$ is male} 
+\end{cases}$$
+
+.blue[Example 2:]  
+$$x_i = \begin{cases} 
+1 & \text{if transaction $i$ is fraudulent} \\ 
+0 & \text{if transaction $i$ is not fraudulent} 
+\end{cases}$$
+
+
+.blue[Example 3:]  
+$$x_i = \begin{cases} 
+1 & \text{if client $i$ made a purchase} \\ 
+0 & \text{if client $i$ didn't make a purchase} 
+\end{cases}$$
 
 ---
 ### Regression with a categorical variable
 
-- What if $x_i$ is a categorical variable?
+- Suppose we regress $y_i$ on a dummy $x_i$:  
 
-- .blue[Example:] $x_i=1$ if female, $x_i=0$ if male
-
-- We called it a binary variable, or a dummy variable
+$$y_i = \beta_0 + \beta_1 x_i + u_i$$  
 
 --
 
-$$\hat{\beta}_0=\bar{y}_{x_i=0}$$
-and 
+- The OLS estimates have a simple interpretation:  
+  - $\hat{\beta}_0 = \bar{y}_{x_i=0}$: the **mean of y** for the group with $x=0$  
+  - $\hat{\beta}_1 = \bar{y}_{x_i=1} - \bar{y}_{x_i=0}$: the **difference in group means**  (change in y when x changes by 1)
 
-$$\hat{\beta}_1=\bar{y}_{x_i=1}-\bar{y}_{x_i=0}$$
 --
 
-Example:
+.blue[Example:]  
 
-$$wage_i=\beta_0+\beta_1female_i+u_i$$
--  $female_i=1$ if $i$ female and 0 if male
-- What is $\beta_0$?
-- What is $\beta_1$?
+- Let $x_i = 1$ if female, $0$ if male  
+- Then:  
+
+--
+- $\hat{\beta}_0 = \bar{y}_{x_i=0} \quad \text{(mean outcome for males)}$  
+- $\hat{\beta}_1 = \bar{y}_{x_i=1} - \bar{y}_{x_i=0} \quad \text{(difference in means)}$
+
+---
+
+.pull-left[
+```{r, echo=FALSE}
+# Load the DT package
+library(DT)
+library(lubridate)
+library(dplyr)
+
+# Add Friday dummy
+Data_BP <- Data_BP %>%
+  mutate(
+    fecha_retiro = as.Date(fecha_retiro),
+    day_of_week = wday(fecha_retiro, label = TRUE, abbr = TRUE),  # Mon, Tue, ...
+    is_friday = ifelse(day_of_week == "Fri", 1, 0)
+  )
+
+# Display only selected variables
+datatable(
+  Data_BP[, c("fecha_retiro", "day_of_week", "is_friday", "Trips")],
+  fillContainer = FALSE,
+  options = list(
+    pageLength = 7,
+    searching = FALSE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().container()).css({'font-size': '12px'});",
+      "}"
+    )
+  ),
+  rownames = FALSE
+)
+```
+]
+.pull-right[
+```{r, warning=FALSE,message=FALSE,fig.height=5.5, out.width='80%'}
+
+# Create plot using ggplot2
+p <- ggplot(Data_BP, aes(x = is_friday, y = Trips)) +
+  geom_point(alpha=0.2) +
+  labs(x = "Is friday?", y = "Trips") +
+  theme_xaringan() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
+  theme(legend.position = "none")
+
+print(p)
+
+
+```
+]
 
 
 ---
+
+- By how much trips change when I move from 0 (Not-friday) to 1 (Friday)? 
+- x changes by 1, y changes by $\beta$
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+
+
+mod <- lm(Trips ~ is_friday, data = Data_BP)
+summary(mod)
+
+```
+
+---
+### Regression with a Categorical Outcome
+
+- Suppose instead that $y_i$ takes only two values: 0 or 1.  
+
+--
+
+.blue[Example:]  
+Suppose you work at Amazon and want to predict if a customer will return a product based on its rating.  
+
+$$y_i =
+\begin{cases}
+1 & \text{if customer returns product \(i\)} \\
+0 & \text{if customer keeps product \(i\)}
+\end{cases}$$
+
+We run the regression:
+
+$$y_i = \beta_0 + \beta_1 x_i + u_i,$$  
+where $x_i$ is the product rating (between 0 and 5).  
+
+---
+### Example Data
+
+HEre provide an equivalent example of data like this, but for a made up data set on returns and ratings 
+.pull-left[
+```{r, echo=FALSE}
+library(DT)
+library(dplyr)
+
+# Simulate product ratings (0–5) and returns (dummy outcome)
+n <- 70
+rating <- round(runif(n, 1, 5),3)
+
+# Make probability of return decrease with rating
+# High rating → lower probability of return
+prob_return <- pmax(0.05, 0.8 - 0.15 * rating)  
+
+# Generate binary outcome: 1=returned, 0=kept
+returned <- rbinom(n, 1, prob = prob_return)
+
+# Combine into data frame
+amazon_data <- data.frame(rating, returned)
+
+# Display sample data
+datatable(
+  amazon_data,
+  fillContainer = FALSE,
+  options = list(
+    pageLength = 7,
+    searching = FALSE,
+    initComplete = JS(
+      "function(settings, json) {",
+      "$(this.api().table().container()).css({'font-size': '12px'});",
+      "}"
+    )
+  ),
+  rownames = FALSE
+)
+
+```
+]
+.pull-right[
+```{r, warning=FALSE,message=FALSE,fig.height=5.5, out.width='80%'}
+
+
+# Scatter (jittered) with regression line
+ggplot(amazon_data, aes(x = rating, y = returned)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(x = "Product Rating (0–5)", y = "Returned (1=Yes, 0=No)") +
+  theme_minimal()+ #increase size of axis labels and ticks and all fonts
+  theme(text = element_text(size = 16)) 
+  
+
+
+```
+]
+
+---
+#### Interpretation
+
+- In a regression, we predict the **expected value** of $y$ for a given $x$:  
+
+  $$E(y|x) = \beta_0 + \beta_1 x$$
+
+- The expected value of a variable is just its **mean**.  
+  - For a binary variable, the mean is simply the proportion of 1s.  
+
+- Therefore, $E(y|x)$ is the **proportion of returns** among products with rating $x$.  
+
+- Hence, the regression prediction is the **probability of return**.  
+
+- If $\hat{y}=0.15$ for a 5-star product, we interpret it as a 30% chance of being returned  
+
+- The slope $\beta_1$ tells us how the probability changes when rating increases by one point:  
+  - If the probability of return is 27% at 4 stars and 30% at 5 stars, then  
+  $$\beta_1 = 0.15 - 0.27 = -0.12$$ 
+  
+    meaning each additional point reduces the probability of return by 12p.p
+
+---
+
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+mod <- lm(returned ~ rating, data = amazon_data)
+summary(mod)
+```
+
+
+- What is the probability of return  when rating is 3?
+---
+
+### Interpretation
+- $\beta_1$ describes change in probability of $y=1$ when x changes by 1
+
+### Limitations
+- OLS can predict values **outside [0,1]**, which doesn’t make sense for probabilities.  
+- That’s why in practice we often move to **Logit/Probit models** — non linear models
+- But OLS is still a useful for simplicity and interpretation. 
+
+
+---
+
 layout: false
 class: inverse, middle
 
@@ -1288,8 +1702,8 @@ $$\hat{\beta}_1=\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\bar{x})^2}=\
 - However, to make **inference** (confidence intervals, hypothesis testing), we need to know something about distribution of $\hat\beta$
 
 --
-  - In particular, we will assume that population errors are normally distributed: $u_i \sim N(0,\sigma)$
-  - This will help us to determine the distribution of $\beta$
+  - We will need to assume that  population errors are normally distributed: $u_i \sim N(0,\sigma)$
+  - For some results this can be relaxed with large samples (CLT)
   
 --
   - $y_i$ or $x_i$ does not need to be normally distributed
@@ -1378,8 +1792,30 @@ Furthermore:
 
 $$\frac{(n-2)\hat{\sigma}^2}{\sigma^2}\sim\chi^2_{n-2}$$
 
+#### CLT For Regression
 
+- In large samples, we can relax the normality assumption on $u_i$ and use CLT:
 
+$$\small  \hat{\beta_1} \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right)  and  \qquad \hat{\beta_0} \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
+---
+
+#### Why does this happen?
+
+- The OLS slope is  a **linear combination of the errors**:
+
+$$\hat{\beta}_1 = \beta_1 + \sum_i \underbrace{\tfrac{(x_i - \bar{x})}{S_{xx}}}_{\text{weight}} u_i $$
+
+- Define each weighted error as $Z_i = \tfrac{(x_i - \bar{x})}{S_{xx}} u_i$,so that $$\hat{\beta}_1 - \beta_1 = \sum_i Z_i .$$
+
+--
+- By the **Central Limit Theorem**, the sum of many independent mean-zero variables is approximately normal:
+
+$$\sum_i Z_i \;\;\overset{d}{\longrightarrow}\;\; N\!\big(0,\; \text{Var}(\sum_i Z_i)\big).$$
+
+- Since $\text{Var}(\sum_i Z_i) =\sum_i var(Z_i)= \frac{\sum_i(x_i - \bar{x})^2}{S_{xx}^2}\sigma^2=\frac{S_{xx}}{S_{xx}^2}\sigma^2=\frac{\sigma^2}{S_{xx}^2}$, we get
+
+$$\hat{\beta}_1 - \beta_1 \;\;\overset{d}{\longrightarrow}\;\; 
+N\!\left(0,\; \frac{\sigma^2}{S_{xx}}\right).$$
 ---
 
 ## Hypothesis Testing
@@ -1499,12 +1935,6 @@ What's the confidence 95% interval for the effect on temperature?
 $$CI_{\beta_1}=\left(723.55-1.96*83.37,723.55+1.96*83.37\right)$$
 $$CI_{\beta_1}=\left(560.87,886.23\right)$$
 
----
-### Question
-
-<center>
-<img src=Exam_qs_to_paste/Q_b1_conf_interval.png width="800">
-</center>
 
 ---
 #### Confidence Intervals
@@ -1620,6 +2050,8 @@ $$\text{Number of hairs/}cm^2=\hat{\beta}_0+\hat{\beta}_1\text{Amount of drug in
     - Those factors avarage out in mean response, so don't play a role
   - There will be more uncertainty about this new response, hence wider CI
   - In particular, $var(\text{new response})=var(\text{mean response})+var(u_i)$
+  - For this we need to make an assumption that errors are normal, CLT is not enough!
+    - Because it's not only about the distribution of $\beta$ but also error term
 
 ---
 ### Confidence Intervals
@@ -1739,12 +2171,6 @@ new_data<- data.frame(TMP= c(30))
 predict(lm_model, newdata = new_data, interval = "predict", level = 0.95, se.fit=TRUE)
 ```
 
----
-
-### Question
-
-Midterm 2 2022, fall, Long question 1
-
 
 ---
 
@@ -1764,8 +2190,4 @@ Suppose a model where we have employee's salary and their years of education. Pr
 - Would the estimator be unbiased? 
 
 
----
-### Practice
-
-- Lista 02
 
