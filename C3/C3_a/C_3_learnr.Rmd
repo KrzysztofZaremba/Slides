@@ -71,6 +71,7 @@ fluidPage(
   plotOutput("sd_dist", height = 280)
 )
 ```
+
 ```{r server_sd, context="server"}
 observeEvent(input$go_sd, {
   n <- input$n_sd; B <- input$B_sd
