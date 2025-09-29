@@ -4,13 +4,27 @@ author: "Business Forecasting"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
-
+ 
 
 ```{r setup, include=FALSE}
 library(learnr)
 library(shiny)
 library(tidyverse)
+
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly")
+}
+
+
+if (!requireNamespace("tseries", quietly = TRUE)) {
+  install.packages("tseries")
+}
+
 library(plotly)
+
+if (!requireNamespace("probstats4econ", quietly = TRUE)) {
+  install.packages("probstats4econ")
+}
 library(probstats4econ)
 
   
@@ -21,6 +35,112 @@ library(probstats4econ)
   y_actual <- 4 + 1.65 * x + e
   
   data <- data.frame(x, y_actual)
+  
+  sexratios <- read.table(text="
+21163 2000-2004 2020 985 901 0.4777306 1886
+08063 2000-2004 2020 190 175 0.4794521 365
+20544 2000-2004 2020 23 22 0.4888889 45
+14080 2000-2004 2020 167 189 0.5308989 356
+19039 2000-2004 2020 45696 46977 0.5069114 92673
+14017 2000-2004 2020 494 520 0.5128205 1014
+28023 2000-2004 2020 137 142 0.5089606 279
+20462 2000-2004 2020 173 203 0.5398936 376
+20359 2000-2004 2020 16 19 0.5428571 35
+07023 2000-2004 2020 5775 4946 0.4613376 10721
+24004 2000-2004 2020 176 146 0.4534161 322
+28026 2000-2004 2020 127 165 0.5650685 292
+07099 2000-2004 2020 3796 3549 0.4831858 7345
+21029 2000-2004 2020 184 172 0.4831461 356
+11025 2000-2004 2020 4050 4158 0.5065789 8208
+21083 2000-2004 2020 1160 1090 0.4844444 2250
+07018 2000-2004 2020 478 468 0.4947146 946
+26016 2000-2004 2020 201 197 0.4949749 398
+16088 2000-2004 2020 5310 5306 0.4998116 10616
+20135 2000-2004 2020 372 333 0.4723404 705
+14035 2000-2004 2020 2200 2287 0.5096947 4487
+05009 2000-2004 2020 2690 2698 0.5007424 5388
+10005 2000-2004 2020 30545 30975 0.5034948 61520
+17023 2000-2004 2020 338 388 0.5344353 726
+20375 2000-2004 2020 614 587 0.4887594 1201
+11001 2000-2004 2020 4245 4254 0.5005295 8499
+26020 2000-2004 2020 198 224 0.5308057 422
+29037 2000-2004 2020 453 443 0.4944196 896
+31024 2000-2004 2020 153 151 0.4967105 304
+32009 2000-2004 2020 379 395 0.5103359 774
+12079 2000-2004 2020 1078 1050 0.4934211 2128
+20041 2000-2004 2020 1257 1117 0.4705139 2374
+30020 2000-2004 2020 697 640 0.4786836 1337
+13083 2000-2004 2020 2435 2501 0.5066856 4936
+20107 2000-2004 2020 1223 1164 0.4876414 2387
+31064 2000-2004 2020 67 50 0.4273504 117
+30207 2000-2004 2020 1825 1838 0.5017745 3663
+12061 2000-2004 2020 1902 2019 0.5149197 3921
+11019 2000-2004 2020 2155 2057 0.4883666 4212
+31079 2000-2004 2020 2158 2107 0.4940211 4265
+16064 2000-2004 2020 1218 1195 0.4952341 2413
+10003 2000-2004 2020 165 182 0.5244957 347
+21124 2000-2004 2020 716 779 0.5210702 1495
+20492 2000-2004 2020 78 92 0.5411765 170
+07076 2000-2004 2020 1523 1519 0.4993425 3042
+20103 2000-2004 2020 262 240 0.4780876 502
+17003 2000-2004 2020 1678 1644 0.4948826 3322
+31057 2000-2004 2020 345 341 0.4970845 686
+20222 2000-2004 2020 39 58 0.5979381 97
+20006 2000-2004 2020 913 837 0.4782857 1750
+20551 2000-2004 2020 1235 1171 0.4866999 2406
+30111 2000-2004 2020 676 634 0.4839695 1310
+31093 2000-2004 2020 749 795 0.5148964 1544
+12002 2000-2004 2020 1296 1155 0.4712362 2451
+05011 2000-2004 2020 485 465 0.4894737 950
+20303 2000-2004 2020 25 34 0.5762712 59
+20076 2000-2004 2020 169 152 0.4735202 321
+09005 2000-2004 2020 42664 44622 0.5112160 87286
+20196 2000-2004 2020 6 14 0.7000000 20
+27001 2000-2004 2020 2491 2506 0.5015009 4997
+14067 2000-2004 2020 12524 12616 0.5018298 25140
+20085 2000-2004 2020 1367 1376 0.5016405 2743
+16006 2000-2004 2020 5535 5524 0.4995027 11059
+14051 2000-2004 2020 1298 1254 0.4913793 2552
+20240 2000-2004 2020 149 137 0.4790210 286
+21192 2000-2004 2020 240 238 0.4979079 478
+21032 2000-2004 2020 32 50 0.6097561 82
+31104 2000-2004 2020 801 854 0.5160121 1655
+14021 2000-2004 2020 796 802 0.5018773 1598
+31086 2000-2004 2020 87 83 0.4882353 170
+32017 2000-2004 2020 9793 9711 0.4978979 19504
+07005 2000-2004 2020 1281 1230 0.4898447 2511
+04001 2000-2004 2020 2426 2584 0.5157685 5010
+23004 2000-2004 2020 9936 10122 0.5046366 20058
+28043 2000-2004 2020 875 856 0.4945118 1731
+20550 2000-2004 2020 209 228 0.5217391 437
+20478 2000-2004 2020 41 44 0.5176471 85
+30057 2000-2004 2020 702 686 0.4942363 1388
+12035 2000-2004 2020 6669 6614 0.4979297 13283
+20105 2000-2004 2020 337 292 0.4642289 629
+20552 2000-2004 2020 14 17 0.5483871 31
+20158 2000-2004 2020 100 117 0.5391705 217
+20355 2000-2004 2020 27 21 0.4375000 48
+14015 2000-2004 2020 2759 2826 0.5059982 5585
+21087 2000-2004 2020 560 585 0.5109170 1145
+07020 2000-2004 2020 2260 2304 0.5048203 4564
+07052 2000-2004 2020 7785 7289 0.4835478 15074
+16087 2000-2004 2020 642 626 0.4936909 1268
+08039 2000-2004 2020 157 165 0.5124224 322
+25018 2000-2004 2020 6806 7106 0.5107821 13912
+26037 2000-2004 2020 30 37 0.5522388 67
+12053 2000-2004 2020 2268 2264 0.4995587 4532
+14059 2000-2004 2020 607 594 0.4945878 1201
+20412 2000-2004 2020 145 123 0.4589552 268
+30037 2000-2004 2020 410 384 0.4836272 794
+32002 2000-2004 2020 213 191 0.4727723 404
+20278 2000-2004 2020 1515 1579 0.5103426 3094
+05013 2000-2004 2020 75 89 0.5426829 164
+17018 2000-2004 2020 5461 5326 0.4937425 10787
+19038 2000-2004 2020 2973 3079 0.5087574 6052
+", header=FALSE)
+
+colnames(sexratios) <- c("fips","period","year","male","female","share_male","total")
+
 ```
 
 ---
@@ -180,7 +300,7 @@ SSE = \sum (y_i - \hat{y}_i)^2
 ```{r housing-sumsquares, exercise=TRUE, exercise.setup="housing-fitted"}
 
 y=houseprices$saleprice
-my=
+
   
 SST <- sum((y - my)^2)
 SSR <- sum((yhat - my)^2)
@@ -363,3 +483,335 @@ How does the correlation formula changes?
 ### Reflection  
 
 - Did R squared change?
+
+
+---
+
+## Variance of the OLS Estimators
+
+
+\[
+S_{xx} = \sum_{i=1}^n (x_i - \bar{x})^2, 
+\quad 
+\hat\sigma^2 = \frac{\text{SSE}}{n-2} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-2}
+\]
+
+\[
+\mathrm{Var}(\hat{\beta}_1) = \frac{\hat\sigma^2}{S_{xx}}, 
+\quad 
+\mathrm{Var}(\hat{\beta}_0) = \hat\sigma^2 \left(\frac{1}{n} + \frac{\bar{x}^2}{S_{xx}}\right)
+\]
+
+
+
+```{r variance4, exercise=TRUE}
+# Step 0: fit regression (keep your variable names)
+reg = lm(saleprice ~ lotarea, data = houseprices)
+summary(reg)
+
+# Step 1: core pieces
+y    = houseprices$saleprice
+yhat = reg$fitted.values
+e    = y - yhat
+n    = length(y)
+
+# Step 2: compute Sxx 
+
+# Step 3: error variance estimator  
+
+# Step 4: variances of OLS estimators
+
+# Step 5: standard errors of OLS estimators
+```
+
+### Transformation of variables: Variance of the OLS Estimators
+
+```{r variance4b, exercise=TRUE, exercise.setup="variance4"}
+
+
+```
+
+
+---
+
+## Hypothesis Testing
+
+
+We will use the **hrs dataset** on health expenditures in the US.  
+Our question: **Do men spend less on health care than women?**
+
+Variables: 
+- hrs$medical_costs -> annual health care expenditures (in dollars) of person i
+- hrs$male -> 1 if is male, 0 if female
+
+1. Write down the regression model (by hand)
+
+2. Write down the hypothesis
+
+3. Find beta1 and beta2 and their standard errors
+
+```{r reg_hrs, exercise=TRUE}
+
+
+```
+
+4. Find the t-statistic and p-value
+
+```{r p-value, exercise=TRUE}
+
+```
+
+5. Interpret
+
+---
+
+## Confidence interval for coefficient
+
+In the cps dataset we have:  
+- **Earnings**: `earnwk` (weekly earnings, in dollars)  
+- **Education**: `educ` (highest education level attained, in years)  
+
+We want to study (1) the impact of an additional year of education on weekly earnings. We want to find the 99% confidence intervals for these parameters. 
+
+### 1. Write down the regression by hand
+
+
+### 2. Estimate coefficients and standard errors
+
+```{r reg_hrs2, exercise=TRUE}
+
+
+```
+
+
+### 3. Find the 99% Critical values
+
+
+```{r reg_hrs3, exercise=TRUE}
+
+
+```
+
+### 4. Construct the interval
+
+
+```{r reg_hrs4, exercise=TRUE}
+
+```
+### 5. Interpretation
+
+
+
+---
+
+## Predict average healthcare expenditure for people who are 55 years old
+
+Confidence interval for the average prediction (average at $x_0$):  
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
+\hat{\sigma} \sqrt{ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+
+We use the **hrs dataset**, which contains data on healthcare utilization and expenditures for older adults in the U.S.  
+We want to predict the **average medical costs (`medical_costs`)** for individuals who are **55 years old (`age = 55`)**.
+
+### 1. Write down the regression by hand
+
+### 2. Estimate the regression
+
+```{r reg_hrs43423, exercise=TRUE}
+
+```
+
+### 3. Make a prediction
+
+```{r reg_hrs424, exercise=TRUE}
+
+```
+
+
+### 4. Build a confidence interval around the prediction
+
+```{r reg_hrs412, exercise=TRUE}
+#hint: to get the vector of residuals you can write: residuals(model)   
+
+
+```
+
+---
+
+## Predict price of a house with 3 bathrooms
+
+Confidence interval for the new prediction ($x_0$):  
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
+\hat{\sigma} \sqrt{1+ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+
+
+
+We use the **houseprices dataset**, which contains information on housing transactions
+We want to predict the **sale price (`saleprice`)** of a house that has **3 bathrooms (`fullbath = 3`)**.
+
+
+### 1. Write down the regression by hand
+
+### 2. Estimate the regression
+
+```{r reg_hrs434423, exercise=TRUE}
+
+```
+
+### 3. Make a prediction
+
+```{r reg_hrs4424, exercise=TRUE}
+
+```
+
+
+### 4. Build a confidence interval around the prediction
+
+```{r reg_hrs4412, exercise=TRUE}
+#hint: to get sigma: summary(model)$sigma
+
+
+
+```
+
+
+---
+
+## Linearity Diagnostic
+
+We want to check whether the assumption of linearity is appropriate when modeling the relationship between house prices and lot area.
+
+Why there could be a nonlinearity?
+
+
+```{r reg_hrs4412_lin, exercise=TRUE}
+# Remove extreme outliers in lot area
+houseprices <- houseprices[houseprices$lotarea < 50000, ]
+
+# Scatter plot of lot area vs sale price
+plot(houseprices$lotarea, houseprices$saleprice)
+
+
+# Fit linear regression
+r1 <- lm(saleprice ~ lotarea, data = houseprices)
+
+fitted_values_linear <- r1$fitted.values
+residuals_linear <- r1$residuals
+
+
+# Residual plot
+plot(fitted_values_linear, residuals_linear)
+```
+
+
+---
+
+## Homoskedasticity
+
+The dataset sexratios reports the percent of men (share_male) in a cohort 2000-2004 in a sample of Mexican municipalities.
+The variable total gives the total population in each municipality. 
+
+Suppose we regress percent of men on total population. Would the variance be constant?
+
+```{r reg_hrs4412hom, exercise=TRUE}
+
+plot(sexratios$total,sexratios$share_male)
+
+
+m1 <- lm(share_male ~ total, data = sexratios)
+summary(m1)
+
+# Residuals vs fitted values to check homoskedasticity
+fitted_values_linear <- m1$fitted.values
+residuals_linear <- m1$residuals
+
+
+# Residual plot
+plot(fitted_values_linear, residuals_linear)
+
+```
+
+---
+
+## Normality Histogram
+
+mutualfunds data is providing returns of 208 mutual funds in the US. We will regress 5 year return (return_5yr) on expense ratio (expense_ratio). The expense ratio of a mutual fund is the annual fee that the fund charges investors to cover its operating costs. It is expressed as share of total assets under management
+
+```{r reg_hrs4412_H, exercise=TRUE}
+
+m1 <- lm(return_5yr ~ expense_ratio, data = mutualfunds)
+summary(m1)
+
+resid=m1$residuals
+
+# Histogram of residuals
+
+```
+
+#### QQplot
+
+```{r reg_hrs4412JB1, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+qqnorm(scale(resid))
+qqline(scale(resid), col = "red", lwd = 2)
+```
+---
+
+#### Jarque-Berra
+
+$$S = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{\frac{3}{2}}}$$
+
+$$EK = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^4}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{2}} - 3$$
+
+$$JB = \frac{n}{6} \left(\frac{S^2}{2} + \frac{EK^2}{4}\right)$$
+
+```{r reg_hrs4412JB2, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+
+deviations=resid - mean(resid)
+n=length(resid)
+
+#calculate the skewness
+
+#calculate the excess curtosis
+
+
+#calculae the JB statistic
+
+##compare to chi square with 2 degrees of freedom  -  pchisq(value, df=df) gives cdf of chi square with df degrees of freedom
+
+
+```
+
+
+```{r reg_hrs4412342, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+library(tseries)
+jarque.bera.test(resid)
+
+```
+
+
+---
+
+## ANOVA: exercise 1
+
+Suppose you test whether product placement with more popular influencers increases your website visits more. From the ANOVA table of a simple linear regression model fitted with 15 observations, we recovered the sums of squares of the residuals and the total sum of squares; $SSE = 52$ and $SST = 152$. Using the F-test statistic, validate the significance of the regression at the 5% level.
+
+
+```{r reg_hrs441235442, exercise=TRUE}
+
+
+```
+
+---
+
+## ANOVA: exercise 2
+
+mutualfunds data is providing returns of 208 mutual funds in the US. Using ANOVA, test if age of the fund (fund_age) can explain it's 5 years return rate (return_5yr). Find SST.
+
+
+```{r reg_hrs441235442, exercise=TRUE}
+m1 <- lm(return_5yr ~ fund_age, data = mutualfunds)
+anova(m1)
+
+```

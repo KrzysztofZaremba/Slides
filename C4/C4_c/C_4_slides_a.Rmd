@@ -81,15 +81,46 @@ load("Daily_CMX_means2.Rda")
 - Testing significance of a regression
   
 ---
+
 ### ANOVA
 
-**ANOVA** stands for the .blue[AN]alysis .blue[O]f .blue[V]ariance
+**ANOVA** = **AN**alysis of **O**f **VA**riance  
 
-- We only look at it in the context of the regression
-- It helps us to determine whether our regression is helpful
-  - It tests whether our regression model can explain variation in y
-  
+- In regression, ANOVA helps us assess **whether our model is useful**.  
+- It compares:  
+  - Variation in **y** explained by predictors (**signal**)  
+  - Variation left unexplained (**noise**)  
+- In short: *Is x actually helping us predict y?*  
+
 ---
+
+### Example  
+
+Suppose you work for a restaurant chain.  
+You want to know if the **time you place an order** affects the **number of missing ingredients** in the delivery.  
+
+- **x** = hour of order (1–24)  
+- **y** = number of missing ingredients  
+
+Question: *Does placing the order earlier vs. later reduce mistakes?*  
+
+---
+
+### ANOVA as a Hypothesis Test  
+
+Intuitively, ANOVA asks:  
+
+
+- **H₀:** Regression explains **no more variation** in y than a model with no predictors  
+  - Equivalent to saying: **x does not matter**  
+  - Or in regression terms: $beta_1 = 0$  
+- **H₁:** Regression explains **some variation** in y (**x matters**)  
+  - Or in regression terms: $beta_1 \neq 0$ 
+  
+If H₀ is rejected → our regression adds value.  
+
+---
+
 ### ANOVA
 
 How do we measure explained variation?
@@ -411,9 +442,4 @@ Using this data, complete the following tasks:
 
 
 
----
-
-### Exercises:
-
-Rest of lista 02 
 

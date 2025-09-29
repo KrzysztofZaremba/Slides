@@ -956,24 +956,15 @@ $$y_i=\beta_1x_i+u_i$$
   - 1 if the condition is true,  
   - 0 otherwise.  
 
-.blue[Example 1:]  
-$$x_i = \begin{cases} 
-1 & \text{if individual $i$ is female} \\ 
-0 & \text{if individual $i$ is male} 
-\end{cases}$$
 
-.blue[Example 2:]  
-$$x_i = \begin{cases} 
-1 & \text{if transaction $i$ is fraudulent} \\ 
-0 & \text{if transaction $i$ is not fraudulent} 
-\end{cases}$$
+**Example 1**
+$x_i = 1 \quad \text{if individual i is female}, \quad 0 \quad \text{if male.}$
 
+**Example 2**
+$x_i = 1 \quad \text{if transaction i is fraudulent}, \quad 0 \quad \text{otherwise.}$
 
-.blue[Example 3:]  
-$$x_i = \begin{cases} 
-1 & \text{if client $i$ made a purchase} \\ 
-0 & \text{if client $i$ didn't make a purchase} 
-\end{cases}$$
+**Example 3**
+$x_i = 1 \quad \text{if client i made a purchase}, \quad 0 \quad \text{if not.}$
 
 ---
 ### Regression with a categorical variable
@@ -1002,7 +993,7 @@ $$y_i = \beta_0 + \beta_1 x_i + u_i$$
 ---
 
 .pull-left[
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 # Load the DT package
 library(DT)
 library(lubridate)
@@ -1087,7 +1078,6 @@ where $x_i$ is the product rating (between 0 and 5).
 ---
 ### Example Data
 
-HEre provide an equivalent example of data like this, but for a made up data set on returns and ratings 
 .pull-left[
 ```{r, echo=FALSE}
 library(DT)
@@ -1637,8 +1627,10 @@ summary(lm_model)
 ---
 ### Problem:
 
-Suppose that instead of measuring $TMP$ in celcius, we measure it in $Farenheits$
-Practically: $F=1.8C+32$
+Suppose that instead of measuring $Lot area$ in feets, we measure it in $Meters$. 
+ - Example: you have the regression from the US data, but you want to use it in countries using metric system.
+ 
+Practically: $1 ft=0.3048m$ and $1 ft^2=0.092903m^2$
 
 - How would $\beta_1$ and $SE(\hat{\beta_1})$ change?
 
@@ -1803,7 +1795,7 @@ $$\small  \hat{\beta_1} \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_1,\fra
 
 - The OLS slope is  a **linear combination of the errors**:
 
-$$\hat{\beta}_1 = \beta_1 + \sum_i \underbrace{\tfrac{(x_i - \bar{x})}{S_{xx}}}_{\text{weight}} u_i $$
+$$\hat{\beta}_1 = \beta_1 + \sum_i \underbrace{\frac{(x_i-\bar{x})}{S_{xx}}}_{\text{weight}}u_i$$
 
 - Define each weighted error as $Z_i = \tfrac{(x_i - \bar{x})}{S_{xx}} u_i$,so that $$\hat{\beta}_1 - \beta_1 = \sum_i Z_i .$$
 
@@ -1812,13 +1804,94 @@ $$\hat{\beta}_1 = \beta_1 + \sum_i \underbrace{\tfrac{(x_i - \bar{x})}{S_{xx}}}_
 
 $$\sum_i Z_i \;\;\overset{d}{\longrightarrow}\;\; N\!\big(0,\; \text{Var}(\sum_i Z_i)\big).$$
 
-- Since $\text{Var}(\sum_i Z_i) =\sum_i var(Z_i)= \frac{\sum_i(x_i - \bar{x})^2}{S_{xx}^2}\sigma^2=\frac{S_{xx}}{S_{xx}^2}\sigma^2=\frac{\sigma^2}{S_{xx}^2}$, we get
+- Since $\small \text{Var}(\sum_i Z_i) =\sum_i var(Z_i)= \frac{\sum_i(x_i - \bar{x})^2}{S_{xx}^2}\sigma^2=\frac{S_{xx}}{S_{xx}^2}\sigma^2=\frac{\sigma^2}{S_{xx}^2}$, we get
 
-$$\hat{\beta}_1 - \beta_1 \;\;\overset{d}{\longrightarrow}\;\; 
-N\!\left(0,\; \frac{\sigma^2}{S_{xx}}\right).$$
+$$\small \hat{\beta}_1 - \beta_1 \;\;\overset{d}{\longrightarrow}\;\; 
+N\!\left(0,\; \frac{\sigma}{\sqrt{S_{xx}}}\right).$$
+
+
 ---
 
-## Hypothesis Testing
+### Hypothesis testing: sales spending
+
+#### Why do we care about hypothesis testing in regression?
+
+We want to test whether advertising spending increases sales.  
+Regression model:
+
+$$\small \text{Sales}_i = \beta_0 + \beta_1 \cdot \text{AdSpend}_i + u_i$$
+
+--
+
+
+
+**Question:** Does more advertising spending actually raise sales?  
+
+- Null hypothesis:  
+  $$\small  H_0: \beta_1 = 0 \quad \text{(ad spending has no effect)}$$  
+
+- Alternative hypothesis:  
+  $$\small H_1: \beta_1 > 0 \quad \text{(ads increase sales)}$$  
+
+---
+
+### Hypothesis testing: Supply Chain
+
+We want to test whether distance to the warehouse affects delivery speed.  
+Regression model:
+
+$$\small  \text{ShipSpeed}_i = \beta_0 + \beta_1 \cdot \text{WarehouseDistance}_i + u_i$$
+
+where ShipSpeed is average days to delivery, and WarehouseDistance is distance to the customer.
+
+--
+
+**Question:** Does distance to the warehouse significantly slow down shipments?  
+
+- Null hypothesis:  
+  $$\small H_0: \beta_1 = 1 \quad \text{(each extra 100 miles adds exactly 1 day)}$$
+- Alternative hypothesis:  
+  $$\small H_1: \beta_1 \neq 1 \quad \text{(effect of distance is stronger or weaker)}$$
+  
+---
+
+####  Hypothesis Testing: Recommendation System (dummy)
+
+We want to test whether a new recommendation system changes user engagement on tiktok.  
+Regression model:
+
+$$\small \text{HoursWatched}_i = \beta_0 + \beta_1 \cdot \text{NewAlgorithm}_i + u_i$$
+
+where `NewAlgorithm = 1` if exposed to the new system, `0` otherwise.
+
+---
+
+**Question 1 (Baseline engagement):**  
+Is average engagement without the new system equal to 10 hours per week?  
+
+- Null hypothesis:  
+  $$\small H_0: \beta_0 = 10 \quad \text{(baseline engagement = 10 hours)}$$  
+
+- Alternative hypothesis:  
+  $$\small H_1: \beta_0 \neq 10 \quad \text{(baseline engagement differs from 10 hours)}$$  
+
+---
+
+**Question 2 (Impact of new system):**  
+Is there a difference in mean engagement between users exposed to the new system and those not exposed? (equivalent to test for difference of means)  
+
+- Null hypothesis:  
+  $$\small H_0: \beta_1 = 0 \quad \text{(mean hours watched is the same in both groups)}$$
+
+- Alternative hypothesis:  
+  $$\small H_1: \beta_1 \neq 0 \quad \text{(mean hours watched differs between groups)}$$
+  
+  
+---
+
+### Hypothesis Testing
+
+How to implement these tests?
 
 Our **test statistic** for $\beta_1$ and it's distribution under the null hypothesis: $H_0: \beta_1=b_1$
 
@@ -1957,6 +2030,9 @@ summary(lm_model)
 ---
 ### Confidence Intervals
 
+How confident are we about predictions coming from a regression?
+
+
 **Average response**:
 What would be average number of rides on days with temperature of 30C?
 $$ (\bar{y}|x=x_0)=\hat{\beta_0}+\hat{\beta_1}x $$
@@ -1980,6 +2056,54 @@ $$(\bar{y}|x=x_0)\sim N\left(\beta_0+\beta_1x_0, \sigma\sqrt{({\frac{1}{n}+\frac
 We can build the confidence intervals as before:
 
 $$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+---
+### Confidence Intervals
+
+How confident are we about predictions coming from a regression?
+
+```{r pred_illustration, echo=FALSE,  message=FALSE, warning=FALSE, fig.height=4}
+df <- Data_BP %>% 
+  filter(!is.na(TMP), !is.na(Trips))
+
+# Fit regression: Trips on temperature (Celsius)
+fit <- lm(Trips ~ TMP, data = df)
+
+# Generate prediction grid up to 40 °C
+grid <- data.frame(TMP = seq(min(df$TMP, na.rm = TRUE), 40, by = 0.5))
+grid_pred <- cbind(grid, predict(fit, newdata = grid, interval = "confidence", level = 0.95))
+
+
+# Prediction at 30°C (mean prediction + 95% CI)
+x0 <- 30
+new <- data.frame(TMP = x0)
+pred_ci <- as.data.frame(predict(fit, newdata = new, interval = "confidence", level = 0.95))
+yhat <- pred_ci$fit
+ylo  <- pred_ci$lwr
+yhi  <- pred_ci$upr
+
+# Build plot
+ggplot() +
+  # Raw data points
+  geom_point(data = df, aes(x = TMP, y = Trips), alpha = 0.35, size = 1.8) +
+  # Regression line extrapolated to 40
+  geom_line(data = grid_pred, aes(x = TMP, y = fit), color = "blue", linewidth = 1) +
+  # Vertical line from x=30 to regression line
+  geom_segment(aes(x = x0, xend = x0, y = min(df$Trips, na.rm = TRUE), yend = yhat),
+               linetype = "dashed", linewidth = 0.7, color = "black") +
+  # Point at predicted value
+  geom_point(aes(x = x0, y = yhat), color = "red", size = 3) +
+  # Error bar for 95% CI at x=30
+  geom_errorbar(aes(x = x0, ymin = ylo, ymax = yhi), width = 0.3, color = "red", linewidth = 0.8) +
+  labs(
+    title = "Prediction Illustration",
+    x = "Temperature (°C)",
+    y = "Trips"
+  ) +
+  theme_minimal(base_size = 12)+
+  ylim(0,NA)
+
+```
+
 
 
 ---

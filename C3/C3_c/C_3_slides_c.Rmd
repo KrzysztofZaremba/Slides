@@ -575,9 +575,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(z[frac(alpha,2)]),
+     labels = c(expression(-z[frac(alpha,2)]),
                 expression(0),
-                expression(-z[frac(alpha,2)])))
+                expression(z[frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
