@@ -1,0 +1,465 @@
+---
+title: "LearnR Tutorial: Estimators"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+ 
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(tidyverse)
+
+if (!requireNamespace("car", quietly = TRUE)) {
+  install.packages("car", repos = "https://cloud.r-project.org")
+}
+
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly", repos = "https://cloud.r-project.org")
+}
+
+
+if (!requireNamespace("tseries", quietly = TRUE)) {
+  install.packages("tseries", repos = "https://cloud.r-project.org")
+}
+
+library(plotly)
+library(car)
+library(tseries)
+
+if (!requireNamespace("probstats4econ", quietly = TRUE)) {
+  install.packages("probstats4econ", repos = "https://cloud.r-project.org")
+}
+library(probstats4econ)
+
+
+if (!requireNamespace("wooldridge", quietly = TRUE)) {
+  install.packages("wooldridge", repos = "https://cloud.r-project.org")
+}
+library(wooldridge)
+
+  
+  # Fixed data generation
+  set.seed(123) # For reproducibility
+  x <- seq(-10, 10, by = 1)
+  e <- rnorm(length(x), mean = 0, sd = 5)
+  y_actual <- 4 + 1.65 * x + e
+  
+  data <- data.frame(x, y_actual)
+  
+
+```
+
+---
+
+## Deriving Coefficients
+
+We’ll work with data from a survey on extra-marital affairs in the US. Here is the data:
+
+- **id**: identifier  
+- **male**: =1 if male  
+- **age**: age in years  
+- **yrsmarr**: years married  
+- **kids**: =1 if have kids  
+- **relig**: religiosity (5 = very religious, 4 = somewhat, 3 = slightly, 2 = not at all, 1 = anti-religious)  
+- **educ**: years of schooling  
+- **ratemarr**: marital happiness (5 = very happy, 4 = happier than average, 3 = average, 2 = somewhat unhappy, 1 = very unhappy)  
+- **naffairs**: number of affairs within last year  
+- **affair**: =1 if had at least one affair  
+
+
+Let's predict the number of affairs. Let's pick two variables and find the coefficients f:
+
+\[
+y_i=\beta_0+\beta_1x_{i3}+\beta_2x_{i2}+\epsilon_i
+\]
+
+Let's find the coefficients using the OLS formula:
+$$\beta=(X'X)^{-1}X'y$$
+
+
+```{r e1, exercise=TRUE}
+#X=cbind(1, affairs$age, affairs$relig)
+#y=affairs$naffairs  
+
+```
+
+
+
+```{r e2, exercise=TRUE}
+
+
+
+```
+
+
+Find predicted values
+
+```{r e3, exercise=TRUE, exercise.setup="e2"}
+
+
+
+```
+
+
+
+Find residuals
+
+```{r e4, exercise=TRUE, exercise.setup="e2"}
+
+
+
+```
+
+Make a prediction for particular values of x vector using beta vector from the first derivation.
+
+```{r e5, exercise=TRUE, exercise.setup="e1"}
+
+
+
+```
+
+
+---
+
+## Adding variables
+
+Using dataset "card", regress wage (weekly, in cents) on educ (education in years). Then add IQ. How do the coefficient on education changes?
+
+
+
+```{r e6, exercise=TRUE}
+
+
+
+```
+
+
+
+
+---
+
+## Variance
+
+We’ll work with data from a survey on extra-marital affairs in the US. Regress nafffairs on age and relig. Find the variance covaraince matrix. 
+
+
+```{r e7, exercise=TRUE}
+
+
+
+```
+
+---
+
+## Categorical variables in a regression
+
+How does the marital status impacts earning?
+
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and marital status (marstatus).  Possible options are: Married, Divorced, Widowed, Never married. 
+
+
+```{r e8, exercise=TRUE}
+
+
+```
+
+---
+
+## Interaction simple
+
+Let's look at how value of the size of the house changes with its age. This data reports houses sold between 2006 and 2010. It has three variables of interest:
+
+1. salesprice - sale price
+2. lotarea - size of the lot
+3. yearbuilt - year the house was built
+
+
+
+```{r e9, exercise=TRUE}
+
+
+```
+
+---
+
+## Interaction variable with a categorical variable with more categories
+
+How do return to education vary across racial groups?
+
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and racial group (race: Black, White, Other)  and education in years (educ).  
+
+```{r 10, exercise=TRUE}
+
+```
+
+
+---
+
+## R squared
+
+Data "attend" reports final score of students of microeconomics from a US universities. It has following variables:
+
+• attend: classes attended out of 32
+• termGPA: GPA for term (GPA: grade point average)
+• priGPA: cumulative GPA prior to term
+• ACT: ACT score (standarized end of high school exam)
+• final: final exam score
+• atndrte: percent classes attended
+• hwrte: percent homework turned in
+• frosh: =1 if freshman
+• soph: =1 if sophomore
+• missed: number of classes missed
+
+
+Outcome is final exam score. It goes from 0 to 40. (that's what we want to predict). Keep adding regressors and try to find the highest adjusted R square possible. (ex: attend, ACT, termGPA, priGPA)
+
+```{r 11, exercise=TRUE}
+
+
+```
+
+
+---
+
+## R squared
+
+Data "attend" reports final score of students of microeconomics from a US universities. It has following variables:
+
+• attend: classes attended out of 32
+• termGPA: GPA for term (GPA: grade point average)
+• priGPA: cumulative GPA prior to term
+• ACT: ACT score (standarized end of high school exam)
+• final: final exam score
+• atndrte: percent classes attended
+• hwrte: percent homework turned in
+• frosh: =1 if freshman
+• soph: =1 if sophomore
+• missed: number of classes missed
+
+
+Outcome is final exam score. It goes from 0 to 40. (that's what we want to predict). Keep adding regressors and try to find the highest adjusted R square possible. (ex: attend, ACT, termGPA, priGPA)
+
+```{r 12, exercise=TRUE}
+
+
+```
+
+
+---
+
+## Hypothesis testing
+
+In the dataset "alcohol" we find information whether someone is employed (employ), whether they abuse alcohol (abuse), and years of education (educ).
+Test if abusing alcohol affects your employment status when controlling for education. Compare to a model that doesn't include education as control. 
+
+```{r 13f, exercise=TRUE}
+
+
+##what is the distribution of test statistic? What is the number of degrees of freedom?
+
+```
+
+
+---
+
+## Hypothesis testing with Interaction
+
+Does education plays larger role if living in a big city?
+
+The dataset "beauty" has information on wage (wage), years of education (educ), and whether someone lives in a big city (bigcity). Test if return to education is higher when you live in big city.
+
+```{r 13, exercise=TRUE}
+
+##what is the distribution of test statistic? What is the number of degrees of freedom?
+
+```
+
+
+---
+
+## Confidence interval for a coefficient
+
+The dataset sleep75 contains informatiomn on total hours of sleep (slpnaps), age, being married (marr), and hourly wage (hrwage).
+Run a regression explaining sleep time using all these variables. What is 95% confidence interval on the impact of more dollar of hourly wage? What about being married?
+
+
+```{r 14, exercise=TRUE}
+
+
+
+##what is the distribution? What is the number of degrees of freedom?
+
+```
+
+
+---
+
+## Confidence interval for a mean response
+
+
+The dataset econmath contains data from a course in economics from Michigan State University. It reports the following variables. 
+
+- score: final score
+- age: age in years
+- study: hours studying per week
+- act: score on final high school exam
+- fathcoll: 1 if father has college degree
+- mothcoll: 1 if mother has college degree
+- male: 1 if male
+
+Let's find the confidence interval for the mean score for students who are 22 years old, study 10 hours per week, had 25 on final high school exam, only mother has a college degree, and is male
+
+Step by step method:
+1. Find the prediction
+2. Write down the vector of predictors
+3. Find the inverse of X'X
+4. Find the standard error
+5. Compute the standard errors of the prediction
+6. Find critical value
+7. Put together the interval
+
+```{r 15m1, exercise=TRUE}
+
+
+```
+
+Quick method: 
+
+```{r 15m2, exercise=TRUE}
+
+lm_model <- lm(score ~ age+study+act+fathcoll+mothcoll+male, data = econmath)
+summary(lm_model)
+new_data<- data.frame(age=22, study=10, act=25, fathcoll=0, mothcoll=1, male=1)
+predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.fit=TRUE)
+
+```
+
+---
+
+## Confidence interval for a new observation
+
+Let's use the same setting as before, but calculate the confidence interval for a new observation. 
+
+Step by step method:
+1. Find the prediction
+2. Write down the vector of predictors
+3. Find the inverse of X'X
+4. Find the standard error
+5. Compute the standard errors of the prediction
+6. Find critical value
+7. Put together the interval
+
+```{r 16m1, exercise=TRUE}
+
+
+
+```
+
+Quick method: 
+
+```{r 16m2, exercise=TRUE}
+
+lm_model <- lm(score ~ age+study+act+fathcoll+mothcoll+male, data = econmath)
+summary(lm_model)
+new_data<- data.frame(age=22, study=10, act=25, fathcoll=0, mothcoll=1, male=1)
+predict(lm_model, newdata = new_data, interval = "prediction", level = 0.95, se.fit=TRUE)
+
+```
+
+
+---
+
+## ANOVA - Significance of the regression
+
+The dataset discrim contains information of prices of fast food items from the US. Each observation is fast food restaurant.
+
+Suppose you regress price of price of fries (pfries) on location characteristics: proportion black in zipcode (prpblck), proportion living in poverty (prppov), median family income (income). Does this regression helps at all to explain the price? 
+
+1. Start with running the regression and looking at the results
+
+```{r 17m1, exercise=TRUE}
+
+lm_model <- lm(pfries ~ prpblck+prppov+income, data = discrim)
+summary(lm_model)
+
+```
+
+
+2. Run the ANOVA test. 
+
+```{r 17m2, exercise=TRUE, exercise.setup="17m1"}
+
+anova(lm_model)
+```
+
+
+3. What is the SSE,  SST and SSR? What are their respective degrees of freedom? 
+
+```{r 17m3, exercise=TRUE}
+
+
+```
+
+
+4. What is the F test result? What is the p-value?
+
+```{r 17m4, exercise=TRUE}
+
+
+#cumulative F distribution pf(q, df1, df2)
+
+
+
+```
+
+
+---
+
+## Testing for difference in coefficients
+
+Dataset married provides information on married couples in the US. It reports total family income and characteristics of both spouses: age (age_w, age_h), years of education (educ_w, educ_h), and body mass index (bmi_w, bmi_h).
+
+Test if the impact of wife education is the same as the impact of husband education on family income.
+
+1. Run the regression
+
+```{r 18m1, exercise=TRUE}
+
+a=lm(famincome~educ_w+educ_h, data=married)
+summary(a)
+
+```
+
+
+2. Find the test statistic
+
+```{r 18m2, exercise=TRUE, exercise.setup="18m1"}
+
+vcov(a) #variance covariance matrix. 
+
+
+```
+
+3. Find the p-value
+
+```{r 18m3, exercise=TRUE, exercise.setup="18m2"}
+
+
+```
+
+
+#### Alternative test. 
+
+Now try again but with bmi of wife (bmi_w) vs bmi of husband (bmi_h)
+
+
+```{r 18m5, exercise=TRUE}
+
+a=lm(famincome~bmi_w+bmi_h, data=married)
+summary(a)
+
+```
+
+---

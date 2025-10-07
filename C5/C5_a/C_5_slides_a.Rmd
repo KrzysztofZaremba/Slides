@@ -44,6 +44,7 @@ library(DT)
 library(Lock5Data)
 library(wooldridge)
 library(tidyverse)
+library(probstats4econ)
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
@@ -191,8 +192,12 @@ summary(lm_model)
 ---
 ### Example 3
 
-What can predict whether you liked someone romantically?
+Who care more about looks when it comes to dating: men or women? 
+Our speed dating data gives us:
 
+1. How much respondent liked someone (1-10 scale) - variable "like")
+2. How attractive they found their date (1-10 scale) - variable "Attractive")
+3. The gender of the respondent (M or F) - variable gender
 --
 
 ```{r, echo=FALSE}
@@ -220,7 +225,7 @@ summary(lm_model)
 
 --
 
-100 observations simulated from an a regression line:
+100 observations simulated from a regression line:
 $$y_i=5+2x_{i1}+1x_{i2}+u_i$$
 ```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='80%'}
 
@@ -267,7 +272,7 @@ plot_ly(my_df, x = ~x1, y = ~x2, z = ~y, text = ~paste("x1:", round(x1,2), "<br>
 ---
 ### Multiple linear regression
 
-100 observations simulated from an a regression line: $$y_i=5+2\underbrace{x_{i}}_{x_{i1}}-1\underbrace{x_i}_{x_{i2}}^2+u_i$$
+100 observations simulated from a regression line: $$y_i=5+2\underbrace{x_{i}}_{x_{i1}}-1\underbrace{x_i}_{x_{i2}}^2+u_i$$
 
 
 ```{r, warning=FALSE,message=FALSE,fig.height=4, out.width='100%'}
@@ -313,7 +318,7 @@ $$x_1 = \begin{cases}
     0 & \text{if male}
 \end{cases}$$
 
-100 observations simulated from an a regression line: $$y_i=5+2x_{i1}-1x_{i2}+u_i$$
+100 observations simulated from a regression line: $$y_i=5+2x_{i1}-1x_{i2}+u_i$$
 ```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='100%'}
 set.seed(123)
 
@@ -375,7 +380,7 @@ $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_kx_{ik}+u_i$$
 ---
 ### Multiple linear regression
 
-We can also write it in the vector form:
+We can also write the regression in the vector form:
 
 $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_k,x_{ik}+u_i$$
 In vector form is: 
@@ -497,10 +502,30 @@ $$\begin{align*}
 
 --
 - First rewrite the sum of squares:
+$$\small SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}$$
+
+- Short review of matrix derivatives (link to full review of matrix algebra in canvas):
+
+1. Constants drop out:
+$$\small \frac{\partial}{\partial \mathbf b}(\mathbf v) = 0$$
+2. Linear functions:
+$$\frac{\partial}{\partial \mathbf b}(\mathbf c' \mathbf b) = \mathbf c,
+\qquad
+\frac{\partial}{\partial \mathbf b}(\mathbf b' \mathbf c) = \mathbf c$$
+3. Quadratic forms
+$$
+\small \frac{\partial}{\partial \mathbf b}(\mathbf b' A \mathbf b) = (A + A')\mathbf b
+$$
+
+
+
+---
+### Multiple linear regression
+
 $$SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}$$
 
---
-- Then minimize it with respect to $\mathbf{b}$
+- Let's minimize it with respect to $\mathbf{b}$
+
 
 $$\frac{\partial}{\partial \mathbf{b}}(\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb})=\mathbf{-2X'y}+\mathbf{2X'Xb}$$
 
@@ -566,67 +591,6 @@ n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
 \]
 </div>
 
----
-Example:
-
-<img src="Exam_f_ols.png" width="80%">
-
----
-### Practice theory
-
-Lista 5.1 Q9 and 6a
-
----
-
-### Special Case: k=1
-
-What if we have just one $x$?
-
-<div class="math">
-\[\underbrace{\begin{bmatrix}
-\hat{\beta}_0 \\
-\hat{\beta}_1 \end{bmatrix}}_{\hat{\beta}}
-=
-\underbrace{\begin{bmatrix}
-n & \sum_{i=1}^{n}x_{i1} \\
-\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2\end{bmatrix}^{-1}}_{\mathbf{(X'X)}^{-1}}
-
-
-\underbrace{\begin{bmatrix}
-\sum_{i=1}^{n}y_i \\
-\sum_{i=1}^{n}x_{i1}y_i \end{bmatrix}}_{\mathbf{X'y}}
-\]
-</div>
-
---
-<div class="math">
-\[
-\begin{bmatrix}
-\hat{\beta}_0 \\
-\hat{\beta}_1\end{bmatrix}
-=
-\begin{bmatrix}
-\frac{\sum^n_{i=1}x_{i1}^2}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} & \frac{-\sum_{i=1}^{n} x_{i1}}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} \\
-\frac{-\sum_{i=1}^{n} x_{i1}}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2} & \frac{n}{n\sum_{i=1}^{n} x_{i1}^2 - (\sum_{i=1}^{n} x_{i1})^2}\end{bmatrix}
-\begin{bmatrix}
-\sum_{i=1}^{n}y_i \\
-\sum_{i=1}^{n}x_{i1}y_i \end{bmatrix}
-\]
-</div>
-
---
-which gives:
-
-<div class="math">
-\[
-\begin{bmatrix}
-\hat{\beta}_0 \\
-\hat{\beta}_1\end{bmatrix}
-=
-\begin{bmatrix} \bar{y}-\bar{x}_1\frac{\sum(x_{1i}y_i-n\bar{y}\bar{x}_1)}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2} \\
-\frac{\sum_ix_{1i}y_i-n\bar{x}_{1}\bar{y}}{\sum_{i=1}^{n} x_{i1}^2 - n\bar{x}_{1}^2}\end{bmatrix}
-\]
-</div>
 
 ---
 ### Predictions
@@ -657,15 +621,14 @@ $$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mat
 - We are trying to find $\beta$s which minimize the prediction error
 - It turns out that we get minimal errors when we set $\beta$ to be: $\hat{\beta}=(X'X)^{-1}X'y$
 - If we have just one regressors, we get back the same formular as we already derived
--  
 
-### Practice Theory
-Lista 5.1 Q7
+
+
 
 ---
 
 #### Example with numbers
-Similar to Lista 5.1 Q8. What's the impact of hours studied and hours slept on the exam score?
+ What's the impact of hours studied and hours slept on the exam score?
 
 $$\small \begin{align*}
 \text{Dataset:} \\
@@ -715,8 +678,6 @@ $$\small \begin{align*}
 --
 - Cross terms in the matrix discount this correlation
 - Intuitively, this makes variables "uncorrelated" and allows to get their own impacts. 
-
-
 
 ---
 
@@ -850,6 +811,7 @@ $$e=y-\hat{y}=y-X\hat{\beta}=
 
 
 
+
 ---
 #### Example from data: 
 ```{r, echo=TRUE}
@@ -910,6 +872,45 @@ summary(fit)
 
 --
 - Because it only helps to study longer, but comparing students who study the same amount, drinking more coffee is not better. 
+
+
+
+---
+### More realistic example from the data: 
+
+Let’s explore a simple linear regression using U.S. survey data. We’ll regress hourly wage (in cents) on years of education.
+
+```{r, echo=TRUE}
+# Fit a linear regression model
+lm_model <- lm(wage ~ educ, data = card)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+```
+---
+### More realistic example from the data: 
+Now let’s include IQ as an additional predictor:
+The coefficient on education  decreases. Why?
+```{r, echo=TRUE}
+# Fit a linear regression model
+# Fit a linear regression model
+lm_model <- lm(wage ~ educ+IQ, data = card)
+# Display the summary of the linear regression model
+summary(lm_model)
+
+
+```
+
+---
+###  Why Does the Coefficient Change?
+
+- In the first model, education captures both its own effect and part of IQ’s effect on wage, because education and IQ are positively correlated.
+  - We're comparing people with different education levels, who also tend to differ in IQ.
+- In the second model, we control for IQ explicitly.
+  - Now, we are comparing people with different education levels, but with the same IQ level (holding IQ fixed).
+- Result: The education coefficient shrinks because it no longer absorbs IQ’s influence.
+- Controlling helps us to separate different effects
+
 ---
 ### OLS Properties
 
@@ -1465,7 +1466,6 @@ $$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\be
 
 - Which sign do you expect $\beta_3$ to have?
 
-- Exercise: Lista 5.1, 10 a) and b)
 
 ---
 
@@ -1623,10 +1623,7 @@ lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
 summary(lm_model)
 
 ```
----
-## Example
 
-![](Exam_covariance.png)
 ---
 ### Confidence Interval for a  Single Coefficient
 
@@ -1668,7 +1665,7 @@ CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}
 --
 - Note that the CI does not contain 0
 - What does it imply for hypothesis testing with $H_0: \beta_{age}=0$?
-- Exercise: lista 5.1 4a) and b)
+
 ---
 ### CI for mean response 
 
@@ -1683,7 +1680,7 @@ x_{02}  \\
 x_{0k} \\
 \end{bmatrix}$$
 
-Ex: What's average wait time if $x_{01}=10 (10 other people are there) and are age 52 $x_{02}=52$ 
+Ex: What's average wait time if $x_{01}=10$ (10 other people are there) and are age 52 $x_{02}=52$ 
 
 
 How accurate is our prediction?  $$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$$ 
@@ -2174,14 +2171,6 @@ knitr::include_graphics("Exam_fq.png")
 ```
 
 
----
-
-### Practice
-
-Lista 05.1
-
-- Changing age by one standard deviation increases duration by 3.8% of a standard deviation
-- Changing Occupancy one standard deviation increases duration by 46% of a standard deviation
 
 ---
 

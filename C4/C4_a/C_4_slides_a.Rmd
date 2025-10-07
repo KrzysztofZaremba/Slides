@@ -1146,10 +1146,10 @@ ggplot(amazon_data, aes(x = rating, y = returned)) +
 
 - Hence, the regression prediction is the **probability of return**.  
 
-- If $\hat{y}=0.15$ for a 5-star product, we interpret it as a 30% chance of being returned  
+- If $\hat{y}=0.15$ for a 5-star product, we interpret it as a 15% chance of being returned  
 
 - The slope $\beta_1$ tells us how the probability changes when rating increases by one point:  
-  - If the probability of return is 27% at 4 stars and 30% at 5 stars, then  
+  - If the probability of return is 27% at 4 stars and 15% at 5 stars, then  
   $$\beta_1 = 0.15 - 0.27 = -0.12$$ 
   
     meaning each additional point reduces the probability of return by 12p.p
@@ -1193,6 +1193,7 @@ We only have samples, and yet we want to learn something about the population pa
 set.seed(123)
 x <- rnorm(100)
 y <- 2 + 3 * x + rnorm(100, sd=3)
+full_model <- lm(y ~ x)
 coef_summary <- summary(full_model)
 intercept1 <- coef_summary$coefficients[1]
 slope1 <- coef_summary$coefficients[2]

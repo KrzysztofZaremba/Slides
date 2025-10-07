@@ -541,8 +541,8 @@ We will use the **hrs dataset** on health expenditures in the US.
 Our question: **Do men spend less on health care than women?**
 
 Variables: 
-- hrs$medical_costs -> annual health care expenditures (in dollars) of person i
-- hrs$male -> 1 if is male, 0 if female
+- medical_costs -> annual health care expenditures (in dollars) of person i
+- male -> 1 if is male, 0 if female
 
 1. Write down the regression model (by hand)
 
@@ -784,7 +784,7 @@ n=length(resid)
 ```
 
 
-```{r reg_hrs4412342, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+```{r reg_hrs4412365742, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
 library(tseries)
 jarque.bera.test(resid)
 
@@ -798,7 +798,7 @@ jarque.bera.test(resid)
 Suppose you test whether product placement with more popular influencers increases your website visits more. From the ANOVA table of a simple linear regression model fitted with 15 observations, we recovered the sums of squares of the residuals and the total sum of squares; $SSE = 52$ and $SST = 152$. Using the F-test statistic, validate the significance of the regression at the 5% level.
 
 
-```{r reg_hrs441235442, exercise=TRUE}
+```{r reg_hrs4412354498892, exercise=TRUE}
 
 
 ```
@@ -810,7 +810,7 @@ Suppose you test whether product placement with more popular influencers increas
 mutualfunds data is providing returns of 208 mutual funds in the US. Using ANOVA, test if age of the fund (fund_age) can explain it's 5 years return rate (return_5yr). Find SST.
 
 
-```{r reg_hrs441235442, exercise=TRUE}
+```{r reg_hrs441235r64556442, exercise=TRUE}
 m1 <- lm(return_5yr ~ fund_age, data = mutualfunds)
 anova(m1)
 
