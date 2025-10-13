@@ -973,7 +973,7 @@ $$EK = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^4}{\left(\frac{1}{n} \sum
 
 The test statistic for our test is:
 
-$$JB = \frac{n}{6} \left(\frac{S^2}{2} + \frac{EK^2}{4}\right)$$
+$$JB = \frac{n}{6} \left(S^2 + \frac{EK^2}{4}\right)$$
 
 - Its value will be high if:
   - Skeweness deviates significantly from 0
