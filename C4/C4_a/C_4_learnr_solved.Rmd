@@ -1,0 +1,975 @@
+---
+title: "LearnR Tutorial: Estimators"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+ 
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(tidyverse)
+
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly")
+}
+
+
+if (!requireNamespace("tseries", quietly = TRUE)) {
+  install.packages("tseries")
+}
+
+library(plotly)
+
+if (!requireNamespace("probstats4econ", quietly = TRUE)) {
+  install.packages("probstats4econ")
+}
+library(probstats4econ)
+
+  
+  # Fixed data generation
+  set.seed(123) # For reproducibility
+  x <- seq(-10, 10, by = 1)
+  e <- rnorm(length(x), mean = 0, sd = 5)
+  y_actual <- 4 + 1.65 * x + e
+  
+  data <- data.frame(x, y_actual)
+  
+  sexratios <- read.table(text="
+21163 2000-2004 2020 985 901 0.4777306 1886
+08063 2000-2004 2020 190 175 0.4794521 365
+20544 2000-2004 2020 23 22 0.4888889 45
+14080 2000-2004 2020 167 189 0.5308989 356
+19039 2000-2004 2020 45696 46977 0.5069114 92673
+14017 2000-2004 2020 494 520 0.5128205 1014
+28023 2000-2004 2020 137 142 0.5089606 279
+20462 2000-2004 2020 173 203 0.5398936 376
+20359 2000-2004 2020 16 19 0.5428571 35
+07023 2000-2004 2020 5775 4946 0.4613376 10721
+24004 2000-2004 2020 176 146 0.4534161 322
+28026 2000-2004 2020 127 165 0.5650685 292
+07099 2000-2004 2020 3796 3549 0.4831858 7345
+21029 2000-2004 2020 184 172 0.4831461 356
+11025 2000-2004 2020 4050 4158 0.5065789 8208
+21083 2000-2004 2020 1160 1090 0.4844444 2250
+07018 2000-2004 2020 478 468 0.4947146 946
+26016 2000-2004 2020 201 197 0.4949749 398
+16088 2000-2004 2020 5310 5306 0.4998116 10616
+20135 2000-2004 2020 372 333 0.4723404 705
+14035 2000-2004 2020 2200 2287 0.5096947 4487
+05009 2000-2004 2020 2690 2698 0.5007424 5388
+10005 2000-2004 2020 30545 30975 0.5034948 61520
+17023 2000-2004 2020 338 388 0.5344353 726
+20375 2000-2004 2020 614 587 0.4887594 1201
+11001 2000-2004 2020 4245 4254 0.5005295 8499
+26020 2000-2004 2020 198 224 0.5308057 422
+29037 2000-2004 2020 453 443 0.4944196 896
+31024 2000-2004 2020 153 151 0.4967105 304
+32009 2000-2004 2020 379 395 0.5103359 774
+12079 2000-2004 2020 1078 1050 0.4934211 2128
+20041 2000-2004 2020 1257 1117 0.4705139 2374
+30020 2000-2004 2020 697 640 0.4786836 1337
+13083 2000-2004 2020 2435 2501 0.5066856 4936
+20107 2000-2004 2020 1223 1164 0.4876414 2387
+31064 2000-2004 2020 67 50 0.4273504 117
+30207 2000-2004 2020 1825 1838 0.5017745 3663
+12061 2000-2004 2020 1902 2019 0.5149197 3921
+11019 2000-2004 2020 2155 2057 0.4883666 4212
+31079 2000-2004 2020 2158 2107 0.4940211 4265
+16064 2000-2004 2020 1218 1195 0.4952341 2413
+10003 2000-2004 2020 165 182 0.5244957 347
+21124 2000-2004 2020 716 779 0.5210702 1495
+20492 2000-2004 2020 78 92 0.5411765 170
+07076 2000-2004 2020 1523 1519 0.4993425 3042
+20103 2000-2004 2020 262 240 0.4780876 502
+17003 2000-2004 2020 1678 1644 0.4948826 3322
+31057 2000-2004 2020 345 341 0.4970845 686
+20222 2000-2004 2020 39 58 0.5979381 97
+20006 2000-2004 2020 913 837 0.4782857 1750
+20551 2000-2004 2020 1235 1171 0.4866999 2406
+30111 2000-2004 2020 676 634 0.4839695 1310
+31093 2000-2004 2020 749 795 0.5148964 1544
+12002 2000-2004 2020 1296 1155 0.4712362 2451
+05011 2000-2004 2020 485 465 0.4894737 950
+20303 2000-2004 2020 25 34 0.5762712 59
+20076 2000-2004 2020 169 152 0.4735202 321
+09005 2000-2004 2020 42664 44622 0.5112160 87286
+20196 2000-2004 2020 6 14 0.7000000 20
+27001 2000-2004 2020 2491 2506 0.5015009 4997
+14067 2000-2004 2020 12524 12616 0.5018298 25140
+20085 2000-2004 2020 1367 1376 0.5016405 2743
+16006 2000-2004 2020 5535 5524 0.4995027 11059
+14051 2000-2004 2020 1298 1254 0.4913793 2552
+20240 2000-2004 2020 149 137 0.4790210 286
+21192 2000-2004 2020 240 238 0.4979079 478
+21032 2000-2004 2020 32 50 0.6097561 82
+31104 2000-2004 2020 801 854 0.5160121 1655
+14021 2000-2004 2020 796 802 0.5018773 1598
+31086 2000-2004 2020 87 83 0.4882353 170
+32017 2000-2004 2020 9793 9711 0.4978979 19504
+07005 2000-2004 2020 1281 1230 0.4898447 2511
+04001 2000-2004 2020 2426 2584 0.5157685 5010
+23004 2000-2004 2020 9936 10122 0.5046366 20058
+28043 2000-2004 2020 875 856 0.4945118 1731
+20550 2000-2004 2020 209 228 0.5217391 437
+20478 2000-2004 2020 41 44 0.5176471 85
+30057 2000-2004 2020 702 686 0.4942363 1388
+12035 2000-2004 2020 6669 6614 0.4979297 13283
+20105 2000-2004 2020 337 292 0.4642289 629
+20552 2000-2004 2020 14 17 0.5483871 31
+20158 2000-2004 2020 100 117 0.5391705 217
+20355 2000-2004 2020 27 21 0.4375000 48
+14015 2000-2004 2020 2759 2826 0.5059982 5585
+21087 2000-2004 2020 560 585 0.5109170 1145
+07020 2000-2004 2020 2260 2304 0.5048203 4564
+07052 2000-2004 2020 7785 7289 0.4835478 15074
+16087 2000-2004 2020 642 626 0.4936909 1268
+08039 2000-2004 2020 157 165 0.5124224 322
+25018 2000-2004 2020 6806 7106 0.5107821 13912
+26037 2000-2004 2020 30 37 0.5522388 67
+12053 2000-2004 2020 2268 2264 0.4995587 4532
+14059 2000-2004 2020 607 594 0.4945878 1201
+20412 2000-2004 2020 145 123 0.4589552 268
+30037 2000-2004 2020 410 384 0.4836272 794
+32002 2000-2004 2020 213 191 0.4727723 404
+20278 2000-2004 2020 1515 1579 0.5103426 3094
+05013 2000-2004 2020 75 89 0.5426829 164
+17018 2000-2004 2020 5461 5326 0.4937425 10787
+19038 2000-2004 2020 2973 3079 0.5087574 6052
+", header=FALSE)
+
+colnames(sexratios) <- c("fips","period","year","male","female","share_male","total")
+
+```
+
+---
+
+## Example 1
+
+We’ll work with auction data from eBay iPod sales (Rezende, 2008).  
+Your task is to regress the final price on the number of bidders and find the slope. 
+
+First, use the covariance/variance formula to find the slope and the intercept. 
+
+\[
+\hat{\beta}_1 = \frac{\text{Cov}(x,y)}{\text{Var}(x)}, 
+\quad 
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\]
+
+```{r auction-exercise1, exercise=TRUE}
+auctions$bidders
+
+auctions$finalprice
+
+beta1=cov(auctions$bidders, auctions$finalprice)/var(auctions$bidders)
+beta0=mean(auctions$finalprice)-beta1*mean(auctions$bidders)
+beta1
+beta0
+```
+
+Or equivalently, you can run a regression in R:
+
+```{r auction-exercise-solution2, exercise=TRUE}
+#or code for linear regression in R
+x=lm(finalprice ~ bidders, data = auctions) #lm stands for linear model. the formula has form y~x and then we put data. 
+summary(x)
+```
+
+
+```{r auction-exercise3, exercise=TRUE}
+# Plug into the formula: beta0 + beta1*6
+103.6434 + 1.8005*6
+
+```
+
+---
+
+## Example 2
+
+We’ll work with data on house sales in Ames, Iowa between 2006 and 2010.  
+The dataset is limited to one-family homes with public utilities and excludes new home sales.  
+We want to study the relationship between **sale price** and **lot area (in square feet)**.  
+
+First, use the **correlation formula** to find the slope and the intercept:  
+
+\[
+\hat{\beta}_1 = r_{xy} \cdot \frac{s_y}{s_x}, 
+\quad 
+\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
+\]
+
+where \(r_{xy}\) is the correlation between \(x\) (lot area) and \(y\) (sale price),  
+and \(s_x, s_y\) are the standard deviations of \(x\) and \(y\).  
+
+```{r housing-exercise1, exercise=TRUE}
+
+houseprices$lotarea
+houseprices$saleprice
+
+beta1=cor(houseprices$lotarea, houseprices$saleprice)*sd(houseprices$saleprice)/sd(houseprices$lotarea)
+beta0=mean(houseprices$saleprice)-beta1*mean(houseprices$lotarea)
+beta1
+beta0
+
+```
+
+Or equivalently, you can run a regression in R:
+
+```{r housing-exercise-solution2, exercise=TRUE}
+#or code for linear regression in R
+x=lm(saleprice ~ lotarea, data = houseprices) #lm stands for linear model. the formula has form y~x and then we put data. 
+summary(x)
+```
+
+Now, find yhat - prediction for all houses in the dataset. 
+
+
+```{r housing-exercise3, exercise=TRUE}
+yhat=1.566e+05 + 2.113e+00*houseprices$lotarea
+
+#or 
+x=lm(saleprice ~ lotarea, data = houseprices) 
+yhat=x$fitted.values #here you will find predicted values (yhats)
+yhat
+
+plot(houseprices$lotarea, yhat)
+```
+
+Now, find e - residuals for all houses in the dataset. 
+
+
+```{r housing-exercise3b, exercise=TRUE}
+
+yhat=1.566e+05 + 2.113e+00*houseprices$lotarea
+e=houseprices$saleprice - yhat
+e
+
+
+```
+---
+
+## Example 3
+
+We’ll work with data on married couples in the United States (CTS Household Survey, 2003).  
+Our question: **Does the body mass index (BMI) of the wife predict the BMI of the husband?**  
+
+---
+
+First, make a scatterplot of husband’s BMI against wife’s BMI:  
+
+```{r bmi-exercise1, exercise=TRUE}
+
+plot(married$bmi_h, married$bmi_w)
+
+```
+
+---
+
+Now, run a regression of husband’s BMI on wife’s BMI:  
+
+```{r bmi-exercise2, exercise=TRUE}
+x=lm(bmi_h ~ bmi_w, data = married) #lm stands for linear model. the formula has form y~x and then we put data.
+summary(x)
+```
+
+What explains this?
+
+---
+
+## Regression Decomposition
+
+We’ll work with the Ames housing dataset.  
+Regression:  
+
+```{r housing-regression, exercise=TRUE}
+# Run a regression of saleprice on lotarea
+x=lm(saleprice ~ lotarea, data = houseprices)
+summary(x)
+```
+
+---
+
+Now, let’s compute the key pieces step by step.  
+
+1. **Fitted values** (predicted sale prices):  
+
+2. **Residuals** (errors = observed – fitted): 
+
+```{r housing-fitted, exercise=TRUE, exercise.setup="housing-regression"}
+
+yhat=x$fitted.values #here you will find predicted values (yhats) #this is just beta0+beta1*x
+
+#you can do 
+e=houseprices$saleprice - x$fitted.values
+
+#or simply
+e=x$residuals #here you will find residuals
+```
+
+---
+
+3. **SST, SSR, and SSE**:  
+
+\[
+SST = \sum (y_i - \bar{y})^2, \quad
+SSR = \sum (\hat{y}_i - \bar{y})^2, \quad
+SSE = \sum (y_i - \hat{y}_i)^2
+\]
+
+```{r housing-sumsquares, exercise=TRUE, exercise.setup="housing-fitted"}
+my=mean(houseprices$saleprice)
+y=houseprices$saleprice
+
+  
+SST <- sum((y - my)^2)
+SSR <- sum((yhat - my)^2)
+SSE <- sum((y - yhat)^2) #or sum(e^2)
+
+c(SST = SST, SSR = SSR, SSE = SSE)
+```
+
+---
+
+4. **Compute \(R^2\):**  
+
+\[
+R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
+\]
+
+```{r housing-r2, exercise=TRUE, exercise.setup="housing-sumsquares"}
+
+R2=SSR/SST
+R2
+
+```
+
+
+---
+
+## Regression Decomposition 2
+
+Now we want to learn how much of variation in prices at the auction is explained by the number of bidders. Repeat the steps from above
+
+```{r housing-regression4, exercise=TRUE}
+# Run a regression of finalprice on bidders from the auctions dataset
+x=lm(finalprice ~ bidders, data = auctions)
+summary(x)
+
+
+```
+
+
+
+---
+
+Now, let’s compute the key pieces step by step.  
+
+1. **Fitted values** (predicted sale prices):  
+
+2. **Residuals** (errors = observed – fitted): 
+
+```{r housing-fitted4, exercise=TRUE, exercise.setup="housing-regression"}
+yhat=x$fitted.values #here you will find predicted values (yhats)
+e=x$residuals #here you will find residuals
+```
+
+---
+
+3. **SST, SSR, and SSE**:  
+
+\[
+SST = \sum (y_i - \bar{y})^2, \quad
+SSR = \sum (\hat{y}_i - \bar{y})^2, \quad
+SSE = \sum (y_i - \hat{y}_i)^2
+\]
+
+```{r housing-sumsquares4, exercise=TRUE, exercise.setup="housing-fitted"}
+
+
+my=mean(auctions$finalprice)
+y=auctions$finalprice
+
+SST <- sum((y - my)^2)
+SSR <- sum((yhat - my)^2)
+SSE <- sum(e^2)
+
+c(SST = SST, SSR = SSR, SSE = SSE)
+```
+
+---
+
+4. **Compute \(R^2\):**  
+
+\[
+R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
+\]
+
+```{r housing-r24, exercise=TRUE, exercise.setup="housing-sumsquares4"}
+
+R2=SSR/SST
+R2
+
+
+```
+
+---
+
+## Scaling of Variables
+
+We’ll work with data on married couples in the U.S. (CTS Household Survey, 2003).  
+Our outcome is **family income**, and our predictor is **husband’s age**.  
+
+---
+
+#### Step 1: Regression with original units  
+Family income in **dollars**, husband’s age in **years**.  
+
+\[
+famincome_i = \beta_0 + \beta_1 \cdot age\_h_i + u_i
+\]
+
+```{r married-exercise1, exercise=TRUE}
+# Run a regression of family income (dollars) on husband's age (years)
+ x=lm(famincome ~ age_h, data = married)
+summary(x)
+```
+
+Visualize:  
+
+```{r married-plot1, exercise=TRUE}
+x=lm(famincome ~ age_h, data = married)
+yhat=x$fitted.values
+
+# scatterplot of the true data
+plot(married$age_h, married$famincome,
+     xlab = "Age of husband", ylab = "Family income",
+     pch = 16, col = "black")
+
+# add the fitted line or points
+lines(married$age_h, yhat, col = "red", lwd = 2) 
+
+
+```
+
+---
+
+#### Step 2: Rescale income to **thousands of dollars**  
+
+Transformation:  
+
+\[
+famincome\_thousands = \frac{famincome}{1000}
+\]
+
+New regression:  
+
+\[
+famincome\_thousands = \beta_0^\* + \beta_1^\* \cdot age\_h + u
+\]
+
+
+
+```{r m2, exercise=TRUE}
+married$famincome_thousands = married$famincome / 1000
+lm(famincome_thousands ~ age_h, data = married)
+
+ggplot(married, aes(x = age_h, y = famincome_thousands)) +
+   geom_point(alpha=0.2) +
+   geom_smooth(method="lm", se=FALSE, color="blue") +
+   labs(x="Husband's age (years)", y="Family income (thousands of $)")
+```
+
+---
+
+#### Step 3: Rescale age to **months**  
+
+Transformation:  
+
+\[
+age\_h\_months = age\_h \times 12
+\]
+
+New regression:  
+
+\[
+famincome = \gamma_0 + \gamma_1 \cdot age\_h\_months + u
+\]
+
+How does the correlation formula changes?
+
+```{r married-exercise4, exercise=TRUE}
+married$age_h_months = married$age_h * 12
+
+
+lm(famincome_thousands ~ age_h_months, data = married)
+
+
+ ggplot(married, aes(x = age_h_months, y = famincome_thousands)) +
+  geom_point(alpha=0.2) +
+   geom_smooth(method="lm", se=FALSE, color="blue") +
+   labs(x="Husband's age (months)", y="Family income (thousands of $)")
+```
+
+
+---
+
+### Reflection  
+
+- Did R squared change?
+
+- no, because R squared is related to correlation - strength of the relationship between the variables. Rescaling variables does not change correlation. 
+
+---
+
+## Variance of the OLS Estimators
+
+
+\[
+S_{xx} = \sum_{i=1}^n (x_i - \bar{x})^2, 
+\quad 
+\hat\sigma^2 = \frac{\text{SSE}}{n-2} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-2}
+\]
+
+\[
+\mathrm{Var}(\hat{\beta}_1) = \frac{\hat\sigma^2}{S_{xx}}, 
+\quad 
+\mathrm{Var}(\hat{\beta}_0) = \hat\sigma^2 \left(\frac{1}{n} + \frac{\bar{x}^2}{S_{xx}}\right)
+\]
+
+
+
+```{r variance4, exercise=TRUE}
+# Step 0: fit regression (keep your variable names)
+reg = lm(saleprice ~ lotarea, data = houseprices)
+summary(reg)
+
+# Step 1: core pieces
+y    = houseprices$saleprice
+yhat = reg$fitted.values
+e    = y - yhat
+n    = length(y)
+
+# Step 2: compute Sxx 
+x    = houseprices$lotarea
+mx   = mean(x)
+Sxx  = sum((x - mx)^2)
+
+# Step 3: error variance estimator  
+SSE  = sum(e^2)
+sigma2_hat = SSE/(n-2)
+
+# Step 4: variances of OLS estimators
+var_beta1 = sigma2_hat / Sxx
+
+
+# Step 5: standard errors of OLS estimators
+se_beta1 = sqrt(var_beta1)
+se_beta1
+```
+
+### Transformation of variables: Variance of the OLS Estimators
+
+
+```{r variance4b, exercise=TRUE, exercise.setup="variance4"}
+#let's multiply y by 1000 and see how standard error changes
+houseprices$saleprice_thousands = houseprices$saleprice / 1000
+reg2 = lm(saleprice_thousands ~ lotarea, data = houseprices)
+summary(reg2)
+
+#(it goes down by 1000 because both y and yhat are divided by 1000, so e is also divided by 1000, so SSE goes down by 1000^2, so sigma2_hat goes down by 1000^2, so se_beta1 goes down by 1000)
+```
+
+
+---
+
+## Hypothesis Testing
+
+
+We will use the **hrs dataset** on health expenditures in the US.  
+Our question: **Do men spend less on health care than women?**
+
+Variables: 
+- medical_costs -> annual health care expenditures (in dollars) of person i
+- male -> 1 if is male, 0 if female
+
+1. Write down the regression model (by hand)
+
+2. Write down the hypothesis
+
+H0: beta1 = 0 (no difference in medical costs between men and women)
+H1: beta1 < 0 (men spend less on healthcare than women)
+
+3. Find beta1 and beta2 and their standard errors
+
+```{r reg_hrs, exercise=TRUE}
+x=lm(medical_costs ~ male, data = hrs)
+summary(x)
+beta1=-317.62
+se_beta1=138.92
+beta0=1938.44
+se_beta0=72.14
+
+
+```
+
+4. Find the t-statistic and p-value
+
+```{r p-value, exercise=TRUE}
+t_stat= (beta1-0)/se_beta1
+t_stat
+
+
+p_value=1-pt(t_stat, df=length(hrs$medical_costs)-2)
+p_value
+
+```
+
+5. Interpret
+
+#we reject that there is no difference in medical costs - seems like men are spending less. 
+
+---
+
+## Confidence interval for coefficient
+
+In the cps dataset we have:  
+- **Earnings**: `earnwk` (weekly earnings, in dollars)  
+- **Education**: `educ` (highest education level attained, in years)  
+
+We want to study (1) the impact of an additional year of education on weekly earnings. We want to find the 99% confidence intervals for these parameters. 
+
+### 1. Write down the regression by hand
+
+
+### 2. Estimate coefficients and standard errors
+
+```{r reg_hrs2, exercise=TRUE}
+reg1=lm(earnwk ~ educ, data = cps)
+summary(reg1)
+
+beta1=101.550
+se_beta1=5.575
+beta0=-330.753
+se_beta0=72.713
+
+```
+
+
+### 3. Find the 99% Critical values
+
+
+```{r reg_hrs3, exercise=TRUE}
+alpha=0.01
+t_critical=qt(1-alpha/2, df=length(cps$earnwk)-2)
+t_critical
+
+
+```
+
+### 4. Construct the interval
+
+
+```{r reg_hrs4, exercise=TRUE}
+#99% CI for beta1
+lower_bound_beta1 = beta1 - t_critical * se_beta1
+upper_bound_beta1 = beta1 + t_critical * se_beta1
+
+c(lower_bound_beta1, upper_bound_beta1)
+```
+### 5. Interpretation
+
+We are 99% confident that an additional year of education increases weekly earnings by between 87.2 and 115.9 dollars.
+
+---
+
+## Predict average healthcare expenditure for people who are 55 years old
+
+Confidence interval for the average prediction (average at $x_0$):  
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
+\hat{\sigma} \sqrt{ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+
+We use the **hrs dataset**, which contains data on healthcare utilization and expenditures for older adults in the U.S.  
+We want to predict the **average medical costs (`medical_costs`)** for individuals who are **55 years old (`age = 55`)**.
+
+### 1. Write down the regression by hand
+
+### 2. Estimate the regression
+
+```{r reg_hrs43423, exercise=TRUE}
+reg=lm(medical_costs ~ age, data = hrs)
+summary(reg)
+
+beta1=35.894
+se_beta1=5.577
+beta0=-710.491
+se_beta0=402.993
+
+```
+
+### 3. Make a prediction
+
+```{r reg_hrs424, exercise=TRUE}
+x0=55
+yhat=-710.491 + 35.894*55
+
+```
+
+
+### 4. Build a confidence interval around the prediction
+
+```{r reg_hrs412, exercise=TRUE}
+#hint: to get the vector of residuals you can write: residuals(model)   
+reg=lm(medical_costs ~ age, data = hrs)
+e=residuals(reg)
+n=length(hrs$medical_costs)
+
+# Step 1: compute Sxx
+x=hrs$age
+mx=mean(x)
+Sxx=sum((x - mx)^2)
+
+# Step 2: compute sigma hat
+SSE=sum(e^2)
+sigma2_hat=SSE/(n-2)
+
+# Step 3: compute the critical value for 95% CI
+alpha=0.05
+t_critical=qt(1-alpha/2, df=n-2)
+t_critical
+
+# Step 4: compute the margin of error
+margin_of_error = t_critical * sqrt(sigma2_hat * (1/n + (x0 - mx)^2 / Sxx))
+margin_of_error
+
+# Step 5: compute the confidence interval
+lower_bound = yhat - margin_of_error
+upper_bound = yhat + margin_of_error
+c(lower_bound, upper_bound)
+
+```
+
+---
+
+## Predict price of a house with 3 bathrooms
+
+Confidence interval for the new prediction ($x_0$):  
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
+\hat{\sigma} \sqrt{1+ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+
+
+
+We use the **houseprices dataset**, which contains information on housing transactions
+We want to predict the **sale price (`saleprice`)** of a house that has **3 bathrooms (`fullbath = 3`)**.
+
+
+### 1. Write down the regression by hand
+
+### 2. Estimate the regression
+
+```{r reg_hrs434423, exercise=TRUE}
+reg=lm(saleprice ~ fullbath, data = houseprices)
+summary(reg)
+
+
+```
+
+### 3. Make a prediction
+
+```{r reg_hrs4424, exercise=TRUE}
+x0=3
+yhat=48106 + 86359*3
+
+```
+
+
+### 4. Build a confidence interval around the prediction
+
+```{r reg_hrs4412, exercise=TRUE}
+#hint: to get sigma: summary(model)$sigma
+reg=lm(saleprice ~ fullbath, data = houseprices)
+sigma=summary(reg)$sigma
+
+n=length(houseprices$saleprice)
+# Step 1: compute Sxx
+x=houseprices$fullbath
+mx=mean(x)
+Sxx=sum((x - mx)^2)
+
+# Step 2: compute sigma hat
+#sigma is already computed above
+# Step 3: compute the critical value for 95% CI
+alpha=0.05
+t_critical=qt(1-alpha/2, df=n-2)
+t_critical
+# Step 4: compute the margin of error
+margin_of_error = t_critical * sqrt(sigma^2 * (1 + 1/n + (x0 - mx)^2 / Sxx))
+margin_of_error
+
+# Step 5: compute the confidence interval
+lower_bound = yhat - margin_of_error
+upper_bound = yhat + margin_of_error
+c(lower_bound, upper_bound)
+
+
+  
+```
+
+
+---
+
+## Linearity Diagnostic
+
+We want to check whether the assumption of linearity is appropriate when modeling the relationship between house prices and lot area.
+
+Why there could be a nonlinearity?
+
+
+```{r reg_hrs4412_lin, exercise=TRUE}
+# Remove extreme outliers in lot area
+houseprices <- houseprices[houseprices$lotarea < 50000, ]
+
+# Scatter plot of lot area vs sale price
+plot(houseprices$lotarea, houseprices$saleprice)
+
+
+# Fit linear regression
+r1 <- lm(saleprice ~ lotarea, data = houseprices)
+
+fitted_values_linear <- r1$fitted.values
+residuals_linear <- r1$residuals
+
+
+# Residual plot
+plot(fitted_values_linear, residuals_linear)
+```
+
+
+---
+
+## Homoskedasticity
+
+The dataset sexratios reports the percent of men (share_male) in a cohort 2000-2004 in a sample of Mexican municipalities.
+The variable total gives the total population in each municipality. 
+
+Suppose we regress percent of men on total population. Would the variance be constant?
+
+```{r reg_hrs4412hom, exercise=TRUE}
+
+plot(sexratios$total,sexratios$share_male)
+
+
+m1 <- lm(share_male ~ total, data = sexratios)
+summary(m1)
+
+# Residuals vs fitted values to check homoskedasticity
+fitted_values_linear <- m1$fitted.values
+residuals_linear <- m1$residuals
+
+
+# Residual plot
+plot(fitted_values_linear, residuals_linear)
+
+
+
+
+```
+
+---
+
+## Normality Histogram
+
+mutualfunds data is providing returns of 208 mutual funds in the US. We will regress 5 year return (return_5yr) on expense ratio (expense_ratio). The expense ratio of a mutual fund is the annual fee that the fund charges investors to cover its operating costs. It is expressed as share of total assets under management
+
+```{r reg_hrs4412_H, exercise=TRUE}
+
+m1 <- lm(return_5yr ~ expense_ratio, data = mutualfunds)
+summary(m1)
+
+resid=m1$residuals
+
+# Histogram of residuals
+hist(resid)
+```
+
+#### QQplot
+
+```{r reg_hrs4412JB1, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+qqnorm(scale(resid))
+qqline(scale(resid), col = "red", lwd = 2)
+```
+---
+
+#### Jarque-Berra
+
+$$S = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^3}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{\frac{3}{2}}}$$
+
+$$EK = \frac{\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^4}{\left(\frac{1}{n} \sum_{i=1}^{n}(x_i - \bar{x})^2\right)^{2}} - 3$$
+
+$$JB = \frac{n}{6} \left(S^2 + \frac{EK^2}{4}\right)$$
+
+```{r reg_hrs4412JB2, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+
+deviations=resid - mean(resid)
+n=length(resid)
+
+#calculate the skewness
+skewness = (1/n * sum(deviations^3)) / ( (1/n * sum(deviations^2))^(3/2) )
+
+#calculate the excess curtosis
+excess_kurtosis = (1/n * sum(deviations^4)) / ( (1/n * sum(deviations^2))^2 ) - 3
+
+#calculae the JB statistic
+JB = n/6 * (skewness^2 + excess_kurtosis^2 / 4)
+
+##compare to chi square with 2 degrees of freedom  -  pchisq(value, df=df) gives cdf of chi square with df degrees of freedom
+p_value = 1 - pchisq(JB, df=2)
+JB
+p_value
+```
+
+
+```{r reg_hrs4412365742, exercise=TRUE, exercise.setup="reg_hrs4412_H"}
+library(tseries)
+jarque.bera.test(resid)
+
+```
+
+
+---
+
+## ANOVA: exercise 1
+
+Suppose you test whether product placement with more popular influencers increases your website visits more. From the ANOVA table of a simple linear regression model fitted with 15 observations, we recovered the sums of squares of the residuals and the total sum of squares; $SSE = 52$ and $SST = 152$. Using the F-test statistic, validate the significance of the regression at the 5% level.
+
+
+```{r reg_hrs4412354498892, exercise=TRUE}
+SSE = 52
+SST = 152
+SSR = SST - SSE
+n = 15
+k = 1 #number of predictors
+F_stat = (SSR/k) / (SSE/(n-k-1))
+
+F_stat
+p_value = 1 - pf(F_stat, df1=k, df2=n-k-1)
+p_value
+
+```
+
+---
+
+## ANOVA: exercise 2
+
+mutualfunds data is providing returns of 208 mutual funds in the US. Using ANOVA, test if age of the fund (fund_age) can explain it's 5 years return rate (return_5yr). Find SST.
+
+
+```{r reg_hrs441235r64556442, exercise=TRUE}
+m1 <- lm(return_5yr ~ fund_age, data = mutualfunds)
+anova(m1)
+
+
+```

@@ -33,7 +33,6 @@ library(ggplot2)
 library(tidyverse)
 library(gridExtra)
 library(forecast)
-library(hrbrthemes)
 library(gridExtra)
 library(cowplot)
 library(viridis)
@@ -252,6 +251,7 @@ labs(y = "$US", title = "Amazon closing stock price")
 ### Autocorrelation
 
 - Can past values predict future values?
+- How strong is "memory" in the data?
 
 --
 - Yes, if they are correlated 
@@ -403,7 +403,7 @@ $$t_{test}=\frac{\hat{\rho}_k-0}{1/\sqrt{n-k}}$$
 - Rule of thumb for larger datasets: reject at 95% if:
 
 $$|\hat{\rho}_k|>\frac{2}{\sqrt{n}}$$
-- Practice: final fall 2023, b
+
 
 
 ---
@@ -494,6 +494,7 @@ HT %>%
   model(NAIVE(M)) %>%
   forecast(h = 24) %>%
   autoplot(HT, level=NULL)
+
 
 
 
@@ -1187,7 +1188,6 @@ $$ME=\frac{\sum^{T-h}_{t=1}(y_{t+h}-\hat{y}_{t+h|t})}{T-h}$$
 - Positive and negative values can add up to 0
 - So even if errors are large, but symmetric, this measure will be close to 0
 
-- Practice: final fall 2023, c
 
 
 ---
@@ -1323,15 +1323,7 @@ forecast::accuracy(FC, HT)
 
 ```
 
----
-#### Practice
 
-- Lista 04.2
-  - Ex 2,4 
-- Lista 04.3
-  - Ex 1,3a  (exponential smoothing is not part of the course anymore)
-  - Ex 11a
-  
   
 ---
 
@@ -1719,36 +1711,36 @@ $$y_t=S_tT_tC_tR_t$$
 ---
 ### Prediction
 
-What will be the marriage rate in January 2023 (T+1)?
+What will be the marriage rate in January 2023 (t_{max}+1)?
 
-- What is my $S_{T+1}$
-
---
-  - $S_{T+1}$ for January is:  0.865
+- What is my $S_{t_{max}+1}$
 
 --
-- What is my $T_{T+1}$?
+  - $S_{t_{max}+1}$ for January is:  0.865
+
+--
+- What is my $T_{t_{max}+1}$?
 
 --
   - Formula: $60304.43-61.46*361=38117.37$
   - January 1993 is t=1, February 1993 is t=2 ... January 2023 is t=361
 
 --
-- What is my $C_{T+1}$?
+- What is my $C_{t_{max}+1}$?
 
 --
   - Hardest to predict
-  - Assume it's the same as last available one: $C_{T-6}=1.0876$
+  - Assume it's the same as last available one: $C_{t_{max}-6}=1.0876$
 
 --
-- What is my $R_{T+1}$?
+- What is my $R_{t_{max}+1}$?
 
 --
-  - We don't expect anything crazy to happen so $R_{T+1}=1$
+  - We don't expect anything crazy to happen so $R_{t_{max}+1}=1$
 
 --
   - Putting it all together:
-  $$\hat{y}_{T+1}=S_{T+1}T_{T+1}C_{T+1}R_{T+1}=35859.83$$
+  $$\hat{y}_{t_{max}+1}=S_{t_{max}+1}T_{t_{max}+1}C_{t_{max}+1}R_{t_{max}+1}=35859.83$$
 
 ---
 ### Prediction
@@ -1758,10 +1750,10 @@ What will be the marriage rate in January 2023 (T+1)?
 **Step 1** Find interval bands from trend regression
   - Just use the standard formula
   
-$$\hat{T}_{T+1} \pm t_{\alpha/2,n-2}\sqrt{\hat{\sigma_T}^2(1+\frac{1}{T}+\frac{(T+1-\bar t)^2}{\sum^T_{t=1}(t-\bar t)^2})}$$
-  - T is the number of the last observation
-  - $T_{T+1}$ is the trend prediction 
-  - $\hat{\sigma}_T=\frac{SSE}{T-2}$ is the st.dev of residuals from the linear regression.
+$$\hat{T}_{t_{max}+1} \pm t_{\alpha/2,n-2}\sqrt{\hat{\sigma_T}^2(1+\frac{1}{n}+\frac{(t_{max}+1-\bar t)^2}{\sum^n_{t=1}(t-\bar t)^2})}$$
+  - t_{max} is the number of the last observation
+  - $T_{t_{max}+1}$ is the trend prediction 
+  - $\hat{\sigma}_T=\frac{SSE}{n-2}$ is the st.dev of residuals from the linear regression.
 
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
@@ -1780,15 +1772,9 @@ a$fit
 **Step 2** Mulitply these bands by the seasonal and cyclical component
 
 
-$$CI_{95}=(31187*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}}, 45050*\underbrace{1.0876}_{C_{T+1}}*\underbrace{0.865}_{S_{T+1}})=(29339.92, 42381.87)$$
+$$CI_{95}=(31187*\underbrace{1.0876}_{C_{t_{max}+1}}*\underbrace{0.865}_{S_{t_{max}+1}}, 45050*\underbrace{1.0876}_{C_{t_{max}T+1}}*\underbrace{0.865}_{S_{t_{max}+1}})=(29339.92, 42381.87)$$
 - This is under the assumption there is little uncertainty about seasonal and cyclical component
 
 ---
 
-### Practice
-- last question final 2023 fall
-- lista 04.4: ex 8, 10
-
-
-##calculate cumulative ormal at 1%
 

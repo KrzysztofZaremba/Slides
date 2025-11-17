@@ -1,0 +1,713 @@
+---
+title: "LearnR Tutorial: Estimators"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+ 
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(tidyverse)
+
+if (!requireNamespace("fpp3", quietly = TRUE)) {
+  install.packages("fpp3", repos = "https://cloud.r-project.org", dependencies = TRUE)
+}
+library(fpp3)
+
+if ("package:igraph" %in% search()) {
+  detach("package:igraph", unload = TRUE)
+}
+
+```
+
+
+
+---
+
+## Identifying time series components
+
+The dataset aus_mortality contains annual mortality counts for Australia by age group and sex.
+Let us begin by examining mortality for males aged 85+.
+
+#### Exercise 1 — Mortality of Older Males
+Describe the patterns in mortality among males aged 85+.
+
+```{r e1, exercise=TRUE}
+aus_mortality
+
+aus_mortality %>%
+  filter(Age=="85+" & Sex=="Male") %>%
+  autoplot(Mortality)
+
+```
+
+#### Exercise 2 — Mortality of Children
+
+Now try the same with children
+
+
+```{r e2, exercise=TRUE}
+
+
+
+
+```
+
+#### Exercise 3 — Vehicle Sales by Type
+
+
+Plot sales of vehicles by type and discuss patterns of the data.
+
+
+```{r e3, exercise=TRUE}
+aus_vehicle_sales
+
+
+
+```
+
+#### Exercise 4 — Bank Calls
+
+
+Plot number of calls to a bank. What patterns do you identify?
+
+```{r e4, exercise=TRUE}
+bank_calls
+
+```
+
+
+
+---
+
+## Calculating autocorrelation function
+
+Daily pageviews of the textbook. Describe any trends, seasonality, and whether the series appears persistent over time.
+
+```{r e5, exercise=TRUE}
+otexts_views %>%
+  autoplot(Pageviews)
+
+otexts_views %>%
+  ACF(Pageviews) 
+
+
+```
+
+---
+
+## Plotting Autocorrelation
+
+Visualize the autocorrelation function (ACF) for the given time series.  The ACF measures how current observations are related to past observations at different time lags.   High autocorrelation at short lags indicates strong dependence between nearby observations,  
+while recurring peaks may suggest seasonality or cyclical patterns.  A slowly decaying ACF suggests  
+that past values carry predictive information about the future.
+
+```{r e6, exercise=TRUE}
+
+otexts_views %>%
+  ACF(Pageviews)%>%
+  autoplot()
+
+
+```
+
+---
+
+## Autocorrelation in Monthly Offences
+
+In this section, we extend the analysis to **monthly offences** data.
+
+### Exercise — Exploring Seasonality and Dependence
+
+Visualize the time series of monthly offences and its autocorrelation function (ACF).  
+Your goal is to identify key time-series components such as trend, seasonality, and persistence.
+
+
+```{r e7, exercise=TRUE}
+
+nsw_offences %>%
+ filter(Type=="Disorderly conduct")%>%
+  autoplot(Count)
+
+
+
+
+```
+
+---
+
+## Testing Autocorrelation
+
+In this section, we formally test whether the autocorrelation of **daily pageviews**  
+is statistically different from zero at **lag 5**.
+
+Use the formula below to compute the test statistic:
+
+\[
+t_{\text{test}} = \frac{\hat{\rho}_k - 0}{1 / \sqrt{n - k}}
+\]
+
+where:  
+- \(\hat{\rho}_k\) is the sample autocorrelation at lag \(k\),  
+- \(n\) is the number of observations, and  
+- \(k\) is the lag being tested.
+
+### Exercise — Testing for Autocorrelation at Lag 5
+
+Perform this test for Pageviews
+
+```{r e8, exercise=TRUE}
+
+
+otexts_views %>%
+  ACF(Pageviews)
+
+
+
+```
+
+---
+
+## Drawing Autocorrelation Bands
+
+When plotting an autocorrelation function (ACF), it is common to display **confidence bands** around zero.  
+These bands help assess whether observed autocorrelations are statistically significant.
+
+### Explanation
+
+For large samples, the approximate 95% confidence interval for each autocorrelation is given by:
+
+\[
+\pm \frac{1.96}{\sqrt{n}}
+\]
+
+where \(n\) is the number of observations.  
+Any autocorrelation that falls **outside** these bounds is typically considered statistically significant —  
+suggesting evidence of a true correlation at that lag rather than random noise.
+
+### Exercise — Adding Confidence Bands
+
+```{r e9, exercise=TRUE}
+
+otexts_views %>%
+  ACF(Pageviews)
+
+
+```
+
+---
+
+## First Differencing
+
+When a time series shows a strong trend or non-stationarity, we can apply **first differencing**  
+to remove the trend and stabilize the mean. The differenced series captures *changes* between consecutive observations,  
+which often results in a more stationary process suitable for modeling and forecasting.
+
+### Exercise — Applying First Differencing
+
+```{r e113, exercise=TRUE}
+
+aus_arrivals%>%
+  filter(Origin=="US")%>%
+  autoplot(Arrivals)
+
+aus_arrivals%>%
+  filter(Origin=="US")%>%
+  ACF(Arrivals)%>%
+  autoplot()
+
+##First differencing
+aus_arrivals=aus_arrivals %>%
+  mutate(F_diff = difference(Arrivals))
+
+aus_arrivals%>%
+  filter(Origin=="US")%>%
+  autoplot(F_diff)
+
+aus_arrivals%>%
+  filter(Origin=="US")%>%
+  ACF(F_diff)%>%
+  autoplot()
+
+```
+
+
+## First Differencing — Vehicle Sales (SUV)
+
+Now, apply the concept of **first differencing** to the dataset `aus_vehicle_sales`,  
+focusing on the sales of **SUVs**. 
+
+```{r e11, exercise=TRUE}
+aus_vehicle_sales%>%
+  filter(Type=="SUV")%>%
+  autoplot(Count)
+
+
+```
+
+---
+
+## Simple Forecasting Methods
+
+In this section, we explore several **simple forecasting techniques** that provide foundational intuition for time-series forecasting. These baseline methods are useful benchmarks against which more complex models can be compared.
+
+We will illustrate each method using the series of **monthly offences in New South Wales** (Type: "Disorderly conduct") and then apply them to **fertility data**. 
+
+---
+
+### 1. Visualizing the Data
+
+Before forecasting, always start by visualizing the data. This helps identify possible **trends**, **seasonality**, and **outliers**.
+
+```{r e11b6, exercise=TRUE}
+nsw_offences %>%
+  filter(Type == "Disorderly conduct") %>%
+  autoplot(Count)
+```
+
+---
+
+### 2. Naïve Forecast
+
+The **naïve method** assumes that the most recent observation will persist into the future:
+
+\[
+\hat{y}_{T+h|T} = y_T
+\]
+
+This method is often surprisingly effective for short-term forecasts, especially when data exhibit strong persistence. The forecast intervals widen over time to reflect increasing uncertainty.
+
+```{r e1166c, exercise=TRUE}
+nsw_offences %>% 
+  filter(Type == "Disorderly conduct") %>%
+  model(NAIVE(Count)) %>%
+  forecast(h = "5 years") %>%
+  autoplot(nsw_offences)
+
+```
+
+---
+
+### 3. Seasonal Naïve Forecast
+
+The **seasonal naïve method** extends the naïve approach by assuming that the last observed seasonal pattern repeats itself in the future. If the data are monthly, each forecast repeats the value from the same month of the previous year:
+
+\[
+\hat{y}_{T+h|T} = y_{T+h-m(k+1)}
+\]
+
+where \(m\) is the seasonal period (e.g., 12 for monthly data).
+
+```{r e11cd6, exercise=TRUE}
+nsw_offences %>% 
+  filter(Type == "Disorderly conduct") %>%
+  model(SNAIVE(Count)) %>%
+  forecast(h = "5 years") %>%
+  autoplot(nsw_offences)
+```
+
+---
+
+### 4. Mean Forecast
+
+The **mean method** forecasts all future values as the historical mean of past observations:
+
+\[
+\hat{y}_{T+h|T} = \bar{y} = \frac{1}{T} \sum_{t=1}^{T} y_t
+\]
+
+This method is appropriate when the data fluctuate around a stable mean without strong trend or seasonality.
+
+```{r e11bf2f, exercise=TRUE}
+nsw_offences %>% 
+  filter(Type == "Disorderly conduct") %>%
+  model(MEAN(Count)) %>%
+  forecast(h = "5 years") %>%
+  autoplot(nsw_offences)
+```
+
+---
+
+### 5. Moving Average Smoothing
+
+The **moving average (MA)** technique smooths short-term fluctuations to highlight longer-term patterns. The 12-month moving average is calculated as:
+
+\[
+MA_t = \frac{1}{12} \sum_{i=0}^{11} y_{t-i}
+\]
+
+This is not a forecasting model by itself but a descriptive tool to visualize trends. We will use it later.
+
+```{r e11b3352, exercise=TRUE}
+nsw_offences %>% 
+  filter(Type == "Disorderly conduct") %>%
+  mutate(
+    `12-MA` = slider::slide_dbl(Count, mean, .before = 11, .after = 0, .complete = TRUE)
+  ) %>%
+  autoplot(Count, color = "gray") +
+  geom_line(aes(y = `12-MA`), colour = "#D55E00")
+```
+
+---
+
+### 6. Applying Forecasts to Fertility Data
+
+We can apply the same simple forecasting models to the **fertility rate** among women aged 18 in Australia.
+
+```{r e12b23, exercise=TRUE}
+aus_fertility %>%
+  filter(Age == "18" & Region == "Australia") %>%
+  autoplot(Rate)
+
+
+
+
+```
+
+---
+
+## Evaluating Forecasts
+
+To compare the performance of forecasting models, we use **accuracy measures** such as the Mean Error (ME), Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), Mean Percentage Error (MPE), and Mean Absolute Percentage Error (MAPE).
+
+
+### 1. Mean Error (ME)
+Measures whether forecasts are biased on average:
+
+
+\[
+ME = \frac{1}{T} \sum_{t=1}^{T} (y_t - \hat{y}_t)
+\]
+
+
+If ME > 0, forecasts are on average too low; if ME < 0, forecasts are on average too high.
+
+
+### 2. Root Mean Squared Error (RMSE)
+Penalizes large errors more heavily and is sensitive to outliers:
+
+
+\[
+RMSE = \sqrt{\frac{1}{T} \sum_{t=1}^{T} (y_t - \hat{y}_t)^2}
+\]
+
+
+### 3. Mean Absolute Error (MAE)
+Gives the average absolute difference between forecast and actual values:
+
+
+\[
+MAE = \frac{1}{T} \sum_{t=1}^{T} |y_t - \hat{y}_t|
+\]
+
+
+### 4. Mean Percentage Error (MPE)
+Shows the average percentage bias of forecasts:
+
+
+\[
+MPE = \frac{100}{T} \sum_{t=1}^{T} \frac{y_t - \hat{y}_t}{y_t}
+\]
+
+
+### 5. Mean Absolute Percentage Error (MAPE)
+Expresses forecast accuracy as a percentage of observed values:
+
+
+\[
+MAPE = \frac{100}{T} \sum_{t=1}^{T} \left| \frac{y_t - \hat{y}_t}{y_t} \right|
+\]
+
+
+These metrics allow comparison between models on the same scale, with **lower values indicating better accuracy**.
+```{r e12g34, exercise=TRUE}
+Preds <- nsw_offences %>%
+  filter(year(Month) < 2023) %>%
+  filter(Type == "Disorderly conduct") %>%
+  model(
+    Mean = MEAN(Count),
+    Naïve = NAIVE(Count),
+    `Seasonal naïve` = SNAIVE(Count)
+  ) %>%
+  forecast(h = 12)
+
+forecast::accuracy(Preds, nsw_offences)
+```
+
+---
+
+### 7. Evaluating Forecasts for Fertility Data
+
+Finally, replicate the evaluation procedure using the fertility data.
+
+```{r e12p, exercise=TRUE}
+aus_fertility %>%
+  filter(Age == "18" & Region == "Australia") %>%
+  autoplot(Rate)
+
+
+```
+
+
+---
+
+## Decomposing and Forecasting Time Series Components
+
+
+In this section, we learn how to separate a time series into its main components: **trend**, **seasonality**, and **cyclical variation**, and use them to make forecasts.
+
+
+We will use data on **births in Queensland (QLD)** as an example and leave parallel spaces for you to repeat each step with **mortality** data.
+
+
+---
+
+
+## 1. Identifying the Seasonal Component — Centered Moving Averages
+
+
+Seasonality refers to systematic, calendar-related movements that repeat at regular intervals (e.g., months, quarters). To isolate it, we smooth the data using a **centered moving average (CMA)**:
+
+
+\\[
+CMA_t = \\frac{1}{m} \\sum_{i=-k}^{k} y_{t+i}
+\\]
+
+
+where \\(m\\) is the number of observations per seasonal cycle (e.g., 12 for monthly data) and \\(k = (m-1)/2\\).
+
+
+Once the centered moving average is computed, the **seasonal component** at time \\(t\\) can be estimated as the ratio of the observed value to the smoothed trend:
+
+
+\\[
+S_t = \\frac{y_t}{CMA_t}
+\\]
+
+
+
+#### Births — QLD
+```{r e14p, exercise=TRUE}
+aus_births %>%
+filter(State == "QLD") %>%
+autoplot(Births)
+
+
+aus_births <- aus_births %>%
+filter(State == "QLD") %>%
+mutate(`12-MA` = slider::slide_dbl(Births, mean, .before = 6, .after = 5, .complete = TRUE))
+
+
+aus_births %>%
+autoplot(Births, color = "gray") +
+geom_line(aes(y = `12-MA`), colour = "#D55E00")
+
+
+aus_births %>%
+mutate(Factor_t = Births / `12-MA`) %>%
+autoplot(Factor_t, color = "red")
+```
+
+
+#### Mortality — 85+
+```{r e14p_mort, exercise=TRUE}
+aus_mortality %>%
+filter(Age == "85+", Sex == "Both") %>%
+autoplot(Mortality)
+
+
+# Apply centered moving average
+# Add your code here
+```
+
+
+---
+
+
+## 2. Estimating Seasonal Factors
+
+
+
+
+We estimate **seasonal indices** that measure the average deviation from the trend for each month. These indices are obtained by averaging the individual seasonal ratios computed earlier:
+
+
+\\[
+SI_m = \\frac{1}{n_m} \\sum_{t \\in m} \\frac{y_t}{CMA_t}
+\\]
+
+
+where \\(SI_m\\) is the seasonal index for month \\(m\\), and \\(n_m\\) is the number of years (or cycles) over which the monthly ratios are averaged.
+
+
+These indices summarize the systematic seasonal behavior of the series and are computed across corresponding months or periods.  
+- If \(SI_m > 1\), observations in that month tend to be **above the long-term trend**, indicating a **seasonal peak** (e.g., higher births, sales, or mortality).  
+- If \(SI_m < 1\), observations are typically **below the trend**, indicating a **seasonal low** or trough.  
+- When all seasonal indices are combined over one full cycle, they should **sum to the number of periods** (e.g., 12 for monthly data) and **average to 1**, ensuring that seasonality does not alter the overall mean level of the series.
+
+#### Births — QLD
+```{r e14pvw, exercise=TRUE}
+a <- aus_births %>%
+model(classical_decomposition(Births, type = "multiplicative")) %>%
+components()
+
+
+data.frame(Month = 1:12, Seasonal_index = a$seasonal[1:12])
+```
+
+
+#### Mortality — 85+
+```{r e14pvw_mort, exercise=TRUE}
+a <- aus_mortality %>%
+filter(Age == "85+", Sex == "Both") %>%
+model(classical_decomposition(Mortality, type = "multiplicative")) %>%
+components()
+
+
+```
+
+
+
+## 3. Estimating the Trend — Linear Model
+
+
+Once seasonal variation is removed, the **trend** can be estimated with a regression model:
+
+
+\[
+T_t = \beta_0 + \beta_1 t + \varepsilon_t
+\]
+
+
+#### Births — QLD
+```{r e14pvwdds4543, exercise=TRUE}
+aus_births <- aus_births %>%
+filter(State == "QLD") %>%
+mutate(`12-MA` = slider::slide_dbl(Births, mean, .before = 6, .after = 5, .complete = TRUE))
+
+
+m1 <- lm(`12-MA` ~ Month, data = aus_births)
+summary(m1)
+
+
+aus_births <- aus_births %>%
+filter(!is.na(`12-MA`)) %>%
+mutate(fitted = predict(m1))
+
+
+aus_births %>%
+autoplot(Births, color = "gray") +
+geom_line(aes(y = `12-MA`), colour = "#D55E00") +
+geom_line(aes(y = fitted), color = "blue")
+```
+
+
+#### Mortality — 85+
+```{r e14pvwdds4543_mort, exercise=TRUE}
+# Repeat the same process for mortality data
+# 1. Compute centered moving average
+# 2. Fit a linear trend using lm()
+# 3. Plot original data, moving average, and fitted line
+```
+
+
+---
+
+## 4. Identifying the Cyclical Component
+
+
+After removing trend and seasonality, the **cyclical component** represents medium-term fluctuations (e.g., economic or demographic cycles). For multiplicative decomposition:
+
+
+\[
+C_t = \frac{CMA_t}{T_t}
+\]
+
+
+#### Births — QLD
+```{r e14pvwdds4543b, exercise=TRUE}
+aus_births <- aus_births %>%
+mutate(Cyclical = `12-MA` / fitted)
+
+
+aus_births %>%
+autoplot(Cyclical, color = "red")
+```
+
+
+#### Mortality — 85+
+```{r e14pvwdds4543b_mort, exercise=TRUE}
+# Apply the same steps to find the cyclical component for mortality
+```
+
+
+---
+
+## 5. Making Forecasts and Confidence Intervals
+
+
+Once we have estimates for seasonal, trend, and cyclical factors, we can forecast future values. For a multiplicative model:
+
+
+\[
+\hat{y}_{t+h} = \hat{T}_{t+h} \times \hat{S}_{t+h} \times \hat{C}_{t+h}
+\]
+
+
+#### Births — QLD
+Find the predicted number of births for December 2025, along with a 95% prediction interval.
+
+```{r e14pvwdds4544343, exercise=TRUE}
+# Step 1: Estimate seasonal factor
+a <- aus_births %>%
+model(classical_decomposition(Births, type = "multiplicative")) %>%
+components()
+dec_seasonal <- a$seasonal[12]
+
+
+# Step 2: Estimate trend and forecast
+aus_births <- aus_births %>%
+filter(State == "QLD") %>%
+mutate(`12-MA` = slider::slide_dbl(Births, mean, .before = 6, .after = 5, .complete = TRUE))
+
+
+m1 <- lm(`12-MA` ~ Month, data = aus_births)
+new_data <- data.frame(Month = yearmonth("2025 Dec"))
+trend <- predict(m1, newdata = new_data)
+
+
+# Step 3: Cyclical component
+aus_births <- aus_births %>%
+filter(!is.na(`12-MA`)) %>%
+mutate(fitted = predict(m1), Cyclical = `12-MA` / fitted)
+
+
+dec_cyclical <- tail(aus_births$Cyclical, 1)
+
+
+# Step 4: Combine components
+predicted_births <- dec_seasonal * dec_cyclical * trend
+
+
+# Step 5: Prediction interval
+pred_trend <- predict(m1, newdata = new_data, interval = "prediction", level = 0.95)
+lower_bound <- dec_seasonal * dec_cyclical * pred_trend[2]
+upper_bound <- dec_seasonal * dec_cyclical * pred_trend[3]
+c(lower_bound, upper_bound)
+```
+
+
+#### Mortality — 85+
+
+Now find the predicted mortality for the week 52 of 2025 (Among 85+ of both sexes), along with a 95% prediction interval.
+
+```{r e14pvwdds4544343_mort, exercise=TRUE}
+# Repeat the forecasting procedure for mortality data
+# Identify seasonal, trend, and cyclical components, then combine them to predict mortality for a future period
+
+#week 52 for predictions
+new_data=data.frame(Week = yearweek("2025 W52"))
+
+```

@@ -1,3 +1,1 @@
-library(renderthis)
-#remotes::install_github('rstudio/chromote')
-to_pdf("C_6_slides_a.html")
+pagedown::chrome_print(input = "C_6_slides_a.html", output = "C_6_slides_a.pdf", timeout = 300)

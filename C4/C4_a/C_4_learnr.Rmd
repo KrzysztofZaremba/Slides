@@ -163,6 +163,10 @@ auctions$bidders
 
 auctions$finalprice
 
+beta1=cov(auctions$bidders, auctions$finalprice)/var(auctions$bidders)
+beta0=mean(auctions$finalprice)-beta1*mean(auctions$bidders)
+beta1
+beta0
 ```
 
 Or equivalently, you can run a regression in R:
@@ -176,6 +180,7 @@ summary(x)
 
 ```{r auction-exercise3, exercise=TRUE}
 # Plug into the formula: beta0 + beta1*6
+103.6434 + 1.8005*6
 
 ```
 
@@ -203,6 +208,11 @@ and \(s_x, s_y\) are the standard deviations of \(x\) and \(y\).
 houseprices$lotarea
 houseprices$saleprice
 
+beta1=cor(houseprices$lotarea, houseprices$saleprice)*sd(houseprices$saleprice)/sd(houseprices$lotarea)
+beta0=mean(houseprices$saleprice)-beta1*mean(houseprices$lotarea)
+beta1
+beta0
+
 ```
 
 Or equivalently, you can run a regression in R:
@@ -217,14 +227,24 @@ Now, find yhat - prediction for all houses in the dataset.
 
 
 ```{r housing-exercise3, exercise=TRUE}
+yhat=1.566e+05 + 2.113e+00*houseprices$lotarea
 
+#or 
+x=lm(saleprice ~ lotarea, data = houseprices) 
+yhat=x$fitted.values #here you will find predicted values (yhats)
+yhat
 
+plot(houseprices$lotarea, yhat)
 ```
 
 Now, find e - residuals for all houses in the dataset. 
 
 
 ```{r housing-exercise3b, exercise=TRUE}
+
+yhat=1.566e+05 + 2.113e+00*houseprices$lotarea
+e=houseprices$saleprice - yhat
+e
 
 
 ```
@@ -240,8 +260,8 @@ Our question: **Does the body mass index (BMI) of the wife predict the BMI of th
 First, make a scatterplot of husband’s BMI against wife’s BMI:  
 
 ```{r bmi-exercise1, exercise=TRUE}
-# Use ggplot2 to plot bmi_h (y) vs bmi_w (x)
-# Hint: ggplot(married, aes(x = bmi_w, y = bmi_h)) + geom_point()
+
+plot(married$bmi_h, married$bmi_w)
 
 ```
 
@@ -250,8 +270,8 @@ First, make a scatterplot of husband’s BMI against wife’s BMI:
 Now, run a regression of husband’s BMI on wife’s BMI:  
 
 ```{r bmi-exercise2, exercise=TRUE}
-
-
+x=lm(bmi_h ~ bmi_w, data = married) #lm stands for linear model. the formula has form y~x and then we put data.
+summary(x)
 ```
 
 What explains this?
@@ -278,6 +298,7 @@ Now, let’s compute the key pieces step by step.
 2. **Residuals** (errors = observed – fitted): 
 
 ```{r housing-fitted, exercise=TRUE, exercise.setup="housing-regression"}
+
 yhat=x$fitted.values #here you will find predicted values (yhats) #this is just beta0+beta1*x
 
 #you can do 
@@ -298,7 +319,7 @@ SSE = \sum (y_i - \hat{y}_i)^2
 \]
 
 ```{r housing-sumsquares, exercise=TRUE, exercise.setup="housing-fitted"}
-
+my=mean(houseprices$saleprice)
 y=houseprices$saleprice
 
   
@@ -319,7 +340,8 @@ R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
 
 ```{r housing-r2, exercise=TRUE, exercise.setup="housing-sumsquares"}
 
-
+R2=SSR/SST
+R2
 
 ```
 
@@ -332,8 +354,13 @@ Now we want to learn how much of variation in prices at the auction is explained
 
 ```{r housing-regression4, exercise=TRUE}
 # Run a regression of finalprice on bidders from the auctions dataset
+x=lm(finalprice ~ bidders, data = auctions)
+summary(x)
+
 
 ```
+
+
 
 ---
 
@@ -344,11 +371,8 @@ Now, let’s compute the key pieces step by step.
 2. **Residuals** (errors = observed – fitted): 
 
 ```{r housing-fitted4, exercise=TRUE, exercise.setup="housing-regression"}
-yhat= #here you will find predicted values (yhats)
-
-
-
-e= #here you will find residuals
+yhat=x$fitted.values #here you will find predicted values (yhats)
+e=x$residuals #here you will find residuals
 ```
 
 ---
@@ -363,12 +387,13 @@ SSE = \sum (y_i - \hat{y}_i)^2
 
 ```{r housing-sumsquares4, exercise=TRUE, exercise.setup="housing-fitted"}
 
-y=
-my=
-  
-SST <-
-SSR <- 
-SSE <- 
+
+my=mean(auctions$finalprice)
+y=auctions$finalprice
+
+SST <- sum((y - my)^2)
+SSR <- sum((yhat - my)^2)
+SSE <- sum(e^2)
 
 c(SST = SST, SSR = SSR, SSE = SSE)
 ```
@@ -383,6 +408,8 @@ R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
 
 ```{r housing-r24, exercise=TRUE, exercise.setup="housing-sumsquares4"}
 
+R2=SSR/SST
+R2
 
 
 ```
@@ -405,16 +432,25 @@ famincome_i = \beta_0 + \beta_1 \cdot age\_h_i + u_i
 
 ```{r married-exercise1, exercise=TRUE}
 # Run a regression of family income (dollars) on husband's age (years)
-# lm(famincome ~ age_h, data = married)
+ x=lm(famincome ~ age_h, data = married)
+summary(x)
 ```
 
 Visualize:  
 
 ```{r married-plot1, exercise=TRUE}
-# ggplot(married, aes(x = age_h, y = famincome)) +
-#   geom_point(alpha=0.2) +
-#   geom_smooth(method="lm", se=FALSE, color="blue") +
-#   labs(x="Husband's age (years)", y="Family income (dollars)")
+x=lm(famincome ~ age_h, data = married)
+yhat=x$fitted.values
+
+# scatterplot of the true data
+plot(married$age_h, married$famincome,
+     xlab = "Age of husband", ylab = "Family income",
+     pch = 16, col = "black")
+
+# add the fitted line or points
+lines(married$age_h, yhat, col = "red", lwd = 2) 
+
+
 ```
 
 ---
@@ -436,14 +472,13 @@ famincome\_thousands = \beta_0^\* + \beta_1^\* \cdot age\_h + u
 
 
 ```{r m2, exercise=TRUE}
-# married$famincome_thousands = married$famincome / 1000
+married$famincome_thousands = married$famincome / 1000
+lm(famincome_thousands ~ age_h, data = married)
 
-# lm(famincome_thousands ~ age_h, data = married)
-
-# ggplot(married, aes(x = age_h, y = famincome_thousands)) +
-#   geom_point(alpha=0.2) +
-#   geom_smooth(method="lm", se=FALSE, color="blue") +
-#   labs(x="Husband's age (years)", y="Family income (thousands of $)")
+ggplot(married, aes(x = age_h, y = famincome_thousands)) +
+   geom_point(alpha=0.2) +
+   geom_smooth(method="lm", se=FALSE, color="blue") +
+   labs(x="Husband's age (years)", y="Family income (thousands of $)")
 ```
 
 ---
@@ -465,16 +500,16 @@ famincome = \gamma_0 + \gamma_1 \cdot age\_h\_months + u
 How does the correlation formula changes?
 
 ```{r married-exercise4, exercise=TRUE}
-# married$age_h_months = married$age_h * 12
+married$age_h_months = married$age_h * 12
 
 
-# lm(famincome_thousands ~ age_h_months, data = married)
+lm(famincome_thousands ~ age_h_months, data = married)
 
 
-# ggplot(married, aes(x = age_h_months, y = famincome_thousands)) +
-#   geom_point(alpha=0.2) +
-#   geom_smooth(method="lm", se=FALSE, color="blue") +
-#   labs(x="Husband's age (months)", y="Family income (thousands of $)")
+ ggplot(married, aes(x = age_h_months, y = famincome_thousands)) +
+  geom_point(alpha=0.2) +
+   geom_smooth(method="lm", se=FALSE, color="blue") +
+   labs(x="Husband's age (months)", y="Family income (thousands of $)")
 ```
 
 
@@ -484,6 +519,7 @@ How does the correlation formula changes?
 
 - Did R squared change?
 
+- no, because R squared is related to correlation - strength of the relationship between the variables. Rescaling variables does not change correlation. 
 
 ---
 
@@ -516,19 +552,33 @@ e    = y - yhat
 n    = length(y)
 
 # Step 2: compute Sxx 
+x    = houseprices$lotarea
+mx   = mean(x)
+Sxx  = sum((x - mx)^2)
 
 # Step 3: error variance estimator  
+SSE  = sum(e^2)
+sigma2_hat = SSE/(n-2)
 
 # Step 4: variances of OLS estimators
+var_beta1 = sigma2_hat / Sxx
+
 
 # Step 5: standard errors of OLS estimators
+se_beta1 = sqrt(var_beta1)
+se_beta1
 ```
 
 ### Transformation of variables: Variance of the OLS Estimators
 
+
 ```{r variance4b, exercise=TRUE, exercise.setup="variance4"}
+#let's multiply y by 1000 and see how standard error changes
+houseprices$saleprice_thousands = houseprices$saleprice / 1000
+reg2 = lm(saleprice_thousands ~ lotarea, data = houseprices)
+summary(reg2)
 
-
+#(it goes down by 1000 because both y and yhat are divided by 1000, so e is also divided by 1000, so SSE goes down by 1000^2, so sigma2_hat goes down by 1000^2, so se_beta1 goes down by 1000)
 ```
 
 
@@ -548,9 +598,18 @@ Variables:
 
 2. Write down the hypothesis
 
+H0: beta1 = 0 (no difference in medical costs between men and women)
+H1: beta1 < 0 (men spend less on healthcare than women)
+
 3. Find beta1 and beta2 and their standard errors
 
 ```{r reg_hrs, exercise=TRUE}
+x=lm(medical_costs ~ male, data = hrs)
+summary(x)
+beta1=-317.62
+se_beta1=138.92
+beta0=1938.44
+se_beta0=72.14
 
 
 ```
@@ -558,10 +617,18 @@ Variables:
 4. Find the t-statistic and p-value
 
 ```{r p-value, exercise=TRUE}
+t_stat= (beta1-0)/se_beta1
+t_stat
+
+
+p_value=1-pt(t_stat, df=length(hrs$medical_costs)-2)
+p_value
 
 ```
 
 5. Interpret
+
+#we reject that there is no difference in medical costs - seems like men are spending less. 
 
 ---
 
@@ -579,7 +646,13 @@ We want to study (1) the impact of an additional year of education on weekly ear
 ### 2. Estimate coefficients and standard errors
 
 ```{r reg_hrs2, exercise=TRUE}
+reg1=lm(earnwk ~ educ, data = cps)
+summary(reg1)
 
+beta1=101.550
+se_beta1=5.575
+beta0=-330.753
+se_beta0=72.713
 
 ```
 
@@ -588,6 +661,9 @@ We want to study (1) the impact of an additional year of education on weekly ear
 
 
 ```{r reg_hrs3, exercise=TRUE}
+alpha=0.01
+t_critical=qt(1-alpha/2, df=length(cps$earnwk)-2)
+t_critical
 
 
 ```
@@ -596,11 +672,15 @@ We want to study (1) the impact of an additional year of education on weekly ear
 
 
 ```{r reg_hrs4, exercise=TRUE}
+#99% CI for beta1
+lower_bound_beta1 = beta1 - t_critical * se_beta1
+upper_bound_beta1 = beta1 + t_critical * se_beta1
 
+c(lower_bound_beta1, upper_bound_beta1)
 ```
 ### 5. Interpretation
 
-
+We are 99% confident that an additional year of education increases weekly earnings by between 87.2 and 115.9 dollars.
 
 ---
 
@@ -619,12 +699,21 @@ We want to predict the **average medical costs (`medical_costs`)** for individua
 ### 2. Estimate the regression
 
 ```{r reg_hrs43423, exercise=TRUE}
+reg=lm(medical_costs ~ age, data = hrs)
+summary(reg)
+
+beta1=35.894
+se_beta1=5.577
+beta0=-710.491
+se_beta0=402.993
 
 ```
 
 ### 3. Make a prediction
 
 ```{r reg_hrs424, exercise=TRUE}
+x0=55
+yhat=-710.491 + 35.894*55
 
 ```
 
@@ -633,7 +722,32 @@ We want to predict the **average medical costs (`medical_costs`)** for individua
 
 ```{r reg_hrs412, exercise=TRUE}
 #hint: to get the vector of residuals you can write: residuals(model)   
+reg=lm(medical_costs ~ age, data = hrs)
+e=residuals(reg)
+n=length(hrs$medical_costs)
 
+# Step 1: compute Sxx
+x=hrs$age
+mx=mean(x)
+Sxx=sum((x - mx)^2)
+
+# Step 2: compute sigma hat
+SSE=sum(e^2)
+sigma2_hat=SSE/(n-2)
+
+# Step 3: compute the critical value for 95% CI
+alpha=0.05
+t_critical=qt(1-alpha/2, df=n-2)
+t_critical
+
+# Step 4: compute the margin of error
+margin_of_error = t_critical * sqrt(sigma2_hat * (1/n + (x0 - mx)^2 / Sxx))
+margin_of_error
+
+# Step 5: compute the confidence interval
+lower_bound = yhat - margin_of_error
+upper_bound = yhat + margin_of_error
+c(lower_bound, upper_bound)
 
 ```
 
@@ -657,12 +771,17 @@ We want to predict the **sale price (`saleprice`)** of a house that has **3 bath
 ### 2. Estimate the regression
 
 ```{r reg_hrs434423, exercise=TRUE}
+reg=lm(saleprice ~ fullbath, data = houseprices)
+summary(reg)
+
 
 ```
 
 ### 3. Make a prediction
 
 ```{r reg_hrs4424, exercise=TRUE}
+x0=3
+yhat=48106 + 86359*3
 
 ```
 
@@ -671,9 +790,32 @@ We want to predict the **sale price (`saleprice`)** of a house that has **3 bath
 
 ```{r reg_hrs4412, exercise=TRUE}
 #hint: to get sigma: summary(model)$sigma
+reg=lm(saleprice ~ fullbath, data = houseprices)
+sigma=summary(reg)$sigma
+
+n=length(houseprices$saleprice)
+# Step 1: compute Sxx
+x=houseprices$fullbath
+mx=mean(x)
+Sxx=sum((x - mx)^2)
+
+# Step 2: compute sigma hat
+#sigma is already computed above
+# Step 3: compute the critical value for 95% CI
+alpha=0.05
+t_critical=qt(1-alpha/2, df=n-2)
+t_critical
+# Step 4: compute the margin of error
+margin_of_error = t_critical * sqrt(sigma^2 * (1 + 1/n + (x0 - mx)^2 / Sxx))
+margin_of_error
+
+# Step 5: compute the confidence interval
+lower_bound = yhat - margin_of_error
+upper_bound = yhat + margin_of_error
+c(lower_bound, upper_bound)
 
 
-
+  
 ```
 
 
@@ -731,6 +873,9 @@ residuals_linear <- m1$residuals
 # Residual plot
 plot(fitted_values_linear, residuals_linear)
 
+
+
+
 ```
 
 ---
@@ -747,7 +892,7 @@ summary(m1)
 resid=m1$residuals
 
 # Histogram of residuals
-
+hist(resid)
 ```
 
 #### QQplot
@@ -772,15 +917,18 @@ deviations=resid - mean(resid)
 n=length(resid)
 
 #calculate the skewness
+skewness = (1/n * sum(deviations^3)) / ( (1/n * sum(deviations^2))^(3/2) )
 
 #calculate the excess curtosis
-
+excess_kurtosis = (1/n * sum(deviations^4)) / ( (1/n * sum(deviations^2))^2 ) - 3
 
 #calculae the JB statistic
+JB = n/6 * (skewness^2 + excess_kurtosis^2 / 4)
 
 ##compare to chi square with 2 degrees of freedom  -  pchisq(value, df=df) gives cdf of chi square with df degrees of freedom
-
-
+p_value = 1 - pchisq(JB, df=2)
+JB
+p_value
 ```
 
 
@@ -799,7 +947,16 @@ Suppose you test whether product placement with more popular influencers increas
 
 
 ```{r reg_hrs4412354498892, exercise=TRUE}
+SSE = 52
+SST = 152
+SSR = SST - SSE
+n = 15
+k = 1 #number of predictors
+F_stat = (SSR/k) / (SSE/(n-k-1))
 
+F_stat
+p_value = 1 - pf(F_stat, df1=k, df2=n-k-1)
+p_value
 
 ```
 
@@ -813,5 +970,6 @@ mutualfunds data is providing returns of 208 mutual funds in the US. Using ANOVA
 ```{r reg_hrs441235r64556442, exercise=TRUE}
 m1 <- lm(return_5yr ~ fund_age, data = mutualfunds)
 anova(m1)
+
 
 ```
