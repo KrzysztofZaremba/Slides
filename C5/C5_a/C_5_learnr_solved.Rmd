@@ -1,0 +1,818 @@
+---
+title: "LearnR Tutorial: Estimators"
+author: "Business Forecasting"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+ 
+
+```{r setup, include=FALSE}
+library(learnr)
+library(shiny)
+library(tidyverse)
+
+if (!requireNamespace("car", quietly = TRUE)) {
+  install.packages("car", repos = "https://cloud.r-project.org")
+}
+
+if (!requireNamespace("plotly", quietly = TRUE)) {
+  install.packages("plotly", repos = "https://cloud.r-project.org")
+}
+
+
+if (!requireNamespace("tseries", quietly = TRUE)) {
+  install.packages("tseries", repos = "https://cloud.r-project.org")
+}
+
+library(plotly)
+library(car)
+library(tseries)
+
+if (!requireNamespace("probstats4econ", quietly = TRUE)) {
+  install.packages("probstats4econ", repos = "https://cloud.r-project.org")
+}
+library(probstats4econ)
+
+
+if (!requireNamespace("wooldridge", quietly = TRUE)) {
+  install.packages("wooldridge", repos = "https://cloud.r-project.org")
+}
+library(wooldridge)
+
+  
+  # Fixed data generation
+  set.seed(123) # For reproducibility
+  x <- seq(-10, 10, by = 1)
+  e <- rnorm(length(x), mean = 0, sd = 5)
+  y_actual <- 4 + 1.65 * x + e
+  
+  data <- data.frame(x, y_actual)
+  
+
+```
+
+---
+
+## Deriving Coefficients
+
+We’ll work with data from a survey on extra-marital affairs in the US. Here is the data:
+
+- **id**: identifier  
+- **male**: =1 if male  
+- **age**: age in years  
+- **yrsmarr**: years married  
+- **kids**: =1 if have kids  
+- **relig**: religiosity (5 = very religious, 4 = somewhat, 3 = slightly, 2 = not at all, 1 = anti-religious)  
+- **educ**: years of schooling  
+- **ratemarr**: marital happiness (5 = very happy, 4 = happier than average, 3 = average, 2 = somewhat unhappy, 1 = very unhappy)  
+- **naffairs**: number of affairs within last year  
+- **affair**: =1 if had at least one affair  
+
+
+Let's predict the number of affairs. Let's pick two variables and find the coefficients f:
+
+\[
+y_i=\beta_0+\beta_1x_{i3}+\beta_2x_{i2}+\epsilon_i
+\]
+
+Let's find the coefficients using the OLS formula:
+$$\beta=(X'X)^{-1}X'y$$
+
+
+```{r e1, exercise=TRUE}
+X <- cbind(1, affairs$age, affairs$relig)
+y <- affairs$naffairs
+
+beta_hat <- solve(t(X) %*% X) %*% (t(X) %*% y)
+beta_hat
+
+```
+
+
+Find predicted values
+
+```{r e3, exercise=TRUE, exercise.setup="e1"}
+
+y_hat <- X %*% beta_hat
+y_hat
+
+
+
+```
+
+
+
+Find residuals
+
+```{r e4, exercise=TRUE, exercise.setup="e1"}
+
+
+y_hat <- X %*% beta_hat
+y_hat
+
+
+residuals <- y - y_hat
+residuals
+
+
+```
+
+Make a prediction for particular values of x vector using beta vector from the first derivation.
+
+```{r e5, exercise=TRUE, exercise.setup="e1"}
+
+x_new <- c(1, 40, 3)
+y_pred <- x_new %*% beta_hat
+y_pred
+
+```
+
+
+---
+
+## Adding variables
+
+Using dataset "card", regress wage (weekly, in cents) on educ (education in years). Then add IQ. How do the coefficient on education changes?
+
+
+
+```{r e6, exercise=TRUE}
+m1 <- lm(wage ~ educ, data = card)
+coef(m1)
+
+# Regression 2: wage on educ and IQ
+m2 <- lm(wage ~ educ + IQ, data = card)
+coef(m2)
+
+
+#Coefficient on education becomes weaker, because previously it was capturing variation in IQ. 
+```
+
+
+
+
+---
+
+## Variance
+
+We’ll work with data from a survey on extra-marital affairs in the US. Regress nafffairs on age and relig. Find the variance covariance matrix. 
+
+
+```{r e7, exercise=TRUE}
+
+X <- cbind(1, affairs$age, affairs$relig)
+y <- affairs$naffairs
+n <- nrow(X)
+k <- ncol(X)
+
+# OLS estimates
+beta_hat <- solve(t(X) %*% X) %*% (t(X) %*% y)
+
+# Residuals
+u_hat <- y - X %*% beta_hat
+
+# Estimate of error variance
+sigma2 <- as.numeric(t(u_hat) %*% u_hat / (n - k))
+
+# Variance–covariance matrix (long form)
+VCOV_long <- sigma2 * solve(t(X) %*% X)
+VCOV_long
+
+
+
+
+# OR simply 
+m <- lm(naffairs ~ age + relig, data = affairs)
+
+vcov(m)
+
+
+```
+
+---
+
+## Categorical variables in a regression
+
+How does the marital status impacts earning?
+
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and marital status (marstatus).  Possible options are: Married, Divorced, Widowed, Never married. 
+
+
+```{r e8, exercise=TRUE}
+
+# Regress hourly wage on marital status
+m <- lm(wagehr ~ marstatus, data = cps)
+
+# Show regression output
+summary(m)
+
+```
+
+---
+
+## Interaction simple
+
+Let's look at how value of the size of the house changes with its age. This data reports houses sold between 2006 and 2010. It has three variables of interest:
+
+1. saleprice - sale price
+2. lotarea - size of the lot
+3. yearbuilt - year the house was built
+
+How does the value of size changes with the age of the house?
+
+```{r e9, exercise=TRUE}
+# Regress lot area on age
+m <- lm(saleprice~lotarea*yearbuilt, data = houseprices)
+
+# Show regression output
+summary(m)
+
+# Interpretation:
+
+# β1 (lotarea):
+#   The effect of lot area on sale price when yearbuilt = 0.
+#   Since no house was built in year 0, this coefficient alone is not meaningful.
+#   It must be interpreted together with the interaction term.
+
+# β2 (yearbuilt):
+#   The effect of year built on sale price when lotarea = 0.
+#   Also not meaningful by itself because lotarea = 0 never occurs.
+#   Again, interpret only jointly with the interaction term.
+
+# β3 (lotarea:yearbuilt):
+#   This is the key coefficient.
+#   It tells how the effect of lot area on sale price changes as the house becomes newer.
+#   If β3 > 0:
+#       Lot area increases sale price more for newer homes.
+#   If β3 < 0:
+#       Lot area increases sale price more for older homes.
+
+# Marginal effects:
+
+# Effect of lotarea on saleprice:
+#   d(saleprice)/d(lotarea) = β1 + β3*yearbuilt
+
+# Effect of yearbuilt on saleprice:
+#   d(saleprice)/d(yearbuilt) = β2 + β3*lotarea
+
+# This means:
+#   • The value of a larger lot depends on how new the house is.
+#   • The value of a newer house depends on how large the lot is.
+
+# Conclusion:
+#   The interaction term β3 captures how the relationship between lot size and price 
+#   varies with the age of the house. This is the most important coefficient to interpret.
+
+```
+
+
+
+
+---
+
+## Interaction variable with a categorical variable with more categories
+
+How do return to education vary across racial groups?
+
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and racial group (race: Black, White, Other)  and education in years (educ).  
+
+```{r 10, exercise=TRUE}
+m <- lm(wagehr ~ educ * race, data = cps)
+
+summary(m)
+
+# ----------------------------------------------------
+# Interpretation (in comments)
+# ----------------------------------------------------
+
+# Model:
+# wagehr = β0 
+#        + β1*educ
+#        + β2*raceWhite
+#        + β3*raceOther
+#        + β4*(educ*raceWhite)
+#        + β5*(educ*raceOther)
+#
+# With omitted category = BLACK:
+#
+# β0 : Predicted wage for Black workers with 0 years of education
+#      (not meaningful by itself, but harmless)
+#
+# β1 : Return to education for Black workers
+#
+# β4 : Difference in return to education between White and Black
+#      Return for White = β1 + β4
+#
+# β5 : Difference in return to education between Other and Black
+#      Return for Other = β1 + β5
+#
+# Race main effects (raceWhite, raceOther):
+#  Wage differences at 0 education — not interpreted alone.
+
+
+
+```
+
+
+---
+
+## R squared
+
+Data "attend" reports final score of students of microeconomics from a US universities. It has following variables:
+
+• attend: classes attended out of 32
+• termGPA: GPA for term (GPA: grade point average)
+• priGPA: cumulative GPA prior to term
+• ACT: ACT score (standarized end of high school exam)
+• final: final exam score
+• atndrte: percent classes attended
+• hwrte: percent homework turned in
+• frosh: =1 if freshman
+• soph: =1 if sophomore
+• missed: number of classes missed
+
+
+Outcome is final exam score. It goes from 0 to 40. (that's what we want to predict). Keep adding regressors and try to find the highest adjusted R square possible. (ex: attend, ACT, termGPA, priGPA)
+
+```{r 11, exercise=TRUE}
+
+m1 <- lm(final ~ attend, data = attend)
+summary(m1)$adj.r.squared
+
+# Model 2: add ACT
+m2 <- lm(final ~ attend + ACT, data = attend)
+summary(m2)$adj.r.squared
+
+# Model 3: add termGPA
+m3 <- lm(final ~ attend + ACT + termGPA, data = attend)
+summary(m3)$adj.r.squared
+
+# Model 4: add priGPA
+m4 <- lm(final ~ attend + ACT + termGPA + priGPA, data = attend)
+summary(m4)$adj.r.squared
+
+# Model 5: try many predictors at once
+m5 <- lm(final ~ attend + ACT + termGPA + priGPA + atndrte + hwrte + frosh + soph + missed, 
+         data = attend)
+summary(m5)$adj.r.squared
+
+
+```
+
+
+
+---
+
+## Hypothesis testing
+
+In the dataset "alcohol" we find information whether someone is employed (employ), whether they abuse alcohol (abuse), and years of education (educ).
+Test if abusing alcohol affects your employment status when controlling for education. Compare to a model that doesn't include education as control. 
+
+```{r 13f, exercise=TRUE}
+
+
+##what is the distribution of test statistic? What is the number of degrees of freedom?
+
+# Model 1: employment on alcohol abuse only
+m1 <- lm(employ ~ abuse, data = alcohol)
+summary(m1)
+
+# Hypothesis test: H0: abuse = 0
+t_test_m1 <- summary(m1)$coefficients["abuse", ]
+t_test_m1
+
+# Model 2: employment on alcohol abuse + education
+m2 <- lm(employ ~ abuse + educ, data = alcohol)
+summary(m2)
+
+# Hypothesis test: H0: abuse = 0 (with control)
+t_test_m2 <- summary(m2)$coefficients["abuse", ]
+t_test_m2
+
+# ------------------------------
+# Distribution of test statistic
+# ------------------------------
+# The t-statistic follows a Student's t distribution.
+
+df_m1 <- m1$df.residual     # degrees of freedom model 1
+df_m2 <- m2$df.residual     # degrees of freedom model 2
+
+df_m1
+df_m2
+
+```
+
+
+---
+
+## Hypothesis testing with Interaction
+
+Does education plays larger role if living in a big city?
+
+The dataset "beauty" has information on wage (wage), years of education (educ), and whether someone lives in a big city (bigcity). Test if return to education is higher when you live in big city.
+
+```{r 13, exercise=TRUE}
+
+##what is the distribution of test statistic? What is the number of degrees of freedom?
+
+# Interaction model to test whether returns to education differ in big cities
+m <- lm(wage ~ educ * bigcity, data = beauty)
+summary(m)
+
+# Key hypothesis:
+# H0: the interaction term educ:bigcity = 0
+# If rejected → return to education IS different in big cities.
+
+# Extract t-test for interaction term
+t_interaction <- summary(m)$coefficients["educ:bigcity", ]
+t_interaction
+
+# ------------------------------
+# Distribution of test statistic
+# ------------------------------
+# The test statistic follows a Student t distribution.
+
+df_model <- m$df.residual   # degrees of freedom
+df_model
+
+```
+
+
+---
+
+## Confidence interval for a coefficient
+
+The dataset sleep75 contains informatiomn on total hours of sleep (slpnaps), age, being married (marr), and hourly wage (hrwage).
+Run a regression explaining sleep time using all these variables. What is 95% confidence interval on the impact of more dollar of hourly wage? What about being married?
+
+
+```{r 14, exercise=TRUE}
+
+
+
+##what is the distribution? What is the number of degrees of freedom?
+
+# Regression using all variables
+m <- lm(slpnaps ~ hrwage + age + marr, data = sleep75)
+summary(m)
+
+# 95% confidence interval for hourly wage effect
+confint(m, level = 0.95)
+
+
+
+#or more explicitely
+
+# Generic formula for a 95% CI for a coefficient β_j is:
+#   β̂_j ± t_{0.975, df} * SE(β̂_j)
+#
+# where:
+#   β̂_j  = estimated coefficient
+#   SE(β̂_j) = standard error of that coefficient
+#   t_{0.975, df} = critical value from t distribution
+#   df = residual degrees of freedom = n - k
+#
+# We compute it manually for hrwage and marr.
+
+coefs   <- summary(m)$coefficients
+beta_hr <- coefs["hrwage", "Estimate"]
+se_hr   <- coefs["hrwage", "Std. Error"]
+
+beta_marr <- coefs["marr", "Estimate"]
+se_marr   <- coefs["marr", "Std. Error"]
+
+df <- m$df.residual
+t_crit <- qt(0.975, df = df)   # two-sided 95% → 0.975 quantile
+
+# Manual CI for hrwage:
+lower_hr  <- beta_hr  - t_crit * se_hr
+upper_hr  <- beta_hr  + t_crit * se_hr
+
+# Manual CI for marr:
+lower_marr <- beta_marr - t_crit * se_marr
+upper_marr <- beta_marr + t_crit * se_marr
+
+c(CI_hrwage_manual = lower_hr, upper_hr)
+c(CI_marr_manual   = lower_marr, upper_marr)
+
+
+
+
+```
+
+
+---
+
+## Confidence interval for a mean response
+
+
+The dataset econmath contains data from a course in economics from Michigan State University. It reports the following variables. 
+
+- score: final score
+- age: age in years
+- study: hours studying per week
+- act: score on final high school exam
+- fathcoll: 1 if father has college degree
+- mothcoll: 1 if mother has college degree
+- male: 1 if male
+
+Let's find the confidence interval for the mean score for students who are 22 years old, study 10 hours per week, had 25 on final high school exam, only mother has a college degree, and is male
+
+Step by step method:
+1. Find the prediction
+2. Write down the vector of predictors
+3. Find the inverse of X'X
+4. Find the standard error
+5. Compute the standard errors of the prediction
+6. Find critical value
+7. Put together the interval
+
+```{r 15m1, exercise=TRUE}
+
+m <- lm(score ~ age + study + act + fathcoll + mothcoll + male, data = econmath)
+summary(m)
+
+# 2. Vector of predictors for the specific student:
+#    age = 22, study = 10, act = 25, fathcoll = 0, mothcoll = 1, male = 1
+x0 <- c(1, 22, 10, 25, 0, 1, 1)  # (Intercept, age, study, act, fathcoll, mothcoll, male)
+
+# 3. Extract X and compute (X'X)^(-1)
+X <- model.matrix(m)                 # Design matrix
+XtX_inv <- solve(t(X) %*% X)         # (X'X)^(-1)
+
+# 4. Get coefficient estimates and prediction for this student
+beta_hat <- coef(m)
+y_hat <- as.numeric(x0 %*% beta_hat) # Predicted mean score
+
+# 5. Estimate error variance and standard error of prediction (mean)
+n <- nrow(X)
+p <- ncol(X)
+s2 <- sum(residuals(m)^2) / (n - p)                     # sigma^2 hat
+var_mean <- as.numeric(s2 * t(x0) %*% XtX_inv %*% x0)   # Var of predicted mean
+se_mean <- sqrt(var_mean)                               # Standard error
+
+# 6. Critical value for 95% CI from t-distribution
+df <- m$df.residual
+t_crit <- qt(0.975, df = df)
+
+# 7. Confidence interval for the mean predicted score
+lower_ci <- y_hat - t_crit * se_mean
+upper_ci <- y_hat + t_crit * se_mean
+
+c(predicted_mean = y_hat,
+  lower_95_CI    = lower_ci,
+  upper_95_CI    = upper_ci)
+
+
+
+
+
+```
+
+Quick method: 
+
+```{r 15m2, exercise=TRUE}
+
+lm_model <- lm(score ~ age+study+act+fathcoll+mothcoll+male, data = econmath)
+summary(lm_model)
+new_data<- data.frame(age=22, study=10, act=25, fathcoll=0, mothcoll=1, male=1)
+predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.fit=TRUE)
+
+```
+
+---
+
+## Confidence interval for a new observation
+
+Let's use the same setting as before, but calculate the confidence interval for a new observation. 
+
+Step by step method:
+1. Find the prediction
+2. Write down the vector of predictors
+3. Find the inverse of X'X
+4. Find the standard error
+5. Compute the standard errors of the prediction
+6. Find critical value
+7. Put together the interval
+
+```{r 16m1, exercise=TRUE}
+# 1. Run the regression model
+m <- lm(score ~ age + study + act + fathcoll + mothcoll + male, data = econmath)
+summary(m)
+
+# 2. Vector of predictors for the specific student
+#    age = 22, study = 10, act = 25, fathcoll = 0, mothcoll = 1, male = 1
+#    x0 = (1, age, study, act, fathcoll, mothcoll, male)
+x0 <- c(1, 22, 10, 25, 0, 1, 1)
+
+# 3. Compute (X'X)^(-1)
+X <- model.matrix(m)
+XtX_inv <- solve(t(X) %*% X)
+
+# 4. Predicted value ŷ0 = x0' * β̂
+beta_hat <- coef(m)
+y_hat <- as.numeric(x0 %*% beta_hat)
+
+# 5. Standard error for a NEW observation
+#    Var(ŷ_new) = σ² * (1 + x0' (X'X)^(-1) x0)
+#    SE(ŷ_new)  = sqrt( Var(ŷ_new) )
+
+n <- nrow(X)
+p <- ncol(X)
+s2 <- sum(residuals(m)^2) / (n - p)                      # σ² estimate
+
+var_new <- as.numeric(s2 * (1 + t(x0) %*% XtX_inv %*% x0))
+se_new  <- sqrt(var_new)
+
+# 6. Critical value for 95% prediction interval
+df <- m$df.residual
+t_crit <- qt(0.975, df = df)
+
+# 7. 95% prediction interval for a NEW observation
+lower_pi <- y_hat - t_crit * se_new
+upper_pi <- y_hat + t_crit * se_new
+
+c(predicted_value      = y_hat,
+  lower_95_pred_int    = lower_pi,
+  upper_95_pred_int    = upper_pi)
+
+
+```
+
+Quick method: 
+
+```{r 16m2, exercise=TRUE}
+
+lm_model <- lm(score ~ age+study+act+fathcoll+mothcoll+male, data = econmath)
+summary(lm_model)
+new_data<- data.frame(age=22, study=10, act=25, fathcoll=0, mothcoll=1, male=1)
+predict(lm_model, newdata = new_data, interval = "prediction", level = 0.95, se.fit=TRUE)
+
+```
+
+
+---
+
+## ANOVA - Significance of the regression
+
+The dataset discrim contains information of prices of fast food items from the US. Each observation is fast food restaurant.
+
+Suppose you regress price of price of fries (pfries) on location characteristics: proportion black in zipcode (prpblck), proportion living in poverty (prppov), median family income (income). Does this regression helps at all to explain the price? 
+
+1. Start with running the regression and looking at the results
+
+```{r 17m1, exercise=TRUE}
+
+lm_model <- lm(pfries ~ prpblck+prppov+income, data = discrim)
+summary(lm_model)
+
+```
+
+
+2. Run the ANOVA test. 
+
+```{r 17m2, exercise=TRUE, exercise.setup="17m1"}
+lm_model <- lm(pfries ~ prpblck+prppov+income, data = discrim)
+summary(lm_model)
+
+
+anova(lm_model)
+```
+
+
+3. What is the SSE,  SST and SSR? What are their respective degrees of freedom? 
+
+```{r 17m3, exercise=TRUE, exercise.setup="17m2"}
+anova_out <- anova(lm_model)
+anova_out
+SSE<- anova_out["Residuals", "Sum Sq"]
+SSR <- sum(anova_out[1:3, "Sum Sq"]) #sum of regression squares of all variables
+SST <- SSR + SSE
+df_SSE<- anova_out["Residuals", "Df"]
+df_SSR <- sum(anova_out[1:3, "Df"]) #sum of regression squares of all variables
+df_SST <- df_SSR + df_SSE
+
+
+```
+
+
+4. What is the F test result? What is the p-value?
+
+```{r 17m4, exercise=TRUE, exercise.setup="17m3"}
+
+# --- 4. F-test result and p-value ---
+
+# F statistic formula:
+#   F = (SSR /df_SSR) / (SSE / (df_SSE))
+
+F_stat <- (SSR / df_SSR) / (SSE / (df_SSE))
+
+# p-value:
+p_value <- 1 - pf(F_stat, df_SSR, df_SSE)
+
+c(F_statistic = F_stat, p_value = p_value)
+```
+
+
+---
+
+## Testing for difference in coefficients
+
+Dataset married provides information on married couples in the US. It reports total family income and characteristics of both spouses: age (age_w, age_h), years of education (educ_w, educ_h), and body mass index (bmi_w, bmi_h).
+
+Test if the impact of wife education is the same as the impact of husband education on family income.
+
+1. Run the regression
+
+```{r 18m1, exercise=TRUE}
+
+a=lm(famincome~educ_w+educ_h, data=married)
+summary(a)
+
+```
+
+
+2. Find the test statistic
+
+```{r 18m2, exercise=TRUE, exercise.setup="18m1"}
+
+
+# Extract coefficients
+b <- coef(a)
+
+
+# Extract variance–covariance matrix
+V <- vcov(a)
+
+
+# Test statistic formula:
+#   t = (β1 - β2) / sqrt( Var(β1) + Var(β2) - 2 Cov(β1, β2) )
+
+beta_diff <- b["educ_w"] - b["educ_h"]
+
+var_diff <- V["educ_w", "educ_w"] +
+            V["educ_h", "educ_h"] -
+            2 * V["educ_w", "educ_h"]
+
+t_stat <- beta_diff / sqrt(var_diff)
+
+t_stat
+
+# Degrees of freedom
+df <- a$df.residual
+
+```
+
+3. Find the p-value
+
+```{r 18m3, exercise=TRUE, exercise.setup="18m2"}
+# --- 3. p-value for the two-sided test ---
+
+
+
+p_value <- 2 * (1 - pt(abs(t_stat), df))
+
+p_value
+
+```
+
+
+#### Alternative test. 
+
+Now try again but with bmi of wife (bmi_w) vs bmi of husband (bmi_h)
+
+
+```{r 18m5, exercise=TRUE}
+# Run regression with wife's and husband's BMI
+a <- lm(famincome ~ bmi_w + bmi_h, data = married)
+summary(a)
+
+# Extract coefficients
+b <- coef(a)
+
+# Extract variance–covariance matrix
+V <- vcov(a)
+
+# Test H0: β_bmi_w = β_bmi_h
+beta_diff <- b["bmi_w"] - b["bmi_h"]
+
+# Variance of the difference:
+# Var(β_w - β_h) = Var(β_w) + Var(β_h) - 2Cov(β_w, β_h)
+var_diff <- V["bmi_w", "bmi_w"] +
+            V["bmi_h", "bmi_h"] -
+            2 * V["bmi_w", "bmi_h"]
+
+# Test statistic
+t_stat <- beta_diff / sqrt(var_diff)
+
+# Degrees of freedom
+df <- a$df.residual
+
+# Two-sided p-value
+p_value <- 2 * (1 - pt(abs(t_stat), df))
+
+c(t_statistic = t_stat, p_value = p_value)
+
+```
+
+---

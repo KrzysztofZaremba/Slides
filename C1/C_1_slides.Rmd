@@ -295,12 +295,7 @@ print(p)
 ### Organization
 
 - **Lectures Schedule**: 
-      - Tuesday morning RH SA2
-
-- **TA schedule**: 
-  - Weekly 1 hour lab session - timing/location to be determined
-  - Office Hours with TAs - timing/location to be determined
-  - Canvas Discussion Board
+      - Monday and Wednesday Morning
 
 - **Textbooks**
   - See canvas course materials and syllabus
@@ -316,31 +311,32 @@ print(p)
 
 - **70% In-Class Exams & Assignments**  
   - 3 total exams (including final)  
-  - Combination of applied (in computer lab) and paper-based formats  
+  - Applied (in computer lab)
 
 --
 
 - **20% Projects & Presentations**  
   - 3 group-based take-home projects  
   - Analyze data, write a short summary  
-  - Present findings briefly in class  
+  - Present (Q&A) findings briefly in class  
+  - Need to be in class during Q&A to get the grade for the projec
 
 
 --
 
 - **5% In-Class Assignments**  
-  - 2 group forecasting competitions using real-world data  
-  - 2 individual theoretical quizzes (1 cheat sheet allowed)  
+  - 2 group forecasting exercises using real-world data  
+  - 2-3 individual theoretical quizzes (1 cheat sheet allowed)  
   - **Lowest score among these 4 assignments will be dropped**  
  
   
 --
 
 - **5% Participation & Engagement**  
-  - 2.5%: Flipped tasks and short homeworks (graded for completion)  
+  - 2.5%: Short homeworks (graded for completion, can skip one)  
   - 2.5%: Preparedness checks at the beginning of class  
     - Random students selected in the first 5 minutes  
-    - Zero credit if absent or unprepared  
+    - Zero credit if absent or unprepared
 
 
 ---
@@ -422,7 +418,7 @@ print(p)
   - Accessing quizzes outside the classroom without prior approval = **0 credit**.
   - Canvas access logs will be reviewed during assessments.
   - In-class assignments are recorded.
-  - Anonymous reporting of cheating is available.
+  - Anonymous reporting of cheating is available
 
 --
 
@@ -431,7 +427,7 @@ print(p)
     - You will be reported to the administration.
     - You will automatically fail the course and must retake it.
     - On a second offense, **you will be expelled**.  
-  - Cheating has been reported in this course before.
+  - I have reported cheating students in this course before.
 
 --
 
