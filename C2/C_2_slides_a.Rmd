@@ -762,7 +762,7 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
 
 - What is the age, such that 50% of people die before that age?
 
--- 
+--
 
 - When do I need to leave home to be on time for class 90% of the days?
 
@@ -785,7 +785,7 @@ ggplot(hist_data, aes(x = DailySales, fill = after_stat(x) > optimal_inventory_l
     - In our example it would be the average of 950th and 951th observation
  
  
- --
+---
 
 ## Or use the CDF
 
@@ -1769,7 +1769,7 @@ combined_plot <- ggplot(data, aes(y=values)) +
   annotate("text", x = -0.04, y = median(data$values), label = "Median", hjust=0) +
   annotate("text", x = -0.04, y = quantile(data$values, 0.75), label = "Q3", hjust=0) +
   annotate("text", x = -0.04, y = max(data$values[data$values < (quantile(data$values, 0.75) + 1.5 * IQR(data$values))]), 
-             label = "Lower Whisker: Q1 + 1.5 × IQR",, hjust=0) +
+             label = "Lower Whisker: Q1 +f 1.5 × IQR",, hjust=0) +
   annotate("text", x = -0.04, y = min(data$values[data$values > (quantile(data$values, 0.25) - 1.5 * IQR(data$values))]), 
              label = "Lower Whisker: Q1 − 1.5 × IQR", hjust=0) +
   
