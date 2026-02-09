@@ -1,11 +1,13 @@
 ---
-title: "LearnR Tutorial: Estimators"
+title: "LearnR Tutorial: Estimators and Confidence Intervals"
 author: "Business Forecasting"
 output: learnr::tutorial
 runtime: shiny_prerendered
 ---
 
 ## Population
+
+We start with a simulated population drawn from an Exponential(2) distribution. This is intentionally **non-normal** — it is right-skewed and bounded below by 0. This lets us see how estimators behave when the population is far from a bell curve.
 
 ```{r setup, include=FALSE}
 library(learnr)
@@ -15,30 +17,31 @@ library(dplyr)
 
 set.seed(123)
 
-# ---- Extremely non-normal population: Zero-Inflated Pareto ----
+# ---- Non-normal population: Exponential ----
 POP_SIZE <- 5e5
 EXP_RATE <- 2
 population <- rexp(POP_SIZE, rate = EXP_RATE)
 
 # Population benchmarks
-pop_sd    <- sd(population)
-pop_iqr   <- IQR(population)
-pop_q995  <- as.numeric(quantile(population, 0.99))
+pop_sd     <- sd(population)
+pop_iqr    <- IQR(population)
+pop_q99    <- as.numeric(quantile(population, 0.99))
 pop_median <- median(population)
 pop_mean   <- 1 / EXP_RATE   # true mu = E[X] for Exp(rate)
-pop_median <- median(population)
 
+# ---- Ride-hailing population for CI exercise ----
 set.seed(2025)
 N <- 20000
 base <- rnorm(N, mean = 120, sd = 18)
 surge <- rlnorm(N, meanlog = log(1.10), sdlog = 0.25)
 noise <- rnorm(N, mean = 0, sd = 8)
-orders_pop <<- pmax(35, base * surge + noise)
-true_mu <<- mean(orders_pop)
-true_sd <<- sd(orders_pop)
+orders_pop <- pmax(35, base * surge + noise)
+true_mu <- mean(orders_pop)
+true_sd <- sd(orders_pop)
 
+# ---- Free shipping experiment data ----
 spend_free <- c(157.80, 192.45, 210.20, 175.60, 198.30,
-                       180.90, 205.75, 185.20, 177.40, 195.60)
+                180.90, 205.75, 185.20, 177.40, 195.60)
 
 ```
 
@@ -49,11 +52,11 @@ plotOutput("pop_hist", height = 300)
 ```{r pop_plot_server, context="server"}
 output$pop_hist <- renderPlot({
   df <- data.frame(x = population)
-  xmax <- pop_q995
+  xmax <- pop_q99
   ggplot(df, aes(x = x)) +
-    geom_histogram(aes(y = ..density..), bins = 120, color = "white", fill = "grey70") +
+    geom_histogram(aes(y = after_stat(density)), bins = 120, color = "white", fill = "grey70") +
     coord_cartesian(xlim = c(0, xmax)) +
-    labs(title = paste0("Exponential"),
+    labs(title = paste0("Population: Exponential(rate=", EXP_RATE, "), true mean = ", pop_mean),
          x = "Value", y = "Density") +
     theme_minimal()
 })
@@ -63,6 +66,11 @@ output$pop_hist <- renderPlot({
 
 
 ## Panel A — Standard Deviation
+
+Explore the sampling distribution of the sample standard deviation. The dashed line shows the true population SD.
+
+**Questions to consider:** What happens as you increase n? Is the sample SD an unbiased estimator of the population SD?
+
 ```{r ui_sd, context="render"}
 fluidPage(
   numericInput("n_sd", "Sample size (n):", value = 30, min = 2, step = 1),
@@ -82,7 +90,7 @@ observeEvent(input$go_sd, {
       geom_vline(xintercept = pop_sd, linetype = "dashed") +
       labs(title = paste0("Sampling Distribution of SD (n=", n, ", B=", B, ")"),
            x = "Sample SD", y = "Count") +
-      theme_minimal()+xlim(0,1)
+      theme_minimal() + xlim(0, max(sds) * 1.1)
   })
 })
 ```
@@ -90,6 +98,11 @@ observeEvent(input$go_sd, {
 ---
 
 ## Panel B — Interquartile Range (IQR)
+
+The IQR is another measure of spread. Explore its sampling distribution and compare it to the SD panel.
+
+**Questions to consider:** Is the IQR more or less variable than the SD across samples? Which converges faster?
+
 ```{r ui_iqr, context="render"}
 fluidPage(
   numericInput("n_iqr", "Sample size (n):", value = 30, min = 2, step = 1),
@@ -108,19 +121,24 @@ observeEvent(input$go_iqr, {
       geom_vline(xintercept = pop_iqr, linetype = "dashed") +
       labs(title = paste0("Sampling Distribution of IQR (n=", n, ", B=", B, ")"),
            x = "Sample IQR", y = "Count") +
-      theme_minimal()+xlim(0,1)
+      theme_minimal() + xlim(0, max(iqrs) * 1.1)
   })
 })
 ```
 
 ---
 
-## Panel C — 99th percentile
+## Panel C — 99th Percentile
+
+Now explore the sampling distribution of the **sample 99th percentile**. The dashed line shows the true population 99th percentile.
+
+**Questions to consider:** Is this estimator biased? How does increasing n affect the distribution?
+
 ```{r ui_max, context="render"}
 fluidPage(
   numericInput("n_max", "Sample size (n):", value = 30, min = 2, step = 1),
   numericInput("B_max", "Number of samples (B):", value = 1000, min = 50, step = 50),
-  actionButton("go_max", "Simulate 99th percentile", class = "btn-primary"),
+  actionButton("go_max", "Simulate 99th Percentile", class = "btn-primary"),
   plotOutput("max_dist", height = 280)
 )
 ```
@@ -128,27 +146,28 @@ fluidPage(
 ```{r server_max, context="server"}
 observeEvent(input$go_max, {
   n <- input$n_max; B <- input$B_max
-  maxs <- replicate(B, max(sample(population, size = n, replace = TRUE)))
+  pct99s <- replicate(B, as.numeric(quantile(sample(population, size = n, replace = TRUE), 0.99)))
   output$max_dist <- renderPlot({
-    ggplot(data.frame(stat = maxs), aes(x = stat)) +
+    ggplot(data.frame(stat = pct99s), aes(x = stat)) +
       geom_histogram(bins = 50, fill = "tomato", color = "white") +
-      geom_vline(xintercept = pop_q995, linetype = "dashed") +
-      labs(title = paste0("Sampling Distribution of Max (n=", n, ", B=", B, ")"),
-           x = "Sample Max", y = "Count") +
-      theme_minimal()+xlim(0,5)
+      geom_vline(xintercept = pop_q99, linetype = "dashed") +
+      labs(title = paste0("Sampling Distribution of 99th Percentile (n=", n, ", B=", B, ")"),
+           x = "Sample 99th Percentile", y = "Count") +
+      theme_minimal() + xlim(0, max(pct99s) * 1.1)
   })
 })
 ```
 
 ---
 
-## Example 1: Estimator \( \hat{\theta}_2 = X_i \)
-- \( E(\hat{\theta}_2) = E(X_i) = \mu \) → **unbiased**.
+## Example 1: Estimator \( \hat{\theta}_1 = X_i \) (a single observation)
+- \( E(\hat{\theta}_1) = E(X_i) = \mu \) → **unbiased**.
+- But is it a good estimator? Run the simulation and look at the variance!
 
 ```{r ui_theta2, context="render"}
 fluidPage(
   numericInput("B_t2", "Number of repetitions (B):", value = 3000, min = 100, step = 100),
-  actionButton("go_t2", "Simulate θ2 = Xᵢ", class = "btn-primary"),
+  actionButton("go_t2", "Simulate θ₁ = Xᵢ", class = "btn-primary"),
   plotOutput("theta2_plot", height = 300),
   verbatimTextOutput("theta2_stats")
 )
@@ -168,8 +187,8 @@ observeEvent(input$go_t2, {
       geom_vline(xintercept = pop_mean, linetype = "dashed", linewidth = 1) +
       geom_vline(xintercept = emp_mean, linetype = "solid", linewidth = 0.8) +
       labs(
-        title = expression(paste("Sampling Dist. of ", hat(theta)[2], " = X" [i] )),
-        x = expression(hat(theta)[2]), y = "Count"
+        title = expression(paste("Sampling Dist. of ", hat(theta)[1], " = X" [i] )),
+        x = expression(hat(theta)[1]), y = "Count"
       ) +
       theme_minimal()+xlim(0,2)
   })
@@ -177,8 +196,8 @@ observeEvent(input$go_t2, {
   output$theta2_stats <- renderText({
     paste0(
       "True μ = ", round(pop_mean, 4),
-      "\nE[θ̂₂] (theoretical) = ", round(E_theta2, 4),
-      "\nSample mean of θ̂₂ = ", round(emp_mean, 4),
+      "\nE[θ̂₁] (theoretical) = ", round(E_theta2, 4),
+      "\nSample mean of θ̂₁ = ", round(emp_mean, 4),
       "\nEstimated bias = ", round(emp_bias, 4), "  (should be ~ 0)"
     )
   })
@@ -187,14 +206,15 @@ observeEvent(input$go_t2, {
 
 ---
 
-## Example 2: Estimator \( \hat{\theta}_3 = \frac{3X_1 + X_2}{5} \)
-- \( E(\hat{\theta}_3) = \frac{4}{5}\mu \) → **biased** (downward).
+## Example 2: Estimator \( \hat{\theta}_2 = \frac{3X_1 + X_2}{5} \)
+- \( E(\hat{\theta}_2) = \frac{4}{5}\mu \) → **biased** (downward).
 - Bias \( = -\frac{1}{5}\mu \).
+- Notice how the sampling distribution is **not centered** on the true mean (dashed line).
 
 ```{r ui_theta3, context="render"}
 fluidPage(
   numericInput("B_t3", "Number of repetitions (B):", value = 3000, min = 100, step = 100),
-  actionButton("go_t3", "Simulate θ3 = (3X₁ + X₂)/5", class = "btn-primary"),
+  actionButton("go_t3", "Simulate θ₂ = (3X₁ + X₂)/5", class = "btn-primary"),
   plotOutput("theta3_plot", height = 300),
   verbatimTextOutput("theta3_stats")
 )
@@ -217,8 +237,8 @@ observeEvent(input$go_t3, {
       geom_vline(xintercept = pop_mean, linetype = "dashed", linewidth = 1) +
       geom_vline(xintercept = emp_mean, linetype = "solid", linewidth = 0.8) +
       labs(
-        title = expression(paste("Sampling Dist. of ", hat(theta)[3], " = (3X"[1], " + X"[2], ")/5")),
-        x = expression(hat(theta)[3]), y = "Count"
+        title = expression(paste("Sampling Dist. of ", hat(theta)[2], " = (3X"[1], " + X"[2], ")/5")),
+        x = expression(hat(theta)[2]), y = "Count"
       ) +
       theme_minimal()+xlim(0,2)
   })
@@ -226,8 +246,8 @@ observeEvent(input$go_t3, {
   output$theta3_stats <- renderText({
     paste0(
       "True μ = ", round(pop_mean, 4),
-      "\nE[θ̂₃] (theoretical) = ", round(E_theta3, 4), "  (= 4/5 μ)",
-      "\nSample mean of θ̂₃ = ", round(emp_mean, 4),
+      "\nE[θ̂₂] (theoretical) = ", round(E_theta3, 4), "  (= 4/5 μ)",
+      "\nSample mean of θ̂₂ = ", round(emp_mean, 4),
       "\nEstimated bias = ", round(emp_bias, 4),
       "  (theoretical bias = -μ/5 = ", round(-pop_mean/5, 4), ")"
     )
@@ -237,7 +257,11 @@ observeEvent(input$go_t3, {
 
 ---
 
-## Example 3: Estimator = mean of 50 observations
+## Example 3: Estimator \( \hat{\theta}_3 = \bar{X} \) (sample mean of 50 observations)
+
+- \( E(\hat{\theta}_3) = \mu \) → **unbiased**.
+- Compare the spread of this distribution to Example 1. The sample mean is much more concentrated — it has variance \( \sigma^2/n \) instead of \( \sigma^2 \).
+
 ```{r ui_theta4, context="render"}
 fluidPage(
   numericInput("B_t4", "Number of repetitions (B):", value = 3000),
@@ -270,6 +294,16 @@ observeEvent(input$go_t4, {
 ---
 
 ## Normal Approximation Problem — DiDi App Example
+
+**Before using the simulator, work through the problem analytically:**
+
+1. What is the distribution of the total calls from Cancun? ( \( S_X = \sum X_i \) where \( X_i \sim \text{Bernoulli}(0.4) \) )
+2. What is the distribution of the total calls from Puerto Vallarta?
+3. Using normal approximation, what is the distribution of \( S_X + S_Y \)?
+4. Calculate \( P(S_X + S_Y > 100) \) using `pnorm()`.
+
+Then use the simulator below to check your answer by setting B to a large number (e.g. 5000).
+
 ```{r ui_didi, context="render"}
 fluidPage(
   h3("DiDi Calls: Two Cities → One Total"),
@@ -468,9 +502,9 @@ observeEvent(input$draw_sample_dist, {
           lwd = 2,
           axes = FALSE)
 
-    # Axis labels for μ ± z*·SE
+    # Axis labels for μ ± z*·SE (use actual zcrit, not hardcoded 1.96)
 axis(1,
-     at = c(-1.96, 0, 1.96),
+     at = c(-zcrit, 0, zcrit),
      labels = c(
        expression(mu - z[alpha/2] %*% frac(s, sqrt(n))),
        expression(mu),
@@ -539,9 +573,9 @@ qnorm(0.995) #quantiles from normal distribution
 
 ## Practice
 
-Product analytics at a ride‑hailing company wants to estimate the **average ride fare** in a city this month. You’ll take a random sample of rides and build a 95% confidence interval for the mean fare.
+Product analytics at a ride-hailing company wants to estimate the **average ride fare** in a city this month. You'll take a random sample of rides and build a **90% confidence interval** for the mean fare.
 
-> You’ll get a hidden population `orders_pop` (thousands of past rides). Your job is to sample from it and compute a CI. At the end, you can click a button to reveal the true mean \(\mu\).
+> You'll get a hidden population `orders_pop` (thousands of past rides). Your job is to sample from it and compute a CI. At the end, you can click a button to reveal the true mean \(\mu\).
 
 
 
@@ -556,17 +590,17 @@ Product analytics at a ride‑hailing company wants to estimate the **average ri
 # xbar <- _____(sample_orders)
 # s    <- _____(sample_orders)
 
-#xbar (you can see these values)
-#s
+# xbar (you can see these values)
+# s
 
 # 3) Find the two-sided critical value for a 90% CI
-
+# z_crit <- qnorm(_____)
 
 # 4) Compute the confidence interval for the mean
-# se <- 
+# se <- s / sqrt(_____)
 
 # 5) show your CI endpoints
-
+# c(xbar - z_crit * se, xbar + z_crit * se)
 
 ```
 
@@ -589,13 +623,16 @@ observeEvent(input$reveal_mean, {
 
 ---
 
-## Finding critical values in student t 
+## Finding critical values in Student's t
 
-Find critical value for 80% confidence interval for data with 20 observations. How does it differ from the normal critical value?
+Find critical value for an 80% confidence interval for data with 20 observations (df = 19). How does it differ from the normal critical value?
 
 ```{r addition56745, exercise=TRUE}
+# For 80% CI: alpha = 0.20, so alpha/2 = 0.10
+# We need P(T < t) = 1 - alpha/2 = 0.90
 
-qt(0.99,100) #quantiles from normal distribution
+qt(0.90, 19)   # t critical value with 19 df
+qnorm(0.90)    # compare with normal critical value
 
 ```
 
@@ -629,14 +666,16 @@ a) **Compute a 90% confidence interval** for the mean spending.
 
 ---
 
-## Finding critical values in chi square
+## Finding critical values in chi-square
 
-Find critical values for 90% confidence interval for variance for data with 20 observations.
+Find critical values for a 90% confidence interval for the variance with 20 observations (df = 19).
 
 ```{r addition5674523, exercise=TRUE}
+# For 90% CI: alpha = 0.10, so alpha/2 = 0.05
+# We need the lower and upper quantiles of chi-squared with df = 19
 
-qchisq(0.11, 111) #these represent quantiles from chi square. First number is quantile, second number is degree of freedom. 
-qchisq(0.11, 111)
+qchisq(0.05, 19)   # lower critical value: P(X < this) = 0.05
+qchisq(0.95, 19)   # upper critical value: P(X < this) = 0.95
 
 ```
 
@@ -668,21 +707,23 @@ upper_ci
 
 ---
 
-## Testing intuition 
-Take a sample of 36 when true mean is 98
+## Testing intuition
+
+Suppose we want to test H₀: μ = 100. Let's see what samples look like when the null is true vs. when it's false.
+
+Take a sample of 36 when the true mean **is** 100 (null is true):
 
 ```{r t1, exercise=TRUE}
-# 0) Set seed to your student ID
 set.seed(3)
-x_98 <- rnorm(n =36, mean = 100, sd = 20) # take a sample of 10 from normal with mean of 98 and sd of 15
-mean(x_98)
+x_100 <- rnorm(n = 36, mean = 100, sd = 20) # sample from N(100, 20)
+mean(x_100)
 
 ```
-Take a sample of 36 when true mean is 108
+Take a sample of 36 when the true mean is 108 (null is false):
 
 ```{r t2, exercise=TRUE}
-
-x_108 <- rnorm(n = 36, mean = 108, sd = 20) # take a sample of 10 from normal with mean of 98
+set.seed(3)
+x_108 <- rnorm(n = 36, mean = 108, sd = 20) # sample from N(108, 20)
 mean(x_108)
 
 ```
@@ -693,21 +734,22 @@ mean(x_108)
 
 ## Probability of incorrectly rejecting the null (Type 1 error)
 
+Suppose H₀: μ = 100 is **true**. We'll generate 1000 samples from N(100, 20) and see how often we'd incorrectly reject.
 
 ```{r t123, exercise=TRUE}
 
-# Generate sample means
-means_98 <- replicate(1000, mean(rnorm(36, mean = 100, sd = 20))) # generate 100 samples and calculate mean in each of them
-head(means_98)
+# Generate 1000 sample means when the null is TRUE (μ = 100)
+means_100 <- replicate(1000, mean(rnorm(36, mean = 100, sd = 20)))
+head(means_100)
 
+hist(means_100, main="Sampling Distribution of Mean (μ=100, null is true)", xlab="Sample mean")
 
-hist(means_98, main="Sampling Distribution of Mean (μ=98)", xlab="Sample mean")
+# Standardize them under H0: μ₀ = 100
+# standardized_means <- (means_100 - 100) / (20 / sqrt(36))
+# head(standardized_means)
 
-#standardize them
-#standardized_means=
-#head(standardized_means)
-
-#sum(standardized_means>1.645)
+# How many exceed the critical value (one-sided, α = 0.05)?
+# sum(standardized_means > 1.645)
 ```
 
 ---
@@ -723,23 +765,24 @@ qnorm(0.95) #quantiles from normal distribution
 
 ---
 
-## Probability of incorrectly rejecting the null (Type 2 error)
+## Probability of incorrectly failing to reject (Type 2 error)
 
+Now suppose the **true** mean is μ = 110, but we are testing H₀: μ = 100. How often do we **fail** to reject?
 
 ```{r t1234, exercise=TRUE}
 
-# Generate sample means
-means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20))) # generate 100 samples and calculate mean in each of them
+# Generate 1000 sample means when the true mean is 110 (null is FALSE)
+means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20)))
 head(means_110)
 
+hist(means_110, main="Sampling Distribution of Mean (true μ=110)", xlab="Sample mean")
 
-hist(means_110, main="Sampling Distribution of Mean (μ=105)", xlab="Sample mean")
+# Standardize under H0: μ₀ = 100 (we don't know the true mean in practice!)
+# standardized_means <- (means_110 - 100) / (20 / sqrt(36))
+# head(standardized_means)
 
-#standardize them
-#standardized_means=  #note that you standarize them accoring to your null hypothesis. You don't know the true mean in  real life
-#head(standardized_means)
-
-#sum(standardized_means<1.645)
+# How many FAIL to exceed the critical value? (Type 2 error)
+# sum(standardized_means < 1.645)
 ```
 
 ---
@@ -755,21 +798,22 @@ pnorm(-1)
 
 ## Power
 
+Power = 1 - P(Type 2 error) = probability of correctly rejecting a false null.
 
 ```{r t1233234, exercise=TRUE}
 
-# Generate sample means
-means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20))) # generate 100 samples and calculate mean in each of them
+# Generate 1000 sample means when the true mean is 110 (null is FALSE)
+means_110 <- replicate(1000, mean(rnorm(36, mean = 110, sd = 20)))
 head(means_110)
 
+hist(means_110, main="Sampling Distribution of Mean (true μ=110)", xlab="Sample mean")
 
-hist(means_110, main="Sampling Distribution of Mean (μ=105)", xlab="Sample mean")
+# Standardize under H0: μ₀ = 100
+# standardized_means <- (means_110 - 100) / (20 / sqrt(36))
+# head(standardized_means)
 
-#standardize them
-#standardized_means=  #note that you standarize them accoring to your null hypothesis. You don't know the true mean in  real life
-#head(standardized_means)
-
-#sum(standardized_means>1.645)
+# Power = proportion that correctly reject (exceed critical value)
+# sum(standardized_means > 1.645) / length(standardized_means)
 ```
 
 ---
@@ -783,11 +827,11 @@ You need to design the test which will have a good power and will be cheap to ma
 
 - Design. Run an A/B experiment with equal-sized groups:
   - Control (A): no photos (baseline) $\mu_0=2000$.
-  - Treatment (B): professional photos. You suspect it increases revenue by to $\mu_a=2200$.
+  - Treatment (B): professional photos. You suspect it increases revenue to $\mu_a=2200$.
 
-- Assume that standard deviation of weekly revenue is $\sigma=600$.
-- Suppose your take a sample of 100
-- And you want type one error probability to be 1% 
+- Assume that the standard deviation of weekly revenue is $\sigma=600$.
+- Suppose you take a sample of 100 listings per group.
+- And you want the type 1 error probability to be 1%.
 
 
 #### Step 0 — State the hypotheses 
@@ -898,7 +942,7 @@ What is the smallest alpha at which you would still reject?
 ## P values
 
 
-We want to test weather a coin is fair:  
+We want to test whether a coin is fair:
 
 - **H₀:** π = 0.50 (the coin is fair)  
 - **H₁:** π ≠ 0.50 (the coin is biased)  
@@ -930,7 +974,7 @@ Suppose we toss a coin 100 times and observe **58 heads**.  What is the p-value?
 
 ## Two Sample Difference, Airbnb Example
 
-Find the p-value fort the hypothesis that they mean prices are equal.
+Find the p-value for the hypothesis that the mean prices are equal.
 
 ```{r ex_0131, exercise=TRUE}
 
@@ -957,8 +1001,8 @@ Before this exercise - load the data on airbnb Listings
 
 Step 1: Let's first take a random sample of 2000 listings for our experiment
 ```{r ex_AB_1, exercise=TRUE}
-#load your listing data - replace with your directory
-load("C:/Users/kzysi/Dropbox/Itam_teaching/Markdowns/Intro_to_r/listings.Rda")
+# Load your listing data — update the path to match your local directory
+load("../../Intro_to_r/listings.Rda")
 
 listings$bed_num=as.numeric(listings$beds) ##transform number of beds to numeric and 
 listings=listings[!is.na(listings$bed_num),] ### keep only those with a valid number of beds
@@ -971,7 +1015,7 @@ Step 2: Let's randomize them into treatment and control group
   - With 50% probability you are in the treatment, otherwise in control
 ```{r ex_AB_2, exercise=TRUE, exercise.setup="ex_AB_1"}
 
-exp_listings$group <- ifelse(rbinom(nrow(exp_listings), 1, 0.5) == 1, "Treatment", "Control") #I draw a bernouill variable (binomial with n=1) for everyone. If you got 1, you are treated, if 0 you got control
+exp_listings$group <- ifelse(rbinom(nrow(exp_listings), 1, 0.5) == 1, "Treatment", "Control") # Draw a Bernoulli variable (binomial with n=1) for everyone. If you got 1, you are treated; if 0, control
 
 table(exp_listings$group)
 

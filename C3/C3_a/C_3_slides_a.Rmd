@@ -6,7 +6,6 @@ output:
     self_contained: true
     css: xaringan-themer.css
     lib_dir: libs
-    google-font: FALSE 
     nature:
       highlightStyle: github
       countIncrementalSlides: true
@@ -14,14 +13,19 @@ output:
 ---   
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -32,46 +36,42 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
-library(ggplot2)
 library(gridExtra)
-library(dplyr)
 library(hrbrthemes)
-library(gridExtra)
 library(cowplot)
 library(viridis)
 library(gapminder)
 library(knitr)
 library(kableExtra)
 library(DT)
-
+library(MASS)
+load("sample_listing.Rda")
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
-```
-
-
-```{r setup2, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-library(ggplot2)
-library(dplyr)
-library(MASS) # for truehist function
-load("sample_listing.Rda")
-
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 ---
 ## Roadmap
 
-### Last set of classess
+### Last set of classes
 - Types of data
 - How to describe data
   - With visualizations
@@ -82,7 +82,7 @@ load("sample_listing.Rda")
 ### This set of classes
 - How to evaluate estimators
 - How to build confidence intervals
-- How to test hypothesis
+- How to test hypotheses
 
 ---
 
@@ -105,12 +105,13 @@ load("sample_listing.Rda")
 # Load the DT package
 library(DT)
 
-Sample_list$clean[Sample_list$clean==TRUE] <- "Clean"
-Sample_list$clean[Sample_list$clean==FALSE] <- "Dirty"
-
+Sample_list$clean_label <- ifelse(Sample_list$clean == TRUE, "Clean", "Dirty")
 
 # Display the data table
-datatable(Sample_list,
+display_list <- Sample_list
+display_list$clean <- display_list$clean_label
+display_list$clean_label <- NULL
+datatable(display_list,
           fillContainer = FALSE,
           options = list(
             pageLength = 5,
@@ -200,20 +201,11 @@ knitr::kable(
 
 
 
-### What is a random sample?
+### Random Samples — Draw 1
 
+Each time we draw a sample, the random variables $P_i$ get realized into concrete values $p_i$.
 
-- **Random Variable: $P_i$:**
-  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
-
-
-- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
-
-
-- **Observed Value: $p_i$:**
-  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
-
-#### After Drawing the Sample (Sample 1)
+#### Sample 1
 
 ```{r, echo=FALSE, results='asis'}
 set.seed(1234)
@@ -238,20 +230,11 @@ knitr::kable(
 
 
 
-### What is a random sample?
+### Random Samples — Draw 2
 
+A different random draw from the same population gives different realized values.
 
-- **Random Variable: $P_i$:**
-  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
-
-
-- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
-
-
-- **Observed Value: $p_i$:**
-  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
-
-#### After Drawing the Sample (Sample 2)
+#### Sample 2
 
 ```{r, echo=FALSE, results='asis'}
 knitr::kable(
@@ -272,20 +255,11 @@ knitr::kable(
 ```
 ---
 
-### What is a random sample?
+### Random Samples — Draw 3
 
+Yet another draw — note how the point estimate changes every time.
 
-- **Random Variable: $P_i$:**
-  - Random variable describing the observation $i$. Before drawing the sample, we don't know its value: it could be any price from the distribution.
-
-
-- **Random Sample** is a collection of random variables $\{P_1, P_2,...,P_n\}$
-
-
-- **Observed Value: $p_i$:**
-  - Once we observe a specific outcome for the random variable, it becomes a realized value, or $p_i$. It's no longer a random variable but a constant from our sample.
-
-#### After Drawing the Sample (Sample 3)
+#### Sample 3
 
 ```{r, echo=FALSE, results='asis'}
 knitr::kable(
@@ -479,15 +453,14 @@ knitr::kable(
 
 ---
 
-### Estimators 
+### Estimators
 
-
-- The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean=="Clean",]$price),3), scientific=FALSE)` MXN
+- The mean price in our sample is $\bar{p}_c=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),3), scientific=FALSE)` MXN
 - This is our point estimate
 
 --
-- Can can't really say how close this one number (point estimate) is to the true mean price in Mexico City without knowing the population
-- But we can say how good our method of guessing (estimator) is by looking at it's sampling distribution
+- We can't really say how close this one number (point estimate) is to the true mean price in Mexico City without knowing the population
+- But we can say how good our method of guessing (estimator) is by looking at its sampling distribution
 
 
 
@@ -497,7 +470,9 @@ knitr::kable(
 - **Sampling distribution** is the distribution of the estimator calculated from multiple random samples drawn from the same population.
 
 
-`r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='500px')`
+`r knitr::include_url('https://www.zoology.ubc.ca/~whitlock/Kingfisher/SamplingNormal.htm', height='420px')`
+
+.learnr-ref[**LearnR:** Panels A, B, C — Explore sampling distributions of SD, IQR, and 99th percentile]
 
   
 ---
@@ -511,71 +486,75 @@ $$E[\hat{\theta}]=\theta$$
 - This should be true for any value of $\theta$
 - The sampling distribution should be centered at the parameter's value
 - Intuitively, on average the estimator should give us the parameter's value
-- When I take a many,many,many samples of apartments and calculate mean price in each sample
+- When I take many, many, many samples of apartments and calculate the mean price in each sample
   - The average of these means should be super close to the true mean price in Mexico City
 
 
 --
 $$Bias(\hat{\theta})=E[\hat{\theta}]-\theta$$
 - Bias of an estimator is a difference between its expectation and the parameter
-- Lets look at a couple of estimators and check if they are biased or not
+- Let's look at a couple of estimators and check if they are biased or not
 
 ---
 
 
-### Example 1: Estimator = $X_i$
+### Example 1: Estimator = $X_i$ (a single observation)
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
-- The estimator: $\hat{\theta}_2 = X_i$
+- The estimator: $\hat{\theta}_1 = X_i$
 
 --
-- Expected Value: $E(\hat{\theta}_2) = E(X_i) = \mu$
+- Expected Value: $E(\hat{\theta}_1) = E(X_i) = \mu$
 
 --
-- Bias: $E(\hat{\theta}_2) - \mu=0$ (unbiased)
+- Bias: $E(\hat{\theta}_1) - \mu=0$ (unbiased)
 
 --
-- Is it a good estimator?
+- Is it a good estimator? (We'll come back to this)
+
+.learnr-ref[**LearnR:** Example 1 — Simulate the sampling distribution of a single observation]
 ---
 
 ### Example 2: Estimator = $(3X_1 + X_2)/5$
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
-- The estimator: $\hat{\theta}_3 = \frac{3X_1 + X_2}{5}$
+- The estimator: $\hat{\theta}_2 = \frac{3X_1 + X_2}{5}$
 
 --
-- Expected Value: $E(\hat{\theta}_3)= \frac{3}{5}E(X_1) + \frac{1}{5}E(X_2) = \frac{3}{5}\mu + \frac{1}{5}\mu = \frac{4}{5}\mu$
+- Expected Value: $E(\hat{\theta}_2)= \frac{3}{5}E(X_1) + \frac{1}{5}E(X_2) = \frac{3}{5}\mu + \frac{1}{5}\mu = \frac{4}{5}\mu$
 
 --
-- Bias: $E(\hat{\theta}_3) - \mu= \frac{4}{5}\mu - \mu=-\frac{1}{5}\mu$ (biased)
+- Bias: $E(\hat{\theta}_2) - \mu= \frac{4}{5}\mu - \mu=-\frac{1}{5}\mu$ (biased)
 
+.learnr-ref[**LearnR:** Example 2 — Simulate the biased estimator and observe the shift]
 ---
-### Example 3: Estimator = $\frac{\sum{X_i}}{n}$
+### Example 3: Estimator = $\frac{\sum{X_i}}{n}$ (sample mean)
 #### Expectation
 - Consider some random variable $X_i$ with unknown mean $E(X_i)=\mu$
 - We want to estimate this mean
-- The estimator: $\hat{\theta}_4 = \frac{\sum_n{X_i}}{n}$
+- The estimator: $\hat{\theta}_3 = \bar{X} = \frac{\sum_n{X_i}}{n}$
 
 --
-- Expected Value: $E(\hat{\theta}_4)=E(\frac{\sum_n{X_i}}{n})=\frac{\sum_n{E(X_i)}}{n}=\frac{\sum_n{\mu}}{n} = \mu$
+- Expected Value: $E(\hat{\theta}_3)=E\left(\frac{\sum_n{X_i}}{n}\right)=\frac{\sum_n{E(X_i)}}{n}=\frac{\sum_n{\mu}}{n} = \mu$
 
 --
-- Bias: $E(\hat{\theta}_4) - \mu=0$ (unbiased)
+- Bias: $E(\hat{\theta}_3) - \mu=0$ (unbiased)
 
+.learnr-ref[**LearnR:** Example 3 — Compare the sample mean's spread to a single observation]
 ---
 
 ### Variance of the estimator
 
-- Good estimator is unbiased
-- But how do we choose among unbiased estimator?
+- A good estimator is unbiased
+- But how do we choose among unbiased estimators?
 
 --
   - Suppose we sample IID from $\small X \sim \mathcal{N}(\mu=10, \sigma=10)$
   - Imagine you don't know the mean is 10, and you try to estimate it:
-  - Estimator 1:  $\hat\mu_1=\small (3X_1 + X_2)/4$
-  - Estimator 2:  $\hat\mu_2=\small (X_1 + X_2+X_3+X_4)/4$
+  - Estimator A:  $\hat\mu_A=\small (3X_1 + X_2)/4$ (note: unbiased since weights sum to 1)
+  - Estimator B:  $\hat\mu_B=\small (X_1 + X_2+X_3+X_4)/4$
   - An estimator is more $\textbf{efficient}$ if it has a smaller variance
 
 --
@@ -594,7 +573,7 @@ estimator_2 <- (data[, 1] + data[, 2] + data[, 3]+ data[, 4]) / 4
 # Create data frame for plotting
 plot_data <- data.frame(
   estimator = c(estimator_1, estimator_2),
-  method = rep(c("Estimator 1", "Estimator 2"), each = n)
+  method = rep(c("Estimator A: (3X1+X2)/4", "Estimator B: (X1+X2+X3+X4)/4"), each = n)
 )
 
 # Create plot using ggplot2
@@ -602,7 +581,7 @@ p <- ggplot(plot_data, aes(x = estimator, fill = method)) +
   geom_histogram(binwidth = 1, color = "black", alpha = 0.7) +
   labs(x = "Estimator Value", y = "Frequency", fill = "Estimator") +
   theme_xaringan() +
-  scale_fill_manual(values = c("Estimator 1" = "blue", "Estimator 2" = "green"))+
+  scale_fill_manual(values = c("Estimator A: (3X1+X2)/4" = "blue", "Estimator B: (X1+X2+X3+X4)/4" = "green"))+
   facet_wrap(~method)+
   theme(legend.position = "none")
 
@@ -622,51 +601,46 @@ print(p)
 $$Var(\hat{\theta})=E[(\hat{\theta}-E[\hat\theta])^2]$$
 - We want the estimator to have low  variance! 
 - Estimator with the lower variance is more efficient
-- Efficiency is property of unbiased estimators
+- Efficiency is a property of unbiased estimators
 - In the example above
 
-$$var(\hat\mu_1)=var(\frac{3X_1 + X_2}{4})>var(\frac{X_1+X_2+X_3+X_4}{4})=var(\hat\mu_2)$$
-- Relative efficiency of the two (unbiased) estimators is the ratio of their variances
-$$Eff_{\hat\mu_1,\hat\mu_2}=\frac{var(\frac{3X_1 + X_2}{4})}{var(\frac{X_1+X_2+X_3+X_4}{4})}=\frac{\frac{10}{16}}{\frac{4}{16}}=\frac{5}{2}$$
+$$Var(\hat\mu_A)=Var\left(\frac{3X_1 + X_2}{4}\right)>Var\left(\frac{X_1+X_2+X_3+X_4}{4}\right)=Var(\hat\mu_B)$$
+- Relative efficiency of two (unbiased) estimators is the ratio of their variances
+$$\small Eff_{\hat\mu_A,\hat\mu_B}=\frac{Var(\hat\mu_A)}{Var(\hat\mu_B)}=\frac{10\sigma^2/16}{4\sigma^2/16}=\frac{10}{4}=\frac{5}{2}$$
 
 ---
+### Variance: Examples
 
 --
-#### Example 1: Estimator = $X_i$
+#### Example 1: $\hat{\theta}_1= X_i$
+- $\small  Var(\hat{\theta}_1) = \sigma^2$
 
 --
-- $\small  Var(\hat{\theta}_2) = E[(X_i - \mu)^2]=\sigma^2$
+#### Example 3: $\hat{\theta}_3= \bar{X} = \frac{\sum{X_i}}{n}$
+- $\small  Var(\hat{\theta}_3) = \frac{\sigma^2}{n}$
 
 --
-#### Example 2: Estimator = $\frac{\sum{X_i}}{n}$
-
---
-- $\small  Var(\hat{\theta}_4) = E\left[\left(\frac{\sum{X_i}}{n} - \mu\right)^2\right]=\frac{\sigma^2}{n}$
-
---
-#### Example 3: Estimator = $\frac{3X_1 + X_2}{4}$
-
---
-- $\small  Var(\hat{\theta}_4) = E\left[\left((3X_1 + X_2)/4 - \mu\right)^2\right]=\frac{10\sigma^2}{16}$
+#### Estimator A: $\hat\mu_A= \frac{3X_1 + X_2}{4}$
+- $\small  Var(\hat\mu_A) = \frac{9\sigma^2+\sigma^2}{16}=\frac{10\sigma^2}{16}$
 
 
 ---
 
-### Side note
+### Side note: what if variables are not independent?
 
 - In all previous cases of estimators we assumed an independent sample
 
 - Suppose that $X_1$ and $X_2$ are **not independent**
-- Example: daily sales of two products in the same store 
+- Example: daily sales of two products in the same store
 
 --
-- What is $E(X_1+X_2)$
+- $E(X_1+X_2) = E(X_1) + E(X_2)$ (expectation of a sum is always the sum of expectations)
 
 --
-- What is $var(X_1+X_2)$?
+- $Var(X_1+X_2) = Var(X_1) + Var(X_2) + 2Cov(X_1,X_2)$
 
 --
-- What about $var(X_1-X_2)$?
+- $Var(X_1-X_2) = Var(X_1) + Var(X_2) - 2Cov(X_1,X_2)$
 
 
 
@@ -683,12 +657,9 @@ $$MSE(\hat{\theta})=E[(\hat{\theta}-\theta)^2]$$
 - It summarizes both the bias and the variance:
 
 \begin{align*}
-\small MSE(\hat{\theta})&=E[(\hat{\theta}-\theta)^2] \\
-& =E[(\hat{\theta}-E(\hat{\theta})+E(\hat{\theta})-\theta)^2]\\
-&= E[(\hat{\theta} - E(\hat{\theta}))^2 + 2(\hat{\theta} - E(\hat{\theta}))(E(\hat{\theta}) - \theta) + (E(\hat{\theta}) - \theta)^2] \\
-&= E[(\hat{\theta} - E(\hat{\theta}))^2] + E[2(\hat{\theta} - E(\hat{\theta}))(E(\hat{\theta}) - \theta)] + E[(E(\hat{\theta}) - \theta)^2] \\
-&= E[(\hat{\theta} - E(\hat{\theta}))^2] + 2(\underbrace{E[\hat{\theta} - E(\hat{\theta})]}_{=0})(E(\hat{\theta}) - \theta) + E[(E(\hat{\theta}) - \theta)^2] \\
-&= \text{var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2
+\scriptsize MSE(\hat{\theta})&\scriptsize =E[(\hat{\theta}-\theta)^2] =E[(\hat{\theta}-E(\hat{\theta})+E(\hat{\theta})-\theta)^2]\\
+&\scriptsize = E[(\hat{\theta} - E(\hat{\theta}))^2] + 2(\underbrace{E[\hat{\theta} - E(\hat{\theta})]}_{=0})(E(\hat{\theta}) - \theta) + (E(\hat{\theta}) - \theta)^2 \\
+&\scriptsize = \text{Var}(\hat{\theta}) + \text{Bias}(\hat{\theta})^2
 \end{align*}
 
 
@@ -702,7 +673,7 @@ $$MSE(\hat{\theta})=E[(\hat{\theta}-\theta)^2]$$
 - Red line shows the true value
 - Which of the estimators would you prefer?
 
-```{r, warning=FALSE, fig.height=4.1, out.width='100%'}
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 set.seed(123)
 n <- 1000
 true_mean <- 10
@@ -723,8 +694,8 @@ for (i in 1:num_bootstrap) {
 }
 
 # Create data frames for plotting histograms
-hist_data_efficient <- data.frame(value = estimates_efficient, estimator = rep("Efficient Estimator", num_bootstrap))
-hist_data_inefficient <- data.frame(value = estimates_inefficient, estimator = rep("Inefficient Estimator", num_bootstrap))
+hist_data_efficient <- data.frame(value = estimates_efficient, estimator = rep("Biased, Low Variance", num_bootstrap))
+hist_data_inefficient <- data.frame(value = estimates_inefficient, estimator = rep("Unbiased, High Variance", num_bootstrap))
 
 # Set common x-axis limits
 x_limits <- c(5, 15)
@@ -734,14 +705,14 @@ binwidth <- 0.1
 
 p1 <- ggplot(hist_data_efficient, aes(x = value)) +
   geom_histogram(binwidth = binwidth, color = "black", fill = "blue", alpha = 0.7) +
-  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size=2) +
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", linewidth=2) +
   labs(x = "Estimator Value", y = "Frequency") +
   theme_xaringan() +
   xlim(x_limits)
 
 p2 <- ggplot(hist_data_inefficient, aes(x = value)) +
   geom_histogram(binwidth = binwidth, color = "black", fill = "purple", alpha = 0.7) +
-  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", size=2) +
+  geom_vline(xintercept = true_mean, color = "red", linetype = "dashed", linewidth=2) +
   labs(x = "Estimator Value", y = "Frequency") +
   theme_xaringan() +
   xlim(x_limits)
@@ -764,7 +735,7 @@ grid.arrange(p1, p2, ncol = 1)
 - In case of sample mean, yes!
 
 --
-- That's what **Central Limit Theorem** is about, the most exciting theorem in statistcs!
+- That's what **Central Limit Theorem** is about, the most exciting theorem in statistics!
 
 ---
 
@@ -792,21 +763,21 @@ grid.arrange(p1, p2, ncol = 1)
 --
 - **Central Limit Theorem** says that **for large n**:
 
-$$S_n \mathrel{\dot\sim} \mathcal{N}(n\mu,\underbrace{\sqrt n \sigma}_{st.dev.}) \qquad\text{and}\qquad \bar{X}_n \mathrel{\dot\sim} \mathcal{N}(\mu,\frac{\sigma}{\sqrt n}) \qquad\text{and}\qquad \bar{Z}_n \mathrel{\dot\sim} \mathcal{N}(0,1)$$
-- In large samples, sample mean is approximately normally distributed with mean $\mu$ and st. dev. $\frac{\sigma}{\sqrt{n}}$ - As n gets larger, the distribution becomes closer to normal
+$$\small S_n \mathrel{\dot\sim} \mathcal{N}\!\left(n\mu,\,\sqrt{n}\,\sigma\right), \quad \bar{X}_n \mathrel{\dot\sim} \mathcal{N}\!\left(\mu,\,\frac{\sigma}{\sqrt{n}}\right), \quad Z_n \mathrel{\dot\sim} \mathcal{N}(0,1)$$
+- In large samples, $\bar{X}_n$ is approximately normal with mean $\mu$ and st.dev. $\frac{\sigma}{\sqrt{n}}$. As $n$ grows, the approximation improves
 
 ---
 - The original distribution of $X_i$ does not matter (but outliers make convergence longer)
 - Larger **n**, tighter distribution around the mean 
 - Smaller ** $\sigma$ **, tighter distribution around the mean 
-`r knitr::include_url('https://seeing-theory.brown.edu/probability-distributions/index.html#section3', height='450px')`
-Source: [https://seeing-theory.brown.edu/probability-distributions/index.html#section3)
+`r knitr::include_url('https://seeing-theory.brown.edu/probability-distributions/index.html#section3', height='400px')`
+Source: [Seeing Theory](https://seeing-theory.brown.edu/probability-distributions/index.html#section3)
 
 
 ---
-What if it's a discrete variable?
-- Let $X_i\sim \text{Bernoulli}(p=0.5)$. Here is the distribution of $\bar{X}_n$:
-```{r, warning=FALSE, fig.height=4, out.width='100%'}
+### CLT also works for discrete variables!
+- Let $X_i\sim \text{Bernoulli}(p=0.5)$. Distribution of $\bar{X}_n$ for different sample sizes:
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 # Set the number of repetitions and the sample sizes
 reps <- 10000
 sample.sizes <- c(5, 20, 75, 100)
@@ -868,6 +839,8 @@ Consider the event that a customer who opened the DiDi app will call the car.  S
 - Suppose you have a random (iid) sample  of 100 customers opening the app from Cancun and 80 from Puerto Vallarta. 
 - What is the probability that more than 100 people will call the car?
 
+.learnr-ref[**LearnR:** DiDi Simulator — Work through the problem analytically, then verify with simulation]
+
 **Reminders**
 
 $$\text{If } X \sim \mathcal{N}(\mu, \sigma) \text{ and } c \text{ is a constant, then } X + c \sim \mathcal{N}(\mu + c, \sigma)$$
@@ -898,18 +871,19 @@ Ok, I know that according to central limit theorem $$\frac{\sum_{i=1}^{80} X_i}{
 
 
 ---
-## Standard deviation
+## Sampling distribution of standard deviation
 
-- Great, sample means have normal distribution in large samples
-
---
-
-- Can we say something about the standard deviation?
-- That is, we if take multiple samples, calculate the standard deviation of each sample, what will be the distribution of these standard deviations?
+- Great, we now know sample means have a normal distribution in large samples
 
 --
 
-- If $X_i$ is normal, then yes! Standard deviation will have **chi-square** distribution 
+- Can we say something about the sampling distribution of the standard deviation?
+- That is, if we take multiple samples and calculate the standard deviation of each sample, what will the distribution of these standard deviations look like?
+
+--
+
+- If $X_i$ comes from a normal distribution, then yes! The sample variance is related to the **chi-squared** distribution
+- This will be useful for constructing confidence intervals for the variance
 
 
 ---
@@ -948,11 +922,12 @@ p1
 ---
 
 ## Visualizing the Connection
-- The shaded areas represent probability that $X=Z^2>1$ 
-- Where $X \sim \chi^2(1)$ and $Z \sim N(0,1)$
+- The shaded areas represent probability that $X=Z^2>1$ where $X \sim \chi^2(1)$ and $Z \sim N(0,1)$
 - Shaded parts have the same area in both graphs
 
-```{r, warning=FALSE, fig.height=4, out.width='100%'}
+.learnr-ref[**LearnR:** Interactive Normal vs Chi-Square — adjust the threshold and see both distributions update]
+
+```{r, warning=FALSE, fig.height=3.5, out.width='100%'}
 # Generate random data from standard normal distribution
 set.seed(42)
 z <- rnorm(100000, mean = 0, sd = 1)
@@ -967,7 +942,7 @@ my_hist$counts=my_hist$counts/sum(my_hist$counts)
 # Color vector
 my_color= ifelse(my_hist$breaks < -1, "purple", ifelse (my_hist$breaks >=1, "purple", rgb(0.2,0.2,0.2,0.2) ))
 # Final plot
-plot(my_hist, col=my_color , border=F , main="Standard Normal", ylab="Density" , xlim=c(-4,4))
+plot(my_hist, col=my_color , border=F , main="Standard Normal", ylab="Relative Frequency" , xlim=c(-4,4))
 
 
 # Create plot for Chi-Square distribution
@@ -976,7 +951,7 @@ my_hist$counts=my_hist$counts/sum(my_hist$counts)
 # Color vector
 my_color= ifelse(my_hist$breaks >1, "purple", rgb(0.2,0.2,0.2,0.2) )
   # Final plot
-plot(my_hist, col=my_color , border=F , main="Chi(1)", ylab="Density" , xlim=c(0,6))
+plot(my_hist, col=my_color , border=F , main="Chi-Squared(1)", ylab="Relative Frequency" , xlim=c(0,6))
 
 par(mfrow = c(1, 1))
 ```
@@ -996,7 +971,7 @@ par(mfrow = c(1, 1))
 </center>
 
 --
-- Why the shapes converges to normal with large n? 
+- Why does the shape converge to normal with large n?
 
 --
 - Because of CLT - it's sum of random variables
