@@ -15,56 +15,56 @@
  *    - xaringan wiki: https://github.com/yihui/xaringan/wiki
  *    - remarkjs wiki: https://github.com/gnab/remark/wiki
  *
- *  Version: 0.4.3
+ *  Version: 0.4.4
  *
  * ------------------------------------------------------- */
-@import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i&display=swap);
-@import url(https://fonts.googleapis.com/css?family=Cabin:600,600i&display=swap);
-@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro:400,700&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab:400&display=swap);
+@import url(https://fonts.googleapis.com/css?family=Fira+Mono&display=swap);
 
 
 :root {
   /* Fonts */
-  --text-font-family: 'Noto Sans';
+  --text-font-family: 'Source Sans Pro';
   --text-font-is-google: 1;
   --text-font-family-fallback: -apple-system, BlinkMacSystemFont, avenir next, avenir, helvetica neue, helvetica, Ubuntu, roboto, noto, segoe ui, arial;
   --text-font-base: sans-serif;
-  --header-font-family: Cabin;
+  --header-font-family: 'Roboto Slab';
   --header-font-is-google: 1;
   --header-font-family-fallback: Georgia, serif;
-  --code-font-family: 'Source Code Pro';
+  --code-font-family: 'Fira Mono';
   --code-font-is-google: 1;
   --base-font-size: 20px;
-  --text-font-size: 1rem;
+  --text-font-size: 18px;
   --code-font-size: 0.9rem;
   --code-inline-font-size: 1em;
   --header-h1-font-size: 2.75rem;
-  --header-h2-font-size: 2.25rem;
-  --header-h3-font-size: 1.75rem;
+  --header-h2-font-size: 1.5rem;
+  --header-h3-font-size: 1.25rem;
 
   /* Colors */
   --text-color: #272822;
-  --header-color: #43418A;
+  --header-color: #23395d;
   --background-color: #FFFFFF;
-  --link-color: #43418A;
-  --text-bold-color: #43418A;
+  --link-color: #23395d;
+  --text-bold-color: #23395d;
   --code-highlight-color: rgba(255,255,0,0.5);
   --inverse-text-color: #FFFFFF;
-  --inverse-background-color: #43418A;
+  --inverse-background-color: #23395d;
   --inverse-header-color: #FFFFFF;
-  --inverse-link-color: #43418A;
-  --title-slide-background-color: #43418A;
+  --inverse-link-color: #23395d;
+  --title-slide-background-color: #23395d;
   --title-slide-text-color: #FFFFFF;
-  --header-background-color: #43418A;
+  --header-background-color: #23395d;
   --header-background-text-color: #FFFFFF;
-  --base: #43418A;
+  --base: #23395d;
   --white: #FFFFFF;
   --black: #272822;
-  --red: #f34213;
-  --purple: #3e2f5b;
-  --orange: #ff8811;
-  --green: #136f63;
-  --blue: #1E90FF;
+  --red: #e74c3c;
+  --purple: #8e44ad;
+  --orange: #e67e22;
+  --green: #27ae60;
+  --blue: #2980b9;
   --white: #FFFFFF;
 }
 
@@ -74,7 +74,7 @@ html {
 
 body {
   font-family: var(--text-font-family), var(--text-font-family-fallback), var(--text-font-base);
-  font-weight: normal;
+  font-weight: 300;
   color: var(--text-color);
 }
 h1, h2, h3 {
@@ -84,7 +84,7 @@ h1, h2, h3 {
 }
 .remark-slide-content {
   background-color: var(--background-color);
-  font-size: 1rem;
+  font-size: 18px;
   padding: 16px 64px 16px 64px;
   width: 100%;
   height: 100%;
@@ -106,10 +106,10 @@ h1, h2, h3 {
 }
 .remark-inline-code {
   font-size: var(--code-inline-font-size);
-  color: #43418A;
+  color: #23395d;
 }
 .remark-slide-number {
-  color: #43418A;
+  color: #23395d;
   opacity: 1;
   font-size: 0.9rem;
 }
@@ -157,10 +157,10 @@ a, a > code {
   float: left;
 }
 .left-column h2, .left-column h3 {
-  color: #43418A99;
+  color: #23395d99;
 }
 .left-column h2:last-of-type, .left-column h3:last-child {
-  color: #43418A;
+  color: #23395d;
 }
 .right-column {
   width: 75%;
@@ -182,7 +182,7 @@ img, video, iframe {
   max-width: 100%;
 }
 blockquote {
-  border-left: solid 5px #43418A80;
+  border-left: solid 5px #23395d80;
   padding-left: 1em;
 }
 .remark-slide table {
@@ -199,7 +199,7 @@ th, td {
 .remark-slide table:not(.table-unshaded) thead,
 .remark-slide table:not(.table-unshaded) tfoot,
 .remark-slide table:not(.table-unshaded) tr:nth-child(even) {
-  background: #D9D9E7;
+  background: #D3D7DE;
 }
 table.dataTable tbody {
   background-color: var(--background-color);
@@ -209,7 +209,7 @@ table.dataTable.display tbody tr.odd {
   background-color: var(--background-color);
 }
 table.dataTable.display tbody tr.even {
-  background-color: #D9D9E7;
+  background-color: #D3D7DE;
 }
 table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.5);

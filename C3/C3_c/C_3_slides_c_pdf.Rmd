@@ -1,5 +1,5 @@
 ---
-title: 'Class 3b: Review of concepts in Probability and Statistics'
+title: 'Class 3c: Review of concepts in Probability and Statistics'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
@@ -13,13 +13,19 @@ output:
 ---   
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -30,30 +36,37 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
-library(ggplot2)
 library(gridExtra)
-library(dplyr)
 library(hrbrthemes)
 library(viridis)
 library(gapminder)
 library(knitr)
 library(kableExtra)
 library(DT)
-
+library(MASS)
+load("sample_listing.Rda")
+Sample_list$clean_label <- ifelse(Sample_list$clean == TRUE, "Clean", "Dirty")
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
-load("sample_listing.Rda")
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 
 
@@ -131,7 +144,7 @@ Some examples of hypotheses testing:
 
 --
 
-- Hypothesis are always about parameters! Never about sample sample statistics
+- Hypotheses are always about parameters! Never about sample statistics
 
 ---
 ### Testing procedure
@@ -480,7 +493,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -492,9 +505,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(z[frac(alpha,2)]),
+     labels = c(expression(-z[frac(alpha,2)]),
                 expression(0),
-                expression(-z[frac(alpha,2)])))
+                expression(z[frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
@@ -552,7 +565,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -628,7 +641,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -798,7 +811,7 @@ $$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^
 ---
   - Where SE is standard error and depends on the estimate of standard deviation
       - If standard deviation known: $\small SE=\sqrt{\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}}$
-          - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X}{n}+\frac{\sigma_Y}{m}$
+          - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}$
       - If standard deviation not known: $\small SE=\sqrt{\frac{s_X^2}{n}+\frac{s_Y^2}{m}}$
 
 
@@ -867,7 +880,7 @@ $$\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}~N(0,1)$$
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -879,9 +892,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(z[frac(alpha,2)]),
+     labels = c(expression(-z[frac(alpha,2)]),
                 expression(0),
-                expression(-z[frac(alpha,2)])))
+                expression(z[frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
@@ -939,7 +952,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -1015,7 +1028,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",

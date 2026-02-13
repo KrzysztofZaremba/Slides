@@ -1070,3 +1070,187 @@ Suppose you have a random sample of 27 units (from a bivariate normal). X measur
 ```
 
 ---
+
+## CI and Hypothesis Test: Two Sides of the Same Coin
+
+This exercise demonstrates the link between confidence intervals and hypothesis tests. You'll see that rejecting $H_0$ at significance $\alpha$ is equivalent to the $1-\alpha$ CI **not** containing $\mu_0$.
+
+**Scenario:** A food company claims their cereal boxes contain $\mu_0 = 500$g on average. You sample $n = 40$ boxes and get $\bar{x} = 492$ with $s = 25$.
+
+```{r ex_ci_ht_link, exercise=TRUE}
+n <- 40
+xbar <- 492
+s <- 25
+mu0 <- 500
+alpha <- 0.05
+
+# 1) Compute the test statistic for H0: mu = 500 vs H_A: mu != 500
+# z_test <- (xbar - mu0) / (s / sqrt(n))
+# z_test
+
+# 2) Find the critical values for a two-sided test at alpha = 0.05
+# z_crit <- qnorm(1 - alpha/2)
+# z_crit
+
+# 3) Do you reject H0?
+# abs(z_test) > z_crit
+
+# 4) Now compute the 95% confidence interval
+# ci_lower <- xbar - z_crit * (s / sqrt(n))
+# ci_upper <- xbar + z_crit * (s / sqrt(n))
+# c(ci_lower, ci_upper)
+
+# 5) Does the CI contain mu0 = 500?
+# mu0 >= ci_lower & mu0 <= ci_upper
+
+# Compare: the test rejects <=> the CI does NOT contain mu0
+```
+
+Try changing `alpha` to 0.01. Does the conclusion change for both the test and the CI?
+
+---
+
+## Small-Sample t-test: McDonald's vs Burger King
+
+We suspect Burger King might have larger caloric content for kids' meals. Both samples are small, so we use the t-distribution.
+
+|   Sample       |  n  | Sample Mean | Sample SD |
+|----------------|-----|-------------|-----------|
+| McDonald's     |  9  |    475      |    230    |
+| Burger King    | 16  |    520      |    180    |
+
+```{r ex_bk_mcdonalds, exercise=TRUE}
+# Data
+n_mc <- 9;  xbar_mc <- 475; s_mc <- 230
+n_bk <- 16; xbar_bk <- 520; s_bk <- 180
+
+# 1) State hypotheses:
+#    H0: mu_BK - mu_MC = 0  (no difference)
+#    HA: mu_BK - mu_MC > 0  (BK has more calories)
+
+# 2) Standard error for the difference in means
+# SE <- sqrt(s_mc^2 / n_mc + s_bk^2 / n_bk)
+# SE
+
+# 3) Test statistic
+# t_stat <- (xbar_bk - xbar_mc - 0) / SE
+# t_stat
+
+# 4) Degrees of freedom (simple approximation)
+# df <- min(n_mc - 1, n_bk - 1)
+# df
+
+# 5) p-value (one-sided, upper tail)
+# p_val <- 1 - pt(t_stat, df)
+# p_val
+
+# 6) Try the exact (Welch) degrees of freedom:
+# df_welch <- (s_mc^2/n_mc + s_bk^2/n_bk)^2 /
+#             ((s_mc^2/n_mc)^2/(n_mc-1) + (s_bk^2/n_bk)^2/(n_bk-1))
+# df_welch
+# 1 - pt(t_stat, floor(df_welch))
+```
+
+At which significance levels do you reject? Does the choice of df formula matter here?
+
+---
+
+## Using `t.test()` in R
+
+So far you have computed test statistics and p-values by hand. In practice, R has a built-in `t.test()` function that does everything for you. Let's learn to use it.
+
+```{r setup-ttest-demo, include=FALSE}
+set.seed(42)
+group_A <- rnorm(30, mean = 52, sd = 10)
+group_B <- rnorm(35, mean = 48, sd = 12)
+```
+
+**Part a)** One-sample t-test: test whether `group_A` has mean equal to 50.
+
+```{r ex_ttest_one, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+# One-sample test: H0: mu = 50 vs HA: mu != 50
+# t.test(group_A, mu = 50)
+
+# For a one-sided test (HA: mu > 50):
+# t.test(group_A, mu = 50, alternative = "greater")
+```
+
+**Part b)** Two-sample t-test: test whether `group_A` and `group_B` have the same mean.
+
+```{r ex_ttest_two, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+# Two-sample test: H0: mu_A = mu_B vs HA: mu_A != mu_B
+# t.test(group_A, group_B)
+
+# Compare: what does the output give you?
+# - test statistic (t)
+# - degrees of freedom (df)
+# - p-value
+# - confidence interval for the difference
+# - sample means
+```
+
+**Part c)** Paired t-test: suppose both groups represent the same 30 subjects measured before and after a treatment.
+
+```{r ex_ttest_paired, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+before <- group_A[1:30]
+after  <- group_B[1:30]
+
+# Paired test: H0: mu_diff = 0 vs HA: mu_diff != 0
+# t.test(before, after, paired = TRUE)
+
+# This is equivalent to a one-sample test on the differences:
+# diffs <- before - after
+# t.test(diffs, mu = 0)
+```
+
+---
+
+## Paired or Unpaired? Classification Practice
+
+For each scenario, decide whether the data is **paired** or **unpaired** (two independent samples). Type your answer and reasoning.
+
+**Scenario 1:** A retailer measures daily sales at 50 stores. For each store, they record sales on a regular Tuesday and sales on a promotional Tuesday (same store, two time periods).
+
+```{r ex_pair_q1, exercise=TRUE}
+# Is this paired or unpaired? Why?
+# answer_1 <- "paired"  # or "unpaired"
+
+# Reason:
+
+
+```
+
+**Scenario 2:** A company recruits 80 new employees. 40 go through the old training program, 40 go through the new one. After 3 months, they compare performance scores.
+
+```{r ex_pair_q2, exercise=TRUE}
+# Is this paired or unpaired? Why?
+# answer_2 <- "paired"  # or "unpaired"
+
+# Reason:
+
+
+```
+
+**Scenario 3:** An economist compares the price of the same 25 grocery items at Walmart vs Costco.
+
+```{r ex_pair_q3, exercise=TRUE}
+# Is this paired or unpaired? Why?
+# answer_3 <- "paired"  # or "unpaired"
+
+# Reason:
+
+
+```
+
+**Scenario 4:** A pharmaceutical company tests a new drug. 100 patients receive the drug, 100 different patients receive a placebo.
+
+```{r ex_pair_q4, exercise=TRUE}
+# Is this paired or unpaired? Why?
+# answer_4 <- "paired"  # or "unpaired"
+
+# Reason:
+
+
+```
+
+---

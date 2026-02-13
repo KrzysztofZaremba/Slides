@@ -13,13 +13,19 @@ output:
 ---   
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -30,30 +36,37 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
-library(ggplot2)
 library(gridExtra)
-library(dplyr)
 library(hrbrthemes)
 library(viridis)
 library(gapminder)
 library(knitr)
 library(kableExtra)
 library(DT)
-
+library(MASS)
+load("sample_listing.Rda")
+Sample_list$clean_label <- ifelse(Sample_list$clean == TRUE, "Clean", "Dirty")
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
-load("sample_listing.Rda")
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 
 
@@ -66,33 +79,32 @@ class: inverse, middle
 ---
 ### Hypothesis Testing
 
-Let's go back to our question. Can we get a higher price if cleanliness level is above 4.5?
+Let's go back to our question: can we get a higher price if cleanliness level is above 4.5?
 
+This type of question can be answered with **hypothesis testing**, where we see which of two competing hypotheses is more likely given the data.
 
-This type of questions can be answered with hypothesis testing where we try to see which one of competing hypothesis is more likely to be true. 
-
-- .blue[Hypothesis] is a claim about a parameter or a distribution. 
-
---
-1. $H_0$ **Null Hypothesis**: 
-  - Claim to be tested, skeptical perspective
+- .blue[Hypothesis] is a claim about a parameter or a distribution.
 
 --
-      - Prices of clean and dirty apartments are equal 
+1. $H_0$ **Null Hypothesis**:
+  - Claim to be tested, the skeptical perspective
+
+--
+      - Prices of clean and dirty apartments are equal
       - $H_0: \mu_c=\mu_d$
 
 --
 2. $H_A$ **Alternative Hypothesis**:
-  - An alternative idea under consideration
+  - An alternative claim under consideration
 
 --
       - Prices of clean apartments are higher than prices of dirty apartments
-       - $H_A: \mu_c>\mu_d$
+      - $H_A: \mu_c>\mu_d$
 
 --
 
-- Assume that the null is true and see if there is enough of data to reject the null in favor of the alternative.
-- You either reject the null, or fail to reject it (but not accept it)
+- Assume the null is true and see if there is enough data to reject it in favor of the alternative
+- You either reject the null, or fail to reject it (but never "accept" it)
 ---
 ### Hypothesis Testing
 
@@ -135,31 +147,30 @@ Some examples of hypotheses testing:
 
 --
 
-- Hypothesis are always about parameters! Never about sample sample statistics
+- Hypotheses are always about parameters! Never about sample statistics
 
 ---
-### Testing procedure
+### Testing Procedure
 
 
-**Test procedure** is a rule based on a sample data whether to reject the null or not.
- 
-It usually relies on two elements:
- - .blue[Test statistics] 
-  - Function of the sample data summarizing evidence for or against a hypothesis 
-  - Usually we know how it should be distributed under the null. Ex: standardized mean
- - .blue[Rejection region] 
-  - Values of the test statistics such that we would reject the null if we observe them
-    - Basically, values which are very unlikely under the null hypothesis
-  - Typically threshold based:
-  - Such as: reject $H_0$ if the test statistic > k, where k is some threshold
+A **test procedure** is a rule based on sample data for deciding whether to reject the null or not.
+
+It relies on two elements:
+ - .blue[Test statistic]
+  - A function of the sample data that summarizes evidence for or against the hypothesis
+  - We know how it is distributed under the null (e.g. standardized mean)
+ - .blue[Rejection region]
+  - Values of the test statistic for which we reject the null
+    - These are values that are very unlikely under the null hypothesis
+  - Typically threshold-based: reject $H_0$ if the test statistic > k
  
 
 ---
-### Testing procedure: Example
+### Testing Procedure: Example
 
 Let's go back to the sugar example. Suppose we have a sample $n=36$.
 
- - .blue[Test statistics] 
+ - .blue[Test statistic]
   - Our test statistic could be:
   $$z=\frac{\bar{x}-100}{\underbrace{s_x/\sqrt 36}_{SE}}$$
 
@@ -176,29 +187,29 @@ magick::image_read_pdf("Rejection.pdf",
 
 
 ---
-### Testing procedure: Example
+### Testing Procedure: Example
 
 - Suppose I reject if $z>1.645$
-- Suppose $\sigma_x=20$. How big needs to be the mean to reject the null?
+- Suppose $\sigma_x=20$. How large does the mean need to be to reject the null?
 
 --
 
 Reject if: 
 - $\frac{\bar{x}-100}{20/\sqrt 36}>1.645$
 - Or equivalently if $\bar{x}>105.483$
-- Those two formulations are fine 
---
+- Those two formulations are equivalent
 
+--
 - Why don't we reject even if $\bar{x}=103$?
 
 
 
 
 ---
-### Testing procedure: Example
-- Because there could be randomness in the sample:
+### Testing Procedure: Example
+- Because there is randomness in the sample:
 
-- So even if the $\mu_s=100$ we could get a sample with $\bar{x}>100$
+- Even if $\mu_s=100$, we could get a sample with $\bar{x}>100$
 
 
 .center[
@@ -213,14 +224,14 @@ Reject if:
 
 
 ---
-### Testing procedure up to now
+### Testing Procedure Summary
 
-1. Set up your hypothesis
+1. Set up your hypotheses
 2. Calculate your test statistic
 3. Check it against the rejection region
-4. Decision: Reject or not your null hypothesis
+4. Decision: Reject or fail to reject the null hypothesis
 
-We will now go into details of all these steps. 
+We will now go into the details of each step.
 
 ---
 layout: false
@@ -292,21 +303,15 @@ Do people spend more if they get free shipping? ($H_0$ is that they spend the sa
 - Example:  You were very unlucky in your sampling, by chance you  got a sample with those rare packages with  a lot of sugar and your $\bar{x}=106$ which means $z=\frac{106-100}{\frac{20}{\sqrt{36}}}=1.8$. According to the test procedure, you reject the null. You make an error.
 
 --
-- Q: What is the probability that (standarized) mean of these 36 is in the rejection region (larger than 1.645)?
+- Q: What is the probability that the (standardized) mean of these 36 is in the rejection region (larger than 1.645)?
 
 
 --
 - What's the probability of making such error?
 
-$$\small 
-\alpha = P(\text{Type I error}) 
-   = \underbrace{P_{H_0}(\bar{X} > 105.483)}_{\text{Pr. if null is true}} 
-   = P_{H_0}\!\left( \frac{\bar{X} - 100}{20/\sqrt{36}} > 
-       \frac{105.483 - 100}{20/\sqrt{36}} \right)$$
+$$\small \alpha = P_{H_0}(\bar{X} > 105.483) = P_{H_0}\!\left( \frac{\bar{X} - 100}{20/\sqrt{36}} > \frac{105.483 - 100}{20/\sqrt{36}} \right)$$
 
-$$\small 
-\overset{\text{(CLT)}}{=} P(Z > 1.645) 
-   = 1 - \underbrace{\Phi(1.645)}_{\text{Normal CDF}}$$
+$$\small \overset{\text{CLT}}{=}\; P(Z > 1.645) = 1 - \Phi(1.645)$$
 
 ---
 
@@ -358,6 +363,10 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 - What would be the critical value for $\alpha=0.01$?
 - What would be the critical value for $\alpha=0$?
 
+.learnr-ref[**LearnR:** Critical values — use `qnorm()` to find the critical value for a given $\alpha$]
+
+.learnr-ref[**LearnR:** Testing intuition & Type 1 error — simulate samples and see how often you'd incorrectly reject]
+
 ---
 ### Probability of type 2 error
 
@@ -365,7 +374,7 @@ text(1.8, 0.02, expression(alpha), col = "white", cex = 1.5)
 
 --
 - What is the probability we do not reject the null, although the alternative is true?
-- If I take 10000 samples from distribution with true mean>10000, what share of sample means will fall below the rejection region?
+- If I take 10000 samples from distribution with true mean > 100, what share of sample means will fall below the rejection region?
 --
 
 - In our example 
@@ -386,7 +395,7 @@ $$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(z<1.645)}_{\text{
 
 ### Probability of type 2 error
 
-- We need to rewrite it so we have $\frac{\bar{x}-110}{20/ \sqrt 36}$ on the left hands side. 
+- We need to rewrite it so we have $\frac{\bar{x}-110}{20/ \sqrt 36}$ on the left-hand side. 
 
 
 $$\scriptsize \beta
@@ -406,12 +415,13 @@ $$\small P\!\left(z
 
 - More generally for this type of test:
 
-$$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(\bar{X}<105.483)}_{\text{Pr. if alt is true}}=\underbrace{P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n})}_{\text{Pr. if alt is true}}=P(\frac{\bar{X}-\mu_s}{\sigma_x/ \sqrt n}<\frac{\mu_0+z_{\alpha}\frac{\sigma_x}{\sqrt n}-\mu_s}{\sigma_x/ \sqrt n})$$
+$$\scriptsize \beta = P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\tfrac{\sigma_x}{\sqrt{n}}) = P\!\left(\frac{\bar{X}-\mu_s}{\sigma_x/\sqrt{n}}<\frac{\mu_0-\mu_s}{\sigma_x/\sqrt{n}}+z_{\alpha}\right)$$
 
 - Depends on what true $\mu$ is and where our rejection region is!
 
+- When you decrease probability of type 1 error, you increase the probability of type 2 error
 
-- When you decrease probability of error type 1, you increase the probability of error type 2
+.learnr-ref[**LearnR:** Type 2 error — simulate samples when the null is false and count how often you fail to reject]
 
 
 ---
@@ -420,11 +430,9 @@ $$\scriptsize \beta=P(\text{Type 2 error})=\underbrace{P_{H_A}(\bar{X}<105.483)}
 $$\beta=P(\text{Type 2 error})=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$
 
 $$\alpha=P(\text{Type 1 error})=P(Z>z_{\alpha})=1-\underbrace{\Phi(z_{\alpha})}_{\text{Normal CDF}}$$
-If I change critical value $z_{\alpha}$, it will have the opposite effect on them. 
+If I change critical value $z_{\alpha}$, it will have the opposite effect on them.
 
-My app or:
-Source: https://shiny.rit.albany.edu/stat/betaprob/
-
+Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
 ---
 ### Power of a test
@@ -437,7 +445,7 @@ $$Power=P_{H_A}(Reject)=1-\underbrace{P_{H_A}(\text{Not Reject})}_{\text{type 2 
 
 $$Power=1-P(z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})$$
 
-Source: https://shiny.rit.albany.edu/stat/betaprob/
+Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
 Power increases if:
 - n increases
@@ -447,15 +455,28 @@ Power increases if:
 
 ---
 
-### A/B Test Power: Professional Photos and Weekly Revenue
+### A/B Test Power: Professional Photos
 
-In Learnr
+- Airbnb wants to test if professional photos increase weekly revenue
+- Design:
+  - Control: no photos (baseline $\mu_0=2000$)
+  - Treatment: professional photos (suspected $\mu_a=2200$)
+  - $\sigma=600$, $n=100$ per group, $\alpha=0.01$
+
+--
+- Steps:
+  1. State hypotheses: $H_0: \mu_T - \mu_C = 0$ vs $H_A: \mu_T - \mu_C > 0$
+  2. Find the critical value
+  3. Compute power $= 1 - \beta$
+  4. Find minimum $n$ for 80% power
+
+.learnr-ref[**LearnR:** Power exercise — Design the Airbnb photography A/B test, calculate power, and find minimum sample size]
 
 ---
 
-### General procedure:
+### General Procedure
 
-1. Determine the the null and the alternative hypothesis
+1. Determine the null and alternative hypotheses
 
 --
 2. Collect your sample of independent observations
@@ -464,13 +485,13 @@ In Learnr
 3. Choose the appropriate test
 
 --
-4. Calculate test statistic
+4. Calculate the test statistic
 
 --
 5. Compare it to the rejection region
 
 --
-5. Reject or not your null hypothesis
+6. Reject or fail to reject the null hypothesis
 
 
 
@@ -478,9 +499,9 @@ In Learnr
 Let's talk about **appropriate tests**!
 ---
 
-### Appropriate tests
+### Choosing the Appropriate Test
 
-Choice of the test statistic and rejection region will depend on:
+The choice of test statistic and rejection region depends on:
 
 - **Type of data we are testing?**
   - .blue[Single sample]
@@ -534,7 +555,6 @@ $$\text{test statistic}=\frac{\bar{X}-\mu_0}{SE}$$
 
 
 
--
 ---
 ### Single Sample - Mean - Two Sided Test
 
@@ -563,7 +583,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -633,8 +653,9 @@ https://kzaremba.shinyapps.io/Hypothesis_Confidence/
 
   $$\scriptsize  \mu_0<\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
 
-  
+.learnr-ref[**LearnR:** CI and Hypothesis Test equivalence — verify that rejecting at $\alpha$ matches the CI not containing $\mu_0$]
 
+.learnr-ref[**LearnR:** One-Sample t-test — Test whether a Twitter campaign generates at least 200 likes per tweet]
 
 ---
 
@@ -672,7 +693,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -748,7 +769,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -792,8 +813,8 @@ $$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 ### P-values
 
-**Technically:**
-The P-value is the probability (so between 0 and 1), under the null hypothesis, of obtaining a value of the test statistic at least as contradictory to H0 as the value calculated from the available sample. 
+**Definition:**
+The p-value is the probability (between 0 and 1), under the null hypothesis, of obtaining a test statistic at least as extreme as the one calculated from the sample.
 
 Depends on:
 - Your hypothesis
@@ -829,10 +850,15 @@ The probability that a statistic we calculated (or more extreme value) could ari
 ---
 ### P-value in two-sided test
 
-#Source: https://rpsychologist.com/pvalue/
+- In a two-sided test, the p-value accounts for **both tails**
+- We double the one-tail probability: $p\text{-value}=2P(Z \geq |z_{test}|)$
+
+Interactive visualization: https://rpsychologist.com/pvalue/
+
+.learnr-ref[**LearnR:** P values — compute the p-value for a coin fairness test]
 
 ---
-### P-Values and test significance
+### P-values and Test Significance
 
 - In our example we calculated the p-value of 0.066
 - Would the test at $\alpha=0.05$ reject the null?
@@ -845,7 +871,7 @@ The probability that a statistic we calculated (or more extreme value) could ari
 - The P-value is the smallest significance level $\alpha$ at which the $H_0$
 can be rejected
 
-![plot](P_value.png)
+<center><img src="P_value.png" style="width:70%"></center>
 
 
 ---
@@ -870,7 +896,7 @@ We have 2 iid samples .red[independent] of each other from two populations $X_1,
 
 --
 - .blue[Test statistic]: normalized difference in sample means
-$$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^{\Delta_0}}{SE}=\frac{\bar{X}-\bar{Y}-\Delta_0}{SE}$$
+$$\small \text{test stat}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^{\Delta_0}}{SE}=\frac{\bar{X}-\bar{Y}-\Delta_0}{SE}$$
  
 ---
 ### Variance in two samples 
@@ -880,7 +906,7 @@ $$\text{test statistic}=\frac{\bar{X}-\bar{Y}-\overbrace{(\mu_{X,0}-\mu_{Y,0})}^
 
 --
 
-  - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X}{n}+\frac{\sigma_Y}{m}$
+  - Why? Because $\small Var(\bar{X}-\bar{Y})=Var(\bar{X})+Var(\bar{Y})=\frac{\sigma_X^2}{n}+\frac{\sigma_Y^2}{m}$
   - If standard deviation not known: $\small SE=\sqrt{\frac{s_X^2}{n}+\frac{s_Y^2}{m}}$
 
 
@@ -901,7 +927,7 @@ Two ways to do it:
 --
 1. Proper, complex (and annoying):
 
-$$\frac{\left(\frac{s_X^2}{n}+\frac{s_Y^2}{m}\right)^2}{ \left(\frac{s_X^2}{n} \right)^2/(n-1)+ \left(\frac{s_Y^2}{m} \right)^2/(m-1)}$$
+$$\small v=\frac{\left(\frac{s_X^2}{n}+\frac{s_Y^2}{m}\right)^2}{\frac{(s_X^2/n)^2}{n-1}+\frac{(s_Y^2/m)^2}{m-1}}$$
 Round down to nearest integer
 
 --
@@ -949,7 +975,7 @@ $$\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}} \sim N(0,
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -961,9 +987,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(z[frac(alpha,2)]),
+     labels = c(expression(-z[frac(alpha,2)]),
                 expression(0),
-                expression(-z[frac(alpha,2)])))
+                expression(z[frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
@@ -991,10 +1017,9 @@ text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 Following this idea, we can construct a confidence interval for the difference:
 
 
-$$\small P(-z_{\alpha/2}<\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}<z_{\alpha/2})=1-\frac{\alpha}{2}$$
-$$\small P(\bar{X}-\bar{Y}-z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m}<\mu_{X,0}-\mu_{Y,0}<\bar{X}-\bar{Y}+z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m})=1-\frac{\alpha}{2}$$
+$$\small P\!\left(-z_{\alpha/2}<\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}<z_{\alpha/2}\right)=1-\alpha$$
 
-$$\small CI_{\alpha}=(\bar{X}-\bar{Y} \pm z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m})$$
+$$\small CI_{1-\alpha}=\left(\bar{X}-\bar{Y} \pm z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m}\right)$$
 
 ---
 
@@ -1032,7 +1057,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -1068,7 +1093,7 @@ text(-2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 - .blue[Intuition]: 
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \geq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently smaller than $\Delta_0$
-  -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
+  -  If null is true ( $\mu_X-\mu_Y=\Delta_0$ ) then we reject with probability
 $$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
 
 
@@ -1108,7 +1133,7 @@ Where
 # plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
       xlim = c(-3, 3),
-      main = "Distribution of the statistic under the null (standard normal case)",
+      main = "Distribution under H0",
       yaxs = "i",
       xlab = "Test Statistic",
       ylab = "",
@@ -1144,27 +1169,26 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 - .blue[Intuition]: 
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \leq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently larger than $\Delta_0$
-  -  If null is true ( $\bar{X}-\bar{Y}=\Delta_0$ ) then we reject with probability
+  -  If null is true ( $\mu_X-\mu_Y=\Delta_0$ ) then we reject with probability
 $$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
 
 
 ---
-Is the price in dirty apartments the same as price in clean apartments?
+### Airbnb: Clean vs Dirty Prices
 
-|   Sample   |    n    | Sample Mean | Sample Standard Deviation |
-|------------|---------|-------------|---------------------------|
-|   Clean    |   100   |    1245     |            962            |
-|   Dirty    |   100   |    869      |            693            |
+|   Sample   |    n    | Mean | SD  |
+|------------|---------|------|-----|
+|   Clean    |   100   | 1245 | 962 |
+|   Dirty    |   100   |  869 | 693 |
 
-```{r abd, warning=FALSE, fig.height=2.7, out.width='100%'}
-ggplot(data = Sample_list, aes(x = clean, y = price)) +
-  geom_boxplot() +
-  labs(x = "Clean",
-       y = "Price")+
-  coord_flip()+
-  theme_xaringan()
+```{r abd, warning=FALSE, fig.height=2.3, out.width='100%'}
+ggplot(data = Sample_list, aes(x = clean_label, y = price, fill = clean_label)) +
+  geom_boxplot(alpha = 0.6) +
+  scale_fill_manual(values = c("Clean" = "#2980b9", "Dirty" = "#e74c3c")) +
+  labs(x = "Cleanliness", y = "Price") +
+  coord_flip() +
+  theme_xaringan() + theme(legend.position = "none")
 ```
-
 
 - State the null and alternative hypothesis
 
@@ -1172,17 +1196,22 @@ ggplot(data = Sample_list, aes(x = clean, y = price)) +
 - Calculate the value of the test statistic
 
 --
-- Calculate the p value
+- Calculate the p-value
 
 --
-- At which $\alpha$ we reject the null?
+- At which $\alpha$ do we reject the null?
 
 --
-- Calculate 95\% confidence interval for the difference
+- Calculate 95% confidence interval for the difference
 
+.learnr-ref[**LearnR:** Two Sample Difference — Calculate test statistic and p-value for this comparison]
+
+.learnr-ref[**LearnR:** Using `t.test()` in R — learn the built-in function for one-sample, two-sample, and paired tests]
 
 ---
-We suspect Burger King might have larger caloric content for kids' meal. Let's test it.
+### Exercise: McDonald's vs Burger King
+
+We suspect Burger King might have larger caloric content for kids' meals. Let's test it.
 
 |   Sample   |    n    | Sample Mean | Sample Standard Deviation |
 |------------|---------|-------------|---------------------------|
@@ -1200,18 +1229,19 @@ We suspect Burger King might have larger caloric content for kids' meal. Let's t
 - Determine the appropriate number of degrees of freedom
 
 --
-- Calculate the p value
+- Calculate the p-value
 
 --
-- At which $\alpha$ we reject the null?
+- At which $\alpha$ do we reject the null?
 
+.learnr-ref[**LearnR:** Small-sample t-test — work through this McDonald's vs Burger King comparison with exact df]
 
 ---
 
-## A/B Testing: The Business Question
+### A/B Testing: The Business Question
 
 .center[
-```{r, out.height="50%", echo=FALSE}
+```{r, out.width="60%", echo=FALSE, fig.align='center'}
 knitr::include_graphics("abb.png")
 ```
 ]
@@ -1230,11 +1260,11 @@ knitr::include_graphics("abb.png")
     - Better customer service
 
 --
-- Revenues may reflect these differences, not the photos themselves.  
-- Test doesn't tell us anything about causality, just association.
+- Revenues may reflect these differences, not the photos themselves.
+- A simple comparison only tells us about **association**, not causality.
 ---
 
-## The Business Decision
+### The Business Decision
 
 - Should Airbnb **invest in professional photography** for hosts?
 
@@ -1265,7 +1295,7 @@ We need a method to **isolate the effect of photos**.
 
 ---
 
-## The Setup
+### The Setup
 
 We divide hosts into **two groups**:
 
@@ -1284,46 +1314,45 @@ We divide hosts into **two groups**:
 - Without randomization: groups differ in many ways.  
 - With randomization: groups are (on average) identical, except for photos.  
 
-.center[💡 This is what gives us **causal inference**!]
+.center[This is what gives us **causal inference**!]
 
 
 ---
 
-# Classroom Exercise 🎯
+### Classroom Exercise: Randomization Check
 
-- Take sample Airbnb listings.  
-- Randomly assign to two groups.  
-- Compare characteristics:  
-  - Beds
-  - Location  
+- Take a sample of Airbnb listings
+- Randomly assign to two groups
+- Compare characteristics (beds, location)
 
-👉 They should look very similar.
+They should look very similar!
+
+.learnr-ref[**LearnR:** AB Testing Randomization — sample listings, randomize, and check balance]
 
 --
 
-Why? We are practically taking two samples from the same populations.
+Why? We are taking two samples from the same population.
 
 - All properties and expectations will be the same for both samples
 
 ---
 
-# Measuring the Effect
+### Measuring the Effect
 
-- After randomization: **the only difference = photos**.  
+- After randomization: **the only difference is the photos**
 
-- Provide photoghraphy to treamtent
+- Provide photography to treatment group
 - Wait to see potential effects
 - Collect outcome data (revenue, reviews, bookings)
-- We run a simple two-samples tests between treatment and control
-- If treatment group earns more revenue →  
-  we know it’s **caused by the professional photos**.
+- Run a simple two-sample test between treatment and control
+- If the treatment group earns more revenue, we know it was **caused by the professional photos**
 
 .center[**This is the causal effect.**]
 
 --
 
-- Tool extremely often used in modern business, especially in Tech. 
-- We all have been subjects of these experiments, without knowing. 
+- A/B testing is used extensively in modern business, especially in tech
+- We have all been subjects of these experiments, often without knowing
 
 
 ---
@@ -1432,10 +1461,14 @@ high school
 --
 - Not paired
 
+.learnr-ref[**LearnR:** Paired or Unpaired? — practice classifying four more business scenarios]
 
 ---
+### Exercise: Does IQ Decrease with Age?
 
-A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using $\alpha=0.01$ test the hypothesis that IQ decreases with age. 
+A psychologist thinks that age influences IQ. They take a random sample of 100 people aged 40. For each person we know their IQ at age 16 and now. On average, IQ at young age was 8 points higher than at age 40. The standard deviation of that difference was 7 points. Using $\alpha=0.01$, test the hypothesis that IQ decreases with age.
+
+.learnr-ref[**LearnR:** Paired Data test for means — work through this IQ example in R]
 
 ---
 #### Hypothesis Testing for Correlation
@@ -1490,38 +1523,42 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
   - Test at $\alpha=0.05$ would reject $H_0$
 
 ---
-### Correlation Test 
+### Correlation Test — Distributions
 
-```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
-ggplot(data=Sample_list, aes(review_scores_cleanliness))+
-  geom_histogram()+
+```{r, warning=FALSE, fig.height=3, out.width='100%', message=FALSE}
+p1 <- ggplot(data=Sample_list, aes(review_scores_cleanliness))+
+  geom_histogram(bins=20, fill="steelblue", color="white")+
+  labs(x="Cleanliness Score", y="Count")+
   theme_xaringan()
 
-ggplot(data=Sample_list, aes(price))+
-  geom_histogram()+
+p2 <- ggplot(data=Sample_list, aes(price))+
+  geom_histogram(bins=30, fill="steelblue", color="white")+
+  labs(x="Price", y="Count")+
   theme_xaringan()
 
+grid.arrange(p1, p2, ncol = 2)
 ```
 
 
 
 ---
-### Correlation Test 
+### Correlation Test — Scatter Plot
 
-```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
-
+```{r, warning=FALSE, fig.height=3.5, out.width='100%', message=FALSE}
 ggplot(data=Sample_list, aes(review_scores_cleanliness, price))+
-  geom_point() +
+  geom_point(alpha=0.5) +
   geom_smooth(method = "loess", fill=NA, level=0.90)+
+  labs(x="Cleanliness Score", y="Price")+
   theme_xaringan()
-
 ```
 
 
 
 ---
-### Exercise
+### Exercise: Correlation Test
 
-Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending.  You calculated the correlation coefficient of $\hat{\rho}=-0.45$. Can you reject null of $\rho=0$ in favor of alternative $\rho \neq 0$ at 5% significance level?
+Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending. You calculated the correlation coefficient $\hat{\rho}=-0.45$. Can you reject the null $\rho=0$ in favor of the alternative $\rho \neq 0$ at the 5% significance level?
+
+.learnr-ref[**LearnR:** Paired Data Test for Correlation — compute the t-statistic for this exercise]
 
 

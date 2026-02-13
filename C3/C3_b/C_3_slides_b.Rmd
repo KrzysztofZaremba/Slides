@@ -13,14 +13,19 @@ output:
 ---   
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 ```{r setup, include=FALSE}
-
-knitr::opts_chunk$set(echo = FALSE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -31,30 +36,35 @@ library(reshape)
 library(spData)
 library(leaflet)
 library(readr)
-library(ggplot2)
 library(gridExtra)
-library(dplyr)
 library(hrbrthemes)
 library(viridis)
 library(gapminder)
 library(knitr)
 library(kableExtra)
 library(DT)
-
+load("sample_listing.Rda")
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
-load("sample_listing.Rda")
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 
 
@@ -67,38 +77,41 @@ class: inverse, middle
 ---
 ### Confidence Intervals
 
-- We calculated the mean price in our sample
+- We calculated the .blue[mean price] in our sample: a single number (point estimate)
 
-- How confident are we that our estimate is close to the parameter's value?
+- But how confident are we that this estimate is close to the .blue[true population value]?
 
-- Confidence intervals measure uncertainty around the estimate
+- A **confidence interval** quantifies our uncertainty: it gives a range of plausible values for the parameter
 
 ---
 ### Confidence Intervals
 
-- Mean price was 1245.43
-
---
-- Is it reasonable to think true average price in population is 1100? What about 2000?
-
---
-- Suppose that we calculated the confidence interval to be:
-$$\{1086.64, 1404.22\}$$
-
---
-    - Where are these numbers coming from?
+- Our sample mean price was $\bar{x}=1245.43$
 
 --
 
-  1. The sampling distribution of the sample mean tells us how likely we are to get a point estimate which is far away from the true mean
+- Is it plausible that the true average price is 1100? What about 2000?
 
 --
 
-  2. The confidence interval uses this property of the sampling distribution to tell us where the true mean might be
+- Suppose we calculated the 90% confidence interval:
+$$(1086.64,\; 1404.22)$$
 
 --
 
- - Let's go through these statements 1-by-1
+- Where do these bounds come from? Two key ideas:
+
+--
+
+  1. The .blue[sampling distribution] of $\bar{X}$ tells us how far a sample mean can reasonably fall from the true mean
+
+--
+
+  2. We .blue[invert] this logic: if $\bar{X}$ is unlikely to be far from $\mu$, then $\mu$ is unlikely to be far from $\bar{X}$
+
+--
+
+- Let's develop each idea step by step
   
 ---
 ### Sampling distribution
@@ -150,29 +163,26 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 ---
 
-### Yet another way to see it
+### Deriving the CI formula
 
 
 \begin{align*}
-0.95&= P(-1.96<Z<1.96) \\
-&= P(z_{-\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt  n}<z_{\frac{\alpha}{2}}) \\
-&= P(z_{-\frac{\alpha}{2}}\sigma/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}\sigma/\sqrt  n) \\
-&= P(\mu-z_{-\frac{\alpha}{2}}\sigma/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}\sigma/\sqrt  n) \\
+1-\alpha &= P\!\left(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}\right) \\[4pt]
+&= P\!\left(-z_{\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}<z_{\frac{\alpha}{2}}\right) \\[4pt]
+&= P\!\left(-z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}<\bar{X}-\mu<z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}\right) \\[4pt]
+&= P\!\left(\bar{X}-z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}< \mu <\bar{X}+z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}\right)
 \end{align*}
 
-
-  - Theoretically, CLT theorem guarantees that $\frac{\bar{X}-\mu}{\sigma/\sqrt  n}$ is standard normal
-  
 --
-  
-  - What happens if you do not know $\sigma$?
+
+- CLT guarantees $\frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \approx N(0,1)$ for large $n$
 
 --
 
-  - In large sample, $s \rightarrow \sigma$, so $\frac{\bar{X}-\mu}{s/\sqrt  n} \rightarrow N(0,1)$
-  - So in large samples, standardized sample mean (with estimated standard deviation) will also have normal distribution
-  - You man need a bit higher n to ensure $s \rightarrow \sigma$
+- **What if $\sigma$ is unknown?** In large samples $s \rightarrow \sigma$, so:
+$$\frac{\bar{X}-\mu}{s/\sqrt{n}} \;\approx\; N(0,1)$$
+- The standardized mean with $s$ in place of $\sigma$ is still approximately normal
+- You may need a slightly larger $n$ to compensate for estimating $\sigma$
 
 ---
 
@@ -182,7 +192,7 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 - Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{\sqrt n}$ to the true parameter
 - There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{ \sqrt n}$
-- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt  n}$
+- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt{n}}$
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
@@ -242,7 +252,7 @@ text(position, 0.21, expression(bar(x)), col = "red", cex = 1.2)
 
 `r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='400px')`
 
-  Source: [https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
+  Source: [Seeing Theory](https://seeing-theory.brown.edu/frequentist-inference/index.html#section2)
 
 
 ---
@@ -270,15 +280,16 @@ Use this procedure if $n>40$
 --
 
 5. Construct the confidence interval as:
-$$\small \{\bar{x}- z_{\frac{\alpha}{2}}*\underbrace{\frac{s}{\sqrt n}}_{SE}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
+$$\boxed{\small \left(\bar{x}- z_{\frac{\alpha}{2}}\cdot\underbrace{\frac{s}{\sqrt{n}}}_{SE},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)}$$
 
 
 ---
 ### Finding Critical Values
 
-- Suppose confidence interval is 99%. 
-- Then $\alpha=0.01$
+- Suppose confidence level is 99%, so $\alpha=0.01$
 - We are looking for $z_{\frac{\alpha}{2}}$ such that:
+
+.learnr-ref[**LearnR:** Finding critical values in normal — use `qnorm()` in R]
 $$P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=0.99$$
 ```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
@@ -320,7 +331,7 @@ $$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995$$
 ---
 
 `r knitr::include_url('https://www.mathsisfun.com/data/standard-normal-distribution-table.html', height='480px')`
-  Source: [https://www.mathsisfun.com/data/standard-normal-distribution-table.html)
+  Source: [Maths is Fun](https://www.mathsisfun.com/data/standard-normal-distribution-table.html)
 
 
 
@@ -363,14 +374,14 @@ text(3.5, 0.1, "0.5%", col = "black", cex = 1.5)
 
 ---
 ### Constructing CI: example
-Let's calculate 90% CI for average price of listing with grade>4.5
+Let's calculate 90% CI for average price of listings with cleanliness score > 4.5
 
 1. Take an IID sample 
   - $n=100$ $\checkmark$
 
 --
 2. Calculate mean $\bar{x}$ and standard deviation $s$
-  - $\bar{x}=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE,]$price),2), scientific=FALSE)` and $s=$ `r format(round(sd(Sample_list[Sample_list$clean==TRUE,]$price),2), scientific=FALSE)`
+  - $\bar{x}=$ `r format(round(mean(Sample_list[Sample_list$clean==TRUE | Sample_list$clean=="Clean",]$price),2), scientific=FALSE)` and $s=$ `r format(round(sd(Sample_list[Sample_list$clean==TRUE | Sample_list$clean=="Clean",]$price),2), scientific=FALSE)`
 
 --
 3. Pick confidence level
@@ -384,19 +395,19 @@ Let's calculate 90% CI for average price of listing with grade>4.5
 --
 
 5. Construct the confidence interval as:
-$$\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$$
-$$\small \{1245.43- 1.65\frac{961.9}{\sqrt{100}}, 1245.43+ 1.65\frac{961.9}{\sqrt 100}\}$$
+$$\small \left(\bar{x}- z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)$$
+$$\small \left(1245.43- 1.65\cdot\frac{961.9}{\sqrt{100}},\;\; 1245.43+ 1.65\cdot\frac{961.9}{\sqrt{100}}\right)$$
 
 ---
 ### Interpreting confidence intervals
 
-$$\small CI_{90}=\{1086.64, 1404.22\}$$
+$$\small CI_{90}=(1086.64,\; 1404.22)$$
 
 How do we interpret a 90% confidence interval we computed?
 
 - **Correct Interpretation**
   - We are 90% confident that the interval captures the true mean
-  - We are 90% confident that the true mean price of listings with grade>4.5 is between 1086.64 and 1404.22
+  - We are 90% confident that the true mean price of listings with cleanliness score > 4.5 is between 1086.64 and 1404.22
   
 --
 
@@ -405,6 +416,10 @@ How do we interpret a 90% confidence interval we computed?
       - Computed interval is not-random and true mean is not random, so can't make probabilistic statements.
       - Interval is a function of random variables only **before** we draw a sample and make any computation.
       - After we have a sample, nothing is random. The true mean is either between 1086.64 and 1404.22 or not.
+
+--
+
+> .red[**Common mistake:**] Saying "there is a 90% probability the true mean is in the interval." After computing the interval, the true mean is either inside it or not — there is no probability involved. The 90% refers to the .blue[procedure]: if we repeated sampling many times, 90% of the resulting intervals would contain $\mu$.
 
 ---
 
@@ -418,12 +433,12 @@ How do we interpret a 90% confidence interval we computed?
 
 ### Shape of confidence intervals
 
-Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, \bar{x}+ z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}\}$ are wider when: 
+CI $= \left(\bar{x}\pm z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)$ are wider when: 
 - Confidence level is higher (99% is wider than 90%)
 - When $n$ is small
 - When $\sigma$ is large
 
-`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='420px')`
+`r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='380px')`
 
 
 
@@ -432,42 +447,37 @@ Confidence intervals $\small \{\bar{x}- z_{\frac{\alpha}{2}}*\frac{s}{\sqrt n}, 
 
 In learnr:
 
-0. Set seed to to your student id. 
+0. Set seed to your student id
 1. Take a sample of 100 observations from the data
 2. Calculate the mean and standard deviation of the sample
 3. Find critical value
 4. Compute confidence interval
 
+.learnr-ref[**LearnR:** Practice — Build a 90% CI for ride-hailing fares and reveal the true mean]
+
 ---
 
-### What critical values?
+### Which critical values to use?
 
-When should we use critical values from Normal Distribution?
-
-
-1. Original distribution (of $X$) is not normal: 
-
-  - If $n>30$- use critical values from normal distribution (40 if $\sigma$ unknown)
-  
-  - If $n<30$ - you are screwed
-
+| Scenario | $\sigma$ known? | Sample size | Use |
+|:---------|:-:|:-:|:---:|
+| $X$ is .blue[normal] | Yes | Any $n$ | **Normal** ($z$) |
+| $X$ is .blue[normal] | No | Any $n$ | .blue[**Student's t**] ($t_{n-1}$) |
+| $X$ is .blue[not normal] | Yes | $n \geq 30$ | **Normal** ($z$) |
+| $X$ is .blue[not normal] | No | $n \geq 40$ | **Normal** ($z$) |
+| $X$ is .blue[not normal] | — | $n < 30$ | Unreliable; use bootstrap |
 
 --
-2. Original distribution (of $X$) is normal: 
 
-  - If you know $\sigma$, you can use critical values from normal ( $n$ doesn't matter)
-      - If $X$ is normal, then use $\sigma$ instead of $s$ and $\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt n}} \sim N(0,1)$ 
-
-  - If you don't know $\sigma$ but $n>40$, you can use critical values from normal
-      - CLT kicks in
-
-  - If you don't know $\sigma$ and $n<40$, you use critical values from .blue[student's t].
-      - $\frac{\bar{X}-\mu}{\frac{s}{\sqrt n}}$ is not normal. $s$ is not a good approx. of $\sigma$ when $n$ is low
-    
+**Key intuition:**
+- When $X$ is normal and $\sigma$ is unknown, use the .blue[t-distribution] — it accounts for the extra uncertainty from estimating $\sigma$
+- When $X$ is not normal, you need large $n$ so the CLT kicks in
+- With unknown $\sigma$, you need slightly more data ($n\geq 40$) so that $s \approx \sigma$
+- As $n$ grows, $t_{n-1}$ converges to $N(0,1)$, so for large $n$ the choice barely matters
 
 
 ---
-### What's  Student's t?
+### What's Student's t?
 
 If $X_1$, $X_2$, . . . , $X_n$ are i.i.d. from $N(µ, σ)$, then
 $$T =\frac{\bar{X} − µ}{s/\sqrt n}$$
@@ -478,7 +488,7 @@ $$T \sim t_{n-1}$$
 
 
 ---
-### What's  Student's t?
+### What's Student's t?
 
 - Bell shaped and symmetric around 0 
 - More spread out - heavier tails, more uncertainty (because we don't know standard deviation)
@@ -569,7 +579,9 @@ text(3, 0.2, "2.5%", col = "black", cex = 1.5)
 ---
 ### Example
 
-- Practice in learnr finding critical values using the code:
+- Practice in LearnR finding critical values using the code:
+
+.learnr-ref[**LearnR:** Finding critical values in Student's t — compare `qt()` vs `qnorm()`]
 
 ```r
 qt(quantile, degrees_of_freedom)
@@ -623,12 +635,12 @@ text(3, 0.05, "2.5%", col = "black", cex = 1.5)
 ```
 - Once we have critical value, we construct the CI as before:
 
-$$\small \{\bar{x}- t_{\frac{\alpha}{2},n-1}*\frac{s}{\sqrt n}, \bar{x}+ t_{\frac{\alpha}{2},n-1}*\frac{s}{\sqrt n}\}$$
+$$\small \left(\bar{x}- t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}}\right)$$
 
 
 
 ---
-### Practice in learnr:
+### Practice: Free Shipping CI
 
 Your company implemented free shipping for a random group of customers. They want to know whether it increased spending.
 Here is your data:
@@ -642,19 +654,26 @@ a) Calculate 90% confidence interval. What assumptions you need?
 
 b) Average spending without free shipping is $182, can say anything about whether free shipping increased spending?
 
+.learnr-ref[**LearnR:** Practice with Student T — compute the CI and draw conclusions]
+
 
 ---
 ### Confidence Intervals for Variance
 
-- Suppose $X_1, X_2, ...X_n$ come from normal distribution
-- The sampling distribution of the sample variance  $S^2=\frac{\sum_i(X_i-\bar{X})^2}{n-1}$ is: 
+- Sometimes we care about how spread out a process is, not just its mean
+- Example: in manufacturing, a machine that produces bolts with high variance in diameter is unreliable, even if the average diameter is correct
 
-$$\small \frac{(n-1)S^2}{\sigma^2}\sim\chi_{n-1}$$
+--
+
+- Suppose $X_1, X_2, ...X_n$ come from a normal distribution
+- The sampling distribution of the sample variance  $S^2=\frac{\sum_i(X_i-\bar{X})^2}{n-1}$ is:
+
+$$\small \frac{(n-1)S^2}{\sigma^2}\sim\chi^2_{n-1}$$
 --
 - We will use the fact that:  
-$$\small P(\chi_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi_{0.975,n-1})=0.95$$
+$$\small P(\chi^2_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi^2_{0.975,n-1})=0.95$$
 
-```{r, warning=FALSE, fig.height=3, out.width='100%'}
+```{r, warning=FALSE, fig.height=3.5, out.width='90%', fig.align='center'}
 df <- 9  # Degrees of freedom for chi-square distribution
 
 # Create a sequence of x values
@@ -663,13 +682,12 @@ x_vals <- seq(0, 25, by =0.01)
 # Calculate the density values for the chi-square distribution
 chi_density <- dchisq(x_vals, df)
 
+par(mar = c(4, 2, 2, 1))
+
 # Plotting
-plot(x_vals, chi_density, type = "l", xlim = c(0, 25), ylim = c(0, 0.2),
+plot(x_vals, chi_density, type = "l", xlim = c(0, 25), ylim = c(0, 0.15),
      main = "Chi-Square with 9df",
      yaxs = "i", xlab = "x", ylab = "", lwd = 2, axes = FALSE)
-
-# Add x-axis
-
 
 # Add a vertical line at the mean (mu)
 abline(v = 9, col = "red", lwd = 2)
@@ -698,16 +716,17 @@ axis(1, at = c(0, q_lower, 9,q_upper, 25), padj = 0.75,
 How we use it to construct the confidence interval?
 
 \begin{align*}
-0.95&= P(\chi_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi_{0.975,n-1}) \\
-&= P(\frac{1}{\chi_{0.975,n-1}} < \frac{\sigma^2}{(n-1)S^2} < \frac{1}{\chi_{0.025,n-1}}) \\
-&= P(\frac{(n-1)S^2}{\chi_{0.975,n-1}} < \sigma^2 < \frac{(n-1)S^2}{\chi_{0.025,n-1}})
+0.95&= P\left(\chi^2_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi^2_{0.975,n-1}\right) \\
+&= P\left(\frac{1}{\chi^2_{0.975,n-1}} < \frac{\sigma^2}{(n-1)S^2} < \frac{1}{\chi^2_{0.025,n-1}}\right) \\
+&= P\left(\frac{(n-1)S^2}{\chi^2_{0.975,n-1}} < \sigma^2 < \frac{(n-1)S^2}{\chi^2_{0.025,n-1}}\right)
 \end{align*}
 
 --
 So more generally, the confidence interval for the sample variance is 
 
-$$CI_{1-\alpha}=\{\frac{(n-1)S^2}{\chi_{1-\frac{\alpha}{2},n-1}}, \frac{(n-1)S^2}{\chi_{\frac{\alpha}{2},n-1}}\}$$
-- Where $\chi_{1-\frac{\alpha}{2},n-1}$ and $\chi_{\frac{\alpha}{2},n-1}$ are quantiles of $\chi_{n-1}$ distribution, such that $P(X<\chi_{1-\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$ and $P(X<\chi_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$
+$$CI_{1-\alpha}=\left(\frac{(n-1)S^2}{\chi^2_{1-\frac{\alpha}{2},n-1}},\; \frac{(n-1)S^2}{\chi^2_{\frac{\alpha}{2},n-1}}\right)$$
+- Where $\chi^2_{1-\frac{\alpha}{2},n-1}$ and $\chi^2_{\frac{\alpha}{2},n-1}$ are quantiles of the $\chi^2_{n-1}$ distribution
+  - $P(X<\chi^2_{1-\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$ and $P(X<\chi^2_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$
 - You can find them in R using: 
 
 ```r
@@ -715,8 +734,10 @@ qchisq(alpha, df)
 ```
 
 ---
-### Practice in learnr
+### Practice: Sausage Variance CI
 
-Suppose you produce sausages. As a quality control, you measure the level of fat in your sausages. You take a random sample of 12 sausages and you find the variance of 20  ( $grams^2$ ). Find 99% confidence interval for the variance. What assumptions you need?
+Suppose you produce sausages. As quality control, you measure the level of fat in your sausages. You take a random sample of 12 sausages and you find the sample variance of 20 $\text{grams}^2$. Find 99% confidence interval for the population variance. What assumptions do you need?
+
+.learnr-ref[**LearnR:** Practice for CI of variance — use `qchisq()` to find critical values and build the interval]
 
 ---
