@@ -77,41 +77,38 @@ class: inverse, middle
 ---
 ### Confidence Intervals
 
-- We calculated the .blue[mean price] in our sample: a single number (point estimate)
+- We calculated the mean price in our sample
 
-- But how confident are we that this estimate is close to the .blue[true population value]?
+- How confident are we that our estimate is close to the parameter's value?
 
-- A **confidence interval** quantifies our uncertainty: it gives a range of plausible values for the parameter
+- Confidence intervals measure uncertainty around the estimate
 
 ---
 ### Confidence Intervals
 
-- Our sample mean price was $\bar{x}=1245.43$
+- Mean price was 1245.43
+
+--
+- Is it reasonable to think true average price in population is 1100? What about 2000?
+
+--
+- Suppose that we calculated the confidence interval to be:
+$$\{1086.64, 1404.22\}$$
+
+--
+    - Where are these numbers coming from?
 
 --
 
-- Is it plausible that the true average price is 1100? What about 2000?
+  1. The sampling distribution of the sample mean tells us how likely we are to get a point estimate which is far away from the true mean
 
 --
 
-- Suppose we calculated the 90% confidence interval:
-$$(1086.64,\; 1404.22)$$
+  2. The confidence interval uses this property of the sampling distribution to tell us where the true mean might be
 
 --
 
-- Where do these bounds come from? Two key ideas:
-
---
-
-  1. The .blue[sampling distribution] of $\bar{X}$ tells us how far a sample mean can reasonably fall from the true mean
-
---
-
-  2. We .blue[invert] this logic: if $\bar{X}$ is unlikely to be far from $\mu$, then $\mu$ is unlikely to be far from $\bar{X}$
-
---
-
-- Let's develop each idea step by step
+ - Let's go through these statements 1-by-1
   
 ---
 ### Sampling distribution
@@ -163,26 +160,29 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 ---
 
-### Deriving the CI formula
+### Yet another way to see it
 
 
 \begin{align*}
-1-\alpha &= P\!\left(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}\right) \\[4pt]
-&= P\!\left(-z_{\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt{n}}<z_{\frac{\alpha}{2}}\right) \\[4pt]
-&= P\!\left(-z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}<\bar{X}-\mu<z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}\right) \\[4pt]
-&= P\!\left(\bar{X}-z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}< \mu <\bar{X}+z_{\frac{\alpha}{2}}\cdot\frac{\sigma}{\sqrt{n}}\right)
+0.95&= P(-1.96<Z<1.96) \\
+&= P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
+&= P\left(-z_{\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt  n}<z_{\frac{\alpha}{2}}\right) \\
+&= P\left(-z_{\frac{\alpha}{2}}\cdot\sigma/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
+&= P\left(\mu-z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
 \end{align*}
 
+
+  - Theoretically, CLT theorem guarantees that $\frac{\bar{X}-\mu}{\sigma/\sqrt  n}$ is standard normal
+  
+--
+  
+  - What happens if you do not know $\sigma$?
+
 --
 
-- CLT guarantees $\frac{\bar{X}-\mu}{\sigma/\sqrt{n}} \approx N(0,1)$ for large $n$
-
---
-
-- **What if $\sigma$ is unknown?** In large samples $s \rightarrow \sigma$, so:
-$$\frac{\bar{X}-\mu}{s/\sqrt{n}} \;\approx\; N(0,1)$$
-- The standardized mean with $s$ in place of $\sigma$ is still approximately normal
-- You may need a slightly larger $n$ to compensate for estimating $\sigma$
+  - In large sample, $s \rightarrow \sigma$, so $\frac{\bar{X}-\mu}{s/\sqrt  n} \rightarrow N(0,1)$
+  - So in large samples, standardized sample mean (with estimated standard deviation) will also have normal distribution
+  - You may need a bit higher n to ensure $s \rightarrow \sigma$
 
 ---
 
@@ -192,7 +192,7 @@ $$\frac{\bar{X}-\mu}{s/\sqrt{n}} \;\approx\; N(0,1)$$
 
 - Hence 95% of the draws of sample means will be within distance of $1.96\frac{\sigma_X}{\sqrt n}$ to the true parameter
 - There is only 5% chance that we have draw sample weird enough that $\bar{X}$ is further from $\mu_X$ by more than $1.96\frac{\sigma_X}{ \sqrt n}$
-- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt{n}}$
+- Confidence interval of $\bar{X}$ will cover $\mu_X$ as long as $|\mu_X-\bar{X}|<1.96\frac{\sigma_X}{\sqrt  n}$
 
 ```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
@@ -280,7 +280,7 @@ Use this procedure if $n>40$
 --
 
 5. Construct the confidence interval as:
-$$\boxed{\small \left(\bar{x}- z_{\frac{\alpha}{2}}\cdot\underbrace{\frac{s}{\sqrt{n}}}_{SE},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)}$$
+$$\small \left\{\bar{x}- z_{\frac{\alpha}{2}}\cdot\underbrace{\frac{s}{\sqrt{n}}}_{SE},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
 
 
 ---
@@ -395,13 +395,13 @@ Let's calculate 90% CI for average price of listings with cleanliness score > 4.
 --
 
 5. Construct the confidence interval as:
-$$\small \left(\bar{x}- z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)$$
-$$\small \left(1245.43- 1.65\cdot\frac{961.9}{\sqrt{100}},\;\; 1245.43+ 1.65\cdot\frac{961.9}{\sqrt{100}}\right)$$
+$$\small \left\{\bar{x}- z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
+$$\small \left\{1245.43- 1.65\cdot\frac{961.9}{\sqrt{100}},\;\; 1245.43+ 1.65\cdot\frac{961.9}{\sqrt{100}}\right\}$$
 
 ---
 ### Interpreting confidence intervals
 
-$$\small CI_{90}=(1086.64,\; 1404.22)$$
+$$\small CI_{90}=\{1086.64, 1404.22\}$$
 
 How do we interpret a 90% confidence interval we computed?
 
@@ -417,10 +417,6 @@ How do we interpret a 90% confidence interval we computed?
       - Interval is a function of random variables only **before** we draw a sample and make any computation.
       - After we have a sample, nothing is random. The true mean is either between 1086.64 and 1404.22 or not.
 
---
-
-> .red[**Common mistake:**] Saying "there is a 90% probability the true mean is in the interval." After computing the interval, the true mean is either inside it or not — there is no probability involved. The 90% refers to the .blue[procedure]: if we repeated sampling many times, 90% of the resulting intervals would contain $\mu$.
-
 ---
 
 <center>
@@ -433,12 +429,14 @@ How do we interpret a 90% confidence interval we computed?
 
 ### Shape of confidence intervals
 
-CI $= \left(\bar{x}\pm z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right)$ are wider when: 
+CI $= \left\{\bar{x}\pm z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$ are wider when:
 - Confidence level is higher (99% is wider than 90%)
 - When $n$ is small
 - When $\sigma$ is large
 
 `r knitr::include_url('https://seeing-theory.brown.edu/frequentist-inference/index.html#section2', height='380px')`
+
+.learnr-ref[**LearnR:** Interactive CI simulator — draw samples and see how the interval moves relative to the true mean]
 
 
 
@@ -457,27 +455,34 @@ In learnr:
 
 ---
 
-### Which critical values to use?
+### What critical values?
 
-| Scenario | $\sigma$ known? | Sample size | Use |
-|:---------|:-:|:-:|:---:|
-| $X$ is .blue[normal] | Yes | Any $n$ | **Normal** ($z$) |
-| $X$ is .blue[normal] | No | Any $n$ | .blue[**Student's t**] ($t_{n-1}$) |
-| $X$ is .blue[not normal] | Yes | $n \geq 30$ | **Normal** ($z$) |
-| $X$ is .blue[not normal] | No | $n \geq 40$ | **Normal** ($z$) |
-| $X$ is .blue[not normal] | — | $n < 30$ | Unreliable; use bootstrap |
+When should we use critical values from Normal Distribution?
+
+
+1. Original distribution (of $X$) is not normal:
+
+  - If $n>30$ — use critical values from normal distribution (use $n>40$ if $\sigma$ unknown, to give $s$ enough data to approximate $\sigma$)
+
+  - If $n<30$ — normal approximation is unreliable; you need specialized methods (e.g., bootstrap)
+
 
 --
+2. Original distribution (of $X$) is normal: 
 
-**Key intuition:**
-- When $X$ is normal and $\sigma$ is unknown, use the .blue[t-distribution] — it accounts for the extra uncertainty from estimating $\sigma$
-- When $X$ is not normal, you need large $n$ so the CLT kicks in
-- With unknown $\sigma$, you need slightly more data ($n\geq 40$) so that $s \approx \sigma$
-- As $n$ grows, $t_{n-1}$ converges to $N(0,1)$, so for large $n$ the choice barely matters
+  - If you know $\sigma$, you can use critical values from normal ( $n$ doesn't matter)
+      - If $X$ is normal, then use $\sigma$ instead of $s$ and $\frac{\bar{X}-\mu}{\frac{\sigma}{\sqrt n}} \sim N(0,1)$ 
+
+  - If you don't know $\sigma$ but $n>40$, you can use critical values from normal
+      - CLT kicks in
+
+  - If you don't know $\sigma$ and $n<40$, you use critical values from .blue[student's t].
+      - $\frac{\bar{X}-\mu}{\frac{s}{\sqrt n}}$ is not normal. $s$ is not a good approx. of $\sigma$ when $n$ is low
+    
 
 
 ---
-### What's Student's t?
+### What's  Student's t?
 
 If $X_1$, $X_2$, . . . , $X_n$ are i.i.d. from $N(µ, σ)$, then
 $$T =\frac{\bar{X} − µ}{s/\sqrt n}$$
@@ -488,7 +493,7 @@ $$T \sim t_{n-1}$$
 
 
 ---
-### What's Student's t?
+### What's  Student's t?
 
 - Bell shaped and symmetric around 0 
 - More spread out - heavier tails, more uncertainty (because we don't know standard deviation)
@@ -635,7 +640,7 @@ text(3, 0.05, "2.5%", col = "black", cex = 1.5)
 ```
 - Once we have critical value, we construct the CI as before:
 
-$$\small \left(\bar{x}- t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}}\right)$$
+$$\small \left\{\bar{x}- t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}}\right\}$$
 
 
 
@@ -673,7 +678,7 @@ $$\small \frac{(n-1)S^2}{\sigma^2}\sim\chi^2_{n-1}$$
 - We will use the fact that:  
 $$\small P(\chi^2_{0.025,n-1}<\frac{(n-1)S^2}{\sigma^2}<\chi^2_{0.975,n-1})=0.95$$
 
-```{r, warning=FALSE, fig.height=3.5, out.width='90%', fig.align='center'}
+```{r, warning=FALSE, fig.height=3, out.width='100%'}
 df <- 9  # Degrees of freedom for chi-square distribution
 
 # Create a sequence of x values
@@ -682,12 +687,13 @@ x_vals <- seq(0, 25, by =0.01)
 # Calculate the density values for the chi-square distribution
 chi_density <- dchisq(x_vals, df)
 
-par(mar = c(4, 2, 2, 1))
-
 # Plotting
-plot(x_vals, chi_density, type = "l", xlim = c(0, 25), ylim = c(0, 0.15),
+plot(x_vals, chi_density, type = "l", xlim = c(0, 25), ylim = c(0, 0.2),
      main = "Chi-Square with 9df",
      yaxs = "i", xlab = "x", ylab = "", lwd = 2, axes = FALSE)
+
+# Add x-axis
+
 
 # Add a vertical line at the mean (mu)
 abline(v = 9, col = "red", lwd = 2)
@@ -724,14 +730,16 @@ How we use it to construct the confidence interval?
 --
 So more generally, the confidence interval for the sample variance is 
 
-$$CI_{1-\alpha}=\left(\frac{(n-1)S^2}{\chi^2_{1-\frac{\alpha}{2},n-1}},\; \frac{(n-1)S^2}{\chi^2_{\frac{\alpha}{2},n-1}}\right)$$
+$$CI_{1-\alpha}=\left\{\frac{(n-1)S^2}{\chi^2_{1-\frac{\alpha}{2},n-1}}, \frac{(n-1)S^2}{\chi^2_{\frac{\alpha}{2},n-1}}\right\}$$
 - Where $\chi^2_{1-\frac{\alpha}{2},n-1}$ and $\chi^2_{\frac{\alpha}{2},n-1}$ are quantiles of the $\chi^2_{n-1}$ distribution
   - $P(X<\chi^2_{1-\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$ and $P(X<\chi^2_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$
-- You can find them in R using: 
+- You can find them in R using:
 
 ```r
 qchisq(alpha, df)
 ```
+
+.learnr-ref[**LearnR:** Finding critical values in chi-square — use `qchisq()` to find quantiles for a 90% CI]
 
 ---
 ### Practice: Sausage Variance CI

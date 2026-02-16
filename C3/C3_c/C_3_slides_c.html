@@ -87,33 +87,32 @@ class: inverse, middle
 ---
 ### Hypothesis Testing
 
-Let&#39;s go back to our question. Can we get a higher price if cleanliness level is above 4.5?
+Let&#39;s go back to our question: can we get a higher price if cleanliness level is above 4.5?
 
+This type of question can be answered with **hypothesis testing**, where we see which of two competing hypotheses is more likely given the data.
 
-This type of questions can be answered with hypothesis testing where we try to see which one of competing hypothesis is more likely to be true. 
-
-- .blue[Hypothesis] is a claim about a parameter or a distribution. 
-
---
-1. `\(H_0\)` **Null Hypothesis**: 
-  - Claim to be tested, skeptical perspective
+- .blue[Hypothesis] is a claim about a parameter or a distribution.
 
 --
-      - Prices of clean and dirty apartments are equal 
+1. `\(H_0\)` **Null Hypothesis**:
+  - Claim to be tested, the skeptical perspective
+
+--
+      - Prices of clean and dirty apartments are equal
       - `\(H_0: \mu_c=\mu_d\)`
 
 --
 2. `\(H_A\)` **Alternative Hypothesis**:
-  - An alternative idea under consideration
+  - An alternative claim under consideration
 
 --
       - Prices of clean apartments are higher than prices of dirty apartments
-       - `\(H_A: \mu_c&gt;\mu_d\)`
+      - `\(H_A: \mu_c&gt;\mu_d\)`
 
 --
 
-- Assume that the null is true and see if there is enough of data to reject the null in favor of the alternative.
-- You either reject the null, or fail to reject it (but not accept it)
+- Assume the null is true and see if there is enough data to reject it in favor of the alternative
+- You either reject the null, or fail to reject it (but never &quot;accept&quot; it)
 ---
 ### Hypothesis Testing
 
@@ -159,28 +158,27 @@ Some examples of hypotheses testing:
 - Hypotheses are always about parameters! Never about sample statistics
 
 ---
-### Testing procedure
+### Testing Procedure
 
 
-**Test procedure** is a rule based on a sample data whether to reject the null or not.
- 
-It usually relies on two elements:
- - .blue[Test statistics] 
-  - Function of the sample data summarizing evidence for or against a hypothesis 
-  - Usually we know how it should be distributed under the null. Ex: standardized mean
- - .blue[Rejection region] 
-  - Values of the test statistics such that we would reject the null if we observe them
-    - Basically, values which are very unlikely under the null hypothesis
-  - Typically threshold based:
-  - Such as: reject `\(H_0\)` if the test statistic &gt; k, where k is some threshold
+A **test procedure** is a rule based on sample data for deciding whether to reject the null or not.
+
+It relies on two elements:
+ - .blue[Test statistic]
+  - A function of the sample data that summarizes evidence for or against the hypothesis
+  - We know how it is distributed under the null (e.g. standardized mean)
+ - .blue[Rejection region]
+  - Values of the test statistic for which we reject the null
+    - These are values that are very unlikely under the null hypothesis
+  - Typically threshold-based: reject `\(H_0\)` if the test statistic &gt; k
  
 
 ---
-### Testing procedure: Example
+### Testing Procedure: Example
 
 Let&#39;s go back to the sugar example. Suppose we have a sample `\(n=36\)`.
 
- - .blue[Test statistics] 
+ - .blue[Test statistic]
   - Our test statistic could be:
   `$$z=\frac{\bar{x}-100}{\underbrace{s_x/\sqrt 36}_{SE}}$$`
 
@@ -194,29 +192,29 @@ Let&#39;s go back to the sugar example. Suppose we have a sample `\(n=36\)`.
 
 
 ---
-### Testing procedure: Example
+### Testing Procedure: Example
 
 - Suppose I reject if `\(z&gt;1.645\)`
-- Suppose `\(\sigma_x=20\)`. How big needs to be the mean to reject the null?
+- Suppose `\(\sigma_x=20\)`. How large does the mean need to be to reject the null?
 
 --
 
 Reject if: 
 - `\(\frac{\bar{x}-100}{20/\sqrt 36}&gt;1.645\)`
 - Or equivalently if `\(\bar{x}&gt;105.483\)`
-- Those two formulations are fine 
---
+- Those two formulations are equivalent
 
+--
 - Why don&#39;t we reject even if `\(\bar{x}=103\)`?
 
 
 
 
 ---
-### Testing procedure: Example
-- Because there could be randomness in the sample:
+### Testing Procedure: Example
+- Because there is randomness in the sample:
 
-- So even if the `\(\mu_s=100\)` we could get a sample with `\(\bar{x}&gt;100\)`
+- Even if `\(\mu_s=100\)`, we could get a sample with `\(\bar{x}&gt;100\)`
 
 
 .center[
@@ -231,14 +229,14 @@ Reject if:
 
 
 ---
-### Testing procedure up to now
+### Testing Procedure Summary
 
-1. Set up your hypothesis
+1. Set up your hypotheses
 2. Calculate your test statistic
 3. Check it against the rejection region
-4. Decision: Reject or not your null hypothesis
+4. Decision: Reject or fail to reject the null hypothesis
 
-We will now go into details of all these steps. 
+We will now go into the details of each step.
 
 ---
 layout: false
@@ -310,7 +308,7 @@ Do people spend more if they get free shipping? (`\(H_0\)` is that they spend th
 - Example:  You were very unlucky in your sampling, by chance you  got a sample with those rare packages with  a lot of sugar and your `\(\bar{x}=106\)` which means `\(z=\frac{106-100}{\frac{20}{\sqrt{36}}}=1.8\)`. According to the test procedure, you reject the null. You make an error.
 
 --
-- Q: What is the probability that (standarized) mean of these 36 is in the rejection region (larger than 1.645)?
+- Q: What is the probability that the (standardized) mean of these 36 is in the rejection region (larger than 1.645)?
 
 
 --
@@ -340,6 +338,8 @@ Do people spend more if they get free shipping? (`\(H_0\)` is that they spend th
 - What would be the critical value for `\(\alpha=0.1\)`?
 - What would be the critical value for `\(\alpha=0.01\)`?
 - What would be the critical value for `\(\alpha=0\)`?
+
+.learnr-ref[**LearnR:** Critical values — use `qnorm()` to find the critical value for a given `\(\alpha\)`]
 
 .learnr-ref[**LearnR:** Testing intuition &amp; Type 1 error — simulate samples and see how often you&#39;d incorrectly reject]
 
@@ -371,7 +371,7 @@ Do people spend more if they get free shipping? (`\(H_0\)` is that they spend th
 
 ### Probability of type 2 error
 
-- We need to rewrite it so we have `\(\frac{\bar{x}-110}{20/ \sqrt 36}\)` on the left hands side. 
+- We need to rewrite it so we have `\(\frac{\bar{x}-110}{20/ \sqrt 36}\)` on the left-hand side. 
 
 
 `$$\scriptsize \beta
@@ -395,8 +395,9 @@ Do people spend more if they get free shipping? (`\(H_0\)` is that they spend th
 
 - Depends on what true `\(\mu\)` is and where our rejection region is!
 
+- When you decrease probability of type 1 error, you increase the probability of type 2 error
 
-- When you decrease probability of error type 1, you increase the probability of error type 2
+.learnr-ref[**LearnR:** Type 2 error — simulate samples when the null is false and count how often you fail to reject]
 
 
 ---
@@ -405,9 +406,9 @@ Do people spend more if they get free shipping? (`\(H_0\)` is that they spend th
 `$$\beta=P(\text{Type 2 error})=P(Z&lt;\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$`
 
 `$$\alpha=P(\text{Type 1 error})=P(Z&gt;z_{\alpha})=1-\underbrace{\Phi(z_{\alpha})}_{\text{Normal CDF}}$$`
-If I change critical value `\(z_{\alpha}\)`, it will have the opposite effect on them. 
+If I change critical value `\(z_{\alpha}\)`, it will have the opposite effect on them.
 
-Source: https://shiny.rit.albany.edu/stat/betaprob/
+Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
 ---
 ### Power of a test
@@ -420,7 +421,7 @@ Source: https://shiny.rit.albany.edu/stat/betaprob/
 
 `$$Power=1-P(z&lt;\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})$$`
 
-Source: https://shiny.rit.albany.edu/stat/betaprob/
+Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
 Power increases if:
 - n increases
@@ -432,13 +433,26 @@ Power increases if:
 
 ### A/B Test Power: Professional Photos
 
+- Airbnb wants to test if professional photos increase weekly revenue
+- Design:
+  - Control: no photos (baseline `\(\mu_0=2000\)`)
+  - Treatment: professional photos (suspected `\(\mu_a=2200\)`)
+  - `\(\sigma=600\)`, `\(n=100\)` per group, `\(\alpha=0.01\)`
+
+--
+- Steps:
+  1. State hypotheses: `\(H_0: \mu_T - \mu_C = 0\)` vs `\(H_A: \mu_T - \mu_C &gt; 0\)`
+  2. Find the critical value
+  3. Compute power `\(= 1 - \beta\)`
+  4. Find minimum `\(n\)` for 80% power
+
 .learnr-ref[**LearnR:** Power exercise — Design the Airbnb photography A/B test, calculate power, and find minimum sample size]
 
 ---
 
-### General procedure:
+### General Procedure
 
-1. Determine the the null and the alternative hypothesis
+1. Determine the null and alternative hypotheses
 
 --
 2. Collect your sample of independent observations
@@ -447,13 +461,13 @@ Power increases if:
 3. Choose the appropriate test
 
 --
-4. Calculate test statistic
+4. Calculate the test statistic
 
 --
 5. Compare it to the rejection region
 
 --
-5. Reject or not your null hypothesis
+6. Reject or fail to reject the null hypothesis
 
 
 
@@ -461,9 +475,9 @@ Power increases if:
 Let&#39;s talk about **appropriate tests**!
 ---
 
-### Appropriate tests
+### Choosing the Appropriate Test
 
-Choice of the test statistic and rejection region will depend on:
+The choice of test statistic and rejection region depends on:
 
 - **Type of data we are testing?**
   - .blue[Single sample]
@@ -578,8 +592,9 @@ https://kzaremba.shinyapps.io/Hypothesis_Confidence/
 
   `$$\scriptsize  \mu_0&lt;\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0&gt;\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$`
 
-  
+.learnr-ref[**LearnR:** CI and Hypothesis Test equivalence — verify that rejecting at `\(\alpha\)` matches the CI not containing `\(\mu_0\)`]
 
+.learnr-ref[**LearnR:** One-Sample t-test — Test whether a Twitter campaign generates at least 200 likes per tweet]
 
 ---
 
@@ -669,8 +684,8 @@ Where
 
 ### P-values
 
-**Technically:**
-The P-value is the probability (so between 0 and 1), under the null hypothesis, of obtaining a value of the test statistic at least as contradictory to H0 as the value calculated from the available sample. 
+**Definition:**
+The p-value is the probability (between 0 and 1), under the null hypothesis, of obtaining a test statistic at least as extreme as the one calculated from the sample.
 
 Depends on:
 - Your hypothesis
@@ -706,12 +721,15 @@ The probability that a statistic we calculated (or more extreme value) could ari
 ---
 ### P-value in two-sided test
 
-Source: https://rpsychologist.com/pvalue/
+- In a two-sided test, the p-value accounts for **both tails**
+- We double the one-tail probability: `\(p\text{-value}=2P(Z \geq |z_{test}|)\)`
+
+Interactive visualization: https://rpsychologist.com/pvalue/
 
 .learnr-ref[**LearnR:** P values — compute the p-value for a coin fairness test]
 
 ---
-### P-Values and test significance
+### P-values and Test Significance
 
 - In our example we calculated the p-value of 0.066
 - Would the test at `\(\alpha=0.05\)` reject the null?
@@ -875,7 +893,7 @@ Where
 - .blue[Intuition]: 
   -  We never reject `\(H_0\)` if `\(\bar{X}-\bar{Y} \geq \Delta_0\)`.
   -  We reject `\(H_0\)` if `\(\bar{X}-\bar{Y}\)` is sufficiently smaller than `\(\Delta_0\)`
-  -  If null is true ( `\(\bar{X}-\bar{Y}=\Delta_0\)` ) then we reject with probability
+  -  If null is true ( `\(\mu_X-\mu_Y=\Delta_0\)` ) then we reject with probability
 `$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}&lt;-z_\alpha)=P(Z&lt;-z_\alpha)=\alpha$$`
 
 
@@ -917,7 +935,7 @@ Where
 - .blue[Intuition]: 
   -  We never reject `\(H_0\)` if `\(\bar{X}-\bar{Y} \leq \Delta_0\)`.
   -  We reject `\(H_0\)` if `\(\bar{X}-\bar{Y}\)` is sufficiently larger than `\(\Delta_0\)`
-  -  If null is true ( `\(\bar{X}-\bar{Y}=\Delta_0\)` ) then we reject with probability
+  -  If null is true ( `\(\mu_X-\mu_Y=\Delta_0\)` ) then we reject with probability
 `$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}&gt;z_\alpha)=P(Z&gt;z_\alpha)=\alpha$$`
 
 
@@ -931,26 +949,28 @@ Where
 
 &lt;img src=&quot;data:image/png;base64,#C_3_slides_c_files/figure-html/abd-1.png&quot; width=&quot;100%&quot; /&gt;
 
-.learnr-ref[**LearnR:** Two Sample Difference — Calculate test statistic and p-value for this comparison]
-
-
 - State the null and alternative hypothesis
 
 --
 - Calculate the value of the test statistic
 
 --
-- Calculate the p value
+- Calculate the p-value
 
 --
-- At which `\(\alpha\)` we reject the null?
+- At which `\(\alpha\)` do we reject the null?
 
 --
-- Calculate 95\% confidence interval for the difference
+- Calculate 95% confidence interval for the difference
 
+.learnr-ref[**LearnR:** Two Sample Difference — Calculate test statistic and p-value for this comparison]
+
+.learnr-ref[**LearnR:** Using `t.test()` in R — learn the built-in function for one-sample, two-sample, and paired tests]
 
 ---
-We suspect Burger King might have larger caloric content for kids&#39; meal. Let&#39;s test it.
+### Exercise: McDonald&#39;s vs Burger King
+
+We suspect Burger King might have larger caloric content for kids&#39; meals. Let&#39;s test it.
 
 |   Sample   |    n    | Sample Mean | Sample Standard Deviation |
 |------------|---------|-------------|---------------------------|
@@ -968,15 +988,16 @@ We suspect Burger King might have larger caloric content for kids&#39; meal. Let
 - Determine the appropriate number of degrees of freedom
 
 --
-- Calculate the p value
+- Calculate the p-value
 
 --
-- At which `\(\alpha\)` we reject the null?
+- At which `\(\alpha\)` do we reject the null?
 
+.learnr-ref[**LearnR:** Small-sample t-test — work through this McDonald&#39;s vs Burger King comparison with exact df]
 
 ---
 
-## A/B Testing: The Business Question
+### A/B Testing: The Business Question
 
 .center[
 &lt;img src=&quot;data:image/png;base64,#abb.png&quot; width=&quot;60%&quot; style=&quot;display: block; margin: auto;&quot; /&gt;
@@ -996,11 +1017,11 @@ We suspect Burger King might have larger caloric content for kids&#39; meal. Let
     - Better customer service
 
 --
-- Revenues may reflect these differences, not the photos themselves.  
-- Test doesn&#39;t tell us anything about causality, just association.
+- Revenues may reflect these differences, not the photos themselves.
+- A simple comparison only tells us about **association**, not causality.
 ---
 
-## The Business Decision
+### The Business Decision
 
 - Should Airbnb **invest in professional photography** for hosts?
 
@@ -1031,7 +1052,7 @@ We need a method to **isolate the effect of photos**.
 
 ---
 
-## The Setup
+### The Setup
 
 We divide hosts into **two groups**:
 
@@ -1050,48 +1071,45 @@ We divide hosts into **two groups**:
 - Without randomization: groups differ in many ways.  
 - With randomization: groups are (on average) identical, except for photos.  
 
-.center[💡 This is what gives us **causal inference**!]
+.center[This is what gives us **causal inference**!]
 
 
 ---
 
-## Classroom Exercise
+### Classroom Exercise: Randomization Check
 
-- Take sample Airbnb listings
+- Take a sample of Airbnb listings
 - Randomly assign to two groups
-- Compare characteristics:
-  - Beds
-  - Location
+- Compare characteristics (beds, location)
 
-They should look very similar.
+They should look very similar!
 
 .learnr-ref[**LearnR:** AB Testing Randomization — sample listings, randomize, and check balance]
 
 --
 
-Why? We are practically taking two samples from the same populations.
+Why? We are taking two samples from the same population.
 
 - All properties and expectations will be the same for both samples
 
 ---
 
-# Measuring the Effect
+### Measuring the Effect
 
-- After randomization: **the only difference = photos**.  
+- After randomization: **the only difference is the photos**
 
 - Provide photography to treatment group
 - Wait to see potential effects
 - Collect outcome data (revenue, reviews, bookings)
-- We run a simple two-samples tests between treatment and control
-- If treatment group earns more revenue →  
-  we know it’s **caused by the professional photos**.
+- Run a simple two-sample test between treatment and control
+- If the treatment group earns more revenue, we know it was **caused by the professional photos**
 
 .center[**This is the causal effect.**]
 
 --
 
-- Tool extremely often used in modern business, especially in Tech. 
-- We all have been subjects of these experiments, without knowing. 
+- A/B testing is used extensively in modern business, especially in tech
+- We have all been subjects of these experiments, often without knowing
 
 
 ---
@@ -1200,10 +1218,12 @@ high school
 --
 - Not paired
 
+.learnr-ref[**LearnR:** Paired or Unpaired? — practice classifying four more business scenarios]
 
 ---
+### Exercise: Does IQ Decrease with Age?
 
-A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using `\(\alpha=0.01\)` test the hypothesis that IQ decreases with age.
+A psychologist thinks that age influences IQ. They take a random sample of 100 people aged 40. For each person we know their IQ at age 16 and now. On average, IQ at young age was 8 points higher than at age 40. The standard deviation of that difference was 7 points. Using `\(\alpha=0.01\)`, test the hypothesis that IQ decreases with age.
 
 .learnr-ref[**LearnR:** Paired Data test for means — work through this IQ example in R]
 
@@ -1274,9 +1294,9 @@ where `\(\hat{\rho}(C,P)\)` is sample correlation coefficient
 
 
 ---
-### Exercise
+### Exercise: Correlation Test
 
-Suppose you have a random sample of 27 units (from a bivariate normal). X measures client&#39;s age and Y measures their spending. You calculated the correlation coefficient of `\(\hat{\rho}=-0.45\)`. Can you reject null of `\(\rho=0\)` in favor of alternative `\(\rho \neq 0\)` at 5% significance level?
+Suppose you have a random sample of 27 units (from a bivariate normal). X measures client&#39;s age and Y measures their spending. You calculated the correlation coefficient `\(\hat{\rho}=-0.45\)`. Can you reject the null `\(\rho=0\)` in favor of the alternative `\(\rho \neq 0\)` at the 5% significance level?
 
 .learnr-ref[**LearnR:** Paired Data Test for Correlation — compute the t-statistic for this exercise]
 
