@@ -605,8 +605,9 @@ $$Var(\hat{\theta})=E[(\hat{\theta}-E[\hat\theta])^2]$$
 - In the example above
 
 $$Var(\hat\mu_A)=Var\left(\frac{3X_1 + X_2}{4}\right)>Var\left(\frac{X_1+X_2+X_3+X_4}{4}\right)=Var(\hat\mu_B)$$
-- Relative efficiency of two (unbiased) estimators is the ratio of their variances
-$$\small Eff_{\hat\mu_A,\hat\mu_B}=\frac{Var(\hat\mu_A)}{Var(\hat\mu_B)}=\frac{10\sigma^2/16}{4\sigma^2/16}=\frac{10}{4}=\frac{5}{2}$$
+- Relative efficiency of $\hat\mu_B$ to $\hat\mu_A$: how many times more efficient is B than A?
+$$\small Eff(\hat\mu_B,\hat\mu_A)=\frac{Var(\hat\mu_A)}{Var(\hat\mu_B)}=\frac{10\sigma^2/16}{4\sigma^2/16}=\frac{10}{4}=\frac{5}{2}$$
+- B is 2.5 times as efficient as A. When $Eff>1$, the first estimator is more efficient
 
 ---
 ### Variance: Examples

@@ -506,9 +506,9 @@ observeEvent(input$draw_sample_dist, {
 axis(1,
      at = c(-zcrit, 0, zcrit),
      labels = c(
-       expression(mu - z[alpha/2] %*% frac(s, sqrt(n))),
+       expression(mu - z[1-alpha/2] %*% frac(s, sqrt(n))),
        expression(mu),
-       expression(mu + z[alpha/2] %*% frac(s, sqrt(n)))
+       expression(mu + z[1-alpha/2] %*% frac(s, sqrt(n)))
      ),
      padj = 0.75
 )
@@ -530,9 +530,9 @@ axis(3,
      at = c(zval - zcrit, zval, zval + zcrit),
      padj = -0.75,
      labels = c(
-  expression(bar(x) - z[alpha/2] %*% frac(s, sqrt(n))),
+  expression(bar(x) - z[1-alpha/2] %*% frac(s, sqrt(n))),
   expression(bar(x)),
-  expression(bar(x) + z[alpha/2] %*% frac(s, sqrt(n)))
+  expression(bar(x) + z[1-alpha/2] %*% frac(s, sqrt(n)))
 )
 )
     text(zval, 0.05, bquote(bar(x) == .(round(xbar, 2))), pos = ifelse(zval > 0, 4, 2))
@@ -729,6 +729,60 @@ mean(x_108)
 ```
 
 
+
+---
+
+## Sugar sticker z-test
+
+A food company produces snack bars. A bar gets an "excessive sugar" sticker if the mean sugar content exceeds 100g. The population standard deviation is known: σ = 20g. You take a sample of n = 36 bars and observe a sample mean of x̄ = 106.
+
+Test H₀: μ ≤ 100 vs H_A: μ > 100 at the 5% significance level.
+
+```{r sugar-ztest, exercise=TRUE}
+# Given
+xbar <- 106
+mu0  <- 100
+sigma <- 20
+n    <- 36
+
+# 1) Calculate the z test statistic
+# z <- ___
+
+
+# 2) Find the critical value for a one-sided test at α = 0.05
+# z_crit <- qnorm(___)
+
+
+# 3) Do you reject H₀?
+# z > z_crit
+
+
+# 4) Calculate the p-value
+# p_value <- 1 - pnorm(___)
+
+```
+
+```{r sugar-ztest-solution}
+xbar <- 106
+mu0  <- 100
+sigma <- 20
+n    <- 36
+
+# 1) z test statistic
+z <- (xbar - mu0) / (sigma / sqrt(n))
+z
+
+# 2) Critical value (one-sided, α = 0.05)
+z_crit <- qnorm(0.95)
+z_crit
+
+# 3) Reject H₀?
+z > z_crit   # TRUE → reject
+
+# 4) p-value
+p_value <- 1 - pnorm(z)
+p_value
+```
 
 ---
 
@@ -939,13 +993,52 @@ What is the smallest alpha at which you would still reject?
 
 ---
 
+## CI and Hypothesis Test: Two Sides of the Same Coin
+
+This exercise demonstrates the link between confidence intervals and hypothesis tests. You'll see that rejecting $H_0$ at significance $\alpha$ is equivalent to the $1-\alpha$ CI **not** containing $\mu_0$.
+
+**Scenario:** A food company claims their cereal boxes contain $\mu_0 = 500$g on average. You sample $n = 40$ boxes and get $\bar{x} = 492$ with $s = 25$.
+
+```{r ex_ci_ht_link, exercise=TRUE}
+n <- 40
+xbar <- 492
+s <- 25
+mu0 <- 500
+alpha <- 0.05
+
+# 1) Compute the test statistic for H0: mu = 500 vs H_A: mu != 500
+# z_test <- (xbar - mu0) / (s / sqrt(n))
+# z_test
+
+# 2) Find the critical values for a two-sided test at alpha = 0.05
+# z_crit <- qnorm(1 - alpha/2)
+# z_crit
+
+# 3) Do you reject H0?
+# abs(z_test) > z_crit
+
+# 4) Now compute the 95% confidence interval
+# ci_lower <- xbar - z_crit * (s / sqrt(n))
+# ci_upper <- xbar + z_crit * (s / sqrt(n))
+# c(ci_lower, ci_upper)
+
+# 5) Does the CI contain mu0 = 500?
+# mu0 >= ci_lower & mu0 <= ci_upper
+
+# Compare: the test rejects <=> the CI does NOT contain mu0
+```
+
+Try changing `alpha` to 0.01. Does the conclusion change for both the test and the CI?
+
+---
+
 ## P values
 
 
 We want to test whether a coin is fair:
 
-- **H₀:** π = 0.50 (the coin is fair)  
-- **H₁:** π ≠ 0.50 (the coin is biased)  
+- **H₀:** π = 0.50 (the coin is fair)
+- **H₁:** π ≠ 0.50 (the coin is biased)
 
 Suppose we toss a coin 100 times and observe **58 heads**.  What is the p-value?
 
@@ -995,121 +1088,6 @@ Do we reject at 10%, 5%, 1%?
 
 ---
 
-## AB Testing Randomization
-
-Before this exercise - load the data on airbnb Listings
-
-Step 1: Let's first take a random sample of 2000 listings for our experiment
-```{r ex_AB_1, exercise=TRUE}
-# Load your listing data — update the path to match your local directory
-load("../../Intro_to_r/listings.Rda")
-
-listings$bed_num=as.numeric(listings$beds) ##transform number of beds to numeric and 
-listings=listings[!is.na(listings$bed_num),] ### keep only those with a valid number of beds
-exp_listings <- listings[sample(nrow(listings), size = 2000, replace = FALSE), ]
-
-
-```
-
-Step 2: Let's randomize them into treatment and control group
-  - With 50% probability you are in the treatment, otherwise in control
-```{r ex_AB_2, exercise=TRUE, exercise.setup="ex_AB_1"}
-
-exp_listings$group <- ifelse(rbinom(nrow(exp_listings), 1, 0.5) == 1, "Treatment", "Control") # Draw a Bernoulli variable (binomial with n=1) for everyone. If you got 1, you are treated; if 0, control
-
-table(exp_listings$group)
-
-```
-
-
-Step 3: Let's check if number of beds and neighborhoods are more or else equally distributed among the two groups
-```{r ex_AB_3, exercise=TRUE, exercise.setup="ex_AB_2"}
-##transform to numeric
-A=exp_listings$bed_num[exp_listings$group=="Treatment"]
-B=exp_listings$bed_num[exp_listings$group=="Control"]
-
-(mean(A)-___)/sqrt(var(A)/___+var(B)/___) #t statistic for difference in means
-
-
-#how would you check if the distribution across neighborhoods is equal?
-table(exp_listings$neighbourhood_cleansed,exp_listings$group) 
-
-```
-
-Now we can organize photography for the treatment group and run the experiment! After a month we run a test to see if they have higher number of bookings. This would be a causal difference due to photography, because everything else is the same across the two groups!
-
----
-
-## Paired Data test for means
-
-A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using  α=0.01 test the hypothesis that IQ decreases with age.
- 
-
-```{r ex_0131342342, exercise=TRUE}
-n=100
-Diff=8
-SD=7
-alpha=0.01
-
-
-```
-
-
-
-
-
----
-
-## Paired Data Test for Correlation
-
-Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending. You calculated the correlation coefficient of 0.45. Can you reject null of 
-ρ=0 in favor of alternative  ρ≠0 at 5% significance level?
-
-```{r ex_01313423443432, exercise=TRUE}
-
-```
-
----
-
-## CI and Hypothesis Test: Two Sides of the Same Coin
-
-This exercise demonstrates the link between confidence intervals and hypothesis tests. You'll see that rejecting $H_0$ at significance $\alpha$ is equivalent to the $1-\alpha$ CI **not** containing $\mu_0$.
-
-**Scenario:** A food company claims their cereal boxes contain $\mu_0 = 500$g on average. You sample $n = 40$ boxes and get $\bar{x} = 492$ with $s = 25$.
-
-```{r ex_ci_ht_link, exercise=TRUE}
-n <- 40
-xbar <- 492
-s <- 25
-mu0 <- 500
-alpha <- 0.05
-
-# 1) Compute the test statistic for H0: mu = 500 vs H_A: mu != 500
-# z_test <- (xbar - mu0) / (s / sqrt(n))
-# z_test
-
-# 2) Find the critical values for a two-sided test at alpha = 0.05
-# z_crit <- qnorm(1 - alpha/2)
-# z_crit
-
-# 3) Do you reject H0?
-# abs(z_test) > z_crit
-
-# 4) Now compute the 95% confidence interval
-# ci_lower <- xbar - z_crit * (s / sqrt(n))
-# ci_upper <- xbar + z_crit * (s / sqrt(n))
-# c(ci_lower, ci_upper)
-
-# 5) Does the CI contain mu0 = 500?
-# mu0 >= ci_lower & mu0 <= ci_upper
-
-# Compare: the test rejects <=> the CI does NOT contain mu0
-```
-
-Try changing `alpha` to 0.01. Does the conclusion change for both the test and the CI?
-
----
-
 ## Small-Sample t-test: McDonald's vs Burger King
 
 We suspect Burger King might have larger caloric content for kids' meals. Both samples are small, so we use the t-distribution.
@@ -1155,53 +1133,67 @@ At which significance levels do you reject? Does the choice of df formula matter
 
 ---
 
-## Using `t.test()` in R
+## AB Testing Randomization
 
-So far you have computed test statistics and p-values by hand. In practice, R has a built-in `t.test()` function that does everything for you. Let's learn to use it.
+Before this exercise - load the data on airbnb Listings
 
-```{r setup-ttest-demo, include=FALSE}
-set.seed(42)
-group_A <- rnorm(30, mean = 52, sd = 10)
-group_B <- rnorm(35, mean = 48, sd = 12)
+Step 1: Let's first take a random sample of 2000 listings for our experiment
+```{r ex_AB_1, exercise=TRUE}
+# Load your listing data — update the path to match your local directory
+load("../../Intro_to_r/listings.Rda")
+
+listings$bed_num=as.numeric(listings$beds) ##transform number of beds to numeric and
+listings=listings[!is.na(listings$bed_num),] ### keep only those with a valid number of beds
+exp_listings <- listings[sample(nrow(listings), size = 2000, replace = FALSE), ]
+
+
 ```
 
-**Part a)** One-sample t-test: test whether `group_A` has mean equal to 50.
+Step 2: Let's randomize them into treatment and control group
+  - With 50% probability you are in the treatment, otherwise in control
+```{r ex_AB_2, exercise=TRUE, exercise.setup="ex_AB_1"}
 
-```{r ex_ttest_one, exercise=TRUE, exercise.setup="setup-ttest-demo"}
-# One-sample test: H0: mu = 50 vs HA: mu != 50
-# t.test(group_A, mu = 50)
+exp_listings$group <- ifelse(rbinom(nrow(exp_listings), 1, 0.5) == 1, "Treatment", "Control") # Draw a Bernoulli variable (binomial with n=1) for everyone. If you got 1, you are treated; if 0, control
 
-# For a one-sided test (HA: mu > 50):
-# t.test(group_A, mu = 50, alternative = "greater")
+table(exp_listings$group)
+
 ```
 
-**Part b)** Two-sample t-test: test whether `group_A` and `group_B` have the same mean.
 
-```{r ex_ttest_two, exercise=TRUE, exercise.setup="setup-ttest-demo"}
-# Two-sample test: H0: mu_A = mu_B vs HA: mu_A != mu_B
-# t.test(group_A, group_B)
+Step 3: Let's check if number of beds and neighborhoods are more or else equally distributed among the two groups
+```{r ex_AB_3, exercise=TRUE, exercise.setup="ex_AB_2"}
+##transform to numeric
+A=exp_listings$bed_num[exp_listings$group=="Treatment"]
+B=exp_listings$bed_num[exp_listings$group=="Control"]
 
-# Compare: what does the output give you?
-# - test statistic (t)
-# - degrees of freedom (df)
-# - p-value
-# - confidence interval for the difference
-# - sample means
+(mean(A)-___)/sqrt(var(A)/___+var(B)/___) #t statistic for difference in means
+
+
+#how would you check if the distribution across neighborhoods is equal?
+table(exp_listings$neighbourhood_cleansed,exp_listings$group)
+
 ```
 
-**Part c)** Paired t-test: suppose both groups represent the same 30 subjects measured before and after a treatment.
+Now we can organize photography for the treatment group and run the experiment! After a month we run a test to see if they have higher number of bookings. This would be a causal difference due to photography, because everything else is the same across the two groups!
 
-```{r ex_ttest_paired, exercise=TRUE, exercise.setup="setup-ttest-demo"}
-before <- group_A[1:30]
-after  <- group_B[1:30]
+---
 
-# Paired test: H0: mu_diff = 0 vs HA: mu_diff != 0
-# t.test(before, after, paired = TRUE)
+## Paired Data test for means
 
-# This is equivalent to a one-sample test on the differences:
-# diffs <- before - after
-# t.test(diffs, mu = 0)
+A psychologist thinks that age influences IQ. They take a random sample of 100 people of age 40. For each person we know their IQ at age 16 and now. On average, in this sample, IQ at young age was 8 points higher than at age 40. Standard deviation of that difference was 7 points. Using  α=0.01 test the hypothesis that IQ decreases with age.
+
+
+```{r ex_0131342342, exercise=TRUE}
+n=100
+Diff=8
+SD=7
+alpha=0.01
+
+
 ```
+
+
+
 
 ---
 
@@ -1251,6 +1243,67 @@ For each scenario, decide whether the data is **paired** or **unpaired** (two in
 # Reason:
 
 
+```
+
+---
+
+## Paired Data Test for Correlation
+
+Suppose you have a random sample of 27 units (from a bivariate normal). X measures client's age and Y measures their spending. You calculated the correlation coefficient of 0.45. Can you reject null of
+ρ=0 in favor of alternative  ρ≠0 at 5% significance level?
+
+```{r ex_01313423443432, exercise=TRUE}
+
+```
+
+---
+
+## Using `t.test()` in R
+
+So far you have computed test statistics and p-values by hand. In practice, R has a built-in `t.test()` function that does everything for you. Let's learn to use it.
+
+```{r setup-ttest-demo, include=FALSE}
+set.seed(42)
+group_A <- rnorm(30, mean = 52, sd = 10)
+group_B <- rnorm(35, mean = 48, sd = 12)
+```
+
+**Part a)** One-sample t-test: test whether `group_A` has mean equal to 50.
+
+```{r ex_ttest_one, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+# One-sample test: H0: mu = 50 vs HA: mu != 50
+# t.test(group_A, mu = 50)
+
+# For a one-sided test (HA: mu > 50):
+# t.test(group_A, mu = 50, alternative = "greater")
+```
+
+**Part b)** Two-sample t-test: test whether `group_A` and `group_B` have the same mean.
+
+```{r ex_ttest_two, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+# Two-sample test: H0: mu_A = mu_B vs HA: mu_A != mu_B
+# t.test(group_A, group_B)
+
+# Compare: what does the output give you?
+# - test statistic (t)
+# - degrees of freedom (df)
+# - p-value
+# - confidence interval for the difference
+# - sample means
+```
+
+**Part c)** Paired t-test: suppose both groups represent the same 30 subjects measured before and after a treatment.
+
+```{r ex_ttest_paired, exercise=TRUE, exercise.setup="setup-ttest-demo"}
+before <- group_A[1:30]
+after  <- group_B[1:30]
+
+# Paired test: H0: mu_diff = 0 vs HA: mu_diff != 0
+# t.test(before, after, paired = TRUE)
+
+# This is equivalent to a one-sample test on the differences:
+# diffs <- before - after
+# t.test(diffs, mu = 0)
 ```
 
 ---

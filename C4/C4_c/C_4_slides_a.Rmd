@@ -1,5 +1,5 @@
 ---
-title: 'Class 4c: Simple OLS:  ANOVA and F-test'
+title: 'Class 4c: Simple OLS: ANOVA and F-test'
 author: "Business Forecasting"
 output:
   xaringan::moon_reader:
@@ -15,17 +15,22 @@ output:
 
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -53,15 +58,23 @@ library(DT)
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 
 
@@ -84,7 +97,7 @@ load("Daily_CMX_means2.Rda")
 
 ### ANOVA
 
-**ANOVA** = **AN**alysis of **O**f **VA**riance  
+**ANOVA** = **AN**alysis **O**f **VA**riance
 
 - In regression, ANOVA helps us assess **whether our model is useful**.  
 - It compares:  
@@ -125,7 +138,7 @@ If H₀ is rejected → our regression adds value.
 
 How do we measure explained variation?
 
-$$\small \underbrace{y_i-\bar{y}}_{\substack{Total \\ deviation}}=\underbrace{(\hat{y_i}-\bar{y})}_{\substack{Explained \\ deviation}}+\underbrace{(y_i-\hat{y_i})}_{\substack{Unexplained \\ deviation}}$$
+$$\small \underbrace{y_i-\bar{y}}_{\substack{Total \\ deviation}}=\underbrace{(\hat{y}_i-\bar{y})}_{\substack{Explained \\ deviation}}+\underbrace{(y_i-\hat{y}_i)}_{\substack{Unexplained \\ deviation}}$$
 where $\small \hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_i$
 
 
@@ -166,7 +179,7 @@ deviations_df <- data.frame(
 # Create a scatterplot of the data points
 # Add the regression line, dashed lines to show deviations, three vertical segments for our x=150, and a horizontal line for mean y
 ggplot(data_df, aes(x = x, y = y)) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE, formula = y ~ x, color = "blue") +
   geom_segment(data = predicted_df, aes(xend = x, yend = y_pred), linetype = "dashed", color = "gray", alpha=0.7) +
   geom_segment(data = deviations_df, aes(x = x, xend = x, y = y_start, yend = y_end), color = c("green", "red", "purple"), size = 1.2) +
@@ -179,24 +192,24 @@ ggplot(data_df, aes(x = x, y = y)) +
 ```
 
 ---
-### ANOVA
+### ANOVA: Sum of Squares Decomposition
 Let's move from a single deviation to sum of squared deviations:
 
 From here:
-$$y_i-\bar{y}=(\hat{y_i}-\bar{y})+(y_i-\hat{y_i})$$
+$$y_i-\bar{y}=(\hat{y}_i-\bar{y})+(y_i-\hat{y}_i)$$
 To here:
 
-$$\sum_i(y_i-\bar{y})^2=\sum_i(\hat{y_i}-\bar{y})^2+\sum_i(y_i-\hat{y_i})^2$$
+$$\sum_i(y_i-\bar{y})^2=\sum_i(\hat{y}_i-\bar{y})^2+\sum_i(y_i-\hat{y}_i)^2$$
 
 **Decomposition of variance**
 
 $$SS_T=SS_R+SS_E$$
 - $SS_T$ is total sum of squares $\sum_i(y_i-\bar{y})^2$, .blue[n-1 DoF]
-- $SS_R$ is regression sum of squares $\sum_i(\hat{y_i}-\bar{y})^2=\hat{\beta}_1^2S_{XY}$, .blue[1 DoF]
-- $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y_i})^2$, .blue[n-2 DoF]
+- $SS_R$ is regression sum of squares $\sum_i(\hat{y}_i-\bar{y})^2=\hat{\beta}_1^2S_{XY}$, .blue[1 DoF]
+- $SS_E$ is residual error sum of squares $\sum_i(y_i-\hat{y}_i)^2$, .blue[n-2 DoF]
 
 ---
-### ANOVA
+### ANOVA: Good vs Bad Model Fit
 
 - Good model explains a lot of variation in $y$
 - Bad model explains little variation in $y$
@@ -256,12 +269,12 @@ deviations_df2 <- data.frame(
 # Plotting functions
 plot_deviations <- function(data_df, predicted_df, deviations_df, y_mean, title, line_color) {
   ggplot(data_df, aes(x = x, y = y)) +
-    geom_point() +
+    geom_point(alpha = 0.5) +
     geom_smooth(method = "lm", se = FALSE, formula = y ~ x, color = line_color) +
     geom_hline(yintercept = y_mean, linetype = "dotdash", color = "orange") +
     geom_segment(data = deviations_df, aes(x = x, xend = x, y = y_start, yend = y_end), color = c("green", "red"), size = 1.2) +
     labs(title = title, x = "Predictor Variable (x)", y = "Response Variable (y)") +
-    theme_minimal()+ylim(-300,300)
+    theme_xaringan()+ylim(-300,300)
 }
 
 # Generate plots
@@ -274,46 +287,36 @@ grid.arrange(plot1, plot2, ncol=2)
 ```
 
 ---
-We usually write them in a table. Here is how it looks like for our ecobici data:
-```{r, results = "asis", echo = FALSE, message = FALSE}
+### ANOVA Table
+
+We usually write them in a table. Here is how it looks for our ecobici data:
+
+```{r, echo = FALSE, message = FALSE}
 library(knitr)
+library(kableExtra)
 
-tex2markdown <- function(texstring) {
-  writeLines(text = texstring,
-             con = myfile <- tempfile(fileext = ".tex"))
-  texfile <- pandoc(input = myfile, format = "html")
-  cat(readLines(texfile), sep = "\n")
-  unlink(c(myfile, texfile))
-}
+anova_df <- data.frame(
+  Source = c("Regression (SSR)", "Residual (SSE)", "Total (SST)"),
+  `Sum of Squares` = c("2,117,100,000", "21,895,000,000", "24,012,100,000"),
+  df = c("1", "n-2 = 779", "n-1 = 780"),
+  check.names = FALSE
+)
 
-textable <- "
-\\begin{table}[ht]
-\\centering
-\\begin{tabular}{lccc}
-\\toprule
-Source & Sum of Squares & Degrees of Freedom & DoF  \\\\
-\\midrule
-Regression & 2117100000 & 1 & 1  \\\\
-Residual Error & 21895000000 & 779 & n-2  \\\\
-Total & 24012100000 & 780 & n-1 \\\\
-\\bottomrule
-\\end{tabular}
-\\end{table}
-
-"
-
-tex2markdown(textable)
+kable(anova_df, align = "lcc") %>%
+  kable_styling(font_size = 16, full_width = FALSE) %>%
+  row_spec(0, bold = TRUE)
 ```
 
-Or in R:
-```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE, echo=TRUE}
-model=lm(Trips ~ TMP, data = Data_BP)
-anova(model)
+--
 
+In R, we can get this directly:
+```{r, message=FALSE, echo=TRUE}
+model <- lm(Trips ~ TMP, data = Data_BP)
+anova(model)
 ```
 
 ---
-### ANOVA
+### ANOVA: The F-test
 
 - But how do we use it as a formal test?
 
@@ -340,7 +343,7 @@ $$F_{test} \sim F_{1,n-2}$$
 And we reject if $F_{test}>F_{1-\alpha,1,n-2}$ (when $F_{test}$ is large)
 
 ---
-### ANOVA
+### ANOVA: Why Does the F-test Work?
 Whether $\beta_1=0$ or $\beta_1 \neq 0$:
 
 $$E(\frac{SS_E}{df_E})=E(\frac{\sum e^2}{n-2})=\sigma^2$$
@@ -354,7 +357,7 @@ And it's distributed as:
 $$\frac{SS_R}{σ^2}  \sim \chi_{1}$$
 
 ---
-### ANOVA
+### ANOVA: Rejection Rule
 
 Hence, under the null:
 
@@ -364,7 +367,7 @@ $$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}\sim F_{1,n-2}$$
 But if the alternative is true, then:
 
 $$E(SS_R)=\sigma^2+\beta_1^2S_{xx}$$
-So typically, when null is not true, nominator will be larger than the denominator
+So typically, when null is not true, the numerator will be larger than the denominator
 - Hence the $F_{Stat}$ would be large
 
 --
@@ -375,10 +378,13 @@ Intuition:
 - We can calculate p-value in the usual way:
 
 $$p-value=P(F_{1,n-2} \geq F_{test})$$
----
-### F-test
 
-I will now discuss an alternative way to interpret this test, which we will use in other tests
+<div class="learnr-ref">LearnR: ANOVA exercises 1 & 2</div>
+
+---
+### F-test: Full vs Restricted Model
+
+There is another way to think about the F-test that will be very useful later, when we have multiple regressors
 
 - Let's rewrite the **F-test** in the following way:
 
@@ -386,12 +392,12 @@ $$F_{test}=\frac{SS_R/df_R}{SS_E/df_E}=\frac{\frac{SS_T-SS_E}{df_T-df_E}}{\frac{
 --
 
 Think about two models trying to explain $y$
-- Our model with $x_i$ $\hat{y_i}=\hat{\beta_0}+\hat{\beta_1} x_i$ (call it .blue[full model])
-  - The unexplained part is measured by $SS_E=\sum(y_i-\hat{y_i})^2$
+- Our model with $x_i$: $\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1 x_i$ (call it .blue[full model])
+  - The unexplained part is measured by $SS_E=\sum(y_i-\hat{y}_i)^2$
 
 --
-- Just intercept model $\hat{y_i}=\hat{\beta_0}=\bar{y}$ (call it .blue[restricted model])
-  - The unexplained part is measured by $SS_T=\sum(y_i-\bar{y_i})^2$
+- Just intercept model: $\hat{y}_i=\hat{\beta}_0=\bar{y}$ (call it .blue[restricted model])
+  - The unexplained part is measured by $SS_T=\sum(y_i-\bar{y})^2$
 
 --
 - Hence $\frac{SS_T-SS_E}{df_T-df_E}$ measures by how much we decrease the unexplained part going from the reduced model to the full model
@@ -399,7 +405,7 @@ Think about two models trying to explain $y$
 
 ---
 
-### F-test
+### F-test: Connecting the Pieces
 
 - With one regressor, comparing model with regressor to model with just intercept is equivalent to ANOVA
 
@@ -413,12 +419,41 @@ Think about two models trying to explain $y$
 
 ---
 
-### Exercise:
+### Exercise: Influencer Marketing
 
-Suppose you test whether product placement with more popular influencers increases your website visits more. 
+Suppose you test whether product placement with more popular influencers increases your website visits more.
 From the ANOVA table of a simple linear regression model fitted with 15 observations,
 we recovered the sums of squares of the residuals and the total sum of squares; namely, $SS_E$ = 52 and $SS_T$ = 152.
-Using the F-test statistic, validate the significance of the regression at the 5% level. Make
-The entire test approach is made explicit: hypothesis, rejection region, test statistic and its
-conclusion. Use 4 decimal places.
+
+Using the F-test statistic, validate the significance of the regression at the 5% level. Make the entire test approach explicit: hypothesis, rejection region, test statistic, and conclusion. Use 4 decimal places.
+
+---
+
+### Back to the Restaurant Example
+
+Remember our question: does the **time you place an order** affect the number of **missing ingredients**?
+
+- We ran a regression: $y_i = \hat{\beta}_0 + \hat{\beta}_1 \cdot \text{hour}_i + e_i$
+- From the ANOVA table, we can see whether hour is a significant predictor
+- If $F_{test}$ is large (p-value small) → order timing **does matter**
+- This gives the restaurant chain actionable insight: place orders at optimal times
+
+---
+### Summary: ANOVA and F-test
+
+| Concept | Meaning |
+|---------|---------|
+| $SS_T$ | Total variation in $y$ |
+| $SS_R$ | Variation explained by the model |
+| $SS_E$ | Unexplained (residual) variation |
+| $R^2 = SS_R / SS_T$ | Proportion of variation explained |
+| $F_{test}$ | Is $SS_R$ large relative to $SS_E$? |
+
+--
+
+**Key takeaways:**
+- ANOVA decomposes $SS_T = SS_R + SS_E$
+- The F-test asks: does our model explain **significantly** more than just using $\bar{y}$?
+- With one regressor: $F_{test} = T_{test}^2$ (equivalent to t-test on $\beta_1$)
+- With multiple regressors (next chapter): F-test can compare any nested models
 

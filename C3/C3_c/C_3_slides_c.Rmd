@@ -168,11 +168,11 @@ It relies on two elements:
 ---
 ### Testing Procedure: Example
 
-Let's go back to the sugar example. Suppose we have a sample $n=36$.
+Let's go back to the sugar example. Suppose we have a sample $n=36$ and the population standard deviation is known, $\sigma_x=20$.
 
  - .blue[Test statistic]
   - Our test statistic could be:
-  $$z=\frac{\bar{x}-100}{\underbrace{s_x/\sqrt 36}_{SE}}$$
+  $$z=\frac{\bar{x}-100}{\underbrace{\sigma_x/\sqrt 36}_{SE}}$$
 
  - .blue[Rejection region] 
   - For a 5% significance level, our rejection region would be: 
@@ -184,6 +184,8 @@ magick::image_read_pdf("Rejection.pdf",
                        pages = 1)
 ```
 ]
+
+<div class="learnr-ref">LearnR: Sugar sticker z-test</div>
 
 
 ---
@@ -415,7 +417,7 @@ $$\small P\!\left(z
 
 - More generally for this type of test:
 
-$$\scriptsize \beta = P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\tfrac{\sigma_x}{\sqrt{n}}) = P\!\left(\frac{\bar{X}-\mu_s}{\sigma_x/\sqrt{n}}<\frac{\mu_0-\mu_s}{\sigma_x/\sqrt{n}}+z_{\alpha}\right)$$
+$$\scriptsize \beta = P_{H_A}(\bar{X}<\mu_0+z_{1-\alpha}\tfrac{\sigma_x}{\sqrt{n}}) = P\!\left(\frac{\bar{X}-\mu_s}{\sigma_x/\sqrt{n}}<\frac{\mu_0-\mu_s}{\sigma_x/\sqrt{n}}+z_{1-\alpha}\right)$$
 
 - Depends on what true $\mu$ is and where our rejection region is!
 
@@ -427,10 +429,10 @@ $$\scriptsize \beta = P_{H_A}(\bar{X}<\mu_0+z_{\alpha}\tfrac{\sigma_x}{\sqrt{n}}
 ---
 ### Trade-off between type 1 and 2 errors
 
-$$\beta=P(\text{Type 2 error})=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})}_{\text{Normal CDF}}$$
+$$\beta=P(\text{Type 2 error})=P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{1-\alpha})=\underbrace{\Phi(\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{1-\alpha})}_{\text{Normal CDF}}$$
 
-$$\alpha=P(\text{Type 1 error})=P(Z>z_{\alpha})=1-\underbrace{\Phi(z_{\alpha})}_{\text{Normal CDF}}$$
-If I change critical value $z_{\alpha}$, it will have the opposite effect on them.
+$$\alpha=P(\text{Type 1 error})=P(Z>z_{1-\alpha})=1-\underbrace{\Phi(z_{1-\alpha})}_{\text{Normal CDF}}$$
+If I change critical value $z_{1-\alpha}$, it will have the opposite effect on them.
 
 Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
@@ -443,7 +445,7 @@ Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
 $$Power=P_{H_A}(Reject)=1-\underbrace{P_{H_A}(\text{Not Reject})}_{\text{type 2 error}}=1-\beta$$
 
-$$Power=1-P(z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{\alpha})$$
+$$Power=1-P(Z<\frac{\mu_0-\mu_s}{\sigma_x/ \sqrt n}+z_{1-\alpha})$$
 
 Interactive visualization: https://shiny.rit.albany.edu/stat/betaprob/
 
@@ -566,14 +568,14 @@ $H_A: \mu \neq \mu_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>z_\frac{\alpha}{2}$$
+$$\small \frac{\bar{X}-\mu_0}{SE}<z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>z_{1-\frac{\alpha}{2}}$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-t_{(n-1),\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),\frac{\alpha}{2}}$$
+$$\small \frac{\bar{X}-\mu_0}{SE}<t_{(n-1),\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),1-\frac{\alpha}{2}}$$
 --
 Where 
-- $z_\frac{\alpha}{2}$ and $t_{(n-1),\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and t-students with n-1 degrees of freedom
+- $z_{1-\frac{\alpha}{2}}$ and $t_{(n-1),1-\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and Student's t with n-1 degrees of freedom
 
 ---
 ### Single Sample - Mean - Two Sided Test
@@ -595,9 +597,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(-z[frac(alpha,2)]),
+     labels = c(expression(z[frac(alpha,2)]),
                 expression(0),
-                expression(z[frac(alpha,2)])))
+                expression(z[1-frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
@@ -623,16 +625,16 @@ text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 ---
 ### Link between Tests and Confidence Intervals
 
-Imagine a test for a parameter $\mu$ with hypothesis $H_0=4$ and $H_A \neq 4$. 
+Imagine a test for a parameter $\mu$ with hypothesis $H_0: \mu=4$ and $H_A: \mu \neq 4$.
 
-- Suppose you draw a sample of 49 units with a mean $\bar{x}=3$ and standard deviation is $s=3$
-- Our test statistic is $z_{test}=\frac{3-4}{3/7}=-2.34$
+- Suppose the population standard deviation is known, $\sigma=3$. You draw a sample of 49 units with a mean $\bar{x}=3$
+- Our test statistic is $z_{test}=\frac{3-4}{\sigma/\sqrt{49}}=\frac{3-4}{3/7}=-2.34$
 - Our critical values at $\alpha=0.05$ are -1.96 and 1.96, hence we reject
 
 --
 - We can also calculate the 95% confidence interval for our sample mean:
 
-$$\small \{3-1.96\frac{3}{\sqrt 49}, 3+1.96\frac{3}{\sqrt 49}\}=\{2.16, 3.84\}$$
+$$\small \{3-1.96\frac{\sigma}{\sqrt {49}}, 3+1.96\frac{\sigma}{\sqrt {49}}\}=\{2.16, 3.84\}$$
 - It does not contain the null hypothesis
 
 
@@ -647,11 +649,11 @@ https://kzaremba.shinyapps.io/Hypothesis_Confidence/
 - Mathematically: 
 
   - Let $\mu_0$ be the null hypothesis. We reject (in two sided test) the null at $\alpha$ if 
-  $$\scriptsize \left| \small \frac{\bar{X}-\mu_0}{ s/ \sqrt n} \right|>z_{\frac{\alpha}{2}}$$
+  $$\scriptsize \left| \small \frac{\bar{X}-\mu_0}{ s/ \sqrt n} \right|>z_{1-\frac{\alpha}{2}}$$
   
   - Which can be rewritten as: 
 
-  $$\scriptsize  \mu_0<\bar{X}-z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
+  $$\scriptsize  \mu_0<\bar{X}-z_{1-\frac{\alpha}{2}}\frac{s}{\sqrt n}  \qquad or  \qquad \mu_0>\bar{X}+z_{1-\frac{\alpha}{2}}\frac{s}{\sqrt n}$$
 
 .learnr-ref[**LearnR:** CI and Hypothesis Test equivalence — verify that rejecting at $\alpha$ matches the CI not containing $\mu_0$]
 
@@ -676,14 +678,14 @@ $H_A: \mu < \mu_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-z_\alpha$$
+$$\small \frac{\bar{X}-\mu_0}{SE}<z_\alpha$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}<-t_{(n-1),\alpha}$$
+$$\small \frac{\bar{X}-\mu_0}{SE}<t_{(n-1),\alpha}$$
 --
-Where 
-- $z_\alpha$ and $t_{(n-1),\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with n-1 degrees of freedom
+Where
+- $z_\alpha$ and $t_{(n-1),\alpha}$ are  $\small \alpha$ quantiles of standard normal and Student's t with n-1 degrees of freedom
 
 ---
 ### Single Sample - Mean - One sided - Case 1
@@ -705,9 +707,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.645,  0 ,1.645), 
      padj = 0.75,
-     labels = c(expression(-z[alpha]),
+     labels = c(expression(z[alpha]),
                 expression(0),
-                expression(z[alpha])))
+                expression(z[1-alpha])))
 
 # add a vertical line at the mean (mu)
 
@@ -726,11 +728,11 @@ text(-2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 ```
 ]
 
-- .blue[Intuition]: 
+- .blue[Intuition]:
   -  We never reject $H_0$ if $\bar{X} \geq \mu_0$.
   -  We reject $H_0$ if $\bar{X}$ is sufficiently smaller than $\mu_0$
   -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}<z_\alpha)=P(Z<z_\alpha)=\alpha$$
 
 
 ---
@@ -752,14 +754,14 @@ $H_A: \mu > \mu_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}>z_\alpha$$
+$$\small \frac{\bar{X}-\mu_0}{SE}>z_{1-\alpha}$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),\alpha}$$
+$$\small \frac{\bar{X}-\mu_0}{SE}>t_{(n-1),1-\alpha}$$
 --
-Where 
-- $z_\alpha$ and $t_{(n-1),\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with n-1 degrees of freedom
+Where
+- $z_{1-\alpha}$ and $t_{(n-1),1-\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and Student's t with n-1 degrees of freedom
 
 ---
 ### Single Sample - Mean - One sided - Case 2
@@ -781,9 +783,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.645,  0 ,1.645), 
      padj = 0.75,
-     labels = c(expression(-z[alpha]),
+     labels = c(expression(z[alpha]),
                 expression(0),
-                expression(z[alpha])))
+                expression(z[1-alpha])))
 
 # add a vertical line at the mean (mu)
 
@@ -802,11 +804,11 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 ```
 ]
 
-- .blue[Intuition]: 
+- .blue[Intuition]:
   -  We never reject $H_0$ if $\bar{X} \leq \mu_0$.
   -  We reject $H_0$ if $\bar{X}$ is sufficiently larger than $\mu_0$
   -  If null is true ( $\mu=\mu_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\mu_0}{s/\sqrt n}>z_{1-\alpha})=P(Z>z_{1-\alpha})=\alpha$$
 
 
 ---
@@ -947,14 +949,14 @@ $H_A: \mu_x-\mu_Y \neq \Delta_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance from normal
-$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<-z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>z_\frac{\alpha}{2}$$
+$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<z_\frac{\alpha}{2} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>z_{1-\frac{\alpha}{2}}$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<-t_{v,\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>t_{v,\frac{\alpha}{2}}$$
+$$\small \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}<t_{v,\frac{\alpha}{2}} \qquad or  \qquad \frac{\bar{X}-\bar{Y}-\Delta_0}{SE}>t_{v,1-\frac{\alpha}{2}}$$
 --
 Where 
-- $z_\frac{\alpha}{2}$ and $t_{v,\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and t-students with v degrees of freedom
+- $z_{1-\frac{\alpha}{2}}$ and $t_{v,1-\frac{\alpha}{2}}$ are  $\small (1-\frac{\alpha}{2})$ quantiles of standard normal and Student's t with v degrees of freedom
 
 ---
 ### Difference in means - Two Sided Test
@@ -987,9 +989,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.96,  0,  1.96), 
      padj = 0.75,
-     labels = c(expression(-z[frac(alpha,2)]),
+     labels = c(expression(z[frac(alpha,2)]),
                 expression(0),
-                expression(z[frac(alpha,2)])))
+                expression(z[1-frac(alpha,2)])))
 
 # add a vertical line at the mean (mu)
 
@@ -1017,9 +1019,9 @@ text(2.2, 0.1, expression(alpha/2), col = "black", cex = 1.5)
 Following this idea, we can construct a confidence interval for the difference:
 
 
-$$\small P\!\left(-z_{\alpha/2}<\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}<z_{\alpha/2}\right)=1-\alpha$$
+$$\small P\!\left(z_{\alpha/2}<\frac{\bar{X}-\bar{Y}-(\mu_{X,0}-\mu_{Y,0})}{\sqrt{s_X^2/n+s_Y^2/m}}<z_{1-\alpha/2}\right)=1-\alpha$$
 
-$$\small CI_{1-\alpha}=\left(\bar{X}-\bar{Y} \pm z_{\alpha/2}\sqrt{s_X^2/n+s_Y^2/m}\right)$$
+$$\small CI_{1-\alpha}=\left(\bar{X}-\bar{Y} \pm z_{1-\alpha/2}\sqrt{s_X^2/n+s_Y^2/m}\right)$$
 
 ---
 
@@ -1040,14 +1042,14 @@ $H_A: \mu_X-\mu_Y<\Delta_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance from  normal
-$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<-z_\alpha$$
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<z_\alpha$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<-t_{v,\alpha}$$
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}<t_{v,\alpha}$$
 --
-Where 
-- $-z_\alpha$ and $-t_{v,\alpha}$ are  $\small \alpha$ quantiles of standard normal and t-students with v degrees of freedom
+Where
+- $z_\alpha$ and $t_{v,\alpha}$ are  $\small \alpha$ quantiles of standard normal and Student's t with v degrees of freedom
 
 ---
 ### Two Samples - Mean - One sided - Case 1
@@ -1069,9 +1071,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.645,  0 ,1.645), 
      padj = 0.75,
-     labels = c(expression(-z[alpha]),
+     labels = c(expression(z[alpha]),
                 expression(0),
-                expression(z[alpha])))
+                expression(z[1-alpha])))
 
 # add a vertical line at the mean (mu)
 
@@ -1090,11 +1092,11 @@ text(-2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 ```
 ]
 
-- .blue[Intuition]: 
+- .blue[Intuition]:
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \geq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently smaller than $\Delta_0$
   -  If null is true ( $\mu_X-\mu_Y=\Delta_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}<-z_\alpha)=P(Z<-z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}<z_\alpha)=P(Z<z_\alpha)=\alpha$$
 
 
 ---
@@ -1116,14 +1118,14 @@ $H_A: \mu_X-\mu_Y>\Delta_0$
 For a test of significance level $\alpha$, reject
 
 - If large sample or known variance with normal
-$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>z_\alpha$$
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>z_{1-\alpha}$$
 --
 
 - If small sample from normal
-$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>t_{v,\alpha}$$
+$$\small \frac{\bar{X}-\bar{Y}-(\Delta_0)}{SE}>t_{v,1-\alpha}$$
 --
-Where 
-- $z_\alpha$ and $t_{v,\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and t-students with v degrees of freedom
+Where
+- $z_{1-\alpha}$ and $t_{v,1-\alpha}$ are  $\small (1-\alpha)$ quantiles of standard normal and Student's t with v degrees of freedom
 
 ---
 ### Two Samples - Mean - One sided - Case 2
@@ -1145,9 +1147,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-1.645,  0 ,1.645), 
      padj = 0.75,
-     labels = c(expression(-z[alpha]),
+     labels = c(expression(z[alpha]),
                 expression(0),
-                expression(z[alpha])))
+                expression(z[1-alpha])))
 
 # add a vertical line at the mean (mu)
 
@@ -1166,11 +1168,11 @@ text(2.2, 0.1, expression(alpha), col = "black", cex = 1.5)
 ```
 ]
 
-- .blue[Intuition]: 
+- .blue[Intuition]:
   -  We never reject $H_0$ if $\bar{X}-\bar{Y} \leq \Delta_0$.
   -  We reject $H_0$ if $\bar{X}-\bar{Y}$ is sufficiently larger than $\Delta_0$
   -  If null is true ( $\mu_X-\mu_Y=\Delta_0$ ) then we reject with probability
-$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}>z_\alpha)=P(Z>z_\alpha)=\alpha$$
+$$\small P(\frac{\bar{X}-\bar{Y}-\Delta_0}{\sqrt{s^2_X/n+s^2_Y/ m}}>z_{1-\alpha})=P(Z>z_{1-\alpha})=\alpha$$
 
 
 ---
@@ -1417,15 +1419,15 @@ For a test of significance level $\alpha$:
 - If large sample or known variance with normal distribution:
 
 - for $H_A: \bar{d} \neq \Delta_0$, reject if:
-$$\small \frac{\bar{d}-\Delta_0}{SE}<-z_\frac{\alpha}{2} \qquad or \qquad  \frac{\bar{d}-\Delta_0}{SE}>z_\frac{\alpha}{2}$$
+$$\small \frac{\bar{d}-\Delta_0}{SE}<z_\frac{\alpha}{2} \qquad or \qquad  \frac{\bar{d}-\Delta_0}{SE}>z_{1-\frac{\alpha}{2}}$$
 --
 
 - for $H_A: \bar{d} > \Delta_0$, reject if:
-$$\small \frac{\bar{d}-\Delta_0}{SE}>z_\alpha$$
+$$\small \frac{\bar{d}-\Delta_0}{SE}>z_{1-\alpha}$$
 --
 
 - for $H_A: \bar{d} < \Delta_0$, reject if:
-$$\small \frac{\bar{d}-\Delta_0}{SE}<-z_\alpha$$
+$$\small \frac{\bar{d}-\Delta_0}{SE}<z_\alpha$$
 --
 
 
@@ -1487,9 +1489,9 @@ where $\hat{\rho}(C,P)$ is sample correlation coefficient
 
 
 .blue[Alternative hypothesis] and their **rejection regions**:
-- $\small H_A: \rho(C,P) \neq \rho_0$ - reject $\small H_0$ if $\small t_{test}>t_{\frac{\alpha}{2},n-2}$ or $\small t_{test}<-t_{\frac{\alpha}{2},n-2}$
-- $\small H_A: \rho(C,P)>\rho_0$  - reject $\small H_0$ if $\small t_{test}>t_{\alpha,n-2}$
-- $\small H_A: \rho(C,P)<\rho_0$  - reject $\small H_0$ if $\small t_{test}<-t_{\alpha,n-2}$
+- $\small H_A: \rho(C,P) \neq \rho_0$ - reject $\small H_0$ if $\small t_{test}>t_{1-\frac{\alpha}{2},n-2}$ or $\small t_{test}<t_{\frac{\alpha}{2},n-2}$
+- $\small H_A: \rho(C,P)>\rho_0$  - reject $\small H_0$ if $\small t_{test}>t_{1-\alpha,n-2}$
+- $\small H_A: \rho(C,P)<\rho_0$  - reject $\small H_0$ if $\small t_{test}<t_{\alpha,n-2}$
 
 ---
 ### Correlation test

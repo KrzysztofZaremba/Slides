@@ -13,14 +13,19 @@ output:
 ---   
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 16px 64px 16px 64px;
 }
-
-
+.remark-slide-content h2 { font-size: 1.4em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h3 { font-size: 1.2em; margin-top: 0.2em; margin-bottom: 0.3em; }
+.remark-slide-content h4 { font-size: 1.05em; margin-top: 0.1em; margin-bottom: 0.2em; }
+.remark-slide-content ul { margin-top: 0.2em; margin-bottom: 0.2em; }
+.remark-slide-content li { margin-bottom: 0.1em; }
+.learnr-ref { background: #eef2f7; border-left: 3px solid #2980b9; padding: 3px 8px; font-size: 0.85em; margin-top: 0.3em; display: inline-block; }
 </style>
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,dpi=300)
+knitr::opts_chunk$set(echo = FALSE, dpi = 300)
 library(shiny)
 library(ggplot2)
 library(forecast)
@@ -47,15 +52,23 @@ library(DT)
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
 library(xaringanthemer)
-style_mono_accent(base_color = "#43418A", 
-colors = c(
-  red = "#f34213",
-  purple = "#3e2f5b",
-  orange = "#ff8811",
-  green = "#136f63",
-  blue = "#1E90FF",
-  white = "#FFFFFF"
-))
+style_mono_accent(
+  base_color = "#23395d",
+  header_font_google = google_font("Roboto Slab", "400"),
+  text_font_google = google_font("Source Sans Pro", "300", "300i"),
+  code_font_google = google_font("Fira Mono"),
+  text_font_size = "18px",
+  header_h2_font_size = "1.5rem",
+  header_h3_font_size = "1.25rem",
+  colors = c(
+    red = "#e74c3c",
+    purple = "#8e44ad",
+    orange = "#e67e22",
+    green = "#27ae60",
+    blue = "#2980b9",
+    white = "#FFFFFF"
+  )
+)
 ```
 
 
@@ -87,7 +100,7 @@ load("Daily_CMX_means2.Rda")
 2. Your boss is worried about the impact of global warming on bike use
 
 --
-3. She wants to know: how the bike use will change when the temperature increases by 1 degreee
+3. She wants to know: how the bike use will change when the temperature increases by 1 degree
 
 --
 4. This is exactly what the linear regression will tell us!
@@ -126,7 +139,7 @@ datatable(Data_BP[,c("fecha_retiro","Trips","TMP","PM2.5")],
 
 # Create plot using ggplot2
 p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
-  geom_point() +
+  geom_point(alpha = 0.4) +
   labs(x = "Temperature", y = "Trips") +
   theme_xaringan() +
   theme(legend.position = "none")
@@ -153,13 +166,15 @@ Where:
   - $\beta_0$ is intercept, where the line cuts y axis
   - $u_i$ is a random error term (unknown)
 
+<div class="learnr-ref">LearnR: Examples 1–3 (estimating regression parameters)</div>
+
 ---
 
 ```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
 
 # Create plot using ggplot2
 p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
-  geom_point() +
+  geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
   labs(x = "Temperature", y = "Trips") +
   theme_xaringan() +
@@ -301,9 +316,9 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "black") +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
-  labs(x = "X",
-       y = "Y") +
-  theme_xaringan() 
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan()
 
 print(gg)
 
@@ -326,11 +341,6 @@ print(gg)
   - $y_i=\beta_0+x^{\beta_1}_i+e_i$
   - $y_i=log(\beta_0+\beta_1x_i+e_i)$
   - $y_i=\beta_0+(\beta_1x_i+e_i)^2$
-
----
-
-2 is in the app
-
 
 ---
 ### $Var(u_i)=\sigma^2$
@@ -395,9 +405,9 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "black") +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
-  labs(x = "X",
-       y = "Y") +
-  theme_xaringan() 
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan()
 
 print(gg)
 ```
@@ -413,13 +423,13 @@ $$y_i=\hat{\beta}_0+\hat{\beta}_1x_i+e_i$$
 
 --
 
-- Residua term (e) here reflects both uncertainly about parameters and the random part present in population model
+- Residual term (e) here reflects both uncertainty about parameters and the random part present in population model
 
 --
 
 - We can predict $y_i$ for any $x_i$ using our estimates
 
-$$\hat{y_i}=\hat{\beta}_0+\hat{\beta}_1x_i$$
+$$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_i$$
 
 
 ---
@@ -441,8 +451,8 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "black") +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan()
 
 print(gg)
@@ -453,8 +463,6 @@ print(gg)
 ---
 
 ```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
-
-# Generate some sample data
 
 # Generate some sample data
 set.seed(123)
@@ -471,9 +479,9 @@ full_model <- lm(y ~ x, data)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
-  theme_xaringan() 
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan()
 
 # Create a filtered dataset for the sample (e.g., the first 40 points)
 sample_size <- 40
@@ -490,10 +498,8 @@ print(gg)
 ```
 
 ---
- 
-```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
-# Generate some sample data
+```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 # Generate some sample data
 set.seed(123)
@@ -510,8 +516,8 @@ full_model <- lm(y ~ x, data)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() 
 
 # Create a filtered dataset for the sample (e.g., the first 40 points)
@@ -542,7 +548,7 @@ print(gg)
 
 The best fitting line will minimize the sum of squared residuals $SSE=\sum^n_{i=1}e_i^2$
 
-$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_{i=1}e_i^2$$
+$$(\hat{\beta}_0,\hat{\beta}_1)=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_{i=1}e_i^2$$
 --
 $$\begin{align*}
 SSE &= \sum_{i=1}^{n} e_i^2 \\
@@ -553,7 +559,7 @@ SSE &= \sum_{i=1}^{n} e_i^2 \\
 --
 So effectively we are minimizing: 
 
-$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
+$$(\hat{\beta}_0,\hat{\beta}_1)=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
 
 ---
 
@@ -561,7 +567,7 @@ $$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\le
 
 We called this estimator **OLS** - .blue[ordinary least squares]
 
-$$(\hat{\beta_0},\hat{\beta_1})=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
+$$(\hat{\beta}_0,\hat{\beta}_1)=argmin_{b_0,b_1} SSE=argmin_{b_0,b_1}\sum^n_i\left( y_i - (b_0 + b_1 x_i) \right)^2$$
 ---
 ### ✏️ Sidenote on Derivatives
 To solve OLS, we’ll need **derivatives**. A key tool is the **chain rule**: if  
@@ -620,7 +626,7 @@ Putting it all together:
 
 $$\small \hat{\beta}_0n+\hat{\beta}_1\sum x_i=\sum y_i$$
 
-$$\small \hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta_1}\bar{x}$$
+$$\small \hat{\beta}_0=\frac{\sum y_i-\hat{\beta}_1\sum x}{n}=\bar{y}-\hat{\beta}_1\bar{x}$$
 
 --
 And plugging this here:
@@ -636,7 +642,7 @@ $$\small \hat{\beta}_1=\frac{\widehat{cov(x_i,y_i)}}{\widehat{var(x_i)}}=\frac{\
 ---
 
 `r knitr::include_url('https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression', height='450px')`
-Source: [https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression)
+Source: [Interactive Visualization](https://observablehq.com/@yizhe-ang/interactive-visualization-of-linear-regression)
 
 
 
@@ -672,7 +678,7 @@ datatable(Data_BP[,c("fecha_retiro","Trips","TMP","PM2.5")],
 
 # Create plot using ggplot2
 p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
-  geom_point() +
+  geom_point(alpha = 0.4) +
   labs(x = "Temperature", y = "Trips") +
   theme_xaringan() +
   theme(legend.position = "none")
@@ -688,12 +694,12 @@ We want to estimate the following relationship:
 $$Trips_i=\beta_0+\beta_1Temperature_i+u_i$$
 
 ---
-### Best Fit Line 
+### Best Fit Line
 ```{r, warning=FALSE, message=FALSE, fig.height=4, out.width='100%'}
 
 # Create plot using ggplot2
 p <- ggplot(Data_BP, aes(x = TMP, y = Trips)) +
-  geom_point() +
+  geom_point(alpha = 0.4) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add linear regression line
   labs(x = "Temperature", y = "Trips") +
   theme_xaringan() +
@@ -751,11 +757,11 @@ plots <- lapply(
     lm_model <- lm(y ~ x, data = data)
     r_squared <- summary(lm_model)$r.squared
     ggplot(data, aes(x = x, y = y)) +
-      geom_point() +
+      geom_point(alpha = 0.5) +
       geom_smooth(method = "lm", se = FALSE, color = "blue") +
       labs(
-        x = "X", y = "Y")+
-      theme_minimal() +
+        x = "Predictor (x)", y = "Response (y)")+
+      theme_xaringan() +
       ylim(-10,10) +
       xlim(-20,20)
   }
@@ -787,6 +793,8 @@ Intuition:
   - In fact $SST=SSR+SSE=\sum(\hat{y}_i-\bar{y})^2+\sum(\hat{y}_i-y_i)^2$
 - SSE/SST is proportion that cannot be explained with the model
 - so 1-SSE/SST is the variation that we can explain with the model
+
+<div class="learnr-ref">LearnR: Regression Decomposition (SST, SSR, SSE, R²)</div>
 
 ---
 ### Illustration in the app
@@ -826,7 +834,7 @@ r2_low  <- summary(lm_low)$r.squared
 
 # Plot high correlation
 p1 <- ggplot(data_high, aes(x, y)) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(title = paste0("Correlation = ", round(r_high, 3),
                           "\nR² = ", round(r2_high, 3))) +
@@ -834,11 +842,11 @@ p1 <- ggplot(data_high, aes(x, y)) +
            label = paste0("Correlation = ", round(r_high, 3),
                           "\nR² = ", round(r2_high, 3)),
            hjust = 0, vjust = 1, size = 5, color = "black") +
-  theme_minimal()+xlim(-2,2)+ylim(-3,3)
+  theme_xaringan()+xlim(-2,2)+ylim(-3,3)
 
 # Plot low correlation
 p2 <- ggplot(data_low, aes(x, y)) +
-  geom_point() +
+  geom_point(alpha = 0.5) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(title = paste0("Correlation = ", round(r_low, 2),
                           "\nR² = ", round(r2_low, 2))) +
@@ -846,7 +854,7 @@ p2 <- ggplot(data_low, aes(x, y)) +
            label = paste0("Correlation = ", round(r_low, 2),
                           "\nR² = ", round(r2_low, 2)),
            hjust = 0, vjust = 1, size = 5, color = "black") +
-  theme_minimal()+xlim(-2,2)+ylim(-3,3)
+  theme_xaringan()+xlim(-2,2)+ylim(-3,3)
 
 # Arrange side by side
 grid.arrange(p1, p2, ncol = 2)
@@ -855,14 +863,14 @@ grid.arrange(p1, p2, ncol = 2)
 ```
 ---
 
-#### How much of bike usage does the temperature explains?
+### How much of bike usage does the temperature explain?
 
  
 - Total Variation in y: $S_{yy}=\sum(y_i-\bar y)^2=24012556582$
 - Explained Variation in y: $SSR=\sum(\hat y_i-\bar y)^2=2117129482$
 - Unexplained Variation in y: $SSE=\sum\hat e^2=21895427100$
 
-```{r, warning=FALSE, fig.height=6, out.width='80%'}
+```{r, echo=TRUE, warning=FALSE, fig.height=6, out.width='80%'}
 
 # Fit a linear regression model
 lm_model <- lm(Trips ~ TMP, data = Data_BP)
@@ -908,6 +916,8 @@ $$\begin{aligned}
 - correlation does not change when we scale variables
 - adding constants does not matter for the slope
 - multiplication of y or x changes the slope
+
+<div class="learnr-ref">LearnR: Scaling of Variables</div>
 
 ---
 ### Scaling of variables:
@@ -1046,7 +1056,7 @@ print(p)
 
 - By how much trips change when I move from 0 (Not-friday) to 1 (Friday)? 
 - x changes by 1, y changes by $\beta$
-```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+```{r, echo=TRUE, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 
 
 mod <- lm(Trips ~ is_friday, data = Data_BP)
@@ -1124,7 +1134,7 @@ ggplot(amazon_data, aes(x = rating, y = returned)) +
   geom_point(alpha = 0.3) +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   labs(x = "Product Rating (0–5)", y = "Returned (1=Yes, 0=No)") +
-  theme_minimal()+ #increase size of axis labels and ticks and all fonts
+  theme_xaringan()+ #increase size of axis labels and ticks and all fonts
   theme(text = element_text(size = 16)) 
   
 
@@ -1133,7 +1143,7 @@ ggplot(amazon_data, aes(x = rating, y = returned)) +
 ]
 
 ---
-#### Interpretation
+### Interpretation
 
 - In a regression, we predict the **expected value** of $y$ for a given $x$:  
 
@@ -1156,13 +1166,16 @@ ggplot(amazon_data, aes(x = rating, y = returned)) +
 
 ---
 
-```{r, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
+```{r, echo=TRUE, warning=FALSE, fig.height=5, out.width='100%', message=FALSE}
 mod <- lm(returned ~ rating, data = amazon_data)
 summary(mod)
 ```
 
 
 - What is the probability of return  when rating is 3?
+
+<div class="learnr-ref">LearnR: Dummy Regression — Product Returns</div>
+
 ---
 
 ### Interpretation
@@ -1209,11 +1222,11 @@ gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "black") +
   geom_smooth(method = "lm", se = FALSE, color = "blue") +
   geom_segment(aes(xend = x, yend = predict(model, data)), color = "red", alpha = 0.2, linetype = "dashed") +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
-  geom_vline(xintercept = 0, color = "black") 
+  geom_vline(xintercept = 0, color = "black")
 
 print(gg)
 
@@ -1245,8 +1258,8 @@ set.seed(125)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
   geom_vline(xintercept = 0, color = "black") 
@@ -1288,7 +1301,7 @@ cat(paste0("$$ y_i = ", round(intercept1, 2), " + ", round(slope1, 2), "x_i +u_i
 **Sample Estimate**
 ]
 ```{r echo=FALSE, results='asis'}
-cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
+cat(paste0("$$ \\hat{y}_i = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
 
 ```
 ]
@@ -1306,8 +1319,8 @@ set.seed(124)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
   geom_vline(xintercept = 0, color = "black") 
@@ -1348,7 +1361,7 @@ cat(paste0("$$ y_i = ", round(intercept1, 2), " + ", round(slope1, 2), "x_i +u_i
 **Sample Estimate**
 ]
 ```{r echo=FALSE, results='asis'}
-cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
+cat(paste0("$$ \\hat{y}_i = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
 
 ```
 ]
@@ -1367,8 +1380,8 @@ set.seed(129)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
   geom_vline(xintercept = 0, color = "black") 
@@ -1409,7 +1422,7 @@ cat(paste0("$$ y_i = ", round(intercept1, 2), " + ", round(slope1, 2), "x_i +u_i
 **Sample Estimate**
 ]
 ```{r echo=FALSE, results='asis'}
-cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
+cat(paste0("$$ \\hat{y}_i = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
 
 ```
 ]
@@ -1428,8 +1441,8 @@ set.seed(126)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
   geom_vline(xintercept = 0, color = "black") 
@@ -1470,7 +1483,7 @@ cat(paste0("$$ y_i = ", round(intercept1, 2), " + ", round(slope1, 2), "x_i +u_i
 **Sample Estimate**
 ]
 ```{r echo=FALSE, results='asis'}
-cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
+cat(paste0("$$ \\hat{y}_i = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
 
 ```
 ]
@@ -1489,8 +1502,8 @@ set.seed(120)
 gg <- ggplot(data, aes(x = x, y = y)) +
   geom_point(color = "lightgray", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, color = "lightgray", alpha=0.01) +
-  labs(x = "X",
-       y = "Y") +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
   theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +  # Add horizontal line at y = 0
   geom_vline(xintercept = 0, color = "black") 
@@ -1531,7 +1544,7 @@ cat(paste0("$$ y_i = ", round(intercept1, 2), " + ", round(slope1, 2), "x_i +u_i
 **Sample Estimate**
 ]
 ```{r echo=FALSE, results='asis'}
-cat(paste0("$$ \\hat{y_i} = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
+cat(paste0("$$ \\hat{y}_i = ", round(intercept, 2), " + ", round(slope, 2), "x_i $$"))
 
 ```
 ]
@@ -1576,6 +1589,8 @@ $$E(\hat{\beta}_1)=E\left(\frac{\sum_i(x_i-\bar{x})(y_i-\bar{y})}{\sum_i(x_i-\ba
 
 - Assumption 1 is enough for being unbiased $E(u_i)=0$
 
+<div class="learnr-ref">LearnR: Variance of the OLS Estimators</div>
+
 ---
 ### Uncertainty in the Estimate
 
@@ -1615,7 +1630,7 @@ $$E(\hat{\sigma}^2)=E\left(\frac{\sum_i e_i^2}{n-2}\right)=\sigma^2$$
 
 ---
 ### Regression Output
-```{r, warning=FALSE, fig.height=6, out.width='80%'}
+```{r, echo=TRUE, warning=FALSE, fig.height=6, out.width='80%'}
 
 # Fit a linear regression model
 lm_model <- lm(Trips ~ TMP, data = Data_BP)
@@ -1633,7 +1648,9 @@ Suppose that instead of measuring $Lot area$ in feets, we measure it in $Meters$
  
 Practically: $1 ft=0.3048m$ and $1 ft^2=0.092903m^2$
 
-- How would $\beta_1$ and $SE(\hat{\beta_1})$ change?
+- How would $\beta_1$ and $SE(\hat{\beta}_1)$ change?
+
+<div class="learnr-ref">LearnR: Scaling — Standard Error Under Unit Change</div>
 
 ---
 ### Gauss Markov Theorem
@@ -1728,9 +1745,9 @@ set.seed(123)
 # Create a scatter plot with the best fit line and deviations
 gg <- ggplot() +
   geom_point(data, mapping=aes(x = x, y = y), color = "grey") +
-  labs(x = "X",
-       y = "Y") +
-  theme_minimal() +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +
   geom_vline(xintercept = 0, color = "black") +
   geom_smooth(data, mapping=aes(x = x, y = y), method = "lm", se = FALSE, color = "black") 
@@ -1760,7 +1777,7 @@ for (i in 1:1000) {
 # Create a histogram of beta_1 values
 hist_plot <- ggplot(data.frame(beta_1 = beta_1_values), aes(x = beta_1)) +
   geom_histogram(binwidth = 0.1) +
-  labs(x = "Beta_1",
+  labs(x = expression(hat(beta)[1]),
        y = "Frequency") +
   theme_xaringan()+
   geom_vline(xintercept=2.84, color="black")
@@ -1778,21 +1795,21 @@ Given that
   
 We can derive the following distributions: 
 
-$$\hat{\beta_1} \sim N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right) \qquad and  \qquad \hat{\beta_0} \sim N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
+$$\hat{\beta}_1 \sim N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right) \qquad and  \qquad \hat{\beta}_0 \sim N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
 --
 
 Furthermore:
 
 $$\frac{(n-2)\hat{\sigma}^2}{\sigma^2}\sim\chi^2_{n-2}$$
 
-#### CLT For Regression
+### CLT For Regression
 
 - In large samples, we can relax the normality assumption on $u_i$ and use CLT:
 
-$$\small  \hat{\beta_1} \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right)  and  \qquad \hat{\beta_0} \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
+$$\small  \hat{\beta}_1 \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_1,\frac{\sigma}{\sqrt{S_{xx}}}\right)  and  \qquad \hat{\beta}_0 \;\;\overset{d}{\longrightarrow}\;\; N\left(\beta_0,\sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}}})\right)$$
 ---
 
-#### Why does this happen?
+### Why does this happen?
 
 - The OLS slope is  a **linear combination of the errors**:
 
@@ -1815,7 +1832,7 @@ N\!\left(0,\; \frac{\sigma}{\sqrt{S_{xx}}}\right).$$
 
 ### Hypothesis testing: sales spending
 
-#### Why do we care about hypothesis testing in regression?
+### Why do we care about hypothesis testing in regression?
 
 We want to test whether advertising spending increases sales.  
 Regression model:
@@ -1856,7 +1873,7 @@ where ShipSpeed is average days to delivery, and WarehouseDistance is distance t
   
 ---
 
-####  Hypothesis Testing: Recommendation System (dummy)
+###  Hypothesis Testing: Recommendation System (dummy)
 
 We want to test whether a new recommendation system changes user engagement on tiktok.  
 Regression model:
@@ -1896,15 +1913,16 @@ How to implement these tests?
 
 Our **test statistic** for $\beta_1$ and it's distribution under the null hypothesis: $H_0: \beta_1=b_1$
 
-$$T=\frac{\hat{\beta_1}-b_1}{SE(\hat{\beta_1})}=\frac{\hat{\beta_1}-b_1}{\frac{ \hat \sigma}{\sqrt{S_{xx}}}} \sim t_{n-2}$$
+$$T=\frac{\hat{\beta}_1-b_1}{SE(\hat{\beta}_1)}=\frac{\hat{\beta}_1-b_1}{\frac{ \hat \sigma}{\sqrt{S_{xx}}}} \sim t_{n-2}$$
 
 
 Similarly, for  $\beta_0$ the null hypothesis: $H_0: \beta_0=b_0$
 
-$$T=\frac{\hat{\beta_0}-b_0}{SE(\hat{\beta_0})}=\frac{\hat{\beta_0}-b_0}{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}} \sim t_{n-2}$$
+$$T=\frac{\hat{\beta}_0-b_0}{SE(\hat{\beta}_0)}=\frac{\hat{\beta}_0-b_0}{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}} \sim t_{n-2}$$
 
 With that, we can use usual hypothesis testing procedures
 
+<div class="learnr-ref">LearnR: Hypothesis Testing (medical costs example)</div>
 
 ---
 **Example:**
@@ -1915,12 +1933,12 @@ $H_0: \beta_1=0$
 $H_A: \beta_1\neq0$
 
 
-$$T_{test}=\frac{\hat{\beta_1}-0}{SE(\hat{\beta_1})}=\frac{723.55}{83.37}=8.679$$
+$$T_{test}=\frac{\hat{\beta}_1-0}{SE(\hat{\beta}_1)}=\frac{723.55}{83.37}=8.679$$
 
 We can compare it to critical value (n=781):
-$$t_{779,\frac{\alpha}{2}} \approx z_{\frac{\alpha}{2}} =1.96<8.679=T_{test}$$
+$$t_{779,1-\frac{\alpha}{2}} \approx z_{1-\frac{\alpha}{2}} =1.96<8.679=T_{test}$$
 
-We confidently reject the the null that the temperature does not predict bike rides.
+We confidently reject the null that temperature does not predict bike rides.
 
 
 ---
@@ -1932,7 +1950,7 @@ Alternatively, calculate **p-value**:  the probability of seeing our test statis
 
 In regressions we usually use two-sided tests. Hence the p-value is:
 
-$$p-value=2*P(t_{n-2,\frac{\alpha}{2}}>T_{test})$$
+$$p\text{-value}=2\cdot P(t_{n-2}>|T_{test}|)$$
 
 Small p-values  mean that it would be unlikely to see our results if the null hypothesis were really true.
 
@@ -1975,7 +1993,7 @@ abline(v = 0, col = "red", lwd = 2)
 ]
 ---
 ### Regression Output
-```{r, warning=FALSE, fig.height=6, out.width='80%'}
+```{r, echo=TRUE, warning=FALSE, fig.height=6, out.width='80%'}
 
 # Fit a linear regression model
 lm_model <- lm(Trips ~ TMP, data = Data_BP)
@@ -1991,13 +2009,15 @@ summary(lm_model)
 
 Using the distributions, we can figure out confidence intervals for our estimates:
 
-$$P(-t_{n-2,\frac{\alpha}{2}}<\frac{\hat{\beta}_1-\beta}{SE(\hat{\beta}_1)}<t_{n-2,\frac{\alpha}{2}})=1-\alpha$$
+$$P(t_{n-2,\frac{\alpha}{2}}<\frac{\hat{\beta}_1-\beta}{SE(\hat{\beta}_1)}<t_{n-2,1-\frac{\alpha}{2}})=1-\alpha$$
 
-$$CI_{\beta_1}=\left(\hat{\beta}_1-t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)},\hat{\beta}_1+t_{n-2,\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)}\right)$$
+$$CI_{\beta_1}=\left(\hat{\beta}_1-t_{n-2,1-\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)},\hat{\beta}_1+t_{n-2,1-\frac{\alpha}{2}}\underbrace{\frac{\hat \sigma}{\sqrt{S_{xx}}}}_{SE(\hat{\beta}_1)}\right)$$
 
 And Similarly for $\beta_0$
 
-$$CI_{\beta_0}=\left(\hat{\beta}_0-t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)},\hat{\beta}_0+t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)}\right)$$
+$$CI_{\beta_0}=\left(\hat{\beta}_0-t_{n-2,1-\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)},\hat{\beta}_0+t_{n-2,1-\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{\bar{x}^2}{S_{xx}}})}}_{SE(\hat{\beta}_0)}\right)$$
+
+<div class="learnr-ref">LearnR: Confidence Interval for Coefficient</div>
 
 ---
 ### Confidence Intervals
@@ -2011,10 +2031,10 @@ $$CI_{\beta_1}=\left(560.87,886.23\right)$$
 
 
 ---
-#### Confidence Intervals
+### Confidence Intervals: Pollution Example
 Suppose we instead want to estimate the impact of pollution (PM10) on bike trips.
 
-```{r, warning=FALSE, fig.height=6, out.width='80%'}
+```{r, echo=TRUE, warning=FALSE, fig.height=6, out.width='80%'}
 
 # Fit a linear regression model
 lm_model <- lm(Trips ~ PM10, data = Data_BP)
@@ -2027,6 +2047,7 @@ summary(lm_model)
 - Can we reject null of no impact at 10%?
 - What's the 90% confidence interval?
 
+<div class="learnr-ref">LearnR: Pollution and Bike Trips (hypothesis test + CI)</div>
 
 ---
 ### Confidence Intervals
@@ -2036,15 +2057,15 @@ How confident are we about predictions coming from a regression?
 
 **Average response**:
 What would be average number of rides on days with temperature of 30C?
-$$ (\bar{y}|x=x_0)=\hat{\beta_0}+\hat{\beta_1}x $$
+$$ (\bar{y}|x=x_0)=\hat{\beta}_0+\hat{\beta}_1x $$
 --
 What's the expectation?
 
-$$E(\bar{y}|x=x_0)=E(\hat{\beta_0}+\hat{\beta_1}x_0)=\beta_0+\beta_1x_0$$
+$$E(\bar{y}|x=x_0)=E(\hat{\beta}_0+\hat{\beta}_1x_0)=\beta_0+\beta_1x_0$$
 --
 
 What's the variance?
-$$var(\bar{y}|x=x_0)=Var(\hat{\beta_0}+\hat{\beta_1}x_0)=\sigma^2({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
+$$var(\bar{y}|x=x_0)=Var(\hat{\beta}_0+\hat{\beta}_1x_0)=\sigma^2({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
 
 --
 What's the distribution:
@@ -2056,7 +2077,10 @@ $$(\bar{y}|x=x_0)\sim N\left(\beta_0+\beta_1x_0, \sigma\sqrt{({\frac{1}{n}+\frac
 
 We can build the confidence intervals as before:
 
-$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+$$CI_{(\bar{y}|x=x_0)}=\hat{\beta}_0+\hat{\beta}_1x_0 \pm t_{n-2,1-\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{({\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+
+<div class="learnr-ref">LearnR: Predict healthcare expenditure / house price</div>
+
 ---
 ### Confidence Intervals
 
@@ -2100,7 +2124,7 @@ ggplot() +
     x = "Temperature (°C)",
     y = "Trips"
   ) +
-  theme_minimal(base_size = 12)+
+  theme_xaringan()+
   ylim(0,NA)
 
 ```
@@ -2112,7 +2136,10 @@ ggplot() +
 
 What would be 95% CI for average number of rides if temperature is 30C?
 
-- $\small \hat{\beta_0}=16892.66$ and  $\small \hat{\beta_1}=723.55$
+<div class="learnr-ref">LearnR: Mean Response CI — Bike Trips at 30°C</div>
+
+
+- $\small \hat{\beta}_0=16892.66$ and  $\small \hat{\beta}_1=723.55$
 - n=781
 - $\small \bar{x}=16.96$
 - $\small S_{xx}=4044$
@@ -2183,16 +2210,16 @@ $$\text{Number of hairs/}cm^2=\hat{\beta}_0+\hat{\beta}_1\text{Amount of drug in
 
 **New response**:
 What would be the number of rides on some day with temperature 30C?
-$$ \hat{y}=\hat{\beta_0}+\hat{\beta_1}x$$
+$$ \hat{y}=\hat{\beta}_0+\hat{\beta}_1x$$
 --
 
 What's the expectation?
 
-$$E(\hat{y}|x=x_0)=E(\hat{\beta_0}+\hat{\beta_1}x_0)=\beta_0+\beta_1x_0$$
+$$E(\hat{y}|x=x_0)=E(\hat{\beta}_0+\hat{\beta}_1x_0)=\beta_0+\beta_1x_0$$
 --
 
 How much true value varies around this prediction?
-$$var(y_0-\hat{y}|x=x_0)=Var(\hat{\beta_0}+\hat{\beta_1}x_0)+Var(u_i)=\sigma^2(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
+$$var(y_0-\hat{y}|x=x_0)=Var(\hat{\beta}_0+\hat{\beta}_1x_0)+Var(u_i)=\sigma^2(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})$$
 
 --
 What's the distribution:
@@ -2204,7 +2231,7 @@ $$(\bar{y}|x=x_0)\sim N\left(\beta_0+\beta_1x_0, \sigma\sqrt{(1+ {\frac{1}{n}+\f
 
 We can build the confidence intervals as before:
 
-$$CI_{(\bar{y}|x=x_0)}=\hat{\beta_0}+\hat{\beta_1}x_0 \pm t_{n-2,\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
+$$CI_{(\bar{y}|x=x_0)}=\hat{\beta}_0+\hat{\beta}_1x_0 \pm t_{n-2,1-\frac{\alpha}{2}}\underbrace{\hat \sigma\sqrt{(1+{\frac{1}{n}+\frac{(x_0-\bar{x})^2}{S_{xx}}})}}_{SE}$$
 
 ---
 
@@ -2245,9 +2272,9 @@ prediction_data <- data.frame(
 gg1 <- ggplot() +
   geom_point(data, mapping=aes(x = x, y = y), color = "lightgray", alpha = 0.6) +
   geom_point(sample_data, mapping=aes(x = x, y = y), color = "black", alpha = 1) +
-  labs(x = "X",
-       y = "Y") +
-  theme_minimal() +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +
   geom_vline(xintercept = 0, color = "black") +
   geom_line(data = prediction_data, aes(x = x, y = y), color = "red", size=1.5) +
@@ -2269,9 +2296,9 @@ prediction_data <- data.frame(
 gg2 <- ggplot() +
   geom_point(data, mapping=aes(x = x, y = y), color = "lightgray", alpha = 0.6) +
   geom_point(sample_data, mapping=aes(x = x, y = y), color = "black", alpha = 1) +
-  labs(x = "X",
-       y = "Y") +
-  theme_minimal() +
+  labs(x = "Predictor (x)",
+       y = "Response (y)") +
+  theme_xaringan() +
   geom_hline(yintercept = 0, color = "black") +
   geom_vline(xintercept = 0, color = "black") +
   geom_line(data = prediction_data, aes(x = x, y = y), color = "red", size=1.5) +
@@ -2302,7 +2329,7 @@ predict(lm_model, newdata = new_data, interval = "predict", level = 0.95, se.fit
 
 ### Question
 
-Suppose a model where we have employee's salary and their years of education. Predictor variable is education, response variable is salary. We try to establish the relationship between education and salary. 
+Suppose a model where we have employee's salary and their years of education. Predictor variable is education, response variable is salary. We try to establish the relationship between education and salary.
 
 
 --
@@ -2312,7 +2339,27 @@ Suppose a model where we have employee's salary and their years of education. Pr
 - Are they correlated with education?
 
 --
-- Would the estimator be unbiased? 
+- Would the estimator be unbiased?
 
 
+---
+### Summary: Simple Linear Regression
+
+| Concept | Key Formula / Idea |
+|---------|--------------------|
+| Model | $y_i = \beta_0 + \beta_1 x_i + u_i$ |
+| OLS estimator | Minimizes $SSE = \sum(y_i - \hat{y}_i)^2$ |
+| Slope | $\hat{\beta}_1 = \frac{\widehat{cov}(x,y)}{\widehat{var}(x)}$ |
+| $R^2$ | Proportion of variation in $y$ explained by $x$ |
+| Hypothesis test | $T = \frac{\hat{\beta}_1 - b_1}{SE(\hat{\beta}_1)} \sim t_{n-2}$ |
+| CI for $\beta_1$ | $\hat{\beta}_1 \pm t_{n-2,1-\alpha/2} \cdot SE(\hat{\beta}_1)$ |
+
+--
+
+**Key takeaways:**
+- OLS finds the line that minimizes squared residuals
+- $\hat{\beta}_1$ tells us the change in $y$ for a one-unit change in $x$
+- $R^2$ measures goodness of fit; with one regressor, $R^2 = \rho^2$
+- We can test and build CIs for coefficients using the t-distribution
+- Mean response CIs are narrower than new response CIs (no individual error)
 

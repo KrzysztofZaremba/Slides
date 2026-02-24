@@ -165,10 +165,10 @@ text(0, 0.2, "95%", col = "black", cex = 1.5)
 
 \begin{align*}
 0.95&= P(-1.96<Z<1.96) \\
-&= P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}}) \\
-&= P\left(-z_{\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt  n}<z_{\frac{\alpha}{2}}\right) \\
-&= P\left(-z_{\frac{\alpha}{2}}\cdot\sigma/ \sqrt n<\bar{X}-\mu<z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
-&= P\left(\mu-z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n< \bar{X} <\mu+z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
+&= P(z_{\frac{\alpha}{2}}<Z<z_{1-\frac{\alpha}{2}}) \\
+&= P\left(z_{\frac{\alpha}{2}}<\frac{\bar{X}-\mu}{\sigma/\sqrt  n}<z_{1-\frac{\alpha}{2}}\right) \\
+&= P\left(z_{\frac{\alpha}{2}}\cdot\sigma/ \sqrt n<\bar{X}-\mu<z_{1-\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
+&= P\left(\mu+z_{\frac{\alpha}{2}}\cdot\sigma/\sqrt  n< \bar{X} <\mu+z_{1-\frac{\alpha}{2}}\cdot\sigma/\sqrt  n\right) \\
 \end{align*}
 
 
@@ -274,23 +274,23 @@ Use this procedure if $n>40$
   
 --
 
-4. Find the corresponding critical values $\small z_{\frac{\alpha}{2}}$
-  - Critical values are such that $\small P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=1-\alpha$
-  - .blue[Example]: if confidence level is 95%, $\small z_\frac{\alpha}{2}=z_{0.025}=1.96$
+4. Find the corresponding critical values $\small z_{\frac{\alpha}{2}}$ and $\small z_{1-\frac{\alpha}{2}}$
+  - Critical values are such that $\small P(z_{\frac{\alpha}{2}}<Z<z_{1-\frac{\alpha}{2}})=1-\alpha$
+  - .blue[Example]: if confidence level is 95%, $\small z_{\frac{\alpha}{2}}=z_{0.025}=-1.96$ and $\small z_{1-\frac{\alpha}{2}}=z_{0.975}=1.96$
 --
 
 5. Construct the confidence interval as:
-$$\small \left\{\bar{x}- z_{\frac{\alpha}{2}}\cdot\underbrace{\frac{s}{\sqrt{n}}}_{SE},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
+$$\small \left\{\bar{x}- z_{1-\frac{\alpha}{2}}\cdot\underbrace{\frac{s}{\sqrt{n}}}_{SE},\;\; \bar{x}+ z_{1-\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
 
 
 ---
 ### Finding Critical Values
 
 - Suppose confidence level is 99%, so $\alpha=0.01$
-- We are looking for $z_{\frac{\alpha}{2}}$ such that:
+- We are looking for $z_{1-\frac{\alpha}{2}}$ such that:
 
 .learnr-ref[**LearnR:** Finding critical values in normal — use `qnorm()` in R]
-$$P(-z_{\frac{\alpha}{2}}<Z<z_{\frac{\alpha}{2}})=0.99$$
+$$P(z_{\frac{\alpha}{2}}<Z<z_{1-\frac{\alpha}{2}})=0.99$$
 ```{r, warning=FALSE, fig.height=3, out.width='100%'}
 curve(dnorm(x),
       xlim = c(-4, 4),
@@ -305,9 +305,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-2.58, 0, 2.58), 
      padj = 0.75,
-     labels = c(expression(-z[0.005]),
+     labels = c(expression(z[0.005]),
                 expression(0),
-                expression(z[0.005])))
+                expression(z[0.995])))
 
 # shade the tails for the 2.5% regions
 polygon(x = c(-4, seq(-4, -2.58, 0.01), -2.58),
@@ -321,13 +321,13 @@ polygon(x = c(2.58, seq(2.58, 4, 0.01), 4),
 # add vertical line at the mean (mu)
 abline(v = 0, col = "red", lwd = 2)
 
-# add the "2.5%" labels on tails
+# add the "0.5%" labels on tails
 text(-2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 text(2.9, 0.05, "0.5%", col = "black", cex = 1.5)
 ```
 
 --
-$$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995$$
+$$P(Z<z_{0.005})=0.005 \qquad\text{and}\qquad P(Z<z_{0.995})=0.995$$
 ---
 
 `r knitr::include_url('https://www.mathsisfun.com/data/standard-normal-distribution-table.html', height='480px')`
@@ -339,8 +339,8 @@ $$P(Z>z_{0.005})=0.005 \qquad\text{or}\qquad P(Z<z_{0.005})=0.995$$
 ---
 ### Finding Critical Values
 
-$P(Z<z_{\frac{\alpha}{2}})=0.995$ 
-$z_{\frac{\alpha}{2}}$, is 99.5% quantile of standard normal $\rightarrow$ $z_{\frac{\alpha}{2}}=2.58$
+$P(Z<z_{1-\frac{\alpha}{2}})=0.995$
+$z_{1-\frac{\alpha}{2}}$ is the 99.5% quantile of standard normal $\rightarrow$ $z_{1-\frac{\alpha}{2}}=z_{0.995}=2.58$
 ```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 curve(dnorm(x),
       xlim = c(-4, 4),
@@ -355,9 +355,9 @@ curve(dnorm(x),
 axis(1, 
      at = c(-2.58, 0, 2.58), 
      padj = 0.75,
-     labels = c(expression(-z[0.005]),
+     labels = c(expression(z[0.005]),
                 expression(0),
-                expression(z[0.005])))
+                expression(z[0.995])))
 
 # shade the tails for the 2.5% regions
 polygon(x = c(-4, seq(-4, 2.58, 0.01), 2.58),
@@ -389,13 +389,13 @@ Let's calculate 90% CI for average price of listings with cleanliness score > 4.
   
 --
 
-4. Find the corresponding critical values $z_{\frac{\alpha}{2}}$
-  - Find $z_\frac{\alpha}{2}$ such that $P(Z>z_{\frac{\alpha}{2}})=0.05$ (or $P(Z<z_{\frac{\alpha}{2}})=0.95$)
-  - $z_{0.05}=1.65$
+4. Find the corresponding critical value $z_{1-\frac{\alpha}{2}}$
+  - Find $z_{1-\frac{\alpha}{2}}$ such that $P(Z<z_{1-\frac{\alpha}{2}})=0.95$
+  - $z_{1-\frac{\alpha}{2}}=z_{0.95}=1.65$
 --
 
 5. Construct the confidence interval as:
-$$\small \left\{\bar{x}- z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
+$$\small \left\{\bar{x}- z_{1-\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ z_{1-\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$$
 $$\small \left\{1245.43- 1.65\cdot\frac{961.9}{\sqrt{100}},\;\; 1245.43+ 1.65\cdot\frac{961.9}{\sqrt{100}}\right\}$$
 
 ---
@@ -429,7 +429,7 @@ How do we interpret a 90% confidence interval we computed?
 
 ### Shape of confidence intervals
 
-CI $= \left\{\bar{x}\pm z_{\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$ are wider when:
+CI $= \left\{\bar{x}\pm z_{1-\frac{\alpha}{2}}\cdot\frac{s}{\sqrt{n}}\right\}$ are wider when:
 - Confidence level is higher (99% is wider than 90%)
 - When $n$ is small
 - When $\sigma$ is large
@@ -538,7 +538,7 @@ Finding critical values for student's t distribution:
   
 3. Find the percentile such that 
 
-$$P(T>t_{\frac{\alpha}{2},\underbrace{n-1}_{d.f.}})=\frac{\alpha}{2} \qquad\text{or}\qquad P(T<t_{\frac{\alpha}{2},n-1})=1-\frac{\alpha}{2}$$
+$$P(T<t_{1-\frac{\alpha}{2},\underbrace{n-1}_{d.f.}})=1-\frac{\alpha}{2} \qquad\text{and}\qquad P(T<t_{\frac{\alpha}{2},n-1})=\frac{\alpha}{2}$$
 
 ```{r, warning=FALSE, fig.height=2.5, out.width='100%'}
 # Parameters
@@ -560,9 +560,9 @@ plot(x_vals, t_density, type = "l", xlim = c(-4, 4), ylim = c(0, 0.4),
 
 # Add x-axis
 axis(1, at = c(-2.26, 0, 2.26), padj = 0.75,
-     labels = c(expression(-t[frac(alpha,2)*","~df]),
+     labels = c(expression(t[frac(alpha,2)*","~df]),
                 0,
-                expression(t[frac(alpha,2)*","~df])))
+                expression(t[1-frac(alpha,2)*","~df])))
 
 # Add a vertical line at the mean (mu)
 abline(v = 0, col = "red", lwd = 2)
@@ -640,7 +640,7 @@ text(3, 0.05, "2.5%", col = "black", cex = 1.5)
 ```
 - Once we have critical value, we construct the CI as before:
 
-$$\small \left\{\bar{x}- t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ t_{\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}}\right\}$$
+$$\small \left\{\bar{x}- t_{1-\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}},\;\; \bar{x}+ t_{1-\frac{\alpha}{2},n-1}\cdot\frac{s}{\sqrt{n}}\right\}$$
 
 
 
