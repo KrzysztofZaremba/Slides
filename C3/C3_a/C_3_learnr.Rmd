@@ -3,6 +3,9 @@ title: "LearnR Tutorial: Estimators and Confidence Intervals"
 author: "Business Forecasting"
 output: learnr::tutorial
 runtime: shiny_prerendered
+tutorial:
+  id: "itam-bf-C3-estimators-ci"
+  version: 1.0
 ---
 
 ## Population
@@ -1307,3 +1310,4 @@ after  <- group_B[1:30]
 ```
 
 ---
+

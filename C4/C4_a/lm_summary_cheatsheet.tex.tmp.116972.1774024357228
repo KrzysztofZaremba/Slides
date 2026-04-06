@@ -1,0 +1,457 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.55in, top=0.5in, bottom=0.5in]{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+\tcbuselibrary{skins,breakable}
+
+% ── Colors ──
+\definecolor{darkblue}{HTML}{1B2A4A}
+\definecolor{medblue}{HTML}{2C5F8A}
+\definecolor{lightblue}{HTML}{D6E8F7}
+\definecolor{accentblue}{HTML}{3A7FBF}
+\definecolor{mygreen}{HTML}{2E7D32}
+\definecolor{lightgreen}{HTML}{E8F5E9}
+\definecolor{myorange}{HTML}{E65100}
+\definecolor{lightorange}{HTML}{FFF3E0}
+\definecolor{myred}{HTML}{C62828}
+\definecolor{lightred}{HTML}{FFEBEE}
+\definecolor{mypurple}{HTML}{6A1B9A}
+\definecolor{lightpurple}{HTML}{F3E5F5}
+\definecolor{codebg}{HTML}{F8F9FA}
+\definecolor{darkgray2}{HTML}{616161}
+
+% ── Code style ──
+\lstdefinestyle{Rstyle}{
+  language=R,
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  showstringspaces=false,
+  keywordstyle=\color{medblue}\bfseries,
+  commentstyle=\color{mygreen},
+  stringstyle=\color{myorange},
+  numbers=none,
+  xleftmargin=8pt,
+  xrightmargin=8pt,
+  aboveskip=6pt,
+  belowskip=6pt,
+  literate={~}{{\textasciitilde}}1 {<-}{{$\leftarrow$}}2,
+}
+\lstset{style=Rstyle}
+
+\lstdefinestyle{Routput}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{gray!40},
+  breaklines=true,
+  showstringspaces=false,
+  numbers=none,
+  xleftmargin=8pt,
+  xrightmargin=8pt,
+  aboveskip=4pt,
+  belowskip=4pt,
+}
+
+% ── tcolorbox styles ──
+\newtcolorbox{scenariobox}{
+  colback=lightblue, colframe=accentblue, arc=4pt,
+  boxrule=1.2pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{darkblue}, title={\faLightbulb\ \ Business Scenario}
+}
+
+\newtcolorbox{tipbox}{
+  colback=lightpurple, colframe=mypurple, arc=4pt,
+  boxrule=1pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+}
+
+\newtcolorbox{greenbox}[1][]{
+  colback=lightgreen, colframe=mygreen, arc=4pt,
+  boxrule=1pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{mygreen}, #1
+}
+
+\newtcolorbox{orangebox}[1][]{
+  colback=lightorange, colframe=myorange, arc=4pt,
+  boxrule=1pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{myorange}, #1
+}
+
+\newtcolorbox{redbox}[1][]{
+  colback=lightred, colframe=myred, arc=4pt,
+  boxrule=1pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{myred}, #1
+}
+
+\newtcolorbox{sectionbox}[1]{
+  colback=medblue, colframe=medblue, arc=4pt,
+  boxrule=0pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+  fontupper=\bfseries\large\color{white}, halign=left,
+  before skip=8pt, after skip=4pt,
+}
+
+% ── Header/Footer ──
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\small\color{darkgray2} Business Forecasting \,|\, ITAM \,|\, Page \thepage\ of 3}
+
+\begin{document}
+
+% ════════════════════════════════════════════════════════════════════
+%  TITLE
+% ════════════════════════════════════════════════════════════════════
+\begin{tcolorbox}[
+  colback=darkblue, colframe=darkblue, arc=0pt,
+  boxrule=0pt, left=10pt, right=10pt, top=10pt, bottom=10pt,
+  halign=center
+]
+{\Huge\bfseries\color{white} Simple Linear Regression in R}\\[6pt]
+{\large\color{white!80} A Visual Guide to \texttt{lm()} and \texttt{summary()}}
+\end{tcolorbox}
+
+\vspace{8pt}
+
+% ════════════════════════════════════════════════════════════════════
+%  SCENARIO
+% ════════════════════════════════════════════════════════════════════
+\begin{scenariobox}
+A marketing manager wants to know: \textbf{does advertising spend predict monthly sales?}\\[3pt]
+She has data on 30 stores: how much each spent on ads (in \$1,000s) and their sales (in \$1,000s).\\[4pt]
+{\bfseries\color{medblue} Y = Sales \quad|\quad X = Advertising Spend}
+\end{scenariobox}
+
+% ════════════════════════════════════════════════════════════════════
+%  THE MODEL
+% ════════════════════════════════════════════════════════════════════
+\begin{sectionbox}{The Linear Regression Model}
+The Linear Regression Model
+\end{sectionbox}
+
+\begin{center}
+\begin{tcolorbox}[
+  colback=white, colframe=accentblue, arc=6pt,
+  boxrule=1.5pt, width=0.85\textwidth,
+  halign=center, top=8pt, bottom=8pt
+]
+{\Large $\text{Sales} \;=\; \underset{{\color{mygreen}\text{\tiny intercept}}}{\color{mygreen}b_0} \;+\; \underset{{\color{myorange}\text{\tiny slope}}}{\color{myorange}b_1} \times \text{AdvertisingSpend} \;+\; \underset{{\color{myred}\text{\tiny error}}}{\color{myred}\varepsilon}$}
+
+\vspace{10pt}
+\begin{minipage}{0.3\textwidth}\centering
+\small\color{mygreen}
+\textbf{Intercept}\\
+Predicted sales\\when ads = \$0
+\end{minipage}
+\begin{minipage}{0.35\textwidth}\centering
+\small\color{myorange}
+\textbf{Slope}\\
+Change in sales for each\\extra \$1,000 in ads
+\end{minipage}
+\begin{minipage}{0.25\textwidth}\centering
+\small\color{myred}
+\textbf{Error}\\
+What our model\\can't explain
+\end{minipage}
+\end{tcolorbox}
+\end{center}
+
+% ════════════════════════════════════════════════════════════════════
+%  STEP 1: lm()
+% ════════════════════════════════════════════════════════════════════
+\begin{sectionbox}{Step 1}
+Step 1: Fit the Model with \texttt{lm()}
+\end{sectionbox}
+
+The \texttt{lm()} function fits a straight line through your data:
+
+\begin{lstlisting}
+model <- lm(Sales ~ AdvertisingSpend, data = stores)
+\end{lstlisting}
+
+\begin{greenbox}[title={\faBook\ \ Reading this line:}]
+\begin{tabular}{@{}llll@{}}
+\texttt{\bfseries model} & \texttt{\bfseries lm(} & \texttt{\bfseries Sales \textasciitilde{} AdvertisingSpend} & \texttt{\bfseries data = stores)} \\[2pt]
+{\scriptsize\color{darkgray2} Save the result} & {\scriptsize\color{darkgray2} Fit a linear} & {\scriptsize\color{darkgray2} ``Y predicted by X''} & {\scriptsize\color{darkgray2} Which data} \\
+{\scriptsize\color{darkgray2} for later use} & {\scriptsize\color{darkgray2} model} & {\scriptsize\color{darkgray2} (\textasciitilde{} reads as ``depends on'')} & {\scriptsize\color{darkgray2} frame to use} \\
+\end{tabular}
+\end{greenbox}
+
+\vspace{4pt}
+Typing just \texttt{model} in the console shows the coefficients:
+
+\begin{lstlisting}[style=Routput]
+> model
+
+Call:
+lm(formula = Sales ~ AdvertisingSpend, data = stores)
+
+Coefficients:
+      (Intercept)  AdvertisingSpend
+           12.351             2.876
+\end{lstlisting}
+
+\vspace{2pt}
+\begin{minipage}[t]{0.48\textwidth}
+\begin{greenbox}[title={$b_0 = 12.351$ (Intercept)}]
+\small A store that spends \$0 on ads is predicted to have \$12,351 in sales.\\[2pt]
+{\scriptsize\itshape\color{darkgray2} May not be meaningful if no store actually spends \$0.}
+\end{greenbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{orangebox}[title={$b_1 = 2.876$ (Slope)}]
+\small Each additional \$1,000 in ads is associated with \$2,876 more in sales.\\[2pt]
+{\scriptsize\itshape\color{darkgray2} This is the key business insight!}
+\end{orangebox}
+\end{minipage}
+
+\vspace{6pt}
+\begin{tipbox}
+{\bfseries\color{mypurple} Tip:} You can also get just the coefficients with: \texttt{coef(model)}
+\end{tipbox}
+
+% ════════════════════════════════════════════════════════════════════
+%  PAGE 2: summary()
+% ════════════════════════════════════════════════════════════════════
+\newpage
+
+\begin{tcolorbox}[
+  colback=darkblue, colframe=darkblue, arc=0pt,
+  boxrule=0pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  halign=center
+]
+{\Large\bfseries\color{white} Step 2: Understand the Output with \texttt{summary()}}
+\end{tcolorbox}
+\vspace{6pt}
+
+\begin{lstlisting}
+summary(model)
+\end{lstlisting}
+
+\begin{lstlisting}[style=Routput]
+Call:
+lm(formula = Sales ~ AdvertisingSpend, data = stores)
+
+Residuals:
+    Min      1Q  Median      3Q     Max
+ -8.324  -2.147   0.381   2.503   7.196
+
+Coefficients:
+                 Estimate Std. Error t value Pr(>|t|)
+(Intercept)       12.351      3.214   3.842  0.00064 ***
+AdvertisingSpend   2.876      0.412   6.981  1.7e-07 ***
+---
+Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1
+
+Residual standard error: 3.891 on 28 degrees of freedom
+Multiple R-squared: 0.6351
+\end{lstlisting}
+
+% ── Section A: Residuals ──
+\begin{sectionbox}{A}
+A \quad Residuals
+\end{sectionbox}
+
+\begin{tcolorbox}[colback=lightblue, colframe=accentblue, arc=4pt, boxrule=1pt]
+\textbf{Residuals = Actual Sales $-$ Predicted Sales} (the errors of your model).\\[3pt]
+The five-number summary (Min, Q1, Median, Q3, Max) tells you how spread out the errors are.\\[3pt]
+{\bfseries\color{mygreen} What to look for:} Median close to 0 is good (errors are balanced). Here: 0.381 --- nicely centered.
+\end{tcolorbox}
+
+% ── Section B: Coefficients ──
+\begin{sectionbox}{B}
+B \quad Coefficients Table \normalfont\normalsize\color{white!80}(the core of the output)
+\end{sectionbox}
+
+\vspace{2pt}
+\begin{minipage}[t]{0.24\textwidth}
+\begin{greenbox}[title={Estimate}]
+\small The coefficients themselves.\\[4pt]
+$b_0 = 12.351$\\
+$b_1 = 2.876$
+\end{greenbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.24\textwidth}
+\begin{orangebox}[title={Std.\ Error}]
+\small How uncertain is each estimate.\\[4pt]
+Smaller = more precise estimate.
+\end{orangebox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.24\textwidth}
+\begin{tipbox}
+{\bfseries\color{mypurple} t value}\\[3pt]
+\small = Estimate / Std.Error\\[4pt]
+Bigger $|t|$ = stronger evidence.
+\end{tipbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.24\textwidth}
+\begin{redbox}[title={Pr($>$$|$t$|$)}]
+\small The \textbf{p-value}.\\[4pt]
+Prob.\ of seeing this if true effect were 0.
+\end{redbox}
+\end{minipage}
+
+\vspace{8pt}
+\begin{orangebox}[title={\faStar\ \ What do the stars (***) mean?}]
+\begin{center}
+\texttt{***}\; $p < 0.001$ \qquad
+\texttt{**}\; $p < 0.01$ \qquad
+\texttt{*}\; $p < 0.05$ \qquad
+\texttt{.}\; $p < 0.1$ \qquad
+(blank)\; not significant
+\end{center}
+\vspace{2pt}
+{\small\itshape More stars = stronger evidence that the variable matters. Our slope has \texttt{***}, so advertising clearly matters!}
+\end{orangebox}
+
+% ── Section C: Model Fit ──
+\begin{sectionbox}{C}
+C \quad Model Fit Statistics
+\end{sectionbox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{greenbox}[title={R-squared = 0.6351}]
+\textbf{63.5\%} of the variation in sales is explained by advertising spend.\\[4pt]
+{\small\itshape Range: 0 (model explains nothing) to 1 (model explains everything).}
+\end{greenbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tipbox}
+{\bfseries\color{mypurple} Residual Std.\ Error = 3.891}\\[4pt]
+On average, predictions are off by about \$3,891 from actual sales.\\[4pt]
+{\small\itshape Same units as Y. Smaller = better predictions.}
+\end{tipbox}
+\end{minipage}
+
+% ════════════════════════════════════════════════════════════════════
+%  PAGE 3: PUTTING IT TOGETHER
+% ════════════════════════════════════════════════════════════════════
+\newpage
+
+\begin{tcolorbox}[
+  colback=darkblue, colframe=darkblue, arc=0pt,
+  boxrule=0pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  halign=center
+]
+{\Large\bfseries\color{white} Putting It All Together}
+\end{tcolorbox}
+\vspace{6pt}
+
+\begin{sectionbox}{Workflow}
+Complete Workflow: From Data to Interpretation
+\end{sectionbox}
+
+\begin{lstlisting}
+# 1. Load data
+stores <- read.csv("stores.csv")
+
+# 2. Quick scatterplot to visualize the relationship
+plot(stores$AdvertisingSpend, stores$Sales,
+     xlab = "Advertising Spend ($1,000s)",
+     ylab = "Sales ($1,000s)",
+     main = "Sales vs Advertising",
+     pch = 19, col = "steelblue")
+
+# 3. Fit the model
+model <- lm(Sales ~ AdvertisingSpend, data = stores)
+
+# 4. Add the regression line to the plot
+abline(model, col = "red", lwd = 2)
+
+# 5. See the full results
+summary(model)
+
+# 6. Make a prediction: what sales do we expect
+#    if we spend $15,000 on ads?
+predict(model, newdata = data.frame(AdvertisingSpend = 15))
+# Answer: 12.351 + 2.876 * 15 = $55,491
+\end{lstlisting}
+
+% ── Scatterplot ──
+\begin{sectionbox}{Plot}
+What the Scatterplot Looks Like
+\end{sectionbox}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.82\textwidth,
+  height=6.5cm,
+  xlabel={Advertising Spend (\$1,000s)},
+  ylabel={Sales (\$1,000s)},
+  title={\textbf{Sales vs Advertising Spend}},
+  xmin=0, xmax=27,
+  ymin=0, ymax=90,
+  grid=major,
+  grid style={gray!20},
+  tick style={color=black},
+  axis lines=left,
+  every axis title/.style={font=\bfseries},
+]
+
+% Scatter points (simulated: y = 12.35 + 2.876*x + noise)
+\addplot[only marks, mark=*, mark size=2.2pt, color=accentblue, fill=accentblue!70]
+coordinates {
+(2,18.5) (3,22.1) (4,19.7) (5,28.3) (6,26.9) (7,33.5) (8,31.2) (8,37.8)
+(9,35.1) (10,42.6) (10,38.2) (11,40.1) (12,45.3) (12,49.8) (13,44.7)
+(14,50.2) (14,53.1) (15,48.9) (15,56.3) (16,52.8) (17,58.1) (17,55.4)
+(18,62.7) (19,60.3) (20,68.5) (20,64.1) (21,72.3) (22,69.8) (23,75.2)
+(25,80.1)
+};
+
+% Regression line: y = 12.351 + 2.876*x
+\addplot[color=myred, line width=2pt, domain=0:26, samples=2] {12.351 + 2.876*x};
+
+% Label the line
+\node[color=myred, font=\small\bfseries, anchor=south west] at (axis cs:15,58) {$\hat{Y} = 12.35 + 2.88X$};
+
+% Show a residual
+\draw[mypurple, thick, dashed] (axis cs:7,33.5) -- (axis cs:7,32.48);
+\node[color=mypurple, font=\scriptsize\bfseries, anchor=west] at (axis cs:7.3,35.5) {residual};
+
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+% ── Quick Reference ──
+\begin{sectionbox}{Ref}
+Quick Reference: Useful Functions
+\end{sectionbox}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}>{\ttfamily\small}l l@{}}
+\toprule
+\textnormal{\textbf{Function}} & \textbf{What It Does} \\
+\midrule
+lm(Y \textasciitilde{} X, data) & Fit the regression model \\
+summary(model) & Full output: coefficients, p-values, R-squared \\
+coef(model) & Extract just the coefficients ($b_0$, $b_1$) \\
+fitted(model) & Get predicted values ($\hat{Y}$) for all observations \\
+residuals(model) & Get residuals ($Y - \hat{Y}$) for all observations \\
+predict(model, newdata=...) & Predict $Y$ for new $X$ values \\
+confint(model, level=0.95) & 95\% confidence intervals for $b_0$ and $b_1$ \\
+plot(X, Y); abline(model) & Scatterplot with regression line \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -1,0 +1,256 @@
+\documentclass[11pt]{article}
+\usepackage[paperwidth=11in, paperheight=8.5in, margin=0.4in, top=0.3in, bottom=0.3in]{geometry}
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{0pt}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{array}
+
+\tcbuselibrary{skins}
+\usetikzlibrary{positioning}
+
+% ── Colors ──
+\definecolor{bg}{HTML}{F7F8FA}
+\definecolor{darkblue}{HTML}{1B2A4A}
+\definecolor{medblue}{HTML}{2C5F8A}
+\definecolor{lightblue}{HTML}{DDEAF6}
+\definecolor{accentblue}{HTML}{3A7FBF}
+\definecolor{mygreen}{HTML}{1B7A3D}
+\definecolor{lightgreen}{HTML}{E2F0E7}
+\definecolor{myorange}{HTML}{D84315}
+\definecolor{lightorange}{HTML}{FDEEE6}
+\definecolor{myred}{HTML}{C62828}
+\definecolor{lightred}{HTML}{FCE4E4}
+\definecolor{mypurple}{HTML}{6A1B9A}
+\definecolor{lightpurple}{HTML}{F0E5F5}
+\definecolor{codebg}{HTML}{ECEEF2}
+\definecolor{darkgray2}{HTML}{555555}
+\definecolor{teal}{HTML}{00796B}
+\definecolor{lightteal}{HTML}{DFF0EE}
+\definecolor{gold}{HTML}{D4960A}
+\definecolor{lightgold}{HTML}{FDF6DF}
+\definecolor{linegray}{HTML}{C8CDD5}
+
+% ── Numbered circle marker ──
+\newcommand{\cmark}[2]{%
+  \tikz[baseline=(c.base)]{\node[circle, fill=#1, text=white, font=\bfseries\scriptsize,
+    inner sep=0pt, minimum size=14pt] (c) {#2};}%
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\small\color{darkgray2} Business Forecasting \,|\, ITAM}
+
+\pagecolor{bg}
+
+\begin{document}
+
+% ── Title ──
+\begin{tcolorbox}[colback=darkblue, colframe=darkblue, arc=0pt, boxrule=0pt,
+  left=10pt, right=10pt, top=5pt, bottom=5pt, halign=center]
+{\Large\bfseries\color{white} \texttt{lm()} and \texttt{summary()} in R --- Visual Guide}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+% ── Scenario + Model + Code in a compact top section ──
+\begin{tcolorbox}[colback=lightblue, colframe=accentblue!50, arc=4pt, boxrule=0.5pt,
+  left=8pt, right=8pt, top=4pt, bottom=4pt]
+\small
+\textbf{\color{darkblue}\faLightbulb\ Example:} A manager asks: \textit{does advertising spend predict sales?} Data: 30 stores.
+\hfill {\color{medblue}\textbf{Y} = Sales (\$1000s) \;\textbar\; \textbf{X} = AdSpend (\$1000s)}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{minipage}[t]{0.52\textwidth}
+\begin{tcolorbox}[colback=white, colframe=accentblue!30, arc=5pt, boxrule=0.6pt,
+  left=6pt, right=6pt, top=6pt, bottom=6pt, halign=center]
+{\large $\text{Sales}_i \;=\; {\color{mygreen}\mathbf{b_0}} \;+\; {\color{myorange}\mathbf{b_1}} \times \text{AdSpend}_i \;+\; {\color{mypurple}\varepsilon_i}$}
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+\begin{tcolorbox}[colback=codebg, colframe=linegray, arc=5pt, boxrule=0.5pt,
+  left=6pt, right=6pt, top=6pt, bottom=6pt]
+\small\ttfamily
+\textbf{model} $\leftarrow$ {\color{medblue}\textbf{lm}}\textbf{(Sales \textasciitilde{} AdSpend, data=stores)}\\[2pt]
+{\color{medblue}\textbf{summary}}\textbf{(model)}\\[3pt]
+\scriptsize\sffamily\color{darkgray2}\itshape
+\textasciitilde{} means ``depends on'' \quad\textbar\quad data = which data frame
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{5pt}
+
+% ═══════════════════════════════════════════════════
+%  THE SUMMARY OUTPUT — with colored numbered markers
+% ═══════════════════════════════════════════════════
+
+\begin{tcolorbox}[colback=white, colframe=linegray, arc=5pt, boxrule=0.8pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  title={\sffamily\small\bfseries\color{darkgray2} \texttt{summary(model)} output},
+  coltitle=darkgray2, colbacktitle=codebg, fonttitle=\small]
+
+\ttfamily\small
+
+Call: lm(formula = Sales \textasciitilde{} AdSpend, data = stores)
+
+\vspace{4pt}
+\cmark{accentblue}{1}\ Residuals:\\
+\hspace*{20pt}Min\hspace{14pt}1Q\hspace{8pt}Median\hspace{10pt}3Q\hspace{12pt}Max\\
+\hspace*{12pt}-8.324\;\;-2.147\;\;\;0.381\;\;\;2.503\;\;\;7.196
+
+\vspace{6pt}
+Coefficients:\\
+\hspace*{64pt}\cmark{mygreen}{2}\ \ \ \ \ \ \ \cmark{myorange}{3}\ \ \ \ \ \cmark{mypurple}{4}\ \ \ \ \cmark{myred}{5}\\[-2pt]
+\hspace*{60pt}Estimate\;\;Std.Error\;\;t.value\;\;Pr(>|t|)\\
+(Intercept)\hspace{8pt}12.351\hspace{14pt}3.214\hspace{10pt}3.842\hspace{6pt}0.00064\;***\\
+AdSpend\hspace{24pt}2.876\hspace{14pt}0.412\hspace{10pt}6.981\hspace{6pt}1.7e-07\;***
+
+\vspace{4pt}
+{\scriptsize Signif. codes:\;\;0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1}
+
+\vspace{6pt}
+\cmark{teal}{6}\ Residual standard error: 3.891 on 28 degrees of freedom\\
+\cmark{accentblue}{7}\ Multiple R-squared: 0.6351,\;\;\;Adjusted R-squared: 0.6221\\
+\cmark{gold}{8}\ F-statistic: 48.74 on 1 and 28 DF,\;\;\;p-value: 1.7e-07
+\end{tcolorbox}
+
+\vspace{5pt}
+
+% ═══════════════════════════════════════════════════
+%  EXPLANATION GRID — 2 rows × 4 columns
+% ═══════════════════════════════════════════════════
+
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightblue, colframe=accentblue!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{accentblue}{1}\ {\bfseries\color{accentblue} Residuals}\\[3pt]
+\footnotesize
+Errors = actual $-$ predicted.\\
+Five-number summary of all\\prediction errors.
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightgreen, colframe=mygreen!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{mygreen}{2}\ {\bfseries\color{mygreen} Estimate}\\[3pt]
+\footnotesize
+The coefficients $b_0$, $b_1$.\\
+These are the numbers in your\\
+regression equation.
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightorange, colframe=myorange!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{myorange}{3}\ {\bfseries\color{myorange} Std.\ Error}\\[3pt]
+\footnotesize
+How uncertain is the estimate?\\
+Smaller = more precise.\\
+Larger = less reliable.
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightpurple, colframe=mypurple!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{mypurple}{4}\ {\bfseries\color{mypurple} t value}\\[3pt]
+\footnotesize
+= Estimate / Std.\ Error.\\
+How far is $b$ from 0?\\
+{\scriptsize\itshape Tests $H_0\!\!: b\!=\!0$ vs $H_1\!\!: b\!\neq\!0$}
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{5pt}
+
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightred, colframe=myred!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{myred}{5}\ {\bfseries\color{myred} p-value}\\[3pt]
+\footnotesize
+Prob.\ of this result if $b\!=\!0$.\\
+Smaller = more evidence.\\
+{\scriptsize\itshape Tests $H_0\!\!: b\!=\!0$ vs $H_1\!\!: b\!\neq\!0$}
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightteal, colframe=teal!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{teal}{6}\ {\bfseries\color{teal} Residual SE}\\[3pt]
+\footnotesize
+Predictions off by $\sim$\$3,891.\\
+Same units as Y. Smaller = better.\\
+{\scriptsize\itshape df $= n\!-\!2 = 30\!-\!2 = 28$}
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightblue, colframe=accentblue!50, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{accentblue}{7}\ {\bfseries\color{accentblue} R$^2$ = 0.6351}\\[3pt]
+\footnotesize
+63.5\% of variation explained.\\
+Range: 0 to 1.\\
+{\scriptsize\itshape Adj.\ R$^2$: corrected for \# of variables.}
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\begin{tcolorbox}[colback=lightgold, colframe=gold!60, arc=4pt, boxrule=0.5pt,
+  left=5pt, right=5pt, top=4pt, bottom=4pt, height=2.0cm, valign=top]
+\small
+\cmark{gold}{8}\ {\bfseries\color{gold!80!black} F-statistic}\\[3pt]
+\footnotesize
+Tests $H_0$: \textit{all} slopes $= 0$.\\
+p: 1.7e-07 $\rightarrow$ reject $H_0$.\\
+{\scriptsize\itshape Same p as t-test when 1 predictor.}
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{4pt}
+
+% ── Bottom row: Interpretation + e-notation ──
+\begin{minipage}[t]{0.35\textwidth}
+\begin{tcolorbox}[colback=lightgreen, colframe=mygreen!60, arc=4pt, boxrule=0.6pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt]
+\small
+{\bfseries\color{mygreen}\faCalculator\ \ Intercept: $b_0 = 12.351$}\\[2pt]
+\footnotesize
+Sales when ads = \$0: \textbf{\$12,351}.\\
+{\scriptsize\itshape\color{darkgray2} May not be meaningful if no store spends \$0.}
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.35\textwidth}
+\begin{tcolorbox}[colback=lightorange, colframe=myorange!60, arc=4pt, boxrule=0.6pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt]
+\small
+{\bfseries\color{myorange}\faArrowUp\ \ Slope: $b_1 = 2.876$}\\[2pt]
+\footnotesize
++\$1k in ads $\rightarrow$ \textbf{+\$2,876} in sales.\\
+{\scriptsize\itshape\color{darkgray2} This is the key business insight!}
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.27\textwidth}
+\begin{tcolorbox}[colback=lightgold, colframe=gold!60, arc=4pt, boxrule=0.6pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt]
+\small
+{\bfseries\color{gold!80!black}\faInfoCircle\ \ \texttt{1.7e-07} = ?}\\[2pt]
+\footnotesize
+$1.7 \times 10^{-7} = 0.00000017$\\
+{\scriptsize\color{darkgray2} Move decimal 7 places left.}
+\end{tcolorbox}
+\end{minipage}
+
+\end{document}

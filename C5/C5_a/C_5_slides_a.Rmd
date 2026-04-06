@@ -10,10 +10,167 @@ output:
       highlightStyle: github
       countIncrementalSlides: true
       
----   
+---
+<script type="text/javascript">
+// Fix: pandoc converts $...$ to <code>$...$</code>, but MathJax skips <code>.
+// This script unwraps math from <code> tags so MathJax can render it.
+document.addEventListener('DOMContentLoaded', function() {
+  // Wait for remark.js to finish processing slides
+  setTimeout(function() {
+    document.querySelectorAll('code').forEach(function(el) {
+      var text = el.textContent;
+      if (/^\\$/.test(text) && /\\$$/.test(text)) {
+        var span = document.createElement('span');
+        span.textContent = text;
+        el.parentNode.replaceChild(span, el);
+      }
+    });
+    // Re-trigger MathJax typesetting
+    if (window.MathJax) {
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+  }, 1000);
+});
+</script>
 <style type="text/css">
 .remark-slide-content {
-    font-size: 20px;
+    font-size: 18px;
+    padding: 15px 35px;
+}
+
+.small .remark-slide-content, .remark-slide-content.small {
+    font-size: 16px;
+}
+
+/* Key formula box - purple gradient */
+.formula-box {
+    background: linear-gradient(135deg, #f0efff 0%, #e8e6ff 100%);
+    border-left: 4px solid #43418A;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin: 8px 0;
+    font-size: 0.95em;
+}
+
+/* Key takeaway box - green */
+.takeaway {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-left: 4px solid #2e7d32;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 0.95em;
+    color: #1b5e20;
+}
+.takeaway strong { color: #2e7d32; }
+
+/* Warning/caution box - orange */
+.caution {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border-left: 4px solid #e65100;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 0.95em;
+    color: #bf360c;
+}
+.caution strong { color: #e65100; }
+
+/* LearnR practice note - blue */
+.learnr-note {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-left: 4px solid #1565c0;
+    border-radius: 8px;
+    padding: 7px 11px;
+    margin: 7px 0;
+    font-size: 0.85em;
+    color: #0d47a1;
+}
+
+/* Definition/concept box - light purple */
+.concept {
+    background: #f5f3ff;
+    border: 2px solid #43418A;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin: 8px 0;
+}
+
+/* Interpretation box - teal */
+.interpret {
+    background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%);
+    border-left: 4px solid #00695c;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 0.95em;
+    color: #004d40;
+}
+
+/* Better table styling */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+th {
+    background: #43418A;
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+}
+td {
+    padding: 6px 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+tr:nth-child(even) { background: #f5f5f5; }
+
+/* Smaller code output */
+.remark-code { font-size: 0.85em; }
+
+/* Nice blockquotes */
+blockquote {
+    border-left: 4px solid #43418A;
+    padding: 10px 20px;
+    margin: 10px 0;
+    background: #fafafa;
+    font-style: italic;
+    color: #555;
+}
+
+/* Section title styling */
+.section-title {
+    color: #43418A;
+    font-size: 1.5em;
+    font-weight: 700;
+    border-bottom: 3px solid #43418A;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Side-by-side comparison */
+.compare-left {
+    float: left;
+    width: 48%;
+    background: #e3f2fd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-right: 2%;
+}
+.compare-right {
+    float: right;
+    width: 48%;
+    background: #fce4ec;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* Clean up footnotes */
+.footnote {
+    font-size: 0.75em;
+    color: #666;
+    bottom: 12px;
 }
 </style>
 
@@ -82,7 +239,7 @@ Sample_urg=Sample_urg[Sample_urg$SEXO!="NO ESPECIFICADO",]
 
 - Suppose that you are managing a hospital
 - You want to predict how long a patient will stay at the urgent care 
-  - You need this information to see how many rescources you need (doctors, beds, etc)
+  - You need this information to see how many resources you need (doctors, beds, etc)
 
 --
 - You collect the data on 
@@ -124,15 +281,13 @@ datatable(Sample_urg,
 
 ### Multiple linear regression
 
-- Multiple linear regression is similar to single linear regression
+.concept[
+**Multiple linear regression** models $y$ as a linear function of **multiple** predictor variables $x_1, x_2, \ldots, x_k$, rather than just one.
+]
 
 --
 
-- But you can use more than just one x (predictor)
-
---
-
-- We model y as a linear function of multiple variables
+- Similar to simple linear regression, but with more than one predictor
 
 --
 
@@ -147,7 +302,7 @@ datatable(Sample_urg,
 Suppose that the outcome $y_i$ (duration) is a linear function of $x_1$ (Occupancy) and $x_2$ (age)
 
 $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+u_i$$
-- $\beta_0$ represents the average value of $y_i$ when $x_1$ and $x_2$ are 0. 
+- $\beta_0$ represents the average value of $y_i$ when $x_1$ and $x_2$ are 0.
 - $\beta_1$ represents the change in $y_i$ while changing $x_1$ by one unit and keeping $x_2$ constant
 - $\beta_2$ represents the change in $y_i$ while changing $x_2$ by one unit and keeping $x_1$ constant
 
@@ -155,7 +310,7 @@ $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+u_i$$
 --
 Once I estimated the parameters, I can predict how long a patient will stay. Consider a patient who is 20 years old (age) and there are 5 other people in the urgent care at the same time (occupancy), then predicted stay is:
 
-$$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1*5+\hat{\beta}_2*10$$
+$$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1 \cdot 5+\hat{\beta}_2 \cdot 10$$
 
 ---
 ### Example 1
@@ -171,6 +326,9 @@ summary(lm_model)
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 ---
 ### Example 2
@@ -187,17 +345,20 @@ summary(lm_model)
 
 ```
 
-
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 ---
 ### Example 3
 
-Who care more about looks when it comes to dating: men or women? 
+Who cares more about looks when it comes to dating: men or women? 
 Our speed dating data gives us:
 
 1. How much respondent liked someone (1-10 scale) - variable "like")
 2. How attractive they found their date (1-10 scale) - variable "Attractive")
 3. The gender of the respondent (M or F) - variable gender
+
 --
 
 ```{r, echo=FALSE}
@@ -216,6 +377,9 @@ summary(lm_model)
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 
 ---
@@ -268,6 +432,9 @@ plot_ly(my_df, x = ~x1, y = ~x2, z = ~y, text = ~paste("x1:", round(x1,2), "<br>
         type = "surface", opacity = 0.6, text = ~paste("x1:", x1_grid, "<br>x2:", x2_grid, "<br>y_pred:", z_matrix))
 ```
 
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 ---
 ### Multiple linear regression
@@ -283,8 +450,8 @@ n <- 100
 
 # Generate random values for x1, x, and u
 x1 <- rnorm(n)
-x <- rnorm(n, mean=1, s=3)
-u <- rnorm(n, s=10)
+x <- rnorm(n, mean=1, sd=3)
+u <- rnorm(n, sd=10)
 
 # Generate y using the given equation
 y <- 5 + 2 * x1 - x^2 + u
@@ -360,6 +527,9 @@ plot <- ggplot(data, aes(x = x2, y = y, color = factor(x1))) +
   plot
 ```
 
+.learnr-note[
+**LearnR Practice:** Sections 4.1–4.2 — Categorical Variables: Wages by Marital Status + Gender Pay Gap
+]
 
 
 ---
@@ -375,14 +545,23 @@ $$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_kx_{ik}+u_i$$
 - Maybe you are trying to predict sales in a store $i$, and $x_{ij}$ represent prices of the products, their competitors' products, how many people live around and how rich are they etc...
 
 --
-- We can no longer visualize it (because we can't visualize more than 3 dimensions) 
+- We can no longer visualize it (because we can't visualize more than 3 dimensions)
 
 ---
+class: inverse, center, middle
+
+# Mathematical Formulation
+
+### Matrix Notation, OLS Derivation, and Normal Equations
+
+---
+class: small
+
 ### Multiple linear regression
 
 We can also write the regression in the vector form:
 
-$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_k,x_{ik}+u_i$$
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+...+\beta_kx_{ik}+u_i$$
 In vector form is: 
 
 
@@ -417,12 +596,20 @@ u_n  \\ \end{bmatrix}}_{\substack{\mathbf{u} \\ n \times 1}}
 \]
 </div>
 
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+
+**Interactive visualization:** See this formula in action step-by-step → [krzysztofzaremba.github.io/matrix-intuition](https://krzysztofzaremba.github.io/matrix-intuition/)
+]
+
 ---
+class: small
+
 ### Full Rank
 
 Important Assumption: **X is full rank** 
 - Has same rank as the number of parameters: $p=k+1$
-- Also known as: no perfect multicolinearity
+- Also known as: no perfect multicollinearity
 
 --
 - .blue[Technically]: columns of X should be linearly independent
@@ -439,7 +626,7 @@ Important Assumption: **X is full rank**
 \left[\begin{array}{ccc}
 1 & 2 & 3 \\
 4 & 5 & 6 \\
-7 & 8 & 9
+7 & 8 & 10
 \end{array}\right]
 &
 \left[\begin{array}{ccc}
@@ -479,64 +666,37 @@ b_k  \\ \end{bmatrix}
 $$y_i=b_0+b_1x_{i1}+b_2x_{i2}+...+b_kx_{ik}+e_i$$
 - That is minimize 
 
-$$SSE=\sum_ie_i^2=\sum_i(y_i-\hat{y}_i)^2=\mathbf{e}'\mathbf{e}=(\mathbf{y-\hat{y}})'(\mathbf{y-\hat{y}})=(\mathbf{y-Xb})'(\mathbf{y-Xb})$$
+$$\small SSE=\sum_ie_i^2=\sum_i(y_i-\hat{y}_i)^2=\mathbf{e}^{\top}\mathbf{e}=(\mathbf{y-Xb})^{\top}(\mathbf{y-Xb})$$
 ---
 ### Multiple linear regression
 
-- We can do it with scalars
+Taking partial derivatives of SSE with respect to each $b_j$ and setting them to zero leads to the **normal equations**:
 
-$$\begin{align*}
-\frac{\partial SSE}{\partial \hat{\beta}_0} & = -2\sum_{i=1}^{n} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
-\frac{\partial SSE}{\partial \hat{\beta}_1} & = -2\sum_{i=1}^{n} x_{i1} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
-\vdots \\
-\frac{\partial SSE}{\partial \hat{\beta}_k} & = -2\sum_{i=1}^{n} x_{ik} \left( y_i - (\hat{\beta}_0 + \hat{\beta}_1 x_{i1}+...+\hat{\beta}_k x_{ik})\right)=0 \\
-\end{align*}$$
+$$\mathbf{X^{\top}X\hat{\beta}} =\mathbf{X^{\top}y}$$
 
 --
-- We have $k+1$ equations with $k+1$ unknowns. 
 
----
-### Multiple linear regression
+By expanding and differentiating in matrix form, we can show that minimizing:
 
-- Or we can do it with vectors
+$$SSE(b)=(\mathbf{y-Xb})^{\top}(\mathbf{y-Xb})$$
 
---
-- First rewrite the sum of squares:
-$$\small SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}$$
+yields the OLS estimator:
 
-- Short review of matrix derivatives (link to full review of matrix algebra in canvas):
-
-1. Constants drop out:
-$$\small \frac{\partial}{\partial \mathbf b}(\mathbf v) = 0$$
-2. Linear functions:
-$$\frac{\partial}{\partial \mathbf b}(\mathbf c' \mathbf b) = \mathbf c,
-\qquad
-\frac{\partial}{\partial \mathbf b}(\mathbf b' \mathbf c) = \mathbf c$$
-3. Quadratic forms
-$$
-\small \frac{\partial}{\partial \mathbf b}(\mathbf b' A \mathbf b) = (A + A')\mathbf b
-$$
-
-
-
----
-### Multiple linear regression
-
-$$SSE(b)=(\mathbf{y-Xb})'(\mathbf{y-Xb})=\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb}$$
-
-- Let's minimize it with respect to $\mathbf{b}$
-
-
-$$\frac{\partial}{\partial \mathbf{b}}(\mathbf{y'}\mathbf{y-2b'X'y}+\mathbf{b'X'Xb})=\mathbf{-2X'y}+\mathbf{2X'Xb}$$
+.formula-box[
+$$\boxed{\mathbf{\hat{\beta}} =\mathbf{(X^{\top}X)^{-1}X^{\top}y}}$$
+]
 
 --
-- $\hat{\beta}$ is the solution of such minimization (our OLS estimator)
 
-$$\begin{align*} 
-\mathbf{-2X'y}+\mathbf{2X'X\hat{\beta}}&=0 \\
-\mathbf{X'X\hat{\beta}} & =\mathbf{X'y} \\
-\mathbf{\hat{\beta}} & =\mathbf{(X'X)^{-1}X'y}
-\end{align*}$$
+.takeaway[
+**Key Takeaway:** OLS finds the coefficients that minimize the sum of squared errors. The formula accounts for correlations between all X variables simultaneously.
+]
+
+
+
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 
 
@@ -544,52 +704,38 @@ $$\begin{align*}
 ---
 ### Multiple linear regression
 
-Looking more closely at the **first order condition**:
+**What do $\mathbf{X^{\top}X}$ and $\mathbf{X^{\top}y}$ contain?**
 
-<div class="math">
-\[
-\underbrace{\begin{bmatrix}
-n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
-\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2 & \ldots & \sum_{i=1}^{n} x_{i1}x_{ik} \\
-\vdots & \vdots & \ddots & \vdots \\
-\sum_{i=1}^{n} x_{ik}& \sum_{i=1}^{n} x_{ik}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik}^2\end{bmatrix}}_{\mathbf{X'X}}
+- $\mathbf{X^{\top}X}$ is a $(k+1) \times (k+1)$ matrix that captures the **relationships between X variables** (sums of squares and cross-products)
+- $\mathbf{X^{\top}y}$ is a $(k+1) \times 1$ vector that captures the **relationships between X and y**
+
+--
+
+For example, with two regressors ($k=2$):
+
+$$\underbrace{\begin{bmatrix}
+n & \sum x_{i1} & \sum x_{i2} \\
+\sum x_{i1} & \sum x_{i1}^2 & \sum x_{i1}x_{i2} \\
+\sum x_{i2} & \sum x_{i1}x_{i2} & \sum x_{i2}^2
+\end{bmatrix}}_{\mathbf{X^{\top}X}}
 \underbrace{\begin{bmatrix}
 \hat{\beta}_0 \\
 \hat{\beta}_1 \\
-\vdots \\
-\hat{\beta}_k\end{bmatrix}}_{\hat{\beta}}
+\hat{\beta}_2
+\end{bmatrix}}_{\hat{\beta}}
 =
 \underbrace{\begin{bmatrix}
-\sum_{i=1}^{n}y_i \\
-\sum_{i=1}^{n}x_{i1}y_i \\
-\vdots \\
-\sum_{i=1}^{n}x_{ik}y_i\end{bmatrix}}_{\mathbf{X'y}}
-\]
-</div>
+\sum y_i \\
+\sum x_{i1}y_i \\
+\sum x_{i2}y_i
+\end{bmatrix}}_{\mathbf{X^{\top}y}}$$
 
-Looking more closely and it's **solution**:
+The solution is: $\hat{\beta} = (\mathbf{X^{\top}X})^{-1}\mathbf{X^{\top}y}$
 
-
-<div class="math">
-\[\underbrace{\begin{bmatrix}
-\hat{\beta}_0 \\
-\hat{\beta}_1 \\
-\vdots \\
-\hat{\beta}_k\end{bmatrix}}_{\hat{\beta}}
-=
-\underbrace{\begin{bmatrix}
-n & \sum_{i=1}^{n}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik} \\
-\sum_{i=1}^{n} x_{i1} & \sum_{i=1}^{n} x_{i1}^2 & \ldots & \sum_{i=1}^{n} x_{i1}x_{ik} \\
-\vdots & \vdots & \ddots & \vdots \\
-\sum_{i=1}^{n} x_{ik}& \sum_{i=1}^{n} x_{ik}x_{i1} & \ldots & \sum_{i=1}^{n} x_{ik}^2\end{bmatrix}^{-1}}_{\mathbf{(X'X)}^{-1}}
-
-\underbrace{\begin{bmatrix}
-\sum_{i=1}^{n}y_i \\
-\sum_{i=1}^{n}x_{i1}y_i \\
-\vdots \\
-\sum_{i=1}^{n}x_{ik}y_i\end{bmatrix}}_{\mathbf{X'y}}
-\]
-</div>
+.footnote[
+For $k$ regressors the pattern extends with additional rows/columns of cross-products $\sum x_{ij}x_{il}$.
+See it animated: [matrix-intuition](https://krzysztofzaremba.github.io/matrix-intuition/)
+]
 
 
 ---
@@ -601,38 +747,41 @@ $$\hat{y}_i=\hat{\beta}_0+\hat{\beta}_1x_{i1}+\hat{\beta}_2x_{i2}+...+\hat{\beta
 Or in the vector form:
 
 
-$$\mathbf{\hat{y}}=\mathbf{X\hat{\beta}}=\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{Hy}$$
+$$\mathbf{\hat{y}}=\mathbf{X\hat{\beta}}=\mathbf{X\mathbf{(X^{\top}X)}^{-1}\mathbf{X^{\top}y}}=\mathbf{Hy}$$
 
-Where $\mathbf{H}=\mathbf{X(X'X)}^{-1}\mathbf{X'}$ is called a hat matrix. 
+Where $\mathbf{H}=\mathbf{X(X^{\top}X)}^{-1}\mathbf{X^{\top}}$ is called a hat matrix.
+
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 ---
 ### Residuals
 
 To get residuals, we calculate: 
 
-$$e_i=y_i-\hat{y}_i=y_i-\hat{\beta}_0+\hat{\beta}_1x_{i1}+\hat{\beta}_2x_{i2}+...+\hat{\beta}_kx_{ik}$$ 
+$$e_i=y_i-\hat{y}_i=y_i-(\hat{\beta}_0+\hat{\beta}_1x_{i1}+\hat{\beta}_2x_{i2}+...+\hat{\beta}_kx_{ik})$$ 
 
 Or in the vector form:
-$$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mathbf{(X'X)}^{-1}\mathbf{X'y}}=\mathbf{(I-H)y}$$
+$$\mathbf{e}=\mathbf{y-\hat{y}}=y-\mathbf{X\hat{\beta}}=\mathbf{y}-\mathbf{X\mathbf{(X^{\top}X)}^{-1}\mathbf{X^{\top}y}}=\mathbf{(I-H)y}$$
 ---
 
 ### Summary
 
 - We are trying to find $\beta$s which minimize the prediction error
-- It turns out that we get minimal errors when we set $\beta$ to be: $\hat{\beta}=(X'X)^{-1}X'y$
-- If we have just one regressors, we get back the same formular as we already derived
+- It turns out that we get minimal errors when we set $\beta$ to be: $\hat{\beta}=(X^{\top}X)^{-1}X^{\top}y$
+- If we have just one regressors, we get back the same formula as we already derived
 
 
 
 
 ---
+class: small
 
 #### Example with numbers
  What's the impact of hours studied and hours slept on the exam score?
 
-$$\small \begin{align*}
-\text{Dataset:} \\
-&\begin{array}{|c|c|c|c|}
+$$\small \begin{array}{|c|c|c|c|}
 \hline
 \text{Student} & \text{Hours Studied (}x_1\text{)} & \text{Hours Slept (}x_2\text{)} & \text{Exam Score (}y\text{)} \\
 \hline
@@ -641,51 +790,52 @@ $$\small \begin{align*}
 3 & 6 & 6 & 92 \\
 4 & 5 & 7 & 88 \\
 \hline
-\end{array}
-\\
-\text{X matrix}: \\
-& X = \begin{bmatrix}
+\end{array}$$
+
+--
+
+In matrix form:
+
+$$\small X = \begin{bmatrix}
 1 & 3 & 8 \\
 1 & 4 & 7 \\
 1 & 6 & 6 \\
 1 & 5 & 7 \\
-\end{bmatrix}
-\\
-\text{Response Vector } (y): \\
-& y = \begin{bmatrix}
+\end{bmatrix} \qquad
+y = \begin{bmatrix}
 80 \\
 85 \\
 92 \\
 88 \\
-\end{bmatrix}
-\end{align*}$$
+\end{bmatrix}$$
 
 ---
 ## What these matrices mean and do?!
 
-- Now we have more regressors, and we want to know SEPARATE impact of each. 
-- What would happen if we change just that one thing (hours of sleep) and keep everything else constant (hours studied)?
+.concept[
+**The problem:** We want to know the effect of sleep on exam scores. But students who sleep more also tend to study less. If we just compare students with different sleep hours, we're also comparing students with different study hours!
+]
 
 --
-- But how do we keep other things constant? Hours slept and hours studied could be correlated
+
+**The matrix solution:**
+
+1. $X^{\top}X$ measures how all predictors relate to each other (including their correlations)
+2. $(X^{\top}X)^{-1}$ "removes" these correlations -- it adjusts for the fact that sleep and study hours are tangled together
+3. $(X^{\top}X)^{-1}X^{\top}y$ gives each predictor its **own, isolated** effect
 
 --
-- So when we compare people with different hours of sleep, there is risk we also compare people with different hours studied
 
---
-- How do we know that the change we see is coming from hours of sleep, not hours of studied?
-
---
-- Cross terms in the matrix discount this correlation
-- Intuitively, this makes variables "uncorrelated" and allows to get their own impacts. 
+Think of it like this: the inverse "untangles" the predictors so each coefficient reflects **only its own contribution**, holding everything else constant.
 
 ---
+class: small
 
 #### Example with numbers
 
-Multiply $X'$ by $X$:
+Multiply $X^{\top}$ by $X$:
 
-$$X'X = 
+$$X^{\top}X = 
 \begin{bmatrix}
 1 & 1 & 1 & 1 \\
 3 & 4 & 6 & 5 \\
@@ -703,9 +853,9 @@ $$X'X =
 28 & 123 & 198 \\
 \end{bmatrix}$$
 
-Find the inverse $(X'X)^{-1}$
+Find the inverse $(X^{\top}X)^{-1}$
 
-$$(X'X)^{-1} = 
+$$(X^{\top}X)^{-1} = 
 \begin{bmatrix}
 474.75 & -30 & -48.5 \\
 -30 & 2 & 3 \\
@@ -713,11 +863,13 @@ $$(X'X)^{-1} =
 \end{bmatrix}$$
 
 ---
+class: small
+
 #### Example with numbers
 
-Next let's find $X'y$
+Next let's find $X^{\top}y$
 
-$$X'y=
+$$X^{\top}y=
 \begin{bmatrix}
 1 & 1 & 1 & 1 \\
 3 & 4 & 6 & 5 \\
@@ -746,11 +898,11 @@ $$\beta=\begin{bmatrix}
 474.75 & -30 & -48.5 \\
 -30 & 2 & 3 \\
 -48.5 & 3 & 5 \\
-\end{bmatrix}}_{(X'X)^{-1}} \underbrace{\begin{bmatrix}
+\end{bmatrix}}_{(X^{\top}X)^{-1}} \underbrace{\begin{bmatrix}
 345 \\
 1572 \\
 2403 \\
-\end{bmatrix}}_{X'y}=
+\end{bmatrix}}_{X^{\top}y}=
 \begin{bmatrix}
 83.25 \\
 3 \\
@@ -760,13 +912,17 @@ $$\beta=\begin{bmatrix}
 
 --
 
-**Interpretation**
-- Score with 0 hours of sleep and 0 of studying is 83.25
-- 1 more hour of studying (without changing sleep hours) increases score by 3 
-- 1 more hour of sleep (without changing study hours) decreases score by 1.5 
+.interpret[
+**Interpretation:**
+- $\hat{\beta}_0 = 83.25$: predicted score with 0 hours of sleep and 0 of studying
+- $\hat{\beta}_1 = 3$: each additional hour of studying (holding sleep constant) increases score by 3 points
+- $\hat{\beta}_2 = -1.5$: each additional hour of sleep (holding study constant) decreases score by 1.5 points
+]
 
 
 ---
+class: small
+
 #### Example with numbers
 
 We can find predicted values:
@@ -810,6 +966,18 @@ $$e=y-\hat{y}=y-X\hat{\beta}=
 \end{bmatrix}$$
 
 
+---
+## What did we just do?
+
+1. Organized data into matrix $\mathbf{X}$ and vector $\mathbf{y}$
+2. Computed $\mathbf{X^{\top}X}$ (captures relationships between X variables)
+3. Inverted it: $(\mathbf{X^{\top}X})^{-1}$ (adjusts for correlations)
+4. Computed $\mathbf{X^{\top}y}$ (captures relationships between X and y)
+5. Multiplied to get $\hat{\beta} = (\mathbf{X^{\top}X})^{-1}\mathbf{X^{\top}y}$
+
+--
+
+Then we used $\hat{\beta}$ to compute predictions $\hat{y}=X\hat{\beta}$ and residuals $e=y-\hat{y}$.
 
 
 ---
@@ -821,6 +989,10 @@ lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
 summary(lm_model)
 
 ```
+
+.learnr-note[
+**LearnR Practice:** Section 1.1 — Matrix OLS: Predicting Affairs
+]
 
 ---
 
@@ -834,10 +1006,10 @@ Predict how long a patient will stay if there 10 other patients in the hospital 
 
 Note, that $x_1$ and $x_2$ can both have positive correlation with $y_i$, but different coefficients!
 
-- Suppose $x_1$ is study hours, $x_2$ is coffee cups drunk by a student, and $y$ is student's score on the exam. 
+- Suppose $x_1$ is study hours, $x_2$ is coffee cups drunk by a student, and $y$ is student's score on the exam.
 
 
-```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='1000%'}
+```{r, warning=FALSE,message=FALSE,fig.height=3, out.width='100%'}
 library(GGally)
 
 # Create a dataset
@@ -871,9 +1043,11 @@ summary(fit)
 - Why coffee has 0 impact?
 
 --
-- Because it only helps to study longer, but comparing students who study the same amount, drinking more coffee is not better. 
+- Because it only helps to study longer, but comparing students who study the same amount, drinking more coffee is not better.
 
-
+.learnr-note[
+**LearnR Practice:** Sections 2.1–2.2 — Omitted Variables: Wages, Education & IQ + CEO Pay Beyond ROE
+]
 
 ---
 ### More realistic example from the data: 
@@ -911,8 +1085,19 @@ summary(lm_model)
 - Result: The education coefficient shrinks because it no longer absorbs IQ’s influence.
 - Controlling helps us to separate different effects
 
+.learnr-note[
+**LearnR Practice:** Sections 2.1–2.2 — Omitted Variables: Wages, Education & IQ + CEO Pay Beyond ROE
+]
+
 ---
-### OLS Properties
+class: inverse, center, middle
+
+# Statistical Properties of OLS
+
+### Unbiasedness, Variance, and Gauss-Markov
+
+---
+### OLS Properties: Unbiasedness
 
 - As usual, we asked whether it's unbiased and what is its variance.
 
@@ -922,26 +1107,27 @@ summary(lm_model)
 
 <div class="math">
 \[\small
-\begin{align*} 
-E(\hat{\beta}) & =E(\mathbf{(X'X)^{-1}X'y})=E(\mathbf{(X'X)^{-1}X'(X\beta+u)})) \\
-& = E(\mathbf{(X'X)^{-1}X'(X\beta+u)}))=E(\mathbf{(X'X)^{-1}X'X\beta})+E(\mathbf{(X'X)^{-1}X'u}) \\
-& = \beta+\mathbf{(X'X)^{-1}X'E(u)}=\beta+0+\beta
+\begin{align*}
+E(\hat{\beta}) & =E(\mathbf{(X^{\top}X)^{-1}X^{\top}y})=E(\mathbf{(X^{\top}X)^{-1}X^{\top}(X\beta+u)})) \\
+& = E(\mathbf{(X^{\top}X)^{-1}X^{\top}(X\beta+u)}))=E(\mathbf{(X^{\top}X)^{-1}X^{\top}X\beta})+E(\mathbf{(X^{\top}X)^{-1}X^{\top}u}) \\
+& = \beta+\mathbf{(X^{\top}X)^{-1}X^{\top}E(u)}=\beta+0=\beta
 \end{align*}
 \]
 </div>
 
-Where $\small E(\mathbf{(X'X)^{-1}X'u})$ if $\small E(u)=0$ (our usual assumption).
+Where $\small E(\mathbf{(X^{\top}X)^{-1}X^{\top}u})=0$ if $\small E(u)=0$ (our usual assumption).
 
---
+---
+### OLS Properties: Variance
 
-- **Variance**
+The variance-covariance matrix of $\hat{\beta}$ is:
 
-$$\small Var(\hat{\beta})=Cov(\hat{\beta})=\underbrace{\begin{bmatrix}
-var(\hat{\beta_0}) & cov(\hat{\beta_0}, \hat{\beta_1}) & ... & cov(\hat{\beta_0}, \hat{\beta_k}) \\
-cov(\hat{\beta_1}, \hat{\beta_0}) & var(\hat{\beta_1}) & ... & cov(\hat{\beta_1}, \hat{\beta_k})  \\
-\vdots & \vdots & \vdots &  \vdots \\
-cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & ... & var(\hat{\beta_k}) &  \end{bmatrix}}_{\substack{ \\ (k+1) \times (k+1)}}$$
-- So it's a matrix with variance of single parameters on the diagonal and covariances off the diagonal.
+$$\scriptsize Var(\hat{\beta})=Cov(\hat{\beta})=\underbrace{\begin{bmatrix}
+var(\hat{\beta_0}) & cov(\hat{\beta_0}, \hat{\beta_1}) & \cdots & cov(\hat{\beta_0}, \hat{\beta_k}) \\
+cov(\hat{\beta_1}, \hat{\beta_0}) & var(\hat{\beta_1}) & \cdots & cov(\hat{\beta_1}, \hat{\beta_k})  \\
+\vdots & \vdots & \ddots &  \vdots \\
+cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & \cdots & var(\hat{\beta_k}) \end{bmatrix}}_{ (k+1) \times (k+1)}$$
+- Variance of single parameters on the diagonal, covariances off the diagonal.
 
 
 ---
@@ -953,49 +1139,47 @@ cov(\hat{\beta_k}, \hat{\beta_0}) & cov(\hat{\beta_k}, \hat{\beta_1}) & ... & va
 
 
 ---
-### Variance
+class: small
 
-First, note that: 
+### Variance: Derivation
 
-$$\hat{\beta} = (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'(\mathbf{X}\beta + \mathbf{u}) = \beta + (\mathbf{X}'\mathbf{X})^{-1}\mathbf{X}'\mathbf{u}$$
-Let's use this
+Since $\hat{\beta} - \beta = (\mathbf{X^{\top}X})^{-1}\mathbf{X^{\top}u}$, and under our assumption $E(\mathbf{uu^{\top}})=\sigma^2 I$:
 
+$$\small var(\hat{\beta}) = E[(\hat{\beta}-\beta)(\hat{\beta}-\beta)^{\top}] = (X^{\top}X)^{-1}X^{\top}\underbrace{E[\mathbf{uu^{\top}}]}_{\sigma^2 I}X(X^{\top}X)^{-1}$$
 
-$$\small
-\begin{align*} 
-var(\hat{\beta}) &  = \mathbb{E}[(\hat{\beta} - \mathbb{E}[\hat{\beta}]) (\hat{\beta} - \mathbb{E}[\hat{\beta}])']
- \\
-& =  \mathbb{E}[(X'X)^{-1}X'\mathbf{u} ((X'X)^{-1}X'\mathbf{u})']= (X'X)^{-1}X'\mathbb{E}[\mathbf{u}\mathbf{u}']X(X'X)^{-1}
- \\
-& = (X'X)^{-1}X'(I\sigma^2)X(X'X)^{-1} =\sigma^2(X'X)^{-1}
-\end{align*}$$
+.formula-box[
+$$\boxed{var(\hat{\beta}) = \sigma^2(X^{\top}X)^{-1}}$$
+]
 
+---
 
---
+### Variance: Interpretation
 
-- Where two last inequalies come from?
-  - From $\sigma^2$ being constant and errors having zero covariance.
+- For a single coefficient: $var(\hat{\beta}_k)=\sigma^2(X^{\top}X)^{-1}_{k+1,k+1}$
 
---
+- $(X^{\top}X)^{-1}_{k+1,k+1}$ is the element in row $k+1$, column $k+1$ of $(X^{\top}X)^{-1}$. First one is the intercept!
 
-So $$var(\hat{\beta}_k)=\sigma^2(X'X)^{-1}_{k+1,k+1}$$ where $(X'X)^{-1}_{k+1,k+1}$ is element in $k+1$ row and $k+1$ column of $(X'X)^{-1}$ matrix. First one is intercept!
+.takeaway[
+**Key Takeaway:** The variance of each coefficient depends on the error variance $\sigma^2$ and on how correlated the regressors are (captured in $(X^{\top}X)^{-1}$).
+]
 
+.learnr-note[
+**LearnR Practice:** Sections 3.1–3.2 — Variance-Covariance: Affairs Model + CEO Salary VCOV
+]
 
 ---
 ### Example:
 
-$$\text{cov}(\hat{\beta})=
+$$\small\text{cov}(\hat{\beta})=\underbrace{0.02389}_{\sigma^2} \times \underbrace{\begin{bmatrix}
+3.2583 & -0.3382 & -0.3089 \\
+-0.3382 & 0.7325 & -0.0059 \\
+-0.3089 & -0.0059 & 0.0686
+\end{bmatrix}}_{(X^{\top}X)^{-1}}=
 \begin{bmatrix}
 0.07784 & -0.00808 & -0.00738 \\
 -0.00808 & 0.0175 & -0.00014 \\
 -0.00738 & -0.00014 & 0.00164
-\end{bmatrix}=$$
-And the residuals:
-$$\text{cov}(\hat{\beta})=\underbrace{0.02389}_{\sigma^2} \times \underbrace{\begin{bmatrix}
-3.2583 & -0.3382 & -0.3089 \\
--0.3382 & 0.7325 & -0.0059 \\
--0.3089 & -0.0059 & 0.0686
-\end{bmatrix}}_{(X'X)^{-1}}$$
+\end{bmatrix}$$
 
 --
 Example:
@@ -1022,26 +1206,21 @@ $$\hat{\sigma}^2=\frac{\sum_i e_i^2}{n-p}$$
 
 The easiest way to compute this sum is:
 
-$$\sum_i e_i^2=\mathbf{e'}\mathbf{e}=(\mathbf{y-X\hat{\beta}})'(\mathbf{y-X\hat{\beta}})=\mathbf{y'y-\hat{\beta}'X'y}$$
+$$\sum_i e_i^2=\mathbf{e^{\top}e}=(\mathbf{y-X\hat{\beta}})^{\top}(\mathbf{y-X\hat{\beta}})=\mathbf{y^{\top}y-\hat{\beta}^{\top}X^{\top}y}$$
 
 ---
+class: small
 
 #### Gauss Markov Theorem (Again)
 
-Assumptions
+.concept[
+**Gauss-Markov Theorem:** Under the assumptions:
+- $E(u_i)=0$, $\;var(u_i)=\sigma^2$, $\;cov(u_i,u_j)=0$, $\;X$ is full rank
 
-- $E(u_i)=0$
-- $var(u_i)=\sigma^2$
-- $cov(u_i,u_j)=0$
-- $X$ is full rank
+OLS is **BLUE**: .blue[Best, Linear, Unbiased Estimator] -- it has the lowest variance among all linear and unbiased estimators.
 
-NO NEED FOR NORMALITY
-
-
-
-**Theorem:** OLS is .blue[BLUE:] Best, Linear, Unbiased Estimator
-
-- It has the lowest variance among linear and unbiased estimators
+**No normality assumption needed!**
+]
 
 --
 
@@ -1054,9 +1233,18 @@ NO NEED FOR NORMALITY
 --
 
 - How is OLS linear?
-  $\hat{\beta}=Cy=\underbrace{(X'X)^{-1}X'}_{C}y$
+  $\hat{\beta}=Cy=\underbrace{(X^{\top}X)^{-1}X^{\top}}_{C}y$
 
+.learnr-note[
+**LearnR Practice:** Sections 3.1–3.2 — Variance-Covariance: Affairs Model + CEO Salary VCOV
+]
 
+---
+class: inverse, center, middle
+
+# Categorical Variables
+
+### Dummy Variables and Their Interpretation
 
 ---
 
@@ -1157,6 +1345,8 @@ datatable(d,
 - For each person, only one of these dummies is equal to 1!
 
 ---
+### Adding Dummies to a Regression
+
 - We will add these dummies into a regression, but not all of them!
 
 - If we have m categories, we will add m-1 dummies. Why?
@@ -1166,9 +1356,13 @@ $$y_i=\beta_0+\beta_1D_{i1}+\beta_2D_{i2}+...+\beta_{m-1}D_{im-1}+u_i$$
 - In our Example:
 
 $$y_i=\beta_0+\beta_1D_{i,Hybrid}+\beta_2D_{i,Remote}+u_i$$
---
 
-- Because otherwise X would not be full rank!
+---
+### Why Not All Dummies?
+
+.caution[
+**Dummy Variable Trap:** Including all $m$ dummies would make X not full rank! Always omit one category.
+]
 
 <div class="math">
 \[
@@ -1191,14 +1385,14 @@ $$y_i=\beta_0+\beta_1D_{i,Hybrid}+\beta_2D_{i,Remote}+u_i$$
 
 --
 
-- Intuitively, if I know that the values of $D_{i,Hybrid}$ and $D_{i,Remote}$, I know the value of $D_{i,Office}$
+- Intuitively, if I know the values of $D_{i,Hybrid}$ and $D_{i,Remote}$, I know the value of $D_{i,Office}$
 - Ex: if they don't work hybrid and don't work remote, I know they work at the office
 - So including it does not bring any new information
 
 ---
 
 
-- R automatically transform categorical variable to dummies and excludes one of them
+- R automatically transforms categorical variables to dummies and excludes one of them
  
 
 ```{r, echo=TRUE}
@@ -1209,6 +1403,9 @@ summary(lm_model)
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Sections 4.1–4.2 — Categorical Variables: Wages by Marital Status + Gender Pay Gap
+]
 
 ---
 
@@ -1218,12 +1415,12 @@ summary(lm_model)
 
 - Coefficient on a dummy $D_1$ tells us by how much $y$ changes when we change category from the excluded one to the category 1.
 
-- In our example
-  - Excluded category is: work fully at the office - this is our comparision group
-  - $\beta_{hybrid}=6.184$: employees working in hybrid mode have on average 6.184 higher productivity score compared to the ones working at the office
-  - $\beta_{remote}=-7.256$: employees working in fully remotely have on average 7.256 lower productivity score compared to the ones working at the office
-  - The t-test on these coefficients tells us whether these differences in means across categories are significant!
-
+.interpret[
+- Excluded category is: work fully at the office -- this is our comparison group
+- $\hat{\beta}_{hybrid}=6.184$: employees working in hybrid mode have on average 6.184 higher productivity score compared to the ones working at the office
+- $\hat{\beta}_{remote}=-7.256$: employees working fully remotely have on average 7.256 lower productivity score compared to the ones working at the office
+- The t-test on these coefficients tells us whether these differences are significant!
+]
 
 - Bottom line: the coefficients on the dummies show the average difference between $y$ in that category compared to the excluded category (holding everything else unchanged)
 
@@ -1277,6 +1474,17 @@ lm_model <- lm(Income ~ Education, data = d)
 summary(lm_model)
 
 ```
+
+.learnr-note[
+**LearnR Practice:** Sections 4.1–4.2 — Categorical Variables: Wages by Marital Status + Gender Pay Gap
+]
+
+---
+class: inverse, center, middle
+
+# Interaction Terms
+
+### When the Effect of One Variable Depends on Another
 
 ---
 ### Interactions
@@ -1367,18 +1575,20 @@ ggplot(data, aes(x = tiktok_ad_spend, y = sales, color=young) ) +
 ```
 
 ---
+class: small
+
 ### Interactions
 
-- Run the regression: 
+- Run the regression:
 
-$$\text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2\text{Age<25}_i+\beta_3\text{TikTok ads}_i*\text{Age<25}_i+u_i $$
+$$\text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2\text{Age<25}_i+\beta_3\text{TikTok ads}_i \cdot \text{Age<25}_i+u_i $$
 
 
 --
 - What's the coefficient on ads when you are older $Age<25_i=0$?
 
 $$\begin{align*}
-& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*0+\beta_3\text{TikTok ads}_i*0 +u_i \\
+& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2 \cdot 0+\beta_3\text{TikTok ads}_i \cdot 0 +u_i \\
 & \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+u_i
 \end{align*}$$
 
@@ -1388,13 +1598,16 @@ $$\begin{align*}
 - What's the coefficient on ads when you are younger $Age<25_i=1$?
 
 $$\begin{align*}
-& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2*1+\beta_3\text{TikTok ads}_i*1 +u_i \\
+& \text{Purchases}_i=\beta_0+\beta_1\text{TikTok ads}_i+\beta_2 \cdot 1+\beta_3\text{TikTok ads}_i \cdot 1 +u_i \\
 & \text{Purchases}_i=\beta_0+\beta_2+(\beta_1+\beta_3)\text{TikTok ads}_i+u_i
 \end{align*}$$
 
---
+---
+class: small
 
-We can estimate $\beta_3$ and it will tell us by how much bigger is the coefficient on ads for young compared to the coefficient on ads for old. 
+### Interactions: Interpretation
+
+We can estimate $\beta_3$ and it will tell us by how much bigger is the coefficient on ads for young compared to the coefficient on ads for old.
 
 - $\beta_1$ is the slope for old
 - $\beta_1+\beta_3$ is the slope for young
@@ -1407,28 +1620,51 @@ summary(model)
 
 ```
 
+.interpret[
+**Interpretation:**
 - One additional dollar on ads increases purchases among old by 0.222 dollars
 - One additional dollar on ads increases purchases among young by 0.222+0.706=0.928 dollars
+]
+
+.learnr-note[
+**LearnR Practice:** Sections 5.3–5.4 — Interaction: Education by Race + Gender Gap by Education
+]
 
 ---
+class: small
 
 ### Interactions
 
-- More generally, we can rewrite a regression:
+.concept[
+**Interaction:** The effect of one variable **depends on** another.
 
-$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i1}*x_{i2}+u_i$$
-- As
+Example: The effect of temperature on ice cream sales depends on whether it's a weekday or weekend.
+- Weekday: each degree adds 5 sales
+- Weekend: each degree adds 15 sales
+- The **interaction coefficient** $\beta_3 = 10$ captures this difference
+]
 
-$$y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}+u_i$$
 --
-- $\beta_3$ answers the following question:
-  - If I increase $x_{i2}$ by one, by how much the coefficient on $x_{i1}$ changes?
-  - If $x_{i2}$ is categorical: by how much the effect of $x_{i1}$ changes when $x_{i2}=1$ compared to when $x_{i2}=0$?
-  
+
+**General form:**
+
+$$y_i=\beta_0+\beta_1x_{i1}+\beta_2x_{i2}+\beta_3 x_{i1} \cdot x_{i2}+u_i$$
+
+Equivalently: $y_i=\beta_0+(\beta_1+\beta_3x_{i2})x_{i1}+\beta_2x_{i2}+u_i$
+
+--
+
+- $\beta_3$ tells us: if I increase $x_{i2}$ by one, by how much does the effect of $x_{i1}$ change?
+
+**Marginal effect:** $\frac{\partial y}{\partial x_1} = \beta_1 + \beta_3 x_2$ -- the slope of $x_1$ depends on $x_2$!
+
 --
 - Suppose $y$ is mortality, $x_1$ is temperature, $x_2$ is age
 - What would you expect $\beta_3$ to be?
 
+.learnr-note[
+**LearnR Practice:** Sections 5.1–5.4 — Interactions
+]
 
 ---
 
@@ -1452,7 +1688,7 @@ Exam example
 
 --
 
-$$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\beta_3\text{WFH}_i*\text{Distance}_i +u_i$$
+$$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\beta_3\text{WFH}_i \cdot \text{Distance}_i +u_i$$
 
 
 --
@@ -1468,12 +1704,9 @@ $$\text{Satisfaction}_i=\beta_0+\beta_1\text{WFH}_i+\beta_2\text{Distance}_i+\be
 
 
 ---
-
-
----
 ### Example
 
-When choosing a partner, do women or men care more about physical attractivness?
+When choosing a partner, do women or men care more about physical attractiveness?
 
 --
 
@@ -1493,14 +1726,29 @@ summary(lm_model)
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Sections 5.1–5.2 — Interaction: House Size x Year Built + Experience x Tenure
+]
 
 ---
+class: inverse, center, middle
+
+# Model Fit
+
+### R-squared and Adjusted R-squared
+
+---
+class: small
 
 ### Goodness of fit
 
-- We can use again the R square to measure the goodness of fit.
+.concept[
+**$R^2$ (R-squared)** measures the proportion of variation in $y$ explained by the model:
 
 $$\small R^2=1-\frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y}_i)^2}$$
+
+]
+
 --
 
 - However, there is one problem with it.
@@ -1511,21 +1759,32 @@ $$\small R^2=1-\frac{\sum(y_i-\hat{y}_i)^2}{\sum(y_i-\bar{y}_i)^2}$$
 
 --
   - Sampling noise will make coefficient slightly positive or negative
-  
+
 --
-  - So the increase in $R^2$ will reflect that noise in our sample 
-  
+  - So the increase in $R^2$ will reflect that noise in our sample
+
 --
   - The more coefficients we include, the higher $R^2$
   - We can adjust it, by accounting for the number of parameters used
-  
---
+
+---
+class: small
+
+### Adjusted $R^2$
+
+.concept[
+**Adjusted $R^2$** penalizes for adding more regressors:
 
 $$\small R_{Adj}^2=1-\frac{\sum(y_i-\hat{y}_i)^2/(n-p)}{\sum(y_i-\bar{y}_i)^2/(n-1)}$$
 
+]
+
 --
-- More parameters -> $\downarrow(n-p)\rightarrow\uparrow\sum(y_i-\hat{y}_i)^2/(n-p)\rightarrow\downarrow R_{Adj}^2$
-- So it balances off the mechanical effect of higher $R^2$ due to more regressors
+
+.caution[
+**Warning:** $R^2$ **always increases** when you add more variables -- even irrelevant ones! Use Adjusted $R^2$ instead when comparing models with different numbers of regressors.
+]
+
 ---
 
 ```{r, echo=FALSE}
@@ -1550,12 +1809,16 @@ summary(lm_model)
 ```
 - Adding random variable increased $R^2$ but decreased $R^2_{Adj}$
 
+.learnr-note[
+**LearnR Practice:** Sections 6.1–6.2 — R-squared: Student Performance + Baseball Salaries
+]
+
 ---
-layout: false
-class: inverse, middle
+class: inverse, center, middle
 
-# Statistical Properties of OLS
+# Statistical Inference
 
+### Hypothesis Tests, Confidence Intervals, and ANOVA
 
 ---
 
@@ -1580,14 +1843,16 @@ $$y \sim N(X\beta,\sigma I) $$
 
 Under the above assumptions:
 
-$$\hat{\beta}\sim N(\beta, \sigma\sqrt{(X'X)^{-1}})$$
+$$\hat{\beta}\sim N(\beta, \sigma\sqrt{(X^{\top}X)^{-1}})$$
 And 
 
-$$\hat{\beta_j}\sim N(\beta_j, \sigma\sqrt{(X'X)^{-1}_{j+1,j+1}})$$
+$$\hat{\beta_j}\sim N(\beta_j, \sigma\sqrt{(X^{\top}X)^{-1}_{j+1,j+1}})$$
+
 --
+
 Normalizing we get that:
 
-$$\frac{\hat{\beta}_j-\beta_j}{s\sqrt{(X'X)^{-1}_{j+1,j+1}}} \sim t_{n-p}$$
+$$\frac{\hat{\beta}_j-\beta_j}{s\sqrt{(X^{\top}X)^{-1}_{j+1,j+1}}} \sim t_{n-p}$$
 - This test statistic has student t distribution with n-p degrees of freedom
   - Because the $\frac{s^2(n-p)}{\sigma^2} \sim \chi_{n-p}$
 - Where p is the number of parameters (coefficients)
@@ -1602,10 +1867,11 @@ Suppose:
 
 Then, we use test statistic:
 
-$$t_{test}=\frac{\hat{\beta}_j-\beta_{j0}}{s\sqrt{(X'X)^{-1}_{j+1,j+1}}}$$
+$$t_{test}=\frac{\hat{\beta}_j-\beta_{j0}}{s\sqrt{(X^{\top}X)^{-1}_{j+1,j+1}}}$$
 And we reject if $t_{test}>t_{\alpha/2,n-p}$ or $t_{test}<-t_{\alpha/2,n-p}$
 
 Where $t_{\alpha/2,n-p}$ is $1-\alpha/2$ quantile of student t with n-p degrees of freedom
+
 --
 
 **NOTE:** This is a test for $\beta_j$ given all other regressors. It's not the same as the test statistic with only one regressor!
@@ -1624,22 +1890,28 @@ summary(lm_model)
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Sections 7.1–7.4 — Hypothesis Testing + Sections 8.1–8.2 — Confidence Intervals
+]
+
 ---
-### Confidence Interval for a  Single Coefficient
+class: small
+
+### Confidence Interval for a Single Coefficient
 
 We can also use this distribution to construct confidence intervals: 
 
 An interval for $\beta_j$ with confidence level $1-\alpha$ is:
 
-$$\begin{align*}
-CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\hat{\beta}_j)\} \\
-& =\{\hat{\beta_j}-t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{j+1,j+1}},\hat{\beta_j}+t_{\alpha/2,n-p}s\sqrt{(X'X)^{-1}_{j+1,j+1}}\}
+$$\small\begin{align*}
+CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\;\hat{\beta_j}+t_{\alpha/2,n-p}SE(\hat{\beta}_j)\} \\
+& =\{\hat{\beta_j}-t_{\alpha/2,n-p}s\sqrt{(X^{\top}X)^{-1}_{j+1,j+1}},\;\hat{\beta_j}+t_{\alpha/2,n-p}s\sqrt{(X^{\top}X)^{-1}_{j+1,j+1}}\}
 \end{align*}$$
 
 
 --
 
-**Intepretation:**
+**Interpretation:**
 - We are $1-\alpha$ % confident that the true parameter is within this CI
 - If we take repeated samples, $1-\alpha$ %  of such constructed confidence intervals would contain true $\beta$
 
@@ -1658,7 +1930,7 @@ So 95% CI for $\beta_{Age}$ is:
 
 $$\begin{align*}
 CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}+t_{\alpha/2,n-p}SE(\hat{\beta}_j)\} \\
-& =\{0.206-1.96*0.067,0.206+1.96*0.067\} \\
+& =\{0.206-1.96 \times 0.067,0.206+1.96 \times 0.067\} \\
 & =\{0.075,0.337\} 
 \end{align*}$$
 
@@ -1666,46 +1938,40 @@ CI_{1-\alpha} & =\{\hat{\beta_j}-t_{\alpha/2,n-p}SE(\hat{\beta}_j),\hat{\beta_j}
 - Note that the CI does not contain 0
 - What does it imply for hypothesis testing with $H_0: \beta_{age}=0$?
 
+.learnr-note[
+**LearnR Practice:** Sections 7.1–7.4 — Hypothesis Testing + Sections 8.1–8.2 — Confidence Intervals
+]
+
 ---
-### CI for mean response 
+### CI for Mean vs. PI for New Observation
+
+Given $\mathbf{x_0}$, prediction: $\hat{y}_0=\mathbf{x_0^{\top}}\hat{\beta}$
 
 .pull-left[
-Suppose that we want an average prediction for individuals with these characteristics:
+**CI for mean response:**
 
-$$\mathbf{x_0}=\begin{bmatrix}
-1 \\
-x_{01} \\
-x_{02}  \\
-\vdots \\
-x_{0k} \\
-\end{bmatrix}$$
-
-Ex: What's average wait time if $x_{01}=10$ (10 other people are there) and are age 52 $x_{02}=52$ 
-
-
-How accurate is our prediction?  $$\hat{y}_0=\mathbf{x_0}'\hat{\beta}$$ 
-
+.formula-box[
+$$\scriptsize CI=\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\hat{\sigma}\sqrt{\mathbf{x_0^{\top}}(\mathbf{X^{\top}X})^{-1}\mathbf{x_0}}$$
 ]
+
+- Only uncertainty from estimating $\beta$
+]
+
 .pull-right[
+**PI for new observation:**
 
-The prediction is unbiased:
-
-$E(\hat{y}_0)=\mathbf{x_0}'\beta$
-
-and it's variance is:
-
-$$\begin{align*} var(\hat{y}_0)& =var(\mathbf{x_0}'\hat{\beta}) \\
-& =\mathbf{x_0}'var(\hat{\beta})\mathbf{x_0} \\ &=\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0} \end{align*}$$
-
-So it's distribution is:
-
-$\hat{y}_0 \sim N(\mathbf{x_0}'\beta, \sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}})$
-
-Hence:
-
-$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}\}$
+.formula-box[
+$$\scriptsize PI=\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\hat{\sigma}\sqrt{1+\mathbf{x_0^{\top}}(\mathbf{X^{\top}X})^{-1}\mathbf{x_0}}$$
 ]
 
+- Uncertainty from $\beta$ **plus** individual error $u_i$
+]
+
+--
+
+.caution[
+**Key difference:** PI has an extra "1 +" inside the square root -- individual outcomes vary around the mean.
+]
 
 ---
 ### Example
@@ -1714,7 +1980,7 @@ $CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\sqrt{\sigma^2\mathbf{x_0}
 lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
 X <- model.matrix(lm_model)
 XTX <- t(X) %*% X
-# Calculate (X'X)^-1
+# Calculate (X^{\top}X)^-1
 XTX_inv <- solve(XTX)
 ```
 
@@ -1728,7 +1994,7 @@ What's the 95% CI for average wait time when there is 10 people at the Urgent Ca
 
   - $\hat{\sigma}=98.97$
 
-  - $(X'X)^{-1}=$
+  - $(X^{\top}X)^{-1}=$
 
 ```{r, echo = FALSE, message=FALSE, warning=FALSE}
 print(XTX_inv)
@@ -1736,21 +2002,21 @@ print(XTX_inv)
 
 ---
 ### Example
-  
-- Prediction: $\hat{y_0}=23.236*1+3.7*10+0.2*52=70.636$
+
+- Prediction: $\hat{y_0}=23.236 \times 1+3.7 \times 10+0.2 \times 52=70.636$
 
 --
 
-- $\sqrt{\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=\sqrt{[1, 10, 52](\mathbf{X}'\mathbf{X})^{-1}[1, 10, 52]'}=0.021$
- 
-- Standard Deviation: $SE(\hat{y_0})=\sqrt{\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}}=2.07837$
+- $\sqrt{\mathbf{x_0^{\top}}(\mathbf{X^{\top}X})^{-1}\mathbf{x_0}}=\sqrt{[1, 10, 52](\mathbf{X^{\top}X})^{-1}[1, 10, 52]^{\top}}=0.021$
+
+- Standard Deviation: $SE(\hat{y_0})=\sqrt{\sigma^2\mathbf{x_0^{\top}}(\mathbf{X^{\top}X})^{-1}\mathbf{x_0}}=2.07837$
 
 --
-$$CI_{95}=\{70.636 \pm 1.96*2.07837\} \approx \{67, 75\}$$
+$$CI_{95}=\{70.636 \pm 1.96 \times 2.07837\} \approx \{67, 75\}$$
 ---
-### Exanmple
+### Example
 
-Or simply in R: 
+Or simply in R:
 
 ```{r, echo = TRUE}
 lm_model <- lm(Duration ~ Occupancy+EDAD, data = Sample_urg)
@@ -1758,31 +2024,16 @@ new_data<- data.frame(Occupancy= c(10), EDAD=52)
 predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.fit=TRUE)
 ```
 
-
-
-
----
-### CI for new observation
-
-** Reminder **: 
-- When we look at average response, $u_i$ doesn't play a role (because on average errors are 0)
-- When we look at a single observation, $u_i$ matters, so it increases the variance of prediction error
-
-So variance is now the previous variance plus the variance of $u_i$
-
-$$\begin{align*}var(y_0-\hat{y}_0)& =var(x_0\beta+u_i-x_0\hat{\beta})  \\ & =var(u_0)+var(x_0\hat{\beta}) \\ & =\sigma^2+\sigma^2\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0}\end{align*}$$
-
-So the confidence interval for a single observation is slightly wider:
-
-$CI_{1-\alpha}=\{\hat{y}_0\pm t_{n-p,\frac{\alpha}{2}}\sqrt{\sigma^2(1+\mathbf{x_0}'(\mathbf{X}'\mathbf{X})^{-1}\mathbf{x_0})}\}$
-
-
-We are less certain about predicting outcome for a single person, compared to average outcome among namy people. 
+.learnr-note[
+**LearnR Practice:** Sections 8.3–8.6 — Prediction Intervals (Student Scores, House Prices)
+]
 
 ---
+class: small
+
 ### Testing for the significance of the regression
 
-- Does our model helps to explain any variation in $y_i$?
+- Does our model help to explain any variation in $y_i$?
 
 - $\small H_0: \beta_1=\beta_2=...\beta_k=0$
 - $\small H_A: \beta_j \neq 0$ for at least one $j$
@@ -1832,8 +2083,12 @@ tex2markdown(textable)
 
 F-stat and its distribution under the null
 
+.formula-box[
 $$F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)} \sim \underbrace{F_{k,n-k-1}}_{\text{Dist under } H_0}$$
+]
 ---
+class: small
+
 ### Testing for the significance of the regression
 
 Alternative way to think about it:
@@ -1843,12 +2098,12 @@ Alternative way to think about it:
 
 If $H_A$ is true, unrestricted model should explain more of $y$
 
-$$\small F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}$$
+$$\small F_{stat}=\frac{SSR/(k)}{SSE/(n-k-1)}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra SS}}}{k-k_0}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra SS}}}{k-k_0}}{\frac{SSE_{H_A}}{n-k-1}}$$
 --
 
 - $\small SSR_{H_A}$ is the regression sum of square from unrestricted model with $\small k$ degrees of freedom (2)
-- $\small SSR_{H_0}$ is the regression sum of squres from the restricted model wiht $\small k_0$ degrees of freedom (0) - it's the number of regressors in restricted model
-- $\small SSE_{H_A}$ is the residual sum of squres in the unrestricted model
+- $\small SSR_{H_0}$ is the regression sum of squares from the restricted model with $\small k_0$ degrees of freedom (0) - it's the number of regressors in restricted model
+- $\small SSE_{H_A}$ is the residual sum of squares in the unrestricted model
 
 ---
 ### Testing for the significance of the regression
@@ -1859,99 +2114,39 @@ linearHypothesis(lm_model, c("Occupancy=0", "EDAD=0"))
 
 ```
 
+.learnr-note[
+**LearnR Practice:** Sections 9.1–9.2 — ANOVA: Fast Food Prices + Player Stats & Salary
+]
+
 ---
 ## Example
 
 ![](ANOVA.png)
 
 ---
-### Adding a coefficient (skip)
+### ANOVA Decision Rule
 
-- We can use the above logic to test how much more we can explain by including one more coeffcient
-
-
---
-- Suppose we want to compare a regression model with only Occupancy vs both Occupancy and age
-
-- $\small H_0: y=\beta_0+\beta_1Occupancy+u$ restricted model
-- $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
-
-$$\small F_{2}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{k-(k_0)}}{\frac{SSE_{H_A}}{n-k-1}} \sim \underbrace{F_{k-k_0, n-k-1}}_{\text{Dist under } H_0}$$
-- In our case $k=2$ and $k_0=1$, so the null distribution is $F_{1, n-3}$
-
----
-### Adding a coefficient (skip)
-```{r, echo = FALSE, message = FALSE}
-lm_model <- lm(Duration ~Occupancy+EDAD, data = Sample_urg)
-anova(lm_model)
-
-```
-
-- **Sequential testing:** 
-- Occupancy - $F_1$ is the additional effect of including Occupancy to a model without any regressors
-  - $\small H_0: y=\beta_0+u$ restricted model
-  - $\small H_A: y=\beta_0+\beta_1Occupancy+u$ unrestricted model
-
-
-- EDAD - $F_2$ is the additional effect of including Age once we already have Occupancy in the model
-  - $\small H_0: y=\beta_0+\beta_1Occupancy+u$ restricted model
-  - $\small H_A: y=\beta_0+\beta_1Occupancy+\beta_2Age+u$ unrestricted model
-
-
-
----
-### Adding a coefficient (skip)
-- $F_k$ (last coef) is equivalent to $t_k^2$ in our full model
-- But $F_1$ is not equivalent to $t_1^2$ in our full model
-
-```{r, echo = FALSE, message = FALSE}
-lm_model <- lm(Duration ~Occupancy+EDAD, data = Sample_urg)
-summary_lm <- summary(lm_model)
-coef_table <- summary_lm$coefficients
-coef_table
-anova(lm_model)
-
-```
-
----
-### Adding a coefficient  (skip)
-
-- Why reordering variables changes $F_{stats}$? 
-
-```{r, echo = FALSE, message = FALSE}
-anova(lm_model)
-
-lm_model <- lm(Duration ~EDAD+Occupancy, data = Sample_urg)
-anova(lm_model)
-```
---
-
-- Because it changes which regressors we already have in the model
+- **F large**: regression explains more than noise --> reject $H_0$
+- **F small**: regression doesn't help much --> fail to reject $H_0$
 
 --
-- Do squares always add up to the same thing?
+
+**Rule:** Reject $H_0$ if $F > F_{1-\alpha, k, n-k-1}$ (use `qf(1-alpha, k, n-k-1)` in R)
+
+--
+
+.takeaway[
+**Key Takeaway:** The F-test compares the variance explained by the model to the variance left unexplained. If the ratio is large enough, the model is statistically significant.
+]
+
+
+
+.learnr-note[
+**LearnR Practice:** Sections 9.1–9.2 — ANOVA: Fast Food Prices + Player Stats & Salary
+]
 
 ---
-### Testing multiple coefficients (skip)
-
-Suppose we have a model with three predictors 
-
-$$\small y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$$
-We can test for a subset of predictors, for example if Age and Sex matter
-
-- $H_0:\beta_2=\beta_3=0  \rightarrow y=\beta_0+\beta_1Occupancy+u$
-- $H_A:\beta_2\neq 0  \text{ or }  \beta_3\neq0  \\ \rightarrow y=\beta_0+\beta_1Occupancy+\beta_2Age+\beta_3Male+u$
-
-$$\small F_{test}=\frac{\frac{\overbrace{SSR_{H_A}-SSR_{H_0}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}}=\frac{\frac{\overbrace{SSE_{H_0}-SSE_{H_A}}^{\text{Extra Sum of Squares}}}{3-1}}{\frac{SSE_{H_A}}{n-3-1}} \sim F_{2, n-4}$$
----
-
-```{r, echo = FALSE, message = FALSE}
-lm_model <- lm(Duration ~Occupancy+EDAD+SEXO, data = Sample_urg[Sample_urg$SEXO!="SEXONO ESPECIFICADO",])
-linearHypothesis(lm_model, c("EDAD=0", "SEXOMASCULINO=0"))
-```
-
-
----
+class: small
 
 ### Testing for multiple coefficients
 
@@ -1962,19 +2157,21 @@ A cool thing about the regression is that we can test relationships between the 
 
 $$income_i=\beta_0+\beta_1\text{education}_i+\beta_2\text{experience}_i+u_i$$
 
-- That corresponds to null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$ 
+- That corresponds to null hypothesis $H_0: \beta_1=\beta_2$ or $H_0: \beta_1-\beta_2=0$
 
 **Another Example**:
 - Suppose that employees can go through a sales training, and/or get a better office (these are binary variables). We want to evaluate impact of these measures on their sales:
 
 $$Sales_i=\beta_0+\beta_1\text{training}_i+\beta_2\text{office}_i+u_i$$
 - We wonder if giving an employee both of them would increase sales by more than 100: 
-$H_A: \beta_1+\beta_2>100$ 
+$H_A: \beta_1+\beta_2>100$
 
 
 
 ---
-### Relationships between coefficients 
+class: small
+
+### Relationships between coefficients
 
 Suppose we have a model:
 
@@ -1994,10 +2191,12 @@ $$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
 
 **Test statistic and its distribution under the null**
 
-$$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+$$\small T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
 - Calculate p-value as $2P(t_{n-k-1}>|T_{test}|)$
 
 ---
+class: small
+
 ### Relationships between coefficients
 
 - In the same way we can test whether one coefficient is larger than another by some amount
@@ -2013,7 +2212,7 @@ $$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}
 
 **Test statistic and its distribution under the null**
 
-$$T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+$$\small T_{test}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{SE(\hat{\beta_1}-\hat{\beta_2})}=\frac{\hat{\beta_1}-\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})-2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
 --
 
 - Calculate p-value as $P(t_{n-k-1}>T_{test})$
@@ -2044,13 +2243,13 @@ vcov_matrix
 
 - Calculate the test statistic
 
-$$\small T_{test}=\frac{\beta_{O}-\beta_{A}}{\sqrt{var(\hat{\beta_O})+var(\hat{\beta_A})-2cov(\hat{\beta_O},\hat{\beta_A})}}=\frac{3.6803- 0.2047}{\sqrt{0.01+0.0045-2*(-0.00054)}}=27.84$$
+$$\small T_{test}=\frac{\beta_{O}-\beta_{A}}{\sqrt{var(\hat{\beta_O})+var(\hat{\beta_A})-2cov(\hat{\beta_O},\hat{\beta_A})}}=\frac{3.6803- 0.2047}{\sqrt{0.01+0.0045-2 \times (-0.00054)}}=27.84$$
 
 --
 
 - Calculate p-value
 
-$P-value=P(t_{n-k-1}>T_{test})=P(t_{4994}>27.84) \approx0$
+$P\text{-value}=P(t_{n-k-1}>T_{test})=P(t_{4994}>27.84) \approx0$
 
 
 --
@@ -2059,8 +2258,14 @@ Conclusion
 
 - we reject that impact of one more year is smaller or equal to the impact of one more person
 
+.learnr-note[
+**LearnR Practice:** Section 10.1 — Coefficient Equality: Spouse Education & Income
+]
+
 ---
-### Sum of coefficients 
+class: small
+
+### Sum of coefficients
 
 Suppose we have a model:
 
@@ -2077,7 +2282,7 @@ $$y=\beta_0+\beta_1x_1+\beta_2x_2+...\beta_kx_k+u$$
 
 **Test statistic and its distribution under the null**
 
-$$T_{test}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{SE(\hat{\beta_1}+\hat{\beta_2})}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})+2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
+$$\small T_{test}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{SE(\hat{\beta_1}+\hat{\beta_2})}=\frac{\hat{\beta_1}+\hat{\beta_2}-c}{\sqrt{var(\hat{\beta_1})+var(\hat{\beta_2})+2cov(\hat{\beta_1},\hat{\beta_2})}}\sim t_{n-k-1}$$
 --
 
 - Calculate p-value as $2P(|t_{n-k-1}|>T_{test})$
@@ -2098,11 +2303,14 @@ vcov_matrix <- vcov(m1)
 vcov_matrix
 ```
 
+.learnr-note[
+**LearnR Practice:** Section 10.1 — Coefficient Equality: Spouse Education & Income
+]
 
 
 ---
 
-### Standarized Coefficients
+### Standardized Coefficients
 
 - Coefficients depend on the units of measurement of the $x$
 - Since $x$ can have different units or magnitudes, we can't directly compare them
@@ -2112,21 +2320,21 @@ vcov_matrix
 
 **Example:**
 
-$$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{polution}_i+u_i$$
+$$\text{ecobici trips}_i=\beta_0+\beta_1\text{temperature}_i+\beta_2\text{pollution}_i+u_i$$
 
 --
 
 - It doesn't make sense to compare $\beta_1$ to $\beta_2$ to see what has bigger effect
 - These variables have very different magnitudes
-  -  Increasing temperature by one unit (1 degree celcius) is different than increasing polution by one unit (1 μg/m3)
+  -  Increasing temperature by one unit (1 degree Celsius) is different than increasing pollution by one unit (1 μg/m3)
 
 --
-- To make them directly comparable, we want to make them unitless (standarized)
-- Does increasing temperature by .blue[one standard deviation] has the same effect as inreasing polution by .blue[one standard deviation]?
+- To make them directly comparable, we want to make them unitless (standardized)
+- Does increasing temperature by .blue[one standard deviation] have the same effect as increasing pollution by .blue[one standard deviation]?
 
 
 ---
-### Standarized coeffcients
+### Standardized coefficients
 
 Basically, we standardize all the variables and run the regression:
 
@@ -2164,6 +2372,10 @@ $$\begin{align*}
 & \hat{\gamma}_{Age}  =\hat{\beta}_{Age}\frac{s_{Age}}{s_{y}}=0.206\frac{20.82}{111.82}=0.0383 \\
 &\hat{\gamma}_{Occupancy} =\hat{\beta}_{Occupancy}\frac{s_{Occupancy}}{s_y}=3.703\frac{13.921}{111.82}=0.461
 \end{align*}$$
+
+.learnr-note[
+**LearnR Practice:** Sections 6.1–6.2 — R-squared: Student Performance + Baseball Salaries
+]
 
 ---
 ```{r, echo=FALSE, out.width="85%"}

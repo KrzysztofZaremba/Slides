@@ -1,75 +1,59 @@
 ---
-title: "LearnR Tutorial: Estimators"
+title: "Multiple Linear Regression"
 author: "Business Forecasting"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: false
+    allow_skip: true
 runtime: shiny_prerendered
+tutorial:
+  id: "itam-bf-C5-mlr-solved"
+  version: 2.0
+description: "Learn to estimate, interpret, and test multiple linear regression models"
 ---
- 
+
 
 ```{r setup, include=FALSE}
-library(learnr)
-library(shiny)
-library(tidyverse)
-
-if (!requireNamespace("car", quietly = TRUE)) {
-  install.packages("car", repos = "https://cloud.r-project.org")
+for (pkg in c("learnr","shiny","tidyverse","plotly","tseries","car","probstats4econ","wooldridge")) {
+  if (!requireNamespace(pkg, quietly = TRUE))
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  library(pkg, character.only = TRUE)
 }
 
-if (!requireNamespace("plotly", quietly = TRUE)) {
-  install.packages("plotly", repos = "https://cloud.r-project.org")
-}
-
-
-if (!requireNamespace("tseries", quietly = TRUE)) {
-  install.packages("tseries", repos = "https://cloud.r-project.org")
-}
-
-library(plotly)
-library(car)
-library(tseries)
-
-if (!requireNamespace("probstats4econ", quietly = TRUE)) {
-  install.packages("probstats4econ", repos = "https://cloud.r-project.org")
-}
-library(probstats4econ)
-
-
-if (!requireNamespace("wooldridge", quietly = TRUE)) {
-  install.packages("wooldridge", repos = "https://cloud.r-project.org")
-}
-library(wooldridge)
-
-  
   # Fixed data generation
   set.seed(123) # For reproducibility
   x <- seq(-10, 10, by = 1)
   e <- rnorm(length(x), mean = 0, sd = 5)
   y_actual <- 4 + 1.65 * x + e
-  
+
   data <- data.frame(x, y_actual)
-  
+
 
 ```
 
----
+## 1.1 Matrix OLS: Predicting Affairs
 
-## Deriving Coefficients
+| | |
+|---|---|
+| **Data** | `affairs` (wooldridge) |
+| **Y** | `naffairs` — number of affairs |
+| **X** | `age` — age (years); `relig` — religiosity (1-5) |
 
-We’ll work with data from a survey on extra-marital affairs in the US. Here is the data:
+We'll work with data from a survey on extra-marital affairs in the US. Here is the data:
 
-- **id**: identifier  
-- **male**: =1 if male  
-- **age**: age in years  
-- **yrsmarr**: years married  
-- **kids**: =1 if have kids  
-- **relig**: religiosity (5 = very religious, 4 = somewhat, 3 = slightly, 2 = not at all, 1 = anti-religious)  
-- **educ**: years of schooling  
-- **ratemarr**: marital happiness (5 = very happy, 4 = happier than average, 3 = average, 2 = somewhat unhappy, 1 = very unhappy)  
-- **naffairs**: number of affairs within last year  
-- **affair**: =1 if had at least one affair  
+- **id**: identifier
+- **male**: =1 if male
+- **age**: age in years
+- **yrsmarr**: years married
+- **kids**: =1 if have kids
+- **relig**: religiosity (5 = very religious, 4 = somewhat, 3 = slightly, 2 = not at all, 1 = anti-religious)
+- **educ**: years of schooling
+- **ratemarr**: marital happiness (5 = very happy, 4 = happier than average, 3 = average, 2 = somewhat unhappy, 1 = very unhappy)
+- **naffairs**: number of affairs within last year
+- **affair**: =1 if had at least one affair
 
 
-Let's predict the number of affairs. Let's pick two variables and find the coefficients f:
+Let's predict the number of affairs. Let's pick two variables and find the coefficients:
 
 \[
 y_i=\beta_0+\beta_1x_{i3}+\beta_2x_{i2}+\epsilon_i
@@ -127,10 +111,49 @@ y_pred
 
 ```
 
-
 ---
 
-## Adding variables
+## 1.2 Your Turn: Real Estate Pricing Model
+
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `bdrms` — bedrooms; `lotsize` — lot (sq ft); `sqrft` — house size (sq ft) |
+
+**Business Context:** A real estate agency wants to build a pricing model. Use `hprice1` from wooldridge: `price` (in $1000s), `bdrms` (bedrooms), `lotsize` (lot size in sqft), `sqrft` (house size sqft).
+
+**Your Decision:** Which features drive house prices the most?
+
+Use the matrix formula $\beta=(X'X)^{-1}X'y$ to find the coefficients. Then verify your result with `lm()`.
+
+```{r biz_c5_1, exercise=TRUE}
+# Matrix approach
+X <- cbind(1, hprice1$bdrms, hprice1$lotsize, hprice1$sqrft)
+y <- hprice1$price
+
+beta_hat <- solve(t(X) %*% X) %*% (t(X) %*% y)
+beta_hat
+
+# Verify with lm()
+m <- lm(price ~ bdrms + lotsize + sqrft, data = hprice1)
+coef(m)
+
+# Interpretation:
+# The coefficients from both methods should match exactly.
+# sqrft has the largest impact per unit, but lotsize also contributes.
+# bdrms may have a smaller or even negative coefficient once sqrft is included
+# (because bigger houses already have more bedrooms).
+
+```
+
+## 2.1 Omitted Variables: Wages, Education & IQ
+
+| | |
+|---|---|
+| **Data** | `card` (wooldridge) |
+| **Y** | `wage` — weekly wage (cents) |
+| **X** | `educ` — years of education; `IQ` — IQ score |
 
 Using dataset "card", regress wage (weekly, in cents) on educ (education in years). Then add IQ. How do the coefficient on education changes?
 
@@ -145,17 +168,55 @@ m2 <- lm(wage ~ educ + IQ, data = card)
 coef(m2)
 
 
-#Coefficient on education becomes weaker, because previously it was capturing variation in IQ. 
+#Coefficient on education becomes weaker, because previously it was capturing variation in IQ.
 ```
-
-
-
 
 ---
 
-## Variance
+## 2.2 Your Turn: CEO Pay Beyond ROE
 
-We’ll work with data from a survey on extra-marital affairs in the US. Regress nafffairs on age and relig. Find the variance covariance matrix. 
+| | |
+|---|---|
+| **Data** | `ceosal1` (wooldridge) |
+| **Y** | `salary` — CEO salary (thousands $) |
+| **X** | `roe` — return on equity (%); `sales` — firm sales (millions $) |
+
+**Business Context:** A board of directors found that ROE explains CEO salary. But does adding firm sales improve the model? Use `ceosal1`: `salary`, `roe`, `sales`.
+
+**Your Decision:** Is firm size a confounding factor in the ROE-salary relationship?
+
+Run `salary ~ roe`, then `salary ~ roe + sales`. Compare the coefficient on `roe`.
+
+```{r biz_c5_2, exercise=TRUE}
+# Model 1: salary on ROE only
+m1 <- lm(salary ~ roe, data = ceosal1)
+coef(m1)
+
+# Model 2: salary on ROE + sales
+m2 <- lm(salary ~ roe + sales, data = ceosal1)
+coef(m2)
+
+# Compare coefficients on roe
+cat("Coefficient on roe (without sales):", coef(m1)["roe"], "\n")
+cat("Coefficient on roe (with sales):   ", coef(m2)["roe"], "\n")
+
+# Interpretation:
+# When we add sales, the coefficient on roe changes.
+# This suggests omitted variable bias: larger firms tend to have
+# both higher ROE and higher CEO pay. Without controlling for sales,
+# the roe coefficient was partially capturing the effect of firm size.
+
+```
+
+## 3.1 Variance-Covariance: Affairs Model
+
+| | |
+|---|---|
+| **Data** | `affairs` (wooldridge) |
+| **Y** | `naffairs` — number of affairs |
+| **X** | `age`; `relig` |
+
+We'll work with data from a survey on extra-marital affairs in the US. Regress nafffairs on age and relig. Find the variance covaraince matrix.
 
 
 ```{r e7, exercise=TRUE}
@@ -174,14 +235,14 @@ u_hat <- y - X %*% beta_hat
 # Estimate of error variance
 sigma2 <- as.numeric(t(u_hat) %*% u_hat / (n - k))
 
-# Variance–covariance matrix (long form)
+# Variance-covariance matrix (long form)
 VCOV_long <- sigma2 * solve(t(X) %*% X)
 VCOV_long
 
 
 
 
-# OR simply 
+# OR simply
 m <- lm(naffairs ~ age + relig, data = affairs)
 
 vcov(m)
@@ -191,11 +252,53 @@ vcov(m)
 
 ---
 
-## Categorical variables in a regression
+## 3.2 Your Turn: CEO Salary VCOV
+
+| | |
+|---|---|
+| **Data** | `ceosal1` (wooldridge) |
+| **Y** | `salary` — CEO salary (thousands $) |
+| **X** | `roe` — return on equity (%); `sales` — firm sales (millions $) |
+
+**Business Context:** The board needs standard errors for their CEO compensation model to know how reliable each estimate is. Use `ceosal1`: `salary`, `roe`, `sales`.
+
+Compute the variance-covariance matrix for `salary ~ roe + sales` using the matrix formula. Verify with `vcov()`.
+
+```{r biz_c5_3, exercise=TRUE}
+# Matrix approach
+X <- cbind(1, ceosal1$roe, ceosal1$sales)
+y <- ceosal1$salary
+n <- nrow(X)
+k <- ncol(X)
+
+beta_hat <- solve(t(X) %*% X) %*% (t(X) %*% y)
+u_hat <- y - X %*% beta_hat
+sigma2 <- as.numeric(t(u_hat) %*% u_hat / (n - k))
+
+VCOV_manual <- sigma2 * solve(t(X) %*% X)
+VCOV_manual
+
+# Standard errors (square root of diagonal)
+cat("\nManual standard errors:\n")
+sqrt(diag(VCOV_manual))
+
+# Verify with lm + vcov
+m <- lm(salary ~ roe + sales, data = ceosal1)
+vcov(m)
+
+```
+
+## 4.1 Categorical Variables: Wages by Marital Status
+
+| | |
+|---|---|
+| **Data** | `cps` (probstats4econ) |
+| **Y** | `wagehr` — hourly wage ($) |
+| **X** | `marstatus` — Married/Divorced/Widowed/Never married |
 
 How does the marital status impacts earning?
 
-Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and marital status (marstatus).  Possible options are: Married, Divorced, Widowed, Never married. 
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and marital status (marstatus).  Possible options are: Married, Divorced, Widowed, Never married.
 
 
 ```{r e8, exercise=TRUE}
@@ -210,7 +313,44 @@ summary(m)
 
 ---
 
-## Interaction simple
+## 4.2 Your Turn: Gender Pay Gap in Hourly Wages
+
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `female` — 1 if female |
+
+**Business Context:** An HR department needs to quantify the gender wage gap. Use `wage1`: `wage` (hourly $) and `female` (1 if female).
+
+**Your Decision:** What is the average pay difference? Is it significant?
+
+Regress `wage` on `female`. Interpret $\beta_0$ (average male wage) and $\beta_1$ (the gap).
+
+```{r biz_c5_4, exercise=TRUE}
+m <- lm(wage ~ female, data = wage1)
+summary(m)
+
+# Interpretation:
+# beta_0 (Intercept) = average hourly wage for males (female = 0)
+# beta_1 (female)    = difference in average wage for females vs males
+# Average female wage = beta_0 + beta_1
+#
+# If beta_1 is negative and significant, there is a measurable gender pay gap.
+
+cat("\nAverage male wage:  ", coef(m)[1], "\n")
+cat("Average female wage:", coef(m)[1] + coef(m)[2], "\n")
+cat("Gender gap:         ", coef(m)[2], "\n")
+
+```
+
+## 5.1 Interaction: House Size x Year Built
+
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `lotarea` — lot size (sq ft); `yearbuilt` — year built |
 
 Let's look at how value of the size of the house changes with its age. This data reports houses sold between 2006 and 2010. It has three variables of interest:
 
@@ -260,21 +400,64 @@ summary(m)
 #   • The value of a newer house depends on how large the lot is.
 
 # Conclusion:
-#   The interaction term β3 captures how the relationship between lot size and price 
+#   The interaction term β3 captures how the relationship between lot size and price
 #   varies with the age of the house. This is the most important coefficient to interpret.
 
 ```
 
+---
 
+## 5.2 Your Turn: Experience x Tenure
 
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `exper` — experience (years); `tenure` — tenure (years) |
+
+**Business Context:** A compensation analyst suspects that the value of general work experience depends on how long the person has been at the company. Use `wage1`: `wage`, `exper`, `tenure`.
+
+**Your Decision:** Should we design different pay scales for new vs. long-tenured employees?
+
+Run `wage ~ exper * tenure`. Interpret the interaction term.
+
+```{r biz_c5_5, exercise=TRUE}
+m <- lm(wage ~ exper * tenure, data = wage1)
+summary(m)
+
+# Interpretation:
+# wage = beta0 + beta1*exper + beta2*tenure + beta3*(exper*tenure)
+#
+# Marginal effect of experience:
+#   d(wage)/d(exper) = beta1 + beta3 * tenure
+#   The value of an extra year of general experience depends on tenure.
+#
+# Marginal effect of tenure:
+#   d(wage)/d(tenure) = beta2 + beta3 * exper
+#   The value of staying at the firm depends on general experience.
+#
+# If beta3 > 0: experience and tenure reinforce each other
+# If beta3 < 0: they substitute for each other
+
+cat("\nMarginal effect of exper at tenure=0: ", coef(m)["exper"], "\n")
+cat("Marginal effect of exper at tenure=10:", coef(m)["exper"] + 10 * coef(m)["exper:tenure"], "\n")
+cat("Marginal effect of exper at tenure=20:", coef(m)["exper"] + 20 * coef(m)["exper:tenure"], "\n")
+
+```
 
 ---
 
-## Interaction variable with a categorical variable with more categories
+## 5.3 Interaction: Education by Race
+
+| | |
+|---|---|
+| **Data** | `cps` (probstats4econ) |
+| **Y** | `wagehr` — hourly wage ($) |
+| **X** | `educ` — years of education; `race` — Black/White/Other |
 
 How do return to education vary across racial groups?
 
-Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and racial group (race: Black, White, Other)  and education in years (educ).  
+Let's use cps data (survey  in the US). It provides information on both hourly wage (wagehr) and racial group (race: Black, White, Other)  and education in years (educ).
 
 ```{r 10, exercise=TRUE}
 m <- lm(wagehr ~ educ * race, data = cps)
@@ -286,7 +469,7 @@ summary(m)
 # ----------------------------------------------------
 
 # Model:
-# wagehr = β0 
+# wagehr = β0
 #        + β1*educ
 #        + β2*raceWhite
 #        + β3*raceOther
@@ -313,23 +496,67 @@ summary(m)
 
 ```
 
-
 ---
 
-## R squared
+## 5.4 Your Turn: Gender Gap by Education Level
+
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `educ` — education (years); `female` — 1 if female |
+
+**Business Context:** An equal-pay advocate claims the gender gap widens with education. Use `wage1`: `wage`, `educ`, `female`.
+
+**Your Decision:** Should pay equity policies focus on higher-educated roles?
+
+Run `wage ~ educ * female`. Interpret the interaction term.
+
+```{r biz_c5_6, exercise=TRUE}
+m <- lm(wage ~ educ * female, data = wage1)
+summary(m)
+
+# Interpretation:
+# wage = beta0 + beta1*educ + beta2*female + beta3*(educ*female)
+#
+# For males (female=0):
+#   wage = beta0 + beta1*educ
+#   Return to education for males = beta1
+#
+# For females (female=1):
+#   wage = (beta0 + beta2) + (beta1 + beta3)*educ
+#   Return to education for females = beta1 + beta3
+#
+# beta3 (interaction) = difference in return to education between females and males
+# If beta3 < 0: the gender gap widens with more education
+# If beta3 > 0: the gender gap narrows with more education
+
+cat("\nReturn to education for males:  ", coef(m)["educ"], "\n")
+cat("Return to education for females:", coef(m)["educ"] + coef(m)["educ:female"], "\n")
+cat("Difference (interaction):       ", coef(m)["educ:female"], "\n")
+
+```
+
+## 6.1 R-squared: Student Exam Performance
+
+| | |
+|---|---|
+| **Data** | `attend` (wooldridge) |
+| **Y** | `final` — final exam score (0-40) |
+| **X** | `attend`, `ACT`, `termGPA`, `priGPA`, etc. |
 
 Data "attend" reports final score of students of microeconomics from a US universities. It has following variables:
 
-• attend: classes attended out of 32
-• termGPA: GPA for term (GPA: grade point average)
-• priGPA: cumulative GPA prior to term
-• ACT: ACT score (standarized end of high school exam)
-• final: final exam score
-• atndrte: percent classes attended
-• hwrte: percent homework turned in
-• frosh: =1 if freshman
-• soph: =1 if sophomore
-• missed: number of classes missed
+- attend: classes attended out of 32
+- termGPA: GPA for term (GPA: grade point average)
+- priGPA: cumulative GPA prior to term
+- ACT: ACT score (standarized end of high school exam)
+- final: final exam score
+- atndrte: percent classes attended
+- hwrte: percent homework turned in
+- frosh: =1 if freshman
+- soph: =1 if sophomore
+- missed: number of classes missed
 
 
 Outcome is final exam score. It goes from 0 to 40. (that's what we want to predict). Keep adding regressors and try to find the highest adjusted R square possible. (ex: attend, ACT, termGPA, priGPA)
@@ -352,21 +579,70 @@ m4 <- lm(final ~ attend + ACT + termGPA + priGPA, data = attend)
 summary(m4)$adj.r.squared
 
 # Model 5: try many predictors at once
-m5 <- lm(final ~ attend + ACT + termGPA + priGPA + atndrte + hwrte + frosh + soph + missed, 
+m5 <- lm(final ~ attend + ACT + termGPA + priGPA + atndrte + hwrte + frosh + soph + missed,
          data = attend)
 summary(m5)$adj.r.squared
 
 
 ```
 
-
-
 ---
 
-## Hypothesis testing
+## 6.2 Your Turn: Baseball Player Salaries
+
+| | |
+|---|---|
+| **Data** | `mlb1` (wooldridge) |
+| **Y** | `salary` — annual salary (thousands $) |
+| **X** | `years`, `games`, `bavg`, `hrunsyr`, `rbisyr` |
+
+**Business Context:** A sports analytics team is building a player valuation model. Use `mlb1`: `salary` (annual in $1000s), `years` (in league), `games` (career games), `bavg` (batting avg), `hrunsyr` (home runs/yr), `rbisyr` (RBIs/yr).
+
+**Your Decision:** Which stats should scouts prioritize when negotiating contracts?
+
+Add predictors one by one and track adjusted $R^2$. Find the best model.
+
+```{r biz_c5_7, exercise=TRUE}
+# Model 1: years only
+m1 <- lm(salary ~ years, data = mlb1)
+cat("Model 1 (years):          adj R² =", summary(m1)$adj.r.squared, "\n")
+
+# Model 2: add games
+m2 <- lm(salary ~ years + games, data = mlb1)
+cat("Model 2 (+ games):        adj R² =", summary(m2)$adj.r.squared, "\n")
+
+# Model 3: add bavg
+m3 <- lm(salary ~ years + games + bavg, data = mlb1)
+cat("Model 3 (+ bavg):         adj R² =", summary(m3)$adj.r.squared, "\n")
+
+# Model 4: add hrunsyr
+m4 <- lm(salary ~ years + games + bavg + hrunsyr, data = mlb1)
+cat("Model 4 (+ hrunsyr):      adj R² =", summary(m4)$adj.r.squared, "\n")
+
+# Model 5: add rbisyr
+m5 <- lm(salary ~ years + games + bavg + hrunsyr + rbisyr, data = mlb1)
+cat("Model 5 (+ rbisyr):       adj R² =", summary(m5)$adj.r.squared, "\n")
+
+# Full model summary
+summary(m5)
+
+# Interpretation:
+# Track which variables produce the largest jumps in adj R².
+# rbisyr and hrunsyr tend to matter most for salary.
+# bavg often adds little once power stats are included.
+
+```
+
+## 7.1 Hypothesis Test: Alcohol & Employment
+
+| | |
+|---|---|
+| **Data** | `alcohol` (wooldridge) |
+| **Y** | `employ` — employed (0/1) |
+| **X** | `abuse` — alcohol abuse (0/1); `educ` — education (years) |
 
 In the dataset "alcohol" we find information whether someone is employed (employ), whether they abuse alcohol (abuse), and years of education (educ).
-Test if abusing alcohol affects your employment status when controlling for education. Compare to a model that doesn't include education as control. 
+Test if abusing alcohol affects your employment status when controlling for education. Compare to a model that doesn't include education as control.
 
 ```{r 13f, exercise=TRUE}
 
@@ -402,10 +678,50 @@ df_m2
 
 ```
 
+---
+
+## 7.2 Your Turn: Does Sleep Protect Wages?
+
+| | |
+|---|---|
+| **Data** | `sleep75` (wooldridge) |
+| **Y** | `hrwage` — hourly wage ($) |
+| **X** | `slpnaps` — total sleep (hours/week); `educ` — education (years); `age` |
+
+**Business Context:** A wellness program manager asks: does getting more sleep improve hourly wages even after accounting for education and age? Use `sleep75`: `hrwage`, `slpnaps`, `educ`, `age`.
+
+**Your Decision:** Should we invest in employee wellness and sleep programs?
+
+Test the significance of `slpnaps` controlling for `educ` and `age`.
+
+```{r biz_c5_8, exercise=TRUE}
+m <- lm(hrwage ~ slpnaps + educ + age, data = sleep75)
+summary(m)
+
+# Extract t-test for slpnaps
+t_test_slpnaps <- summary(m)$coefficients["slpnaps", ]
+t_test_slpnaps
+
+# Distribution: t with df = n - k degrees of freedom
+df <- m$df.residual
+cat("\nDegrees of freedom:", df, "\n")
+
+# Interpretation:
+# If the p-value for slpnaps is small (< 0.05), we reject H0: beta_slpnaps = 0.
+# This means sleep has a significant effect on hourly wages even after
+# controlling for education and age. This supports investing in wellness programs.
+
+```
 
 ---
 
-## Hypothesis testing with Interaction
+## 7.3 Interaction Test: Education & City Size
+
+| | |
+|---|---|
+| **Data** | `beauty` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `educ` — education (years); `bigcity` — 1 if big city |
 
 Does education plays larger role if living in a big city?
 
@@ -437,10 +753,50 @@ df_model
 
 ```
 
-
 ---
 
-## Confidence interval for a coefficient
+## 7.4 Your Turn: City Size & Returns to Education
+
+| | |
+|---|---|
+| **Data** | `beauty` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `educ` — education (years); `bigcity` — 1 if big city |
+
+**Business Context:** A workforce study asks if workers in big cities get a higher return to education. Use `beauty`: `wage`, `educ`, `bigcity`.
+
+**Your Decision:** Is the education premium different in big vs small cities?
+
+Run `wage ~ educ * bigcity` and test the interaction term.
+
+```{r biz_c5_9, exercise=TRUE}
+m <- lm(wage ~ educ * bigcity, data = beauty)
+summary(m)
+
+# Extract t-test for interaction
+t_interaction <- summary(m)$coefficients["educ:bigcity", ]
+t_interaction
+
+# Degrees of freedom
+df <- m$df.residual
+cat("\nDegrees of freedom:", df, "\n")
+
+# Interpretation:
+# H0: educ:bigcity = 0 (city size does not change the return to education)
+# If rejected: workers in big cities get a different return per year of education.
+# The sign of the interaction tells us the direction:
+#   positive -> big city workers benefit MORE from education
+#   negative -> big city workers benefit LESS from education
+
+```
+
+## 8.1 CI for Coefficients: Sleep & Wages
+
+| | |
+|---|---|
+| **Data** | `sleep75` (wooldridge) |
+| **Y** | `slpnaps` — total sleep (hours/week) |
+| **X** | `hrwage` — hourly wage ($); `age`; `marr` — married (0/1) |
 
 The dataset sleep75 contains informatiomn on total hours of sleep (slpnaps), age, being married (marr), and hourly wage (hrwage).
 Run a regression explaining sleep time using all these variables. What is 95% confidence interval on the impact of more dollar of hourly wage? What about being married?
@@ -500,13 +856,59 @@ c(CI_marr_manual   = lower_marr, upper_marr)
 
 ```
 
+---
+
+## 8.2 Your Turn: Value of Years in the League
+
+| | |
+|---|---|
+| **Data** | `mlb1` (wooldridge) |
+| **Y** | `salary` — annual salary (thousands $) |
+| **X** | `years` — years in league; `bavg` — batting avg; `hrunsyr` — home runs/yr |
+
+**Business Context:** A sports analytics team is designing seniority-based pay adjustments. Use `mlb1`: `salary`, `years`, `bavg`, `hrunsyr`.
+
+**Your Decision:** What range of salary increase per additional year in the league should we budget?
+
+Compute the 95% confidence interval for the `years` coefficient in `salary ~ years + bavg + hrunsyr`.
+
+```{r biz_c5_10, exercise=TRUE}
+m <- lm(salary ~ years + bavg + hrunsyr, data = mlb1)
+summary(m)
+
+# Quick method
+confint(m, "years", level = 0.95)
+
+# Manual method
+coefs <- summary(m)$coefficients
+beta_years <- coefs["years", "Estimate"]
+se_years   <- coefs["years", "Std. Error"]
+df <- m$df.residual
+t_crit <- qt(0.975, df = df)
+
+lower <- beta_years - t_crit * se_years
+upper <- beta_years + t_crit * se_years
+
+cat("\nManual 95% CI for years: [", lower, ",", upper, "]\n")
+
+# Interpretation:
+# We are 95% confident that an extra year in the league
+# is associated with a salary change between the lower and upper bound,
+# holding batting average and home runs per year constant.
+
+```
 
 ---
 
-## Confidence interval for a mean response
+## 8.3 CI for Mean Response: Student Scores
 
+| | |
+|---|---|
+| **Data** | `econmath` (wooldridge) |
+| **Y** | `score` — final score |
+| **X** | `age`, `study`, `act`, `fathcoll`, `mothcoll`, `male` |
 
-The dataset econmath contains data from a course in economics from Michigan State University. It reports the following variables. 
+The dataset econmath contains data from a course in economics from Michigan State University. It reports the following variables.
 
 - score: final score
 - age: age in years
@@ -518,7 +920,8 @@ The dataset econmath contains data from a course in economics from Michigan Stat
 
 Let's find the confidence interval for the mean score for students who are 22 years old, study 10 hours per week, had 25 on final high school exam, only mother has a college degree, and is male
 
-Step by step method:
+#### Step by step method:
+
 1. Find the prediction
 2. Write down the vector of predictors
 3. Find the inverse of X'X
@@ -563,13 +966,9 @@ c(predicted_mean = y_hat,
   lower_95_CI    = lower_ci,
   upper_95_CI    = upper_ci)
 
-
-
-
-
 ```
 
-Quick method: 
+#### Quick method:
 
 ```{r 15m2, exercise=TRUE}
 
@@ -582,11 +981,71 @@ predict(lm_model, newdata = new_data, interval = "confidence", level = 0.95, se.
 
 ---
 
-## Confidence interval for a new observation
+## 8.4 Your Turn: Expected Price for 3-Bed House
 
-Let's use the same setting as before, but calculate the confidence interval for a new observation. 
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `bdrms`, `lotsize`, `sqrft` |
 
-Step by step method:
+**Business Context:** The real estate agency wants to know the average market price for a 3-bed, 2000 sqft house on an 8000 sqft lot. Use `hprice1`.
+
+**Your Decision:** What average price should we communicate to the seller?
+
+Use `predict(..., interval = "confidence")` with `new_data = data.frame(bdrms = 3, lotsize = 8000, sqrft = 2000)`.
+
+```{r biz_c5_11, exercise=TRUE}
+# Fit the model
+m <- lm(price ~ bdrms + lotsize + sqrft, data = hprice1)
+summary(m)
+
+# Step-by-step method
+x0 <- c(1, 3, 8000, 2000)
+X <- model.matrix(m)
+XtX_inv <- solve(t(X) %*% X)
+beta_hat <- coef(m)
+y_hat <- as.numeric(x0 %*% beta_hat)
+
+n <- nrow(X)
+p <- ncol(X)
+s2 <- sum(residuals(m)^2) / (n - p)
+var_mean <- as.numeric(s2 * t(x0) %*% XtX_inv %*% x0)
+se_mean <- sqrt(var_mean)
+
+df <- m$df.residual
+t_crit <- qt(0.975, df = df)
+
+lower_ci <- y_hat - t_crit * se_mean
+upper_ci <- y_hat + t_crit * se_mean
+
+cat("Step-by-step CI:\n")
+c(predicted_mean = y_hat, lower_95_CI = lower_ci, upper_95_CI = upper_ci)
+
+# Quick method
+new_data <- data.frame(bdrms = 3, lotsize = 8000, sqrft = 2000)
+predict(m, newdata = new_data, interval = "confidence", level = 0.95, se.fit = TRUE)
+
+# Interpretation:
+# We are 95% confident that the AVERAGE market price for houses with
+# these characteristics falls within this interval (in $1000s).
+
+```
+
+---
+
+## 8.5 PI for New Observation: Student Scores
+
+| | |
+|---|---|
+| **Data** | `econmath` (wooldridge) |
+| **Y** | `score` — final score |
+| **X** | `age`, `study`, `act`, `fathcoll`, `mothcoll`, `male` |
+
+Let's use the same setting as before, but calculate the confidence interval for a new observation.
+
+#### Step by step method:
+
 1. Find the prediction
 2. Write down the vector of predictors
 3. Find the inverse of X'X
@@ -639,7 +1098,7 @@ c(predicted_value      = y_hat,
 
 ```
 
-Quick method: 
+#### Quick method:
 
 ```{r 16m2, exercise=TRUE}
 
@@ -650,16 +1109,59 @@ predict(lm_model, newdata = new_data, interval = "prediction", level = 0.95, se.
 
 ```
 
-
 ---
 
-## ANOVA - Significance of the regression
+## 8.6 Your Turn: Price This Specific House
+
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `bdrms`, `lotsize`, `sqrft` |
+
+**Business Context:** Same house as before (3-bed, 2000 sqft, 8000 sqft lot), but now we need a range for what THIS specific house will sell for.
+
+**Your Decision:** What listing price range should we recommend?
+
+Use `predict(..., interval = "prediction")`. Compare the width of the prediction interval to the confidence interval from above.
+
+```{r biz_c5_12, exercise=TRUE}
+m <- lm(price ~ bdrms + lotsize + sqrft, data = hprice1)
+new_data <- data.frame(bdrms = 3, lotsize = 8000, sqrft = 2000)
+
+# Prediction interval (for THIS specific house)
+pi <- predict(m, newdata = new_data, interval = "prediction", level = 0.95)
+pi
+
+# Confidence interval (for the AVERAGE house with these features)
+ci <- predict(m, newdata = new_data, interval = "confidence", level = 0.95)
+ci
+
+# Comparison
+cat("\nCI width:", ci[,"upr"] - ci[,"lwr"], "(in $1000s)\n")
+cat("PI width:", pi[,"upr"] - pi[,"lwr"], "(in $1000s)\n")
+
+# Interpretation:
+# The prediction interval is WIDER than the confidence interval because
+# it accounts for individual variation (sigma^2) on top of estimation uncertainty.
+# The CI tells us where the average price is; the PI tells us
+# the range for a specific house's selling price.
+
+```
+
+## 9.1 ANOVA: Fast Food Prices & Demographics
+
+| | |
+|---|---|
+| **Data** | `discrim` (wooldridge) |
+| **Y** | `pfries` — price of fries ($) |
+| **X** | `prpblck`, `prppov`, `income` |
 
 The dataset discrim contains information of prices of fast food items from the US. Each observation is fast food restaurant.
 
-Suppose you regress price of price of fries (pfries) on location characteristics: proportion black in zipcode (prpblck), proportion living in poverty (prppov), median family income (income). Does this regression helps at all to explain the price? 
+Suppose you regress price of price of fries (pfries) on location characteristics: proportion black in zipcode (prpblck), proportion living in poverty (prppov), median family income (income). Does this regression helps at all to explain the price?
 
-1. Start with running the regression and looking at the results
+#### Step 1: Start with running the regression and looking at the results
 
 ```{r 17m1, exercise=TRUE}
 
@@ -669,7 +1171,7 @@ summary(lm_model)
 ```
 
 
-2. Run the ANOVA test. 
+#### Step 2: Run the ANOVA test.
 
 ```{r 17m2, exercise=TRUE, exercise.setup="17m1"}
 lm_model <- lm(pfries ~ prpblck+prppov+income, data = discrim)
@@ -680,7 +1182,7 @@ anova(lm_model)
 ```
 
 
-3. What is the SSE,  SST and SSR? What are their respective degrees of freedom? 
+#### Step 3: What is the SSE, SST and SSR? What are their respective degrees of freedom?
 
 ```{r 17m3, exercise=TRUE, exercise.setup="17m2"}
 anova_out <- anova(lm_model)
@@ -696,7 +1198,7 @@ df_SST <- df_SSR + df_SSE
 ```
 
 
-4. What is the F test result? What is the p-value?
+#### Step 4: What is the F test result? What is the p-value?
 
 ```{r 17m4, exercise=TRUE, exercise.setup="17m3"}
 
@@ -713,16 +1215,72 @@ p_value <- 1 - pf(F_stat, df_SSR, df_SSE)
 c(F_statistic = F_stat, p_value = p_value)
 ```
 
-
 ---
 
-## Testing for difference in coefficients
+## 9.2 Your Turn: Do Player Stats Explain Salary?
+
+| | |
+|---|---|
+| **Data** | `mlb1` (wooldridge) |
+| **Y** | `salary` — annual salary (thousands $) |
+| **X** | `years`, `bavg`, `hrunsyr`, `rbisyr` |
+
+**Business Context:** The team owner asks: do on-field statistics actually explain salary variation, or is it mostly seniority? Use `mlb1`.
+
+**Your Decision:** Should contract negotiations focus on stats or years of service?
+
+Run `anova(lm(salary ~ years + bavg + hrunsyr + rbisyr, data = mlb1))` and interpret the F-test. Compute SST, SSR, SSE.
+
+```{r biz_c5_13, exercise=TRUE}
+m <- lm(salary ~ years + bavg + hrunsyr + rbisyr, data = mlb1)
+summary(m)
+
+# ANOVA table
+anova_out <- anova(m)
+anova_out
+
+# Compute SSE, SSR, SST
+SSE <- anova_out["Residuals", "Sum Sq"]
+SSR <- sum(anova_out[1:4, "Sum Sq"])
+SST <- SSR + SSE
+
+df_SSE <- anova_out["Residuals", "Df"]
+df_SSR <- sum(anova_out[1:4, "Df"])
+df_SST <- df_SSR + df_SSE
+
+cat("\nSSR:", SSR, "  df:", df_SSR, "\n")
+cat("SSE:", SSE, "  df:", df_SSE, "\n")
+cat("SST:", SST, "  df:", df_SST, "\n")
+
+# F-test
+F_stat <- (SSR / df_SSR) / (SSE / df_SSE)
+p_value <- 1 - pf(F_stat, df_SSR, df_SSE)
+
+cat("\nF-statistic:", F_stat, "\n")
+cat("p-value:    ", p_value, "\n")
+
+# Interpretation:
+# The F-test tests H0: all slope coefficients = 0 (the model has no explanatory power).
+# A small p-value means the model as a whole is significant.
+# Looking at individual ANOVA rows shows which variables contribute most
+# to explaining salary variation. 'years' typically explains a large share,
+# but hitting stats (hrunsyr, rbisyr) also matter.
+
+```
+
+## 10.1 Coefficient Equality: Spouse Education & Income
+
+| | |
+|---|---|
+| **Data** | `married` (probstats4econ) |
+| **Y** | `famincome` — family income ($) |
+| **X** | `educ_w` — wife's education; `educ_h` — husband's education |
 
 Dataset married provides information on married couples in the US. It reports total family income and characteristics of both spouses: age (age_w, age_h), years of education (educ_w, educ_h), and body mass index (bmi_w, bmi_h).
 
 Test if the impact of wife education is the same as the impact of husband education on family income.
 
-1. Run the regression
+#### Step 1: Run the regression
 
 ```{r 18m1, exercise=TRUE}
 
@@ -732,7 +1290,7 @@ summary(a)
 ```
 
 
-2. Find the test statistic
+#### Step 2: Find the test statistic
 
 ```{r 18m2, exercise=TRUE, exercise.setup="18m1"}
 
@@ -741,7 +1299,7 @@ summary(a)
 b <- coef(a)
 
 
-# Extract variance–covariance matrix
+# Extract variance-covariance matrix
 V <- vcov(a)
 
 
@@ -763,7 +1321,7 @@ df <- a$df.residual
 
 ```
 
-3. Find the p-value
+#### Step 3: Find the p-value
 
 ```{r 18m3, exercise=TRUE, exercise.setup="18m2"}
 # --- 3. p-value for the two-sided test ---
@@ -777,7 +1335,7 @@ p_value
 ```
 
 
-#### Alternative test. 
+#### Alternative test.
 
 Now try again but with bmi of wife (bmi_w) vs bmi of husband (bmi_h)
 
@@ -790,7 +1348,7 @@ summary(a)
 # Extract coefficients
 b <- coef(a)
 
-# Extract variance–covariance matrix
+# Extract variance-covariance matrix
 V <- vcov(a)
 
 # Test H0: β_bmi_w = β_bmi_h
@@ -814,5 +1372,3 @@ p_value <- 2 * (1 - pt(abs(t_stat), df))
 c(t_statistic = t_stat, p_value = p_value)
 
 ```
-
----

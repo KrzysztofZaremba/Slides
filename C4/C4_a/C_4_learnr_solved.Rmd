@@ -1,41 +1,35 @@
 ---
-title: "LearnR Tutorial: Estimators"
+title: "Simple Linear Regression"
 author: "Business Forecasting"
-output: learnr::tutorial
+output:
+  learnr::tutorial:
+    progressive: false
+    allow_skip: true
+    css: !expr system.file("tutorials/css/custom.css", package = "learnr")
 runtime: shiny_prerendered
+tutorial:
+  id: "itam-bf-C4-slr-solved"
+  version: 2.0
+description: "Learn to estimate, interpret, and diagnose simple linear regression models"
 ---
- 
+
 
 ```{r setup, include=FALSE}
-library(learnr)
-library(shiny)
-library(tidyverse)
-
-if (!requireNamespace("plotly", quietly = TRUE)) {
-  install.packages("plotly")
+for (pkg in c("learnr","shiny","tidyverse","plotly","tseries","probstats4econ","wooldridge")) {
+  if (!requireNamespace(pkg, quietly = TRUE))
+    install.packages(pkg, repos = "https://cloud.r-project.org")
+  library(pkg, character.only = TRUE)
 }
 
 
-if (!requireNamespace("tseries", quietly = TRUE)) {
-  install.packages("tseries")
-}
-
-library(plotly)
-
-if (!requireNamespace("probstats4econ", quietly = TRUE)) {
-  install.packages("probstats4econ")
-}
-library(probstats4econ)
-
-  
   # Fixed data generation
   set.seed(123) # For reproducibility
   x <- seq(-10, 10, by = 1)
   e <- rnorm(length(x), mean = 0, sd = 5)
   y_actual <- 4 + 1.65 * x + e
-  
+
   data <- data.frame(x, y_actual)
-  
+
   sexratios <- read.table(text="
 21163 2000-2004 2020 985 901 0.4777306 1886
 08063 2000-2004 2020 190 175 0.4794521 365
@@ -143,18 +137,22 @@ colnames(sexratios) <- c("fips","period","year","male","female","share_male","to
 
 ```
 
----
+## 1.1 Regression: eBay Auction Prices
 
-## Example 1
+| | |
+|---|---|
+| **Data** | `auctions` (probstats4econ) |
+| **Y** | `finalprice` — final auction price ($) |
+| **X** | `bidders` — number of bidders |
 
-We’ll work with auction data from eBay iPod sales (Rezende, 2008).  
-Your task is to regress the final price on the number of bidders and find the slope. 
+We'll work with auction data from eBay iPod sales (Rezende, 2008).
+Your task is to regress the final price on the number of bidders and find the slope.
 
-First, use the covariance/variance formula to find the slope and the intercept. 
+First, use the covariance/variance formula to find the slope and the intercept.
 
 \[
-\hat{\beta}_1 = \frac{\text{Cov}(x,y)}{\text{Var}(x)}, 
-\quad 
+\hat{\beta}_1 = \frac{\text{Cov}(x,y)}{\text{Var}(x)},
+\quad
 \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
 \]
 
@@ -173,7 +171,7 @@ Or equivalently, you can run a regression in R:
 
 ```{r auction-exercise-solution2, exercise=TRUE}
 #or code for linear regression in R
-x=lm(finalprice ~ bidders, data = auctions) #lm stands for linear model. the formula has form y~x and then we put data. 
+x=lm(finalprice ~ bidders, data = auctions) #lm stands for linear model. the formula has form y~x and then we put data.
 summary(x)
 ```
 
@@ -186,22 +184,28 @@ summary(x)
 
 ---
 
-## Example 2
+## 1.2 Regression: House Prices & Lot Area
 
-We’ll work with data on house sales in Ames, Iowa between 2006 and 2010.  
-The dataset is limited to one-family homes with public utilities and excludes new home sales.  
-We want to study the relationship between **sale price** and **lot area (in square feet)**.  
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `lotarea` — lot area (sq ft) |
 
-First, use the **correlation formula** to find the slope and the intercept:  
+We'll work with data on house sales in Ames, Iowa between 2006 and 2010.
+The dataset is limited to one-family homes with public utilities and excludes new home sales.
+We want to study the relationship between **sale price** and **lot area (in square feet)**.
+
+First, use the **correlation formula** to find the slope and the intercept:
 
 \[
-\hat{\beta}_1 = r_{xy} \cdot \frac{s_y}{s_x}, 
-\quad 
+\hat{\beta}_1 = r_{xy} \cdot \frac{s_y}{s_x},
+\quad
 \hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}
 \]
 
-where \(r_{xy}\) is the correlation between \(x\) (lot area) and \(y\) (sale price),  
-and \(s_x, s_y\) are the standard deviations of \(x\) and \(y\).  
+where \(r_{xy}\) is the correlation between \(x\) (lot area) and \(y\) (sale price),
+and \(s_x, s_y\) are the standard deviations of \(x\) and \(y\).
 
 ```{r housing-exercise1, exercise=TRUE}
 
@@ -219,25 +223,25 @@ Or equivalently, you can run a regression in R:
 
 ```{r housing-exercise-solution2, exercise=TRUE}
 #or code for linear regression in R
-x=lm(saleprice ~ lotarea, data = houseprices) #lm stands for linear model. the formula has form y~x and then we put data. 
+x=lm(saleprice ~ lotarea, data = houseprices) #lm stands for linear model. the formula has form y~x and then we put data.
 summary(x)
 ```
 
-Now, find yhat - prediction for all houses in the dataset. 
+Now, find yhat - prediction for all houses in the dataset.
 
 
 ```{r housing-exercise3, exercise=TRUE}
 yhat=1.566e+05 + 2.113e+00*houseprices$lotarea
 
-#or 
-x=lm(saleprice ~ lotarea, data = houseprices) 
+#or
+x=lm(saleprice ~ lotarea, data = houseprices)
 yhat=x$fitted.values #here you will find predicted values (yhats)
 yhat
 
 plot(houseprices$lotarea, yhat)
 ```
 
-Now, find e - residuals for all houses in the dataset. 
+Now, find e - residuals for all houses in the dataset.
 
 
 ```{r housing-exercise3b, exercise=TRUE}
@@ -248,16 +252,21 @@ e
 
 
 ```
----
-
-## Example 3
-
-We’ll work with data on married couples in the United States (CTS Household Survey, 2003).  
-Our question: **Does the body mass index (BMI) of the wife predict the BMI of the husband?**  
 
 ---
 
-First, make a scatterplot of husband’s BMI against wife’s BMI:  
+## 1.3 Regression: Married Couples BMI
+
+| | |
+|---|---|
+| **Data** | `married` (probstats4econ) |
+| **Y** | `bmi_h` — husband's BMI |
+| **X** | `bmi_w` — wife's BMI |
+
+We'll work with data on married couples in the United States (CTS Household Survey, 2003).
+Our question: **Does the body mass index (BMI) of the wife predict the BMI of the husband?**
+
+First, make a scatterplot of husband's BMI against wife's BMI:
 
 ```{r bmi-exercise1, exercise=TRUE}
 
@@ -265,9 +274,7 @@ plot(married$bmi_h, married$bmi_w)
 
 ```
 
----
-
-Now, run a regression of husband’s BMI on wife’s BMI:  
+Now, run a regression of husband's BMI on wife's BMI:
 
 ```{r bmi-exercise2, exercise=TRUE}
 x=lm(bmi_h ~ bmi_w, data = married) #lm stands for linear model. the formula has form y~x and then we put data.
@@ -278,10 +285,48 @@ What explains this?
 
 ---
 
-## Regression Decomposition
+## 1.4 Your Turn: CEO Pay & Firm Performance
 
-We’ll work with the Ames housing dataset.  
-Regression:  
+| | |
+|---|---|
+| **Data** | `ceosal1` (wooldridge) |
+| **Y** | `salary` — CEO salary (thousands $) |
+| **X** | `roe` — return on equity (%) |
+
+**Business Context:** Your company's board of directors wants to understand whether firms with higher returns on equity (ROE) pay their CEOs more. Use `ceosal1` from the wooldridge package: `salary` (CEO salary in thousands $), `roe` (return on equity in %).
+
+**Your Decision:** Should the board set CEO pay based on ROE?
+
+**Task:** Regress `salary` on `roe` using both the covariance/variance formula and `lm()`. Interpret the slope.
+
+```{r biz_c4_1, exercise=TRUE}
+# Method 1: Covariance / Variance formula
+beta1 = cov(ceosal1$roe, ceosal1$salary) / var(ceosal1$roe)
+beta0 = mean(ceosal1$salary) - beta1 * mean(ceosal1$roe)
+beta1
+beta0
+
+# Method 2: lm()
+reg = lm(salary ~ roe, data = ceosal1)
+summary(reg)
+
+# Interpretation:
+# Each additional percentage point of ROE is associated with about $18,500 more
+# in CEO salary (since salary is in thousands).
+# The R-squared is very low, so ROE alone is a poor predictor of CEO pay.
+# The board should NOT set pay based on ROE alone.
+```
+
+## 2.1 Decomposition: House Prices (SST, SSR, SSE, R²)
+
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `lotarea` — lot area (sq ft) |
+
+We'll work with the Ames housing dataset.
+Regression:
 
 ```{r housing-regression, exercise=TRUE}
 # Run a regression of saleprice on lotarea
@@ -291,17 +336,17 @@ summary(x)
 
 ---
 
-Now, let’s compute the key pieces step by step.  
+Now, let's compute the key pieces step by step.
 
-1. **Fitted values** (predicted sale prices):  
+1. **Fitted values** (predicted sale prices):
 
-2. **Residuals** (errors = observed – fitted): 
+2. **Residuals** (errors = observed -- fitted):
 
 ```{r housing-fitted, exercise=TRUE, exercise.setup="housing-regression"}
 
 yhat=x$fitted.values #here you will find predicted values (yhats) #this is just beta0+beta1*x
 
-#you can do 
+#you can do
 e=houseprices$saleprice - x$fitted.values
 
 #or simply
@@ -310,7 +355,7 @@ e=x$residuals #here you will find residuals
 
 ---
 
-3. **SST, SSR, and SSE**:  
+3. **SST, SSR, and SSE**:
 
 \[
 SST = \sum (y_i - \bar{y})^2, \quad
@@ -322,7 +367,7 @@ SSE = \sum (y_i - \hat{y}_i)^2
 my=mean(houseprices$saleprice)
 y=houseprices$saleprice
 
-  
+
 SST <- sum((y - my)^2)
 SSR <- sum((yhat - my)^2)
 SSE <- sum((y - yhat)^2) #or sum(e^2)
@@ -332,7 +377,7 @@ c(SST = SST, SSR = SSR, SSE = SSE)
 
 ---
 
-4. **Compute \(R^2\):**  
+4. **Compute \(R^2\):**
 
 \[
 R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
@@ -345,10 +390,15 @@ R2
 
 ```
 
-
 ---
 
-## Regression Decomposition 2
+## 2.2 Decomposition: eBay Auctions
+
+| | |
+|---|---|
+| **Data** | `auctions` (probstats4econ) |
+| **Y** | `finalprice` — final auction price ($) |
+| **X** | `bidders` — number of bidders |
 
 Now we want to learn how much of variation in prices at the auction is explained by the number of bidders. Repeat the steps from above
 
@@ -364,20 +414,20 @@ summary(x)
 
 ---
 
-Now, let’s compute the key pieces step by step.  
+Now, let's compute the key pieces step by step.
 
-1. **Fitted values** (predicted sale prices):  
+1. **Fitted values** (predicted sale prices):
 
-2. **Residuals** (errors = observed – fitted): 
+2. **Residuals** (errors = observed -- fitted):
 
-```{r housing-fitted4, exercise=TRUE, exercise.setup="housing-regression"}
+```{r housing-fitted4, exercise=TRUE, exercise.setup="housing-regression4"}
 yhat=x$fitted.values #here you will find predicted values (yhats)
 e=x$residuals #here you will find residuals
 ```
 
 ---
 
-3. **SST, SSR, and SSE**:  
+3. **SST, SSR, and SSE**:
 
 \[
 SST = \sum (y_i - \bar{y})^2, \quad
@@ -385,7 +435,7 @@ SSR = \sum (\hat{y}_i - \bar{y})^2, \quad
 SSE = \sum (y_i - \hat{y}_i)^2
 \]
 
-```{r housing-sumsquares4, exercise=TRUE, exercise.setup="housing-fitted"}
+```{r housing-sumsquares4, exercise=TRUE, exercise.setup="housing-fitted4"}
 
 
 my=mean(auctions$finalprice)
@@ -400,7 +450,7 @@ c(SST = SST, SSR = SSR, SSE = SSE)
 
 ---
 
-4. **Compute \(R^2\):**  
+4. **Compute \(R^2\):**
 
 \[
 R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}
@@ -416,15 +466,66 @@ R2
 
 ---
 
-## Scaling of Variables
+## 2.3 Your Turn: House Prices & Square Footage
 
-We’ll work with data on married couples in the U.S. (CTS Household Survey, 2003).  
-Our outcome is **family income**, and our predictor is **husband’s age**.  
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `sqrft` — house size (sq ft) |
+
+**Business Context:** A real estate company wants to know how much of the variation in house prices is explained by square footage. Use `hprice1` from the wooldridge package: `price` (house price in $1,000s) and `sqrft` (square footage).
+
+**Your Decision:** What share of the variation in house prices is explained by square footage alone?
+
+**Task:** Run the regression of `price` on `sqrft`, then compute SST, SSR, SSE, and R-squared.
+
+```{r biz_c4_2, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(price ~ sqrft, data = hprice1)
+summary(reg)
+
+# Step 2: Extract pieces
+yhat = reg$fitted.values
+e = reg$residuals
+y = hprice1$price
+my = mean(y)
+
+# Step 3: Compute sums of squares
+SST = sum((y - my)^2)
+SSR = sum((yhat - my)^2)
+SSE = sum(e^2)
+
+c(SST = SST, SSR = SSR, SSE = SSE)
+
+# Step 4: R-squared
+R2 = SSR / SST
+R2
+
+# Also verify: 1 - SSE/SST
+1 - SSE / SST
+
+# Interpretation:
+# R-squared shows the fraction of variation in house prices explained by
+# square footage alone. Square footage is a meaningful predictor of price,
+# but other factors (location, condition, lot size) also matter.
+```
+
+## 3.1 Scaling: Family Income & Husband's Age
+
+| | |
+|---|---|
+| **Data** | `married` (probstats4econ) |
+| **Y** | `famincome` — family income ($) |
+| **X** | `age_h` — husband's age (years) |
+
+We'll work with data on married couples in the U.S. (CTS Household Survey, 2003).
+Our outcome is **family income**, and our predictor is **husband's age**.
 
 ---
 
-#### Step 1: Regression with original units  
-Family income in **dollars**, husband’s age in **years**.  
+#### Step 1: Regression with original units
+Family income in **dollars**, husband's age in **years**.
 
 \[
 famincome_i = \beta_0 + \beta_1 \cdot age\_h_i + u_i
@@ -436,7 +537,7 @@ famincome_i = \beta_0 + \beta_1 \cdot age\_h_i + u_i
 summary(x)
 ```
 
-Visualize:  
+Visualize:
 
 ```{r married-plot1, exercise=TRUE}
 x=lm(famincome ~ age_h, data = married)
@@ -448,22 +549,22 @@ plot(married$age_h, married$famincome,
      pch = 16, col = "black")
 
 # add the fitted line or points
-lines(married$age_h, yhat, col = "red", lwd = 2) 
+lines(married$age_h, yhat, col = "red", lwd = 2)
 
 
 ```
 
 ---
 
-#### Step 2: Rescale income to **thousands of dollars**  
+#### Step 2: Rescale income to **thousands of dollars**
 
-Transformation:  
+Transformation:
 
 \[
 famincome\_thousands = \frac{famincome}{1000}
 \]
 
-New regression:  
+New regression:
 
 \[
 famincome\_thousands = \beta_0^\* + \beta_1^\* \cdot age\_h + u
@@ -483,15 +584,15 @@ ggplot(married, aes(x = age_h, y = famincome_thousands)) +
 
 ---
 
-#### Step 3: Rescale age to **months**  
+#### Step 3: Rescale age to **months**
 
-Transformation:  
+Transformation:
 
 \[
 age\_h\_months = age\_h \times 12
 \]
 
-New regression:  
+New regression:
 
 \[
 famincome = \gamma_0 + \gamma_1 \cdot age\_h\_months + u
@@ -515,26 +616,64 @@ lm(famincome_thousands ~ age_h_months, data = married)
 
 ---
 
-### Reflection  
+#### Reflection
 
 - Did R squared change?
 
-- no, because R squared is related to correlation - strength of the relationship between the variables. Rescaling variables does not change correlation. 
+- no, because R squared is related to correlation - strength of the relationship between the variables. Rescaling variables does not change correlation.
 
 ---
 
-## Variance of the OLS Estimators
+## 3.2 Your Turn: Rescaling Baseball Salaries
 
+| | |
+|---|---|
+| **Data** | `mlb1` (wooldridge) |
+| **Y** | `salary` — annual salary (thousands $) |
+| **X** | `years` — years in major leagues |
+
+**Business Context:** A sports analytics team has baseball salaries in $1,000s (`salary`) and wants to convert to actual dollars. How do the regression coefficients for `salary ~ years` change? Use `mlb1` from the wooldridge package: `salary` (annual salary in $1,000s) and `years` (years in the league).
+
+**Your Decision:** Does the scaling affect our conclusions about the relationship?
+
+**Task:** Rescale salary to actual dollars (`salary*1000`), re-run the regression of salary on years, and compare slope, intercept, R-squared, and t-statistic to the original.
+
+```{r biz_c4_3, exercise=TRUE}
+# Original regression (salary in thousands)
+reg_original = lm(salary ~ years, data = mlb1)
+summary(reg_original)
+
+# Rescaled regression (salary in actual dollars)
+mlb1$salary_dollars = mlb1$salary * 1000
+
+reg_rescaled = lm(salary_dollars ~ years, data = mlb1)
+summary(reg_rescaled)
+
+# Comparison:
+# - The intercept is multiplied by 1000 (salary went from thousands to dollars)
+# - The slope is multiplied by 1000 (each year's effect is now in dollars, not thousands)
+# - R-squared does NOT change (scaling does not affect correlation)
+# - t-statistic does NOT change (the ratio beta1/se(beta1) is invariant to scaling)
+# Conclusion: scaling does NOT affect our substantive conclusions.
+```
+
+## 4.1 Standard Errors: House Prices (manual computation)
+
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `lotarea` — lot area (sq ft) |
 
 \[
-S_{xx} = \sum_{i=1}^n (x_i - \bar{x})^2, 
-\quad 
+S_{xx} = \sum_{i=1}^n (x_i - \bar{x})^2,
+\quad
 \hat\sigma^2 = \frac{\text{SSE}}{n-2} = \frac{\sum_{i=1}^n (y_i - \hat{y}_i)^2}{n-2}
 \]
 
 \[
-\mathrm{Var}(\hat{\beta}_1) = \frac{\hat\sigma^2}{S_{xx}}, 
-\quad 
+\mathrm{Var}(\hat{\beta}_1) = \frac{\hat\sigma^2}{S_{xx}},
+\quad
 \mathrm{Var}(\hat{\beta}_0) = \hat\sigma^2 \left(\frac{1}{n} + \frac{\bar{x}^2}{S_{xx}}\right)
 \]
 
@@ -551,12 +690,12 @@ yhat = reg$fitted.values
 e    = y - yhat
 n    = length(y)
 
-# Step 2: compute Sxx 
+# Step 2: compute Sxx
 x    = houseprices$lotarea
 mx   = mean(x)
 Sxx  = sum((x - mx)^2)
 
-# Step 3: error variance estimator  
+# Step 3: error variance estimator
 SSE  = sum(e^2)
 sigma2_hat = SSE/(n-2)
 
@@ -569,7 +708,7 @@ se_beta1 = sqrt(var_beta1)
 se_beta1
 ```
 
-### Transformation of variables: Variance of the OLS Estimators
+## 4.2 Standard Errors: Effect of Rescaling Y
 
 
 ```{r variance4b, exercise=TRUE, exercise.setup="variance4"}
@@ -581,16 +720,69 @@ summary(reg2)
 #(it goes down by 1000 because both y and yhat are divided by 1000, so e is also divided by 1000, so SSE goes down by 1000^2, so sigma2_hat goes down by 1000^2, so se_beta1 goes down by 1000)
 ```
 
-
 ---
 
-## Hypothesis Testing
+## 4.3 Your Turn: Wage-Experience Standard Errors
 
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `exper` — years of work experience |
 
-We will use the **hrs dataset** on health expenditures in the US.  
+**Business Context:** The HR department is studying how work experience affects hourly wages for compensation benchmarking. Use `wage1` from the wooldridge package: `wage` (hourly wage in $) and `exper` (years of experience).
+
+**Your Decision:** How precisely can we estimate the return to an additional year of experience?
+
+**Task:** Compute Sxx, sigma-squared, Var(beta1), and SE(beta1) manually. Verify with `summary()`.
+
+```{r biz_c4_4, exercise=TRUE}
+# Step 0: fit the regression
+reg = lm(wage ~ exper, data = wage1)
+summary(reg)
+
+# Step 1: core pieces
+y    = wage1$wage
+yhat = reg$fitted.values
+e    = y - yhat
+n    = length(y)
+
+# Step 2: compute Sxx
+x    = wage1$exper
+mx   = mean(x)
+Sxx  = sum((x - mx)^2)
+Sxx
+
+# Step 3: error variance estimator
+SSE  = sum(e^2)
+sigma2_hat = SSE / (n - 2)
+sigma2_hat
+
+# Step 4: variance of beta1
+var_beta1 = sigma2_hat / Sxx
+var_beta1
+
+# Step 5: standard error of beta1
+se_beta1 = sqrt(var_beta1)
+se_beta1
+
+# Verify: this should match the Std. Error for exper in summary(reg)
+# Interpretation: The SE tells us how precisely we estimate the effect
+# of one more year of experience on hourly wages.
+```
+
+## 5.1 Hypothesis Test: Do Men Spend Less on Healthcare?
+
+| | |
+|---|---|
+| **Data** | `hrs` (probstats4econ) |
+| **Y** | `medical_costs` — annual health expenditure ($) |
+| **X** | `male` — 1 if male, 0 if female |
+
+We will use the **hrs dataset** on health expenditures in the US.
 Our question: **Do men spend less on health care than women?**
 
-Variables: 
+Variables:
 - medical_costs -> annual health care expenditures (in dollars) of person i
 - male -> 1 if is male, 0 if female
 
@@ -616,7 +808,7 @@ se_beta0=72.14
 
 4. Find the t-statistic and p-value
 
-```{r p-value, exercise=TRUE}
+```{r p-value, exercise=TRUE, exercise.setup="reg_hrs"}
 t_stat= (beta1-0)/se_beta1
 t_stat
 
@@ -628,22 +820,69 @@ p_value
 
 5. Interpret
 
-#we reject that there is no difference in medical costs - seems like men are spending less. 
+#we reject that there is no difference in medical costs - seems like men are spending less.
 
 ---
 
-## Confidence interval for coefficient
+## 5.2 Your Turn: Gender Pay Gap Audit
 
-In the cps dataset we have:  
-- **Earnings**: `earnwk` (weekly earnings, in dollars)  
-- **Education**: `educ` (highest education level attained, in years)  
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `female` — 1 if female, 0 if male |
 
-We want to study (1) the impact of an additional year of education on weekly earnings. We want to find the 99% confidence intervals for these parameters. 
+**Business Context:** HR is auditing whether there is a gender pay gap. Use `wage1` from the wooldridge package: `wage` (hourly wage in $) and `female` (1 if female, 0 if male). Test if women earn less than men.
 
-### 1. Write down the regression by hand
+**Your Decision:** Should the company launch a pay equity review?
+
+**Hypotheses:**
+H0: beta1 = 0 (no difference in wages by gender)
+H1: beta1 < 0 (women earn less than men)
+
+```{r biz_c4_5, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(wage ~ female, data = wage1)
+summary(reg)
+
+# Step 2: Extract coefficients
+beta1 = coef(reg)["female"]
+se_beta1 = summary(reg)$coefficients["female", "Std. Error"]
+
+# Step 3: Compute t-statistic (one-sided test: H1: beta1 < 0)
+t_stat = beta1 / se_beta1
+t_stat
+
+# Step 4: p-value for one-sided test (left tail)
+n = nrow(wage1)
+p_value = pt(t_stat, df = n - 2)
+p_value
+
+# Interpretation:
+# The coefficient on female is negative and highly significant.
+# Women earn significantly less per hour than men.
+# The p-value is extremely small, so we reject H0.
+# The company should absolutely launch a pay equity review.
+```
+
+## 6.1 Confidence Interval: Education & Weekly Earnings
+
+| | |
+|---|---|
+| **Data** | `cps` (probstats4econ) |
+| **Y** | `earnwk` — weekly earnings ($) |
+| **X** | `educ` — years of education |
+
+In the cps dataset we have:
+- **Earnings**: `earnwk` (weekly earnings, in dollars)
+- **Education**: `educ` (highest education level attained, in years)
+
+We want to study (1) the impact of an additional year of education on weekly earnings. We want to find the 99% confidence intervals for these parameters.
+
+#### Step 1: Write down the regression by hand
 
 
-### 2. Estimate coefficients and standard errors
+#### Step 2: Estimate coefficients and standard errors
 
 ```{r reg_hrs2, exercise=TRUE}
 reg1=lm(earnwk ~ educ, data = cps)
@@ -657,10 +896,10 @@ se_beta0=72.713
 ```
 
 
-### 3. Find the 99% Critical values
+#### Step 3: Find the 99% Critical values
 
 
-```{r reg_hrs3, exercise=TRUE}
+```{r reg_hrs3, exercise=TRUE, exercise.setup="reg_hrs2"}
 alpha=0.01
 t_critical=qt(1-alpha/2, df=length(cps$earnwk)-2)
 t_critical
@@ -668,35 +907,90 @@ t_critical
 
 ```
 
-### 4. Construct the interval
+#### Step 4: Construct the interval
 
 
-```{r reg_hrs4, exercise=TRUE}
+```{r reg_hrs4, exercise=TRUE, exercise.setup="reg_hrs2"}
+# Re-define needed values from previous steps
+beta1=101.550
+se_beta1=5.575
+alpha=0.01
+t_critical=qt(1-alpha/2, df=length(cps$earnwk)-2)
+
 #99% CI for beta1
 lower_bound_beta1 = beta1 - t_critical * se_beta1
 upper_bound_beta1 = beta1 + t_critical * se_beta1
 
 c(lower_bound_beta1, upper_bound_beta1)
 ```
-### 5. Interpretation
+#### Step 5: Interpretation
 
 We are 99% confident that an additional year of education increases weekly earnings by between 87.2 and 115.9 dollars.
 
 ---
 
-## Predict average healthcare expenditure for people who are 55 years old
+## 6.2 Your Turn: Value of Job Tenure
 
-Confidence interval for the average prediction (average at $x_0$):  
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `tenure` — years with current employer |
 
-$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
-\hat{\sigma} \sqrt{ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+**Business Context:** Management wants to know how much each additional year of tenure adds to wages, to design retention bonuses. Use `wage1` from the wooldridge package: `wage` (hourly wage in $) and `tenure` (years with current employer).
 
-We use the **hrs dataset**, which contains data on healthcare utilization and expenditures for older adults in the U.S.  
+**Your Decision:** How large should retention bonuses be to match the wage premium of tenure?
+
+**Task:** Compute a 95% confidence interval for the tenure coefficient.
+
+```{r biz_c4_6, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(wage ~ tenure, data = wage1)
+summary(reg)
+
+# Step 2: Extract coefficient and SE
+beta1 = coef(reg)["tenure"]
+se_beta1 = summary(reg)$coefficients["tenure", "Std. Error"]
+
+# Step 3: Critical value for 95% CI
+n = nrow(wage1)
+alpha = 0.05
+t_critical = qt(1 - alpha/2, df = n - 2)
+t_critical
+
+# Step 4: Construct the interval manually
+lower = beta1 - t_critical * se_beta1
+upper = beta1 + t_critical * se_beta1
+c(lower, upper)
+
+# Step 5: Verify with confint()
+confint(reg, "tenure", level = 0.95)
+
+# Interpretation:
+# We are 95% confident that each additional year of tenure adds between
+# [lower] and [upper] dollars to the hourly wage.
+# Management can use this range to calibrate retention bonuses.
+```
+
+## 7.1 CI for Mean: Healthcare Costs at Age 55
+
+| | |
+|---|---|
+| **Data** | `hrs` (probstats4econ) |
+| **Y** | `medical_costs` — annual health expenditure ($) |
+| **X** | `age` — age in years |
+
+Confidence interval for the average prediction (average at $x_0$):
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot
+\hat{\sigma} \sqrt{ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$
+
+We use the **hrs dataset**, which contains data on healthcare utilization and expenditures for older adults in the U.S.
 We want to predict the **average medical costs (`medical_costs`)** for individuals who are **55 years old (`age = 55`)**.
 
-### 1. Write down the regression by hand
+#### Step 1: Write down the regression by hand
 
-### 2. Estimate the regression
+#### Step 2: Estimate the regression
 
 ```{r reg_hrs43423, exercise=TRUE}
 reg=lm(medical_costs ~ age, data = hrs)
@@ -709,7 +1003,7 @@ se_beta0=402.993
 
 ```
 
-### 3. Make a prediction
+#### Step 3: Make a prediction
 
 ```{r reg_hrs424, exercise=TRUE}
 x0=55
@@ -718,10 +1012,10 @@ yhat=-710.491 + 35.894*55
 ```
 
 
-### 4. Build a confidence interval around the prediction
+#### Step 4: Build a confidence interval around the prediction
 
 ```{r reg_hrs412, exercise=TRUE}
-#hint: to get the vector of residuals you can write: residuals(model)   
+#hint: to get the vector of residuals you can write: residuals(model)
 reg=lm(medical_costs ~ age, data = hrs)
 e=residuals(reg)
 n=length(hrs$medical_costs)
@@ -753,12 +1047,76 @@ c(lower_bound, upper_bound)
 
 ---
 
-## Predict price of a house with 3 bathrooms
+## 7.2 Your Turn: Predict Average Rent for a City
 
-Confidence interval for the new prediction ($x_0$):  
+| | |
+|---|---|
+| **Data** | `rental` (wooldridge) |
+| **Y** | `rent` — average monthly rent ($) |
+| **X** | `avginc` — average income in city ($) |
 
-$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot 
-\hat{\sigma} \sqrt{1+ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$  
+**Business Context:** A property management company is entering a new market where average household income is $10,000. Use `rental` from the wooldridge package: `rent` (average monthly rent) and `avginc` (average income in the city).
+
+**Your Decision:** What rental prices should we target in this market?
+
+**Task:** Predict the average rent when `avginc = 10` and build a 95% confidence interval for the mean response.
+
+```{r biz_c4_7, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(rent ~ avginc, data = rental)
+summary(reg)
+
+# Step 2: Extract pieces for manual computation
+e = residuals(reg)
+n = nrow(rental)
+x = rental$avginc
+mx = mean(x)
+Sxx = sum((x - mx)^2)
+
+SSE = sum(e^2)
+sigma2_hat = SSE / (n - 2)
+sigma_hat = sqrt(sigma2_hat)
+
+# Step 3: Prediction at avginc = 10
+x0 = 10
+beta0 = coef(reg)[1]
+beta1 = coef(reg)[2]
+yhat = beta0 + beta1 * x0
+yhat
+
+# Step 4: 95% CI for the mean response (manual)
+alpha = 0.05
+t_critical = qt(1 - alpha/2, df = n - 2)
+
+margin_of_error = t_critical * sigma_hat * sqrt(1/n + (x0 - mx)^2 / Sxx)
+
+lower = yhat - margin_of_error
+upper = yhat + margin_of_error
+c(lower, upper)
+
+# Step 5: Verify with predict()
+newdata = data.frame(avginc = 10)
+predict(reg, newdata, interval = "confidence", level = 0.95)
+
+# Interpretation:
+# We are 95% confident that the average rent in cities with avginc = $10,000
+# falls between [lower] and [upper]. The company should target this range.
+```
+
+---
+
+## 7.3 PI for New Obs: House Price with 3 Bathrooms
+
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `fullbath` — number of full bathrooms |
+
+Confidence interval for the new prediction ($x_0$):
+
+$$\hat{y}(x_0) \;\pm\; t_{\alpha/2,\,n-2} \cdot
+\hat{\sigma} \sqrt{1+ \frac{1}{n} \;+\; \frac{(x_0 - \bar{x})^2}{S_{xx}} }$$
 
 
 
@@ -766,9 +1124,9 @@ We use the **houseprices dataset**, which contains information on housing transa
 We want to predict the **sale price (`saleprice`)** of a house that has **3 bathrooms (`fullbath = 3`)**.
 
 
-### 1. Write down the regression by hand
+#### Step 1: Write down the regression by hand
 
-### 2. Estimate the regression
+#### Step 2: Estimate the regression
 
 ```{r reg_hrs434423, exercise=TRUE}
 reg=lm(saleprice ~ fullbath, data = houseprices)
@@ -777,7 +1135,7 @@ summary(reg)
 
 ```
 
-### 3. Make a prediction
+#### Step 3: Make a prediction
 
 ```{r reg_hrs4424, exercise=TRUE}
 x0=3
@@ -786,7 +1144,7 @@ yhat=48106 + 86359*3
 ```
 
 
-### 4. Build a confidence interval around the prediction
+#### Step 4: Build a confidence interval around the prediction
 
 ```{r reg_hrs4412, exercise=TRUE}
 #hint: to get sigma: summary(model)$sigma
@@ -815,13 +1173,74 @@ upper_bound = yhat + margin_of_error
 c(lower_bound, upper_bound)
 
 
-  
-```
 
+```
 
 ---
 
-## Linearity Diagnostic
+## 7.4 Your Turn: Price a Specific House
+
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `sqrft` — house size (sq ft) |
+
+**Business Context:** A real estate agent needs to price a specific 2,000 sq ft house. Use `hprice1` from the wooldridge package: `price` (house price in $1,000s) and `sqrft` (square footage).
+
+**Your Decision:** What price range should we list this house at?
+
+**Task:** Predict the price for a 2,000 sq ft house and build a 95% prediction interval.
+
+```{r biz_c4_8, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(price ~ sqrft, data = hprice1)
+summary(reg)
+
+# Step 2: Extract pieces for manual computation
+e = residuals(reg)
+n = nrow(hprice1)
+x = hprice1$sqrft
+mx = mean(x)
+Sxx = sum((x - mx)^2)
+
+sigma = summary(reg)$sigma
+
+# Step 3: Prediction at sqrft = 2000
+x0 = 2000
+beta0 = coef(reg)[1]
+beta1 = coef(reg)[2]
+yhat = beta0 + beta1 * x0
+yhat
+
+# Step 4: 95% Prediction Interval (manual)
+alpha = 0.05
+t_critical = qt(1 - alpha/2, df = n - 2)
+
+# NOTE: prediction interval has the extra "1 +" under the square root
+margin_of_error = t_critical * sigma * sqrt(1 + 1/n + (x0 - mx)^2 / Sxx)
+
+lower = yhat - margin_of_error
+upper = yhat + margin_of_error
+c(lower, upper)
+
+# Step 5: Verify with predict()
+newdata = data.frame(sqrft = 2000)
+predict(reg, newdata, interval = "prediction", level = 0.95)
+
+# Interpretation:
+# We are 95% confident that THIS PARTICULAR house of 2000 sq ft will sell
+# for between [lower] and [upper] thousand dollars.
+# The PI is wider than a CI because it accounts for individual-level uncertainty.
+```
+
+## 8.1 Linearity Check: House Prices vs Lot Area
+
+| | |
+|---|---|
+| **Data** | `houseprices` (probstats4econ) |
+| **Y** | `saleprice` — sale price ($) |
+| **X** | `lotarea` — lot area (sq ft) |
 
 We want to check whether the assumption of linearity is appropriate when modeling the relationship between house prices and lot area.
 
@@ -847,13 +1266,59 @@ residuals_linear <- r1$residuals
 plot(fitted_values_linear, residuals_linear)
 ```
 
+---
+
+## 8.2 Your Turn: Is the Wage-Experience Relationship Linear?
+
+| | |
+|---|---|
+| **Data** | `wage1` (wooldridge) |
+| **Y** | `wage` — hourly wage ($) |
+| **X** | `exper` — years of experience |
+
+**Business Context:** Check if the relationship between wages and experience is linear. Use `wage1` from the wooldridge package: `wage` (hourly wage in $) and `exper` (years of experience).
+
+**Your Decision:** Should we use a linear model or consider a nonlinear specification?
+
+**Task:** Make a scatter plot of `wage` vs `exper` from `wage1`, fit a linear regression, and examine the residual plot.
+
+```{r biz_c4_9, exercise=TRUE}
+# Step 1: Scatter plot
+plot(wage1$exper, wage1$wage,
+     xlab = "Years of Experience", ylab = "Hourly Wage ($)",
+     main = "Wage vs Experience",
+     pch = 16, col = "steelblue")
+
+# Step 2: Fit linear regression
+reg = lm(wage ~ exper, data = wage1)
+abline(reg, col = "red", lwd = 2)
+
+# Step 3: Residual plot
+plot(reg$fitted.values, reg$residuals,
+     xlab = "Fitted Values", ylab = "Residuals",
+     main = "Residual Plot: wage ~ exper",
+     pch = 16, col = "steelblue")
+abline(h = 0, col = "red", lty = 2)
+
+# Interpretation:
+# The scatter plot may show that wages increase with experience but at a
+# decreasing rate (diminishing returns). The residual plot may show curvature,
+# suggesting the linear model is NOT fully appropriate.
+# A quadratic term (exper + exper^2) or log(wage) may be more suitable.
+```
 
 ---
 
-## Homoskedasticity
+## 8.3 Homoskedasticity: Mexican Sex Ratios
+
+| | |
+|---|---|
+| **Data** | `sexratios` (embedded in setup) |
+| **Y** | `share_male` — proportion male |
+| **X** | `total` — total population |
 
 The dataset sexratios reports the percent of men (share_male) in a cohort 2000-2004 in a sample of Mexican municipalities.
-The variable total gives the total population in each municipality. 
+The variable total gives the total population in each municipality.
 
 Suppose we regress percent of men on total population. Would the variance be constant?
 
@@ -880,7 +1345,55 @@ plot(fitted_values_linear, residuals_linear)
 
 ---
 
-## Normality Histogram
+## 8.4 Your Turn: Does House Price Variability Depend on Size?
+
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `sqrft` — house size (sq ft) |
+
+**Business Context:** Does the variability of house prices depend on house size? Check residuals from `price ~ sqrft`. Use `hprice1` from the wooldridge package: `price` (house price in $1,000s) and `sqrft` (square footage).
+
+**Your Decision:** Can we trust standard errors from a simple OLS regression of price on square footage?
+
+**Task:** Run the regression `price ~ sqrft` from `hprice1` and plot residuals vs fitted values. Interpret the pattern.
+
+```{r biz_c4_10, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(price ~ sqrft, data = hprice1)
+summary(reg)
+
+# Step 2: Residual plot
+plot(reg$fitted.values, reg$residuals,
+     xlab = "Fitted Values", ylab = "Residuals",
+     main = "Checking Homoskedasticity: price ~ sqrft",
+     pch = 16, col = "steelblue")
+abline(h = 0, col = "red", lty = 2)
+
+# Step 3: Also plot residuals vs the predictor directly
+plot(hprice1$sqrft, reg$residuals,
+     xlab = "Square Footage", ylab = "Residuals",
+     main = "Residuals vs Square Footage",
+     pch = 16, col = "steelblue")
+abline(h = 0, col = "red", lty = 2)
+
+# Interpretation:
+# The residual spread increases with square footage (fan shape).
+# This is HETEROSKEDASTICITY -- larger houses have more variable prices.
+# Standard OLS standard errors are NOT reliable here.
+# We should use robust (heteroskedasticity-consistent) standard errors.
+```
+
+---
+
+## 8.5 Normality Check: Mutual Fund Returns
+
+| | |
+|---|---|
+| **Data** | `mutualfunds` (probstats4econ) |
+| **Y** | `return_5yr` — 5-year return (%) |
+| **X** | `expense_ratio` — annual fee (% of assets) |
 
 mutualfunds data is providing returns of 208 mutual funds in the US. We will regress 5 year return (return_5yr) on expense ratio (expense_ratio). The expense ratio of a mutual fund is the annual fee that the fund charges investors to cover its operating costs. It is expressed as share of total assets under management
 
@@ -938,10 +1451,50 @@ jarque.bera.test(resid)
 
 ```
 
-
 ---
 
-## ANOVA: exercise 1
+## 8.6 Your Turn: Are House Price Residuals Normal?
+
+| | |
+|---|---|
+| **Data** | `hprice1` (wooldridge) |
+| **Y** | `price` — house price (thousands $) |
+| **X** | `lotsize` — lot size (sq ft) |
+
+**Business Context:** Check normality of residuals from `price ~ lotsize` using `hprice1` from the wooldridge package: `price` (house price in $1,000s) and `lotsize` (lot size in sq ft).
+
+**Your Decision:** Can we rely on t-based confidence intervals for house price predictions?
+
+**Task:** Regress `price` on `lotsize` from `hprice1`, then make a histogram, QQ plot, and run the Jarque-Bera test on the residuals.
+
+```{r biz_c4_11, exercise=TRUE}
+# Step 1: Run the regression
+reg = lm(price ~ lotsize, data = hprice1)
+summary(reg)
+
+resid_price = reg$residuals
+
+# Step 2: Histogram of residuals
+hist(resid_price, breaks = 30, main = "Histogram of Residuals: price ~ lotsize",
+     xlab = "Residuals", col = "lightblue")
+
+# Step 3: QQ plot
+qqnorm(scale(resid_price), main = "QQ Plot of Residuals")
+qqline(scale(resid_price), col = "red", lwd = 2)
+
+# Step 4: Jarque-Bera test
+library(tseries)
+jarque.bera.test(resid_price)
+
+# Interpretation:
+# The histogram is likely right-skewed (house prices are bounded below by 0).
+# The QQ plot shows departure from the line in the tails.
+# The JB test will likely reject normality (small p-value).
+# With a small sample (88 obs), the normality violation matters more.
+# Consider log(price) for a better-behaved residual distribution.
+```
+
+## 9.1 ANOVA: Influencer Marketing (Conceptual)
 
 Suppose you test whether product placement with more popular influencers increases your website visits more. From the ANOVA table of a simple linear regression model fitted with 15 observations, we recovered the sums of squares of the residuals and the total sum of squares; $SSE = 52$ and $SST = 152$. Using the F-test statistic, validate the significance of the regression at the 5% level.
 
@@ -962,7 +1515,13 @@ p_value
 
 ---
 
-## ANOVA: exercise 2
+## 9.2 ANOVA: Mutual Fund Age & Returns
+
+| | |
+|---|---|
+| **Data** | `mutualfunds` (probstats4econ) |
+| **Y** | `return_5yr` — 5-year return (%) |
+| **X** | `fund_age` — age of fund (years) |
 
 mutualfunds data is providing returns of 208 mutual funds in the US. Using ANOVA, test if age of the fund (fund_age) can explain it's 5 years return rate (return_5yr). Find SST.
 
@@ -972,4 +1531,38 @@ m1 <- lm(return_5yr ~ fund_age, data = mutualfunds)
 anova(m1)
 
 
+```
+
+---
+
+## 9.3 Your Turn: Do Years in the League Explain Baseball Salaries?
+
+| | |
+|---|---|
+| **Data** | `mlb1` (wooldridge) |
+| **Y** | `salary` — annual salary (thousands $) |
+| **X** | `years` — years in major leagues |
+
+**Business Context:** Does years in the league explain baseball player salaries? Use `mlb1` from the wooldridge package: `salary` (annual salary in $1,000s) and `years` (years in the league). Run `anova()` to formally test.
+
+**Your Decision:** Is years in the league a useful predictor of player salary, or should the team look at other factors?
+
+**Task:** Run `anova(lm(salary ~ years, data = mlb1))` and interpret the F-statistic and p-value.
+
+```{r biz_c4_12, exercise=TRUE}
+# Step 1: Run the regression and ANOVA
+reg = lm(salary ~ years, data = mlb1)
+anova(reg)
+
+# Step 2: Also look at summary for context
+summary(reg)
+
+# Interpretation:
+# The ANOVA F-statistic tests H0: beta1 = 0 (years has no effect on salary).
+# Look at the p-value:
+# - If p < 0.05, years in the league is a statistically significant predictor.
+# - However, check R-squared: even if significant, years may explain only
+#   a modest fraction of the variation in baseball salaries.
+# The team should also consider batting average, home runs, and other
+# performance metrics beyond years alone to understand player compensation.
 ```

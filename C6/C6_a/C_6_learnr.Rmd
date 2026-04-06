@@ -3,6 +3,9 @@ title: "LearnR Tutorial: Estimators"
 author: "Business Forecasting"
 output: learnr::tutorial
 runtime: shiny_prerendered
+tutorial:
+  id: "itam-bf-C6-estimators"
+  version: 1.0
 ---
  
 
@@ -711,3 +714,4 @@ Now find the predicted mortality for the week 52 of 2025 (Among 85+ of both sexe
 new_data=data.frame(Week = yearweek("2025 W52"))
 
 ```
+

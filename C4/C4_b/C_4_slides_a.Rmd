@@ -216,7 +216,7 @@ grid.arrange(gg1, gg2, ncol = 2)
 
 ```
 
-<div class="learnr-ref">LearnR: Linearity Diagnostic</div>
+<div class="learnr-ref">LearnR: 8.1–8.2 Linearity Check (House Prices, CEO Pay)</div>
 
 ---
 ### Constant variance: Heteroskedastic Example
@@ -371,7 +371,7 @@ gg2
 ```
 
 
-<div class="learnr-ref">LearnR: Homoskedasticity</div>
+<div class="learnr-ref">LearnR: 8.3–8.4 Homoskedasticity (Sex Ratios, House Prices)</div>
 
 ---
 ### Correlation of error terms
@@ -500,7 +500,7 @@ grid.arrange(
 We can start by looking at histograms
 - Some are obvious
 
-<div class="learnr-ref">LearnR: Normality Histogram, QQ Plot, Jarque-Bera Test</div>
+<div class="learnr-ref">LearnR: 8.5–8.6 Normality Check (Mutual Funds, House Prices)</div>
 
 ```{r, warning=FALSE, fig.height=4, out.width='100%', message=FALSE}
 # Function to generate data with specified residual distribution and plot

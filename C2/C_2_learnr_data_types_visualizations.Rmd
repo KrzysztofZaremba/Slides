@@ -3,6 +3,9 @@ title: "LearnR Tutorial: Data Types and Visualizations"
 author: "Business Forecasting"
 output: learnr::tutorial
 runtime: shiny_prerendered
+tutorial:
+  id: "itam-bf-C2-data-viz"
+  version: 1.0
 ---
 
 ```{r setup, include=FALSE}
@@ -303,3 +306,4 @@ output$hist_covariance <- renderPlot({
 ```{r render_hist_covariance, context="render", echo=FALSE}
 plotOutput("hist_covariance")
 ```
+

@@ -379,7 +379,7 @@ Intuition:
 
 $$p-value=P(F_{1,n-2} \geq F_{test})$$
 
-<div class="learnr-ref">LearnR: ANOVA exercises 1 & 2</div>
+<div class="learnr-ref">LearnR: 9.1–9.3 ANOVA (Influencer Marketing, Mutual Funds, Baseball Salaries)</div>
 
 ---
 ### F-test: Full vs Restricted Model
