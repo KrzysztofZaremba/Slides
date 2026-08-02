@@ -1,0 +1,107 @@
+/* ============================================================
+   badges.css — Fall 2026 slide badge + pace-tag system
+   Add to each deck's YAML:  css: [xaringan-themer.css, my-css.css, badges.css]
+   Colors reuse the existing course palette (see my-css.css).
+   ============================================================ */
+
+/* ---- Pace tags: mark each concept's role for the exam ---- */
+/* Inline pill you place at the start of a slide or bullet.    */
+.tag {
+  display: inline-block;
+  font-size: 0.62em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.12em 0.6em;
+  border-radius: 0.8em;
+  vertical-align: middle;
+  color: #ffffff !important;
+  margin-right: 0.4em;
+}
+/* CORE: tested directly, must master */
+.tag-core   { background-color: #54778B; }   /* blue  */
+/* REVIEW: prerequisite, skim; self-study via learnr if rusty */
+.tag-review { background-color: #8AA19E; }   /* grey  */
+/* DEEP: beyond exam scope, for the curious */
+.tag-deep   { background-color: #6A5ACD; }   /* purple */
+
+/* ---- Exam-question spotlight badge ----
+   Use above a worked past-exam example. Pass the exam name as text.
+   e.g. <span class="exam-badge">EXAM QUESTION — Fall 2025 M1</span>      */
+.exam-badge {
+  display: inline-block;
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.2em 0.7em;
+  border-radius: 0.3em;
+  color: #ffffff !important;
+  background-color: #fb6107;                 /* red-orange */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Box to wrap the worked exam question so it stands out */
+.exam-box {
+  border-left: 5px solid #fb6107;
+  background-color: #fff5ef;
+  padding: 0.6em 1em;
+  margin: 0.4em 0;
+  border-radius: 0 0.3em 0.3em 0;
+}
+
+/* "Try this next" referral note at the close of a deck */
+.exam-referral {
+  border-left: 5px solid #54778B;
+  background-color: #eef3f6;
+  padding: 0.5em 1em;
+  margin: 0.4em 0;
+  border-radius: 0 0.3em 0.3em 0;
+  font-size: 0.9em;
+}
+
+/* ---- learnr moment marker: an in-lecture hands-on break ---- */
+.learnr-badge {
+  display: inline-block;
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.2em 0.7em;
+  border-radius: 0.3em;
+  color: #ffffff !important;
+  background-color: #44C1C4;                 /* turquoise */
+}
+.learnr-box {
+  border-left: 5px solid #44C1C4;
+  background-color: #ecfafa;
+  padding: 0.6em 1em;
+  margin: 0.4em 0;
+  border-radius: 0 0.3em 0.3em 0;
+}
+
+/* Compact inline "practice this now in learnr" note, placed on a teaching slide
+   right after the concept it practices. Keep to one line so it doesn't overflow. */
+.learnr-note {
+  display: block;
+  border-left: 4px solid #44C1C4;
+  background-color: #ecfafa;
+  padding: 0.25em 0.7em;
+  margin: 0.3em 0 0 0;
+  border-radius: 0 0.25em 0.25em 0;
+  font-size: 0.72em;
+}
+.learnr-note::before {
+  content: "▶ learnr  ";
+  font-weight: 700;
+  color: #2a9d9f;
+}
+
+/* ---- Business-hook framing box for the opening decision problem ---- */
+.biz-hook {
+  border-left: 5px solid #D8BD44;
+  background-color: #fdfaef;
+  padding: 0.6em 1em;
+  margin: 0.4em 0;
+  border-radius: 0 0.3em 0.3em 0;
+}

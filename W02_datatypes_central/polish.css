@@ -1,0 +1,53 @@
+/* polish.css — shared visual polish for all Fall 2026 decks
+   Layered on top of xaringan-themer.css. Overflow-neutral: does NOT
+   change the base slide font-size or line-height. */
+
+/* Headings — one consistent style everywhere */
+.remark-slide-content h1,
+.remark-slide-content h2,
+.remark-slide-content h3 {
+  color: #3b3a6b;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 0.15em;
+  margin-bottom: 0.45em;
+}
+.remark-slide-content h1 { font-size: 1.75rem; }
+.remark-slide-content h2 { font-size: 1.38rem; }
+.remark-slide-content h3 { font-size: 1.15rem; }
+
+/* A touch more horizontal room, unchanged vertical rhythm */
+.remark-slide-content { padding: 0.9em 2.4em 1.0em 2.4em; }
+.remark-slide-content li { margin-bottom: 0.12em; }
+
+/* Section-divider (inverse) slides — clean, branded */
+.inverse { background-color: #3b3a6b; background-image: none; }
+.inverse h1, .inverse h2, .inverse h3 { color: #ffffff; }
+
+/* Tables — tidy, striped, branded header */
+.remark-slide-content table { border-collapse: collapse; margin: 0.3em auto; }
+.remark-slide-content thead th {
+  background: #3b3a6b; color: #fff; font-weight: 600;
+  padding: 5px 12px; border: none;
+}
+.remark-slide-content tbody td { padding: 4px 12px; border-bottom: 1px solid #e7e6f0; }
+.remark-slide-content tbody tr:nth-child(even) td { background: #f6f5fb; }
+
+/* Code — subtle card look, consistent mono */
+.remark-code { border-radius: 6px; }
+.remark-inline-code { color: #b5179e; background: #f4f3fb; padding: 0 4px; border-radius: 4px; }
+
+/* Links — branded, understated */
+.remark-slide-content a { color: #2563d6; text-decoration: none;
+  border-bottom: 1px solid rgba(37,99,214,0.35); }
+.remark-slide-content a:hover { border-bottom-color: #2563d6; }
+
+/* Slide numbers — quiet */
+.remark-slide-number { opacity: 0.4; font-size: 0.7em; }
+
+/* Images never spill */
+.remark-slide-content img { max-width: 100%; }
+
+/* Two-column helpers: consistent gutter */
+.pull-left { width: 47%; }
+.pull-right { width: 47%; }
