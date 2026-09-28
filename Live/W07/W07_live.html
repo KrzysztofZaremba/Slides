@@ -272,9 +272,9 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4NWIiLCJleDEwYiJd
 eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4NWIiLCJleDEwYiJdLCJwZXJzaXN0Ijp0cnVlLCJzZXR1cCI6dHJ1ZX0sImNvZGUiOiJsb2FkKFwiRGF0YS9yZW50cy5SZGFcIikifQ==
 </script>
 </div>
-<div class="cell" data-setup="true" data-exercise="ex11s">
-<script type="exercise-setup-ex11s-contents">
-eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MTFzIl0sInBlcnNpc3QiOnRydWUsInNldHVwIjp0cnVlfSwiY29kZSI6ImxvYWQoXCJEYXRhL3N0b3Jlcy5SZGFcIikifQ==
+<div class="cell" data-setup="true" data-exercise="ex11h">
+<script type="exercise-setup-ex11h-contents">
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MTFoIl0sInBlcnNpc3QiOnRydWUsInNldHVwIjp0cnVlfSwiY29kZSI6ImxvYWQoXCJEYXRhL2hpcmVzLlJkYVwiKSJ9
 </script>
 </div>
 </section>
@@ -1303,7 +1303,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMGIiLCJwZXJzaXN0
 <section>
 <section id="changing-the-units" class="title-slide slide level1 center" data-background-color="#23395d">
 <h1>7 · Changing the units</h1>
-<p>Your client reports in thousands. A store owner wants profit, not sales. Does the answer change?</p>
+<p>Your client reports in thousands. Finance wants yearly cost, not monthly salary. Does the answer change?</p>
 </section>
 <section id="the-problem" class="slide level2">
 <h2>The problem</h2>
@@ -1476,50 +1476,49 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMCIsInBlcnNpc3Qi
 <p>The slope is 0.7236 — exactly <span class="math inline">\(723.55 / 1000\)</span>. Same relationship, different units. The <span class="math inline">\(R^2\)</span> does not move at all.</p>
 </div>
 </section>
-<section id="exercise-13-from-sales-to-profit" class="slide level2 scrollable">
-<h2>🖊️ Exercise 13 — From sales to profit</h2>
-<p>A franchise owner runs 80 convenience stores. The data frame <code>stores</code> has:</p>
+<section id="exercise-13-what-does-a-hire-really-cost" class="slide level2 scrollable">
+<h2>🖊️ Exercise 13 — What does a hire really cost?</h2>
+<p>A tech company in Guadalajara is planning next year’s hiring budget. The data frame <code>hires</code> has its 120 engineers:</p>
 <ul>
-<li><code>stores$customers</code> — average customers per day</li>
-<li><code>stores$sales</code> — monthly sales, in pesos</li>
+<li><code>hires$experience</code> — years of experience</li>
+<li><code>hires$salary</code> — monthly gross salary, in pesos</li>
 </ul>
-<p>She does not care about sales, she cares about profit. Each store keeps 25% of its sales as margin and pays 150,000 pesos a month in rent and wages:</p>
-<p><span class="math display">\[\text{profit} = 0.25 \times \text{sales} - 150{,}000\]</span></p>
+<p>Finance does not budget in monthly salary. They budget the first-year cost of a hire: 12 months of salary, plus 35% on top for IMSS, aguinaldo and benefits, plus 25,000 pesos once for recruiting and a laptop:</p>
+<p><span class="math display">\[\text{cost} = 12 \times 1.35 \times \text{salary} + 25{,}000 = 16.2 \times \text{salary} + 25{,}000\]</span></p>
 <ol type="1">
-<li>Regress <code>stores$sales</code> on <code>stores$customers</code>.</li>
-<li>Use the rescaling rules to predict the slope and the intercept of profit on customers. Do this before you run anything.</li>
-<li>Build <code>stores$profit</code>, regress it on <code>stores$customers</code>, and check your prediction.</li>
-<li>How much more monthly profit does one extra customer a day bring?</li>
+<li>Regress <code>hires$salary</code> on <code>hires$experience</code>. What do the slope and the intercept say?</li>
+<li>Use the rescaling rules to predict the slope and the intercept of cost on experience. Do this before you run anything.</li>
+<li>Build <code>hires$cost</code>, regress it on <code>hires$experience</code>, and check your prediction.</li>
+<li>How much does one extra year of experience add to the first-year cost of a hire?</li>
 </ol>
-<div class="cell" data-exercise="ex11s">
+<div class="cell" data-exercise="ex11h">
 <div>
 <div id="webr-18" class="exercise-cell">
 
 </div>
 <script type="webr-18-contents">
-eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMXMiLCJwZXJzaXN0Ijp0cnVlfSwiY29kZSI6IiJ9
+eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMWgiLCJwZXJzaXN0Ijp0cnVlfSwiY29kZSI6IiJ9
 </script>
 </div>
 </div>
-<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex11s">
-<p>Only <span class="math inline">\(y\)</span> changes: <span class="math inline">\(b = 0.25\)</span> and <span class="math inline">\(d = -150{,}000\)</span>. <span class="math inline">\(x\)</span> is untouched, so <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(c = 0\)</span>.</p>
+<div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex11h">
+<p>Only <span class="math inline">\(y\)</span> changes: <span class="math inline">\(b = 16.2\)</span> and <span class="math inline">\(d = 25{,}000\)</span>. <span class="math inline">\(x\)</span> is untouched, so <span class="math inline">\(a = 1\)</span> and <span class="math inline">\(c = 0\)</span>.</p>
 </div>
-<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex11s">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="" aria-label="1"></a>reg_sales <span class="ot">&lt;-</span> <span class="fu">lm</span>(sales <span class="sc">~</span> customers, <span class="at">data =</span> stores)</span>
-<span id="cb14-2"><a href="" aria-label="2"></a>reg_sales</span>
+<div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex11h">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="" aria-label="1"></a>reg_salary <span class="ot">&lt;-</span> <span class="fu">lm</span>(salary <span class="sc">~</span> experience, <span class="at">data =</span> hires)</span>
+<span id="cb14-2"><a href="" aria-label="2"></a>reg_salary</span>
 <span id="cb14-3"><a href="" aria-label="3"></a></span>
-<span id="cb14-4"><a href="" aria-label="4"></a><span class="fl">0.25</span> <span class="sc">*</span> <span class="fl">2365.4</span></span>
-<span id="cb14-5"><a href="" aria-label="5"></a><span class="fl">0.25</span> <span class="sc">*</span> <span class="fl">87389.9</span> <span class="sc">-</span> <span class="dv">150000</span></span>
+<span id="cb14-4"><a href="" aria-label="4"></a><span class="fl">16.2</span> <span class="sc">*</span> <span class="fl">2733.5</span></span>
+<span id="cb14-5"><a href="" aria-label="5"></a><span class="fl">16.2</span> <span class="sc">*</span> <span class="fl">16547.0</span> <span class="sc">+</span> <span class="dv">25000</span></span>
 <span id="cb14-6"><a href="" aria-label="6"></a></span>
-<span id="cb14-7"><a href="" aria-label="7"></a>stores<span class="sc">$</span>profit <span class="ot">&lt;-</span> <span class="fl">0.25</span> <span class="sc">*</span> stores<span class="sc">$</span>sales <span class="sc">-</span> <span class="dv">150000</span></span>
-<span id="cb14-8"><a href="" aria-label="8"></a>reg_profit <span class="ot">&lt;-</span> <span class="fu">lm</span>(profit <span class="sc">~</span> customers, <span class="at">data =</span> stores)</span>
-<span id="cb14-9"><a href="" aria-label="9"></a>reg_profit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb14-7"><a href="" aria-label="7"></a>hires<span class="sc">$</span>cost <span class="ot">&lt;-</span> <span class="fl">16.2</span> <span class="sc">*</span> hires<span class="sc">$</span>salary <span class="sc">+</span> <span class="dv">25000</span></span>
+<span id="cb14-8"><a href="" aria-label="8"></a>reg_cost <span class="ot">&lt;-</span> <span class="fu">lm</span>(cost <span class="sc">~</span> experience, <span class="at">data =</span> hires)</span>
+<span id="cb14-9"><a href="" aria-label="9"></a>reg_cost</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol type="1">
-<li class="fragment">Sales: intercept 87,390, slope 2,365.4.</li>
-<li class="fragment">Slope: <span class="math inline">\(0.25 \times 2{,}365.4 = 591.4\)</span>. Intercept: <span class="math inline">\(0.25 \times 87{,}390 - 150{,}000 =
--128{,}153\)</span>.</li>
-<li class="fragment">The regression returns exactly these two numbers. The <span class="math inline">\(R^2\)</span> is the same, 0.902: the fit did not change, only the units.</li>
-<li class="fragment">One extra customer a day is associated with about 591 pesos more profit a month.</li>
+<li class="fragment">Salary: intercept 16,547, slope 2,733.5. A new graduate earns about 16,500 pesos a month, and each year of experience adds about 2,700 pesos a month.</li>
+<li class="fragment">Slope: <span class="math inline">\(16.2 \times 2{,}733.5 = 44{,}282\)</span>. Intercept: <span class="math inline">\(16.2 \times 16{,}547 + 25{,}000 = 293{,}062\)</span>.</li>
+<li class="fragment">The regression returns exactly these two numbers. The <span class="math inline">\(R^2\)</span> is the same, 0.803: the fit did not change, only the units.</li>
+<li class="fragment">One extra year of experience adds about 44,300 pesos to the first-year cost of a hire.</li>
 </ol>
 </div>
 </section></section>
@@ -2064,7 +2063,7 @@ eyJjb250ZW50cyI6W3siY2VsbE5hbWUiOiJ3ZWJyLXdpZGdldC0yNSIsImlubGluZSI6ZmFsc2UsIm1l
 </div>
 </div>
 <script type="vfs-file">
-WyJEYXRhL2Jpa2VzLlJkYSIsIkRhdGEvaHJzLlJkYSIsIkRhdGEvcmV0dXJucy5SZGEiLCJEYXRhL3JlbnRzLlJkYSIsIkRhdGEvc3RvcmVzLlJkYSJd
+WyJEYXRhL2Jpa2VzLlJkYSIsIkRhdGEvaHJzLlJkYSIsIkRhdGEvcmV0dXJucy5SZGEiLCJEYXRhL3JlbnRzLlJkYSIsIkRhdGEvaGlyZXMuUmRhIl0=
 </script>
 </section></section>
     </div>
