@@ -797,6 +797,18 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 <h1>3 · Best among its kind</h1>
 <p>OLS is unbiased. Is there an unbiased estimator that moves less?</p>
 </section>
+<section id="the-assumptions-again" class="slide level2 scrollable">
+<h2>The assumptions, again</h2>
+<ol type="1">
+<li class="fragment"><p>Linear in the parameters, with an additive error: <span class="math inline">\(y_i = \beta_0 + \beta_1 x_i + u_i\)</span>.</p></li>
+<li class="fragment"><p>The error has mean zero: <span class="math inline">\(E(u_i) = 0\)</span>. On average the line is not too high or too low.</p></li>
+<li class="fragment"><p>Constant variance: <span class="math inline">\(\text{Var}(u_i) = \sigma^2\)</span>. The scatter around the line is the same width everywhere (homoskedasticity).</p></li>
+<li class="fragment"><p>Errors are uncorrelated across observations: one day’s error tells you nothing about the next day’s.</p></li>
+</ol>
+<div class="fragment">
+<p>Assumptions 1 and 2 give unbiasedness. Adding 3 and 4 gives the next result.</p>
+</div>
+</section>
 <section id="the-gaussmarkov-theorem" class="slide level2">
 <h2>The Gauss–Markov theorem</h2>
 <p>Under assumptions 1–4, among all linear and unbiased estimators, OLS has the smallest variance:</p>
@@ -809,6 +821,65 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 <p>where <span class="math inline">\(\tilde{\beta}_1\)</span> and <span class="math inline">\(\tilde{\beta}_0\)</span> are any other linear and unbiased estimators.</p>
 <div class="fragment">
 <p>OLS is BLUE: the Best Linear Unbiased Estimator.</p>
+</div>
+</section>
+<section id="what-the-theorem-means-in-a-picture" class="slide level2">
+<h2>What the theorem means, in a picture</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W08_live_files/figure-revealjs/gm-picture-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Both curves are centred on the true slope: both estimators are unbiased.</li>
+<li class="fragment">The OLS curve is the narrowest. In any sample, OLS is the least likely to land far from the truth.</li>
+<li class="fragment">Gauss–Markov says no linear unbiased estimator has a narrower curve than OLS.</li>
+</ul>
+</section>
+<section id="another-unbiased-slope-join-the-two-group-means" class="slide level2">
+<h2>Another unbiased slope: join the two group means</h2>
+<p>A simple idea: split the sample at the median of <span class="math inline">\(x\)</span>, into low-<span class="math inline">\(x\)</span> and high-<span class="math inline">\(x\)</span> points, and draw the line through the two group means.</p>
+<p><span class="math display">\[\tilde{\beta}_1 = \frac{\cssId{mt-yhi}{\bar{y}_{high}} - \bar{y}_{low}}{\cssId{mt-xhi}{\bar{x}_{high}} - \bar{x}_{low}}\]</span></p>
+<div class="mathtips">
+<ul>
+<li class="fragment">yhi: The mean of y among the points with the higher half of x values. The groups are chosen by x only, never by y.</li>
+<li class="fragment">xhi: The mean of x among the same high-x points. The denominator depends only on x, so the estimator is a weighted sum of the y values: it is linear.</li>
+</ul>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W08_live_files/figure-revealjs/gm-groups-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Orange: the line through the two group means, slope 2.53. Blue: OLS on the same sample, slope 2.74.</li>
+<li class="fragment">On average the group line is right too: it is linear and unbiased.</li>
+</ul>
+</section>
+<section id="which-one-moves-more" class="slide level2">
+<h2>Which one moves more?</h2>
+<p>Both estimators are unbiased. Draw 5,000 samples of 40 from the sampler’s population (true slope 3) and compute both slopes in every sample. Which histogram is wider?</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W08_live_files/figure-revealjs/gm-race-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<p>Both average 3: OLS 2.99, group means 2.99. But the standard deviation is 0.49 for OLS and 0.62 for the group line, about 26% more. The group line throws away how far each point sits from the centre; OLS uses it.</p>
 </div>
 </section>
 <section id="what-linear-means-here" class="slide level2">
