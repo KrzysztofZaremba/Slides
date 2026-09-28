@@ -809,7 +809,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 <p>Assumptions 1 and 2 give unbiasedness. Adding 3 and 4 gives the next result.</p>
 </div>
 </section>
-<section id="the-gaussmarkov-theorem" class="slide level2">
+<section id="gauss-markov" class="slide level2">
 <h2>The Gauss–Markov theorem</h2>
 <p>Under assumptions 1–4, among all linear and unbiased estimators, OLS has the smallest variance:</p>
 <p><span class="math display">\[\text{Var}(\hat{\beta}_1) \leq \text{Var}(\cssId{mt-btilde}{\tilde{\beta}_1}) \qquad \text{and} \qquad \text{Var}(\hat{\beta}_0) \leq \text{Var}(\tilde{\beta}_0)\]</span></p>
@@ -820,25 +820,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 </div>
 <p>where <span class="math inline">\(\tilde{\beta}_1\)</span> and <span class="math inline">\(\tilde{\beta}_0\)</span> are any other linear and unbiased estimators.</p>
 <div class="fragment">
-<p>OLS is BLUE: the Best Linear Unbiased Estimator.</p>
+<p>OLS is BLUE: the Best Linear Unbiased Estimator. <a href="#/appendix-linear">What “linear” means</a> · <a href="#/appendix-hansen">An update from 2022</a></p>
 </div>
-</section>
-<section id="what-the-theorem-means-in-a-picture" class="slide level2">
-<h2>What the theorem means, in a picture</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="W08_live_files/figure-revealjs/gm-picture-1.png" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li class="fragment">Both curves are centred on the true slope: both estimators are unbiased.</li>
-<li class="fragment">The OLS curve is the narrowest. In any sample, OLS is the least likely to land far from the truth.</li>
-<li class="fragment">Gauss–Markov says no linear unbiased estimator has a narrower curve than OLS.</li>
-</ul>
 </section>
 <section id="another-unbiased-slope-join-the-two-group-means" class="slide level2">
 <h2>Another unbiased slope: join the two group means</h2>
@@ -861,12 +844,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 </div>
 <ul>
 <li class="fragment">Orange: the line through the two group means, slope 2.53. Blue: OLS on the same sample, slope 2.74.</li>
-<li class="fragment">On average the group line is right too: it is linear and unbiased.</li>
+<li class="fragment">Both lines are linear in the <span class="math inline">\(y_i\)</span>, and both are unbiased: on average each lands on the true slope. Does the group line move as little as OLS? Next slide.</li>
 </ul>
 </section>
 <section id="which-one-moves-more" class="slide level2">
 <h2>Which one moves more?</h2>
-<p>Both estimators are unbiased. Draw 5,000 samples of 40 from the sampler’s population (true slope 3) and compute both slopes in every sample. Which histogram is wider?</p>
+<p>Both estimators are unbiased. Draw 5,000 samples of 40 from the sampler’s population (true slope 3) and compute both slopes in every sample. Are both centred on 3? Which curve is wider?</p>
 <div class="fragment">
 <div class="cell">
 <div class="cell-output-display">
@@ -880,39 +863,52 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <p>Both average 3: OLS 2.99, group means 2.99. But the standard deviation is 0.49 for OLS and 0.62 for the group line, about 26% more. The group line throws away how far each point sits from the centre; OLS uses it.</p>
+<p>Unbiased is not enough. Among linear unbiased estimators, OLS has the smallest variance. <a href="#/appendix-gm-picture">The theorem in a picture</a>.</p>
 </div>
 </section>
-<section id="what-linear-means-here" class="slide level2">
-<h2>What “linear” means here</h2>
-<p>A linear estimator is a weighted sum of the <span class="math inline">\(y_i\)</span>:</p>
-<p><span class="math display">\[\tilde{\beta}_1 = \sum_i \cssId{mt-ci}{c_i}\, y_i\]</span></p>
+<section id="why-on-paper" class="slide level2">
+<h2>Why, on paper</h2>
+<p>Write <span class="math inline">\(D = \bar{x}_{high} - \bar{x}_{low}\)</span>, with <span class="math inline">\(n/2\)</span> points in each group. Put <span class="math inline">\(y_i = \beta_0 + \beta_1 x_i + u_i\)</span> into the group line:</p>
+<p><span class="math display">\[\tilde{\beta}_1 = \frac{\bar{y}_{high} - \bar{y}_{low}}{D}
+= \beta_1 + \frac{\cssId{mt-ubar}{\bar{u}_{high} - \bar{u}_{low}}}{D}\]</span></p>
 <div class="mathtips">
 <ul>
-<li class="fragment">ci: A weight for each observation. It may depend on the x values, but never on the y values.</li>
+<li class="fragment">ubar: The average error in each group. Each has expected value zero, so their difference does too.</li>
 </ul>
 </div>
 <div class="fragment">
-<p>OLS is one of them. Since <span class="math inline">\(\sum (x_i - \bar{x})\bar{y} = 0\)</span>:</p>
-<p><span class="math display">\[\hat{\beta}_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}
-= \frac{\sum (x_i - \bar{x})\, y_i}{\sum (x_i - \bar{x})^2}
-\qquad \text{so} \qquad \cssId{mt-cols}{c_i^{OLS} = \frac{x_i - \bar{x}}{S_{xx}}}\]</span></p>
-<div class="mathtips">
-<ul>
-<li class="fragment">cols: The OLS weight on observation i. Positive to the right of the mean of x, negative to the left, and largest in size at the extremes.</li>
-</ul>
-</div>
+<p>Unbiased: <span class="math inline">\(E(\bar{u}_{high} - \bar{u}_{low}) = 0\)</span>, so <span class="math inline">\(E(\tilde{\beta}_1) = \beta_1\)</span>.</p>
 </div>
 <div class="fragment">
-<p>Points far from <span class="math inline">\(\bar{x}\)</span> get the biggest weights. That is the plank from the slider slide again.</p>
+<p>Variance: each group mean of <span class="math inline">\(n/2\)</span> errors has variance <span class="math inline">\(\sigma^2/(n/2)\)</span>, so</p>
+<p><span class="math display">\[\text{Var}(\tilde{\beta}_1) = \frac{4\sigma^2}{n D^2}
+\qquad \text{against} \qquad
+\text{Var}(\hat{\beta}_1) = \frac{\sigma^2}{\cssId{mt-sxxgm}{S_{xx}}}\]</span></p>
 </div>
-</section>
-<section id="an-update-from-2022" class="slide level2">
-<h2>An update from 2022</h2>
+<div class="mathtips">
 <ul>
-<li class="fragment">Science is still moving on this theorem.</li>
-<li class="fragment">A 2022 paper by Bruce Hansen shows that the word “linear” is not needed.</li>
-<li class="fragment">Under our assumptions, OLS is the best unbiased estimator of any kind: BUE, not only BLUE.</li>
+<li class="fragment">sxxgm: The spread of x around its mean, summed over all n points: the sum of squared deviations.</li>
 </ul>
+</div>
+<div class="fragment">
+<p>Split <span class="math inline">\(S_{xx}\)</span> into the spread inside each group plus the spread between the two group means:</p>
+<p><span class="math display">\[S_{xx} = \cssId{mt-within}{\text{within}} + \frac{n D^2}{4} \;\geq\; \frac{n D^2}{4}
+\quad\Longrightarrow\quad
+\text{Var}(\hat{\beta}_1) = \frac{\sigma^2}{S_{xx}} \leq \frac{4\sigma^2}{n D^2} = \text{Var}(\tilde{\beta}_1)\]</span></p>
+</div>
+<div class="mathtips">
+<ul>
+<li class="fragment">within: How far the points sit from their own group mean, squared and summed. OLS uses this information; the group line throws it away.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>The group line ignores where points sit inside their group. OLS uses it, so its variance is smaller, unless every point in a group has the same <span class="math inline">\(x\)</span>.</p>
+</div>
+</section></section>
+<section>
+<section id="the-shape-of-the-slopes-distribution" class="title-slide slide level1 center" data-background-color="#23395d">
+<h1>4 · The shape of the slope’s distribution</h1>
+<p>Centre and spread are settled. To test and to build intervals we also need the shape.</p>
 </section>
 <section id="what-we-have-not-needed-so-far" class="slide level2">
 <h2>What we have not needed so far</h2>
@@ -2912,6 +2908,64 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTE0IiwicGVyc2lz
 <section id="appendix-optional" class="title-slide slide level1 center" data-background-color="#23395d">
 <h1>Appendix — optional</h1>
 <p>The algebra behind the results in the main flow.</p>
+</section>
+<section id="appendix-linear" class="slide level2">
+<h2>Appendix — what “linear” means here</h2>
+<p>A linear estimator is a weighted sum of the <span class="math inline">\(y_i\)</span>:</p>
+<p><span class="math display">\[\tilde{\beta}_1 = \sum_i \cssId{mt-ci}{c_i}\, y_i\]</span></p>
+<div class="mathtips">
+<ul>
+<li class="fragment">ci: A weight for each observation. It may depend on the x values, but never on the y values.</li>
+</ul>
+</div>
+<div class="fragment">
+<p>OLS is one of them. Since <span class="math inline">\(\sum (x_i - \bar{x})\bar{y} = 0\)</span>:</p>
+<p><span class="math display">\[\hat{\beta}_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}
+= \frac{\sum (x_i - \bar{x})\, y_i}{\sum (x_i - \bar{x})^2}
+\qquad \text{so} \qquad \cssId{mt-cols}{c_i^{OLS} = \frac{x_i - \bar{x}}{S_{xx}}}\]</span></p>
+<div class="mathtips">
+<ul>
+<li class="fragment">cols: The OLS weight on observation i. Positive to the right of the mean of x, negative to the left, and largest in size at the extremes.</li>
+</ul>
+</div>
+</div>
+<div class="fragment">
+<p>Points far from <span class="math inline">\(\bar{x}\)</span> get the biggest weights. That is the plank from the slider slide again.</p>
+</div>
+<div class="fragment">
+<p><a href="#/gauss-markov">← Back to the Gauss–Markov theorem</a></p>
+</div>
+</section>
+<section id="appendix-hansen" class="slide level2">
+<h2>Appendix — an update from 2022</h2>
+<ul>
+<li class="fragment">Science is still moving on this theorem.</li>
+<li class="fragment">A 2022 paper by Bruce Hansen shows that the word “linear” is not needed.</li>
+<li class="fragment">Under our assumptions, OLS is the best unbiased estimator of any kind: BUE, not only BLUE.</li>
+</ul>
+<div class="fragment">
+<p><a href="#/gauss-markov">← Back to the Gauss–Markov theorem</a></p>
+</div>
+</section>
+<section id="appendix-gm-picture" class="slide level2">
+<h2>Appendix — the theorem in a picture</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W08_live_files/figure-revealjs/gm-picture-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Both curves are centred on the true slope: both estimators are unbiased.</li>
+<li class="fragment">The OLS curve is the narrowest. In any sample, OLS is the least likely to land far from the truth.</li>
+<li class="fragment">Gauss–Markov says no linear unbiased estimator has a narrower curve than OLS.</li>
+</ul>
+<div class="fragment">
+<p><a href="#/which-one-moves-more">← Back to Which one moves more?</a></p>
+</div>
 </section>
 <section id="appendix-changing-units" class="slide level2">
 <h2>Appendix — changing the units, again</h2>
