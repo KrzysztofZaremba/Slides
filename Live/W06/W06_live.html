@@ -760,7 +760,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="exercise-3-the-test-statistic-by-hand" class="slide level2 scrollable">
 <h2>🖊️ Exercise 3 — The test statistic by hand</h2>
-<p>Write the test statistic for <span class="math inline">\(H_0: \mu = 100\)</span> yourself, from the definition <span class="math inline">\(\dfrac{\bar x - \mu_0}{s/\sqrt n}\)</span>.</p>
+<p>Write the test statistic for <span class="math inline">\(H_0: \mu = 100\)</span> against <span class="math inline">\(H_A: \mu &gt; 100\)</span> yourself, from the definition <span class="math inline">\(\dfrac{\bar x - \mu_0}{s/\sqrt n}\)</span>.</p>
 <div class="cell" data-layout-align="center" data-exercise="ex3">
 <div>
 <div id="webr-3" class="exercise-cell">
@@ -2188,7 +2188,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4MCIsInBlcnNpc3Qi
 </section>
 <section id="exercise-2-the-whole-two-sample-test" class="slide level2 scrollable">
 <h2>🖊️ Exercise 2 — The whole two-sample test</h2>
-<p>Test whether clean listings are priced differently from dirty ones. Work every step.</p>
+<p>Test whether clean listings are priced differently from dirty ones: <span class="math inline">\(H_0: \mu_{clean} = \mu_{dirty}\)</span> against <span class="math inline">\(H_A: \mu_{clean} \neq \mu_{dirty}\)</span>. Work every step.</p>
 <ol type="1">
 <li class="fragment">The two group means, and the gap between them.</li>
 <li class="fragment">The standard error of that gap.</li>
@@ -2401,6 +2401,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4OSIsInBlcnNpc3Qi
 <section id="paired-data-test-statistic" class="slide level2">
 <h2>Paired data — test statistic</h2>
 <p>Null hypothesis: <span class="math inline">\(H_0: \Delta=\Delta_0\)</span></p>
+<p>Alternative: <span class="math inline">\(H_A: \Delta \neq \Delta_0\)</span> (two-sided), or <span class="math inline">\(H_A: \Delta &gt; \Delta_0\)</span>, or <span class="math inline">\(H_A: \Delta &lt; \Delta_0\)</span> (one-sided)</p>
 <p>Test Statistic is:</p>
 <p><span class="math display">\[\text{test statistic}=\frac{\overbrace{\cssId{mt-dbar}{\bar{X}-\bar{Y}}}^{\bar{d}}-\cssId{mt-delta0-pair}{\Delta_0}}{\cssId{mt-sed}{SE}}=\cssId{mt-tstat-pair}{\frac{\bar{d}-\Delta_0}{SE}}\]</span></p>
 <div class="mathtips">
@@ -2727,7 +2728,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoic3BvdDEyIiwicGVyc2lz
 <p>We frame this in class using <code>Data/households_environment.rda</code> (object <code>exam_data</code>):</p>
 <ul>
 <li class="fragment">Randomize units into treatment vs control → the groups are, on average, identical except for the treatment.</li>
-<li class="fragment">Collect the outcome, then run a two-sample difference-in-means test (<span class="math inline">\(H_0:\mu_T-\mu_C=0\)</span>).</li>
+<li class="fragment">Collect the outcome, then run a two-sample difference-in-means test (<span class="math inline">\(H_0:\mu_T-\mu_C=0\)</span> against <span class="math inline">\(H_A:\mu_T-\mu_C&gt;0\)</span>, since the question is whether the change causes an increase).</li>
 </ul>
 <div class="exam-referral">
 <p>Practice now: the two-sample and A/B-design problems in the Week (Testing II) set.</p>
@@ -3470,7 +3471,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4NiIsInBlcnNpc3Qi
 </section>
 <section id="exercise-22-correlation-with-n-27" class="slide level2 scrollable">
 <h2>🖊️ Exercise 22 — Correlation with n = 27</h2>
-<p>Only two numbers are given, and that is enough.</p>
+<p>Only two numbers are given, and that is enough. Test <span class="math inline">\(H_0: \rho = 0\)</span> against <span class="math inline">\(H_A: \rho \neq 0\)</span>.</p>
 <ol type="1">
 <li class="fragment">Compute the test statistic and its degrees of freedom.</li>
 <li class="fragment">Compute the two-sided p-value and the two critical values at <span class="math inline">\(\alpha = 0.05\)</span>.</li>
@@ -4090,7 +4091,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4MyIsInBlcnNpc3Qi
 <section id="appendix-decision-at-α-0.05" class="slide level2">
 <h2>Appendix: decision at α = 0.05</h2>
 <p>Look at the two numbers you just produced in Exercise 3 — nothing else.</p>
-<p>At <span class="math inline">\(\alpha = 0.05\)</span>, what is the correct decision for <span class="math inline">\(H_0\)</span>: the two group means are equal?</p>
+<p>At <span class="math inline">\(\alpha = 0.05\)</span>, what is the correct decision for <span class="math inline">\(H_0\)</span>: the two group means are equal, against <span class="math inline">\(H_A\)</span>: they differ?</p>
 <div class="fragment">
 <p>Reject <span class="math inline">\(H_0\)</span> — the p-value came out far below 0.05, and the CI excludes 0.</p>
 </div>
@@ -4401,7 +4402,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4MTkiLCJwZXJzaXN0
 </tr>
 </tbody>
 </table>
-<p>The outcome here is binary, so the two-sample test is a test of proportions. Compute the two conversion rates and the lift yourself; the last line runs R’s built-in proportion test so you can compare.</p>
+<p>The outcome here is binary, so the two-sample test is a test of proportions. Compute the two conversion rates and the lift.</p>
 <div class="cell" data-layout-align="center" data-exercise="bex11">
 <div>
 <div id="webr-35" class="exercise-cell">
@@ -4431,8 +4432,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4MTEiLCJwZXJzaXN0
 </section>
 <section id="exercise-12-reading-the-proportion-test" class="slide level2 scrollable">
 <h2>🖊️ Exercise 12 — Reading the proportion test</h2>
-<p>Reuse the A/B test from Exercise 11. Store the result, extract the p-value and the confidence interval for the difference in proportions, and reach a decision at <span class="math inline">\(\alpha = 0.05\)</span>.</p>
-<p>Then rebuild the same z-statistic by hand from the pooled proportion, and check that the two routes agree.</p>
+<p>Reuse the A/B test from Exercise 11. Test <span class="math inline">\(H_0: \pi_T = \pi_C\)</span> against <span class="math inline">\(H_A: \pi_T \neq \pi_C\)</span>: build the z-statistic by hand from the pooled proportion, find its two-sided p-value, and reach a decision at <span class="math inline">\(\alpha = 0.05\)</span>.</p>
 <div class="cell" data-layout-align="center" data-exercise="bex12">
 <div>
 <div id="webr-36" class="exercise-cell">
@@ -4661,7 +4661,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4MTYiLCJwZXJzaXN0
 <p><code>Sample_list</code> holds the 200 sampled Mexico City listings, with <code>price</code> the nightly price in pesos. A pricing report claims the true mean nightly price is 1000.</p>
 <ol type="1">
 <li class="fragment">Compute the mean and the standard deviation of <code>Sample_list$price</code>, then the standard error of the mean (the sample size is 200).</li>
-<li class="fragment">Build the one-sample test statistic for <span class="math inline">\(H_0: \mu = 1000\)</span>.</li>
+<li class="fragment">Build the one-sample test statistic for <span class="math inline">\(H_0: \mu = 1000\)</span> against <span class="math inline">\(H_A: \mu \neq 1000\)</span>.</li>
 <li class="fragment">Turn it into a two-sided p-value with <code>pt()</code> at 199 degrees of freedom.</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="brecall">
@@ -4698,7 +4698,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYnJlY2FsbCIsInBlcnNp
 <h2>📝 Exam practice 1 — Predicted income: t-statistic and p-value</h2>
 <p>A random sample of 15 Mexican university students reports predicted first-job income: <span class="math inline">\(\bar{x} = 46{,}000\)</span> pesos, <span class="math inline">\(s = 9{,}000\)</span> pesos. <span class="small-note">[I4]</span></p>
 <ol type="a">
-<li class="fragment">Compute the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu_X = 48{,}000\)</span>. (c) Compute the p-value (two-sided).</li>
+<li class="fragment">Compute the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu_X = 48{,}000\)</span> against <span class="math inline">\(H_A: \mu_X \neq 48{,}000\)</span>. (c) Compute the p-value (two-sided).</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="exam1">
 <div>
@@ -4730,7 +4730,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTEiLCJwZXJzaXN0
 </section>
 <section id="exam-practice-2-predicted-income-a-larger-sample" class="slide level2 scrollable">
 <h2>📝 Exam practice 2 — Predicted income: a larger sample</h2>
-<p>Same setting as the previous slide (<span class="math inline">\(\bar{x} = 46{,}000\)</span>, <span class="math inline">\(s = 9{,}000\)</span>, <span class="math inline">\(H_0: \mu_X = 48{,}000\)</span>). <span class="small-note">[I4]</span></p>
+<p>Same setting as the previous slide (<span class="math inline">\(\bar{x} = 46{,}000\)</span>, <span class="math inline">\(s = 9{,}000\)</span>, <span class="math inline">\(H_0: \mu_X = 48{,}000\)</span> against <span class="math inline">\(H_A: \mu_X \neq 48{,}000\)</span>). <span class="small-note">[I4]</span></p>
 <ol start="4" type="a">
 <li class="fragment">If <span class="math inline">\(n = 1{,}000\)</span> instead of <span class="math inline">\(n = 15\)</span>, would you reject at 5%?</li>
 </ol>
@@ -4766,7 +4766,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTIiLCJwZXJzaXN0
 <h2>📝 Exam practice 3 — Candy taste test</h2>
 <p>250 ITAM students take a blind taste test of green vs.&nbsp;red candies: 140 prefer green, 110 prefer red. <span class="small-note">[I5]</span></p>
 <ol type="a">
-<li class="fragment">Compute the asymptotic 95% CI for <span class="math inline">\(\pi\)</span>. (c) Compute the p-value for the test of equal preference.</li>
+<li class="fragment">Compute the asymptotic 95% CI for <span class="math inline">\(\pi\)</span>. (c) Compute the p-value for the test of equal preference, <span class="math inline">\(H_0: \pi = 0.5\)</span> against <span class="math inline">\(H_A: \pi \neq 0.5\)</span>.</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="exam3">
 <div>
@@ -4869,7 +4869,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTUiLCJwZXJzaXN0
 <h2>📝 Exam practice 6 — Stock returns: is the mean return zero?</h2>
 <p>You are considering investing in a Mexican company listed on the <em>Bolsa Mexicana de Valores</em>. Its annual returns over the last 10 years are: <span class="math inline">\(0.03,\ -0.12,\ 0.15,\ 0.04,\ -0.14,\ -0.06,\ 0.00,\ 0.08,\ 0.20,\ 0.07\)</span>. Assume returns are i.i.d. normal. <span class="small-note">[I3]</span></p>
 <ol type="a">
-<li class="fragment">What is the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu = 0\)</span>? Do you reject at 5%?</li>
+<li class="fragment">What is the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu = 0\)</span> against <span class="math inline">\(H_A: \mu \neq 0\)</span>? Do you reject at 5%?</li>
 <li class="fragment">What is the p-value?</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="exam6stock">
@@ -4899,7 +4899,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTZzdG9jayIsInBl
 <span id="cb38-11"><a href="" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pt</span>(<span class="fu">abs</span>(t_stat), n <span class="sc">-</span> <span class="dv">1</span>))            <span class="co"># 0.488</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ol start="3" type="a">
-<li class="fragment">How would the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu = -0.01\)</span> compare to (a)?</li>
+<li class="fragment">How would the <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(H_0: \mu = -0.01\)</span> against <span class="math inline">\(H_A: \mu \neq -0.01\)</span> compare to (a)?</li>
 </ol>
 <div class="fragment">
 <p>Larger in absolute value: <span class="math inline">\(t = rac{0.025 - (-0.01)}{0.0346} = 1.012\)</span>, because <span class="math inline">\(-0.01\)</span> is farther from <span class="math inline">\(ar{x} = 0.025\)</span> than 0 is.</p>
@@ -4943,7 +4943,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTZzdG9jayIsInBl
 </table>
 <ol type="a">
 <li class="fragment">Provide an asymptotic 95% confidence interval for the difference in mean total scores between domestic and international students.</li>
-<li class="fragment">Conduct a z-test of equal means. What is the p-value?</li>
+<li class="fragment">Conduct a z-test of equal means, <span class="math inline">\(H_0: \mu_D = \mu_I\)</span> against <span class="math inline">\(H_A: \mu_D \neq \mu_I\)</span>. What is the p-value?</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="bexam1">
 <div>
@@ -4985,7 +4985,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4YW0xIiwicGVyc2lz
 <p>Use the <code>sp500</code> dataset, which includes monthly returns for several U.S. stocks and the overall market index. Key variables: <code>HD</code> (Home Depot returns), <code>LOW</code> (Lowe’s returns), <code>IDX</code> (market index returns). <span class="small-note">[I22]</span></p>
 <p>Sample summaries (<span class="math inline">\(n = 364\)</span> months): mean HD <span class="math inline">\(= 0.0167\)</span>, var HD <span class="math inline">\(= 0.0054\)</span>; mean LOW <span class="math inline">\(= 0.0203\)</span>, var LOW <span class="math inline">\(= 0.0084\)</span>.</p>
 <ol type="a">
-<li class="fragment">Compute the z-statistic and p-value for testing <span class="math inline">\(H_0: \mu_{HD} = \mu_{LOW}\)</span>, and state the decision at <span class="math inline">\(\alpha = 0.05\)</span>.</li>
+<li class="fragment">Compute the z-statistic and p-value for testing <span class="math inline">\(H_0: \mu_{HD} = \mu_{LOW}\)</span> against <span class="math inline">\(H_A: \mu_{HD} \neq \mu_{LOW}\)</span>, and state the decision at <span class="math inline">\(\alpha = 0.05\)</span>.</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="bexam2">
 <div>
@@ -5018,7 +5018,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiYmV4YW0yIiwicGVyc2lz
 <section id="exam-practice-2-cont.-testing-against-a-benchmark" class="slide level2 scrollable">
 <h2>📝 Exam practice 2 (cont.) — testing against a benchmark</h2>
 <ol start="2" type="a">
-<li class="fragment">Suppose the market index mean return is 0.0078. Would it be appropriate to test <span class="math inline">\(H_0: \mu_{HD} = 0.0078\)</span>?</li>
+<li class="fragment">Suppose the market index mean return is 0.0078. Would it be appropriate to test <span class="math inline">\(H_0: \mu_{HD} = 0.0078\)</span> against <span class="math inline">\(H_A: \mu_{HD} \neq 0.0078\)</span>?</li>
 </ol>
 <p>First produce the number the question is really about: run the one-sample z-test of HD against that value, so you can see what it would claim.</p>
 <div class="cell" data-layout-align="center" data-exercise="bexam2b">
