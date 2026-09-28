@@ -454,114 +454,21 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4YW0xNCJdLCJwZXJz
 <ul>
 <li class="fragment">Every sample gives a different line. None of them is the population line exactly.</li>
 <li class="fragment">The estimates <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> depend on which 40 points we happened to draw.</li>
-<li class="fragment">How far do they wander, and are they right on average? The next exercise draws 1,000 samples to find out.</li>
+<li class="fragment">How far do they wander, and are they right on average? The sampler two slides on draws as many samples as you like.</li>
 </ul>
 </section>
 <section id="predict-a-thousand-samples" class="slide level2 scrollable">
 <h2>Predict: a thousand samples</h2>
-<p>Now imagine drawing not five but 1,000 samples of 40 from the same population, and fitting a line to each one.</p>
+<p>Now imagine drawing not five but 1,000 samples of 40 from a population whose true slope is 3, and fitting a line to each one.</p>
 <ol type="1">
-<li>Where will the 1,000 slopes be centred? Compare with the population slope, 2.84.</li>
+<li>Where will the 1,000 slopes be centred? Compare with the true slope, 3.</li>
 <li>How far will a typical slope be from that centre?</li>
 <li>What shape will the histogram of the 1,000 slopes have?</li>
 </ol>
 </section>
-<section id="what-1000-samples-look-like" class="slide level2">
-<h2>What 1,000 samples look like</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="W08_live_files/figure-revealjs/thousand-samples-1.png" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<ul>
-<li class="fragment">Left: each blue line is one sample’s fit. Black: the population line.</li>
-<li class="fragment">Right: the 1,000 slopes pile up around the population slope, in a bell shape.</li>
-</ul>
-<div class="fragment">
-<p>The 1,000 slopes average 2.83, against a population slope of 2.84. Their standard deviation is 0.41: a typical sample slope misses by about that much.</p>
-</div>
-</section>
-<section id="the-slope-is-a-random-variable-1" class="slide level2">
-<h2>The slope is a random variable</h2>
-<ul>
-<li class="fragment"><span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> are estimators: rules that turn a sample into a number.</li>
-<li class="fragment">So they are random variables. Their values depend on which sample we happened to draw.</li>
-<li class="fragment">That raises the two questions every estimator must answer:
-<ul>
-<li class="fragment">Is it right on average? That is, is it unbiased?</li>
-<li class="fragment">How much does it move from sample to sample? That is, how big is its variance?</li>
-</ul></li>
-</ul>
-<div class="fragment">
-<p>That histogram is the sampling distribution of <span class="math inline">\(\hat{\beta}_1\)</span>. Its centre and its spread are the next two sections.</p>
-</div>
-</section></section>
-<section>
-<section id="how-much-does-the-slope-move" class="title-slide slide level1 center" data-background-color="#23395d">
-<h1>2 · How much does the slope move?</h1>
-<p>Centre first, then spread. The spread has a name: the standard error.</p>
-</section>
-<section id="right-on-average" class="slide level2 scrollable">
-<h2>Right on average</h2>
-<p>Under the four assumptions from last week:</p>
-<ol type="1">
-<li class="fragment">linear in the parameters, with an additive error;</li>
-<li class="fragment"><span class="math inline">\(E(u_i) = 0\)</span>;</li>
-<li class="fragment"><span class="math inline">\(\text{Var}(u_i) = \sigma^2\)</span>;</li>
-<li class="fragment"><span class="math inline">\(\text{Cov}(u_i, u_j) = 0\)</span> for <span class="math inline">\(i \neq j\)</span>;</li>
-</ol>
-<div class="fragment">
-<p>OLS is unbiased:</p>
-<p><span class="math display">\[\cssId{mt-Eb1}{E(\hat{\beta}_1)} = E\left(\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}\right) = \beta_1
-\qquad \text{and} \qquad \cssId{mt-Eb0}{E(\hat{\beta}_0)} = \beta_0\]</span></p>
-<div class="mathtips">
-<ul>
-<li class="fragment">Eb1: The average of the slope over all possible samples. Your histogram of 1,000 slopes was centred here.</li>
-<li class="fragment">Eb0: The same for the intercept: over many samples, the intercept is right on average.</li>
-</ul>
-</div>
-</div>
-<div class="fragment">
-<p>Assumption 2 alone is enough for unbiasedness. Assumptions 3 and 4 matter for the spread.</p>
-</div>
-</section>
-<section id="when-is-the-slope-biased" class="slide level2">
-<h2>When is the slope biased?</h2>
-<p>A firm regresses employees’ salary on their years of education, to learn what one more year of schooling is worth.</p>
-<ul>
-<li class="fragment">What kinds of things end up in the error <span class="math inline">\(u_i\)</span>?</li>
-<li class="fragment">Are they related to education?</li>
-<li class="fragment">Is the slope unbiased?</li>
-</ul>
-<div class="fragment">
-<p>Ability, motivation, family connections and the quality of the school all move salary and all sit in <span class="math inline">\(u_i\)</span>.</p>
-</div>
-<div class="fragment">
-<p>People with more of them also tend to study longer. Then <span class="math inline">\(u_i\)</span> is higher, on average, for people with more education: <span class="math inline">\(E(u_i)\)</span> is not zero at every level of <span class="math inline">\(x\)</span>.</p>
-</div>
-<div class="fragment">
-<p>The slope is then biased upward. It mixes the effect of schooling with the effect of everything that comes with schooling.</p>
-</div>
-</section>
-<section id="three-things-that-could-make-the-slope-steadier" class="slide level2">
-<h2>Three things that could make the slope steadier</h2>
-<p>Across the 1,000 samples, a typical sample slope missed the population slope by 0.39. Which of these would make that number smaller?</p>
-<ul>
-<li class="fragment">more points in each sample?</li>
-<li class="fragment">less scatter around the line?</li>
-<li class="fragment">more spread in <span class="math inline">\(x\)</span>?</li>
-</ul>
-<div class="fragment">
-<p>The next slide lets you change each one and watch.</p>
-</div>
-</section>
 <section id="draw-samples-yourself" class="slide level2">
 <h2>🎛️ Draw samples yourself</h2>
-<p>Each click draws a fresh sample from a population whose true slope is 3. Left: the sample and its line. Right: every slope drawn so far. Moving a slider starts a new histogram.</p>
+<p>Each click draws a fresh sample from a population whose true slope is 3. Left: the sample and its line. Right: every slope drawn so far. Press Draw 100 ten times, then show the numbers. <a href="#/three-things-that-could-make-the-slope-steadier">Then: what makes the slope steadier →</a></p>
 <div class="wdg" id="smp">
   <div class="wdg-controls">
     <label>Sample size n <span class="v" id="smp-nv">40</span>
@@ -683,6 +590,92 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4YW0xNCJdLCJwZXJz
   draw();
 })();
 </script>
+</section>
+<section id="what-the-sampler-showed" class="slide level2">
+<h2>What the sampler showed</h2>
+<ul>
+<li class="fragment">Centre: the slopes pile up around 3, the true slope. On average OLS is right.</li>
+<li class="fragment">Spread: with <span class="math inline">\(n = 40\)</span> and noise 3, a typical slope misses the true slope by about 0.5.</li>
+<li class="fragment">Shape: a bell, symmetric around 3.</li>
+<li class="fragment"><a href="#/appendix-thousand-samples">The same picture for the population of 100 points</a>.</li>
+</ul>
+<div class="fragment">
+<p>One sample gives one slope. Which slope you get depends on which points you happened to draw.</p>
+</div>
+</section>
+<section id="the-slope-is-a-random-variable-1" class="slide level2">
+<h2>The slope is a random variable</h2>
+<ul>
+<li class="fragment"><span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> are estimators: rules that turn a sample into a number.</li>
+<li class="fragment">So they are random variables. Their values depend on which sample we happened to draw.</li>
+<li class="fragment">That raises the two questions every estimator must answer:
+<ul>
+<li class="fragment">Is it right on average? That is, is it unbiased?</li>
+<li class="fragment">How much does it move from sample to sample? That is, how big is its variance?</li>
+</ul></li>
+</ul>
+<div class="fragment">
+<p>The sampler’s histogram is the sampling distribution of <span class="math inline">\(\hat{\beta}_1\)</span>. Its centre and its spread are the next two sections.</p>
+</div>
+</section></section>
+<section>
+<section id="how-much-does-the-slope-move" class="title-slide slide level1 center" data-background-color="#23395d">
+<h1>2 · How much does the slope move?</h1>
+<p>Centre first, then spread. The spread has a name: the standard error.</p>
+</section>
+<section id="right-on-average" class="slide level2 scrollable">
+<h2>Right on average</h2>
+<p>Under the four assumptions from last week:</p>
+<ol type="1">
+<li class="fragment">linear in the parameters, with an additive error;</li>
+<li class="fragment"><span class="math inline">\(E(u_i) = 0\)</span>;</li>
+<li class="fragment"><span class="math inline">\(\text{Var}(u_i) = \sigma^2\)</span>;</li>
+<li class="fragment"><span class="math inline">\(\text{Cov}(u_i, u_j) = 0\)</span> for <span class="math inline">\(i \neq j\)</span>;</li>
+</ol>
+<div class="fragment">
+<p>OLS is unbiased:</p>
+<p><span class="math display">\[\cssId{mt-Eb1}{E(\hat{\beta}_1)} = E\left(\frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}\right) = \beta_1
+\qquad \text{and} \qquad \cssId{mt-Eb0}{E(\hat{\beta}_0)} = \beta_0\]</span></p>
+<div class="mathtips">
+<ul>
+<li class="fragment">Eb1: The average of the slope over all possible samples. Your histogram of 1,000 slopes was centred here.</li>
+<li class="fragment">Eb0: The same for the intercept: over many samples, the intercept is right on average.</li>
+</ul>
+</div>
+</div>
+<div class="fragment">
+<p>Assumption 2 alone is enough for unbiasedness. Assumptions 3 and 4 matter for the spread.</p>
+</div>
+</section>
+<section id="when-is-the-slope-biased" class="slide level2">
+<h2>When is the slope biased?</h2>
+<p>A firm regresses employees’ salary on their years of education, to learn what one more year of schooling is worth.</p>
+<ul>
+<li class="fragment">What kinds of things end up in the error <span class="math inline">\(u_i\)</span>?</li>
+<li class="fragment">Are they related to education?</li>
+<li class="fragment">Is the slope unbiased?</li>
+</ul>
+<div class="fragment">
+<p>Ability, motivation, family connections and the quality of the school all move salary and all sit in <span class="math inline">\(u_i\)</span>.</p>
+</div>
+<div class="fragment">
+<p>People with more of them also tend to study longer. Then <span class="math inline">\(u_i\)</span> is higher, on average, for people with more education: <span class="math inline">\(E(u_i)\)</span> is not zero at every level of <span class="math inline">\(x\)</span>.</p>
+</div>
+<div class="fragment">
+<p>The slope is then biased upward. It mixes the effect of schooling with the effect of everything that comes with schooling.</p>
+</div>
+</section>
+<section id="three-things-that-could-make-the-slope-steadier" class="slide level2">
+<h2>Three things that could make the slope steadier</h2>
+<p>On the sampler, a typical slope missed the true slope by about 0.5. Which of these would make that number smaller?</p>
+<ul>
+<li class="fragment">more points in each sample?</li>
+<li class="fragment">less scatter around the line?</li>
+<li class="fragment">more spread in <span class="math inline">\(x\)</span>?</li>
+</ul>
+<div class="fragment">
+<p><a href="#/draw-samples-yourself">Go back to the sampler</a> and move one slider at a time.</p>
+</div>
 </section>
 <section id="what-the-sliders-showed" class="slide level2">
 <h2>What the sliders showed</h2>
@@ -2895,6 +2888,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTE0IiwicGVyc2lz
 <section id="appendix-optional" class="title-slide slide level1 center" data-background-color="#23395d">
 <h1>Appendix — optional</h1>
 <p>The algebra behind the results in the main flow.</p>
+</section>
+<section id="appendix-thousand-samples" class="slide level2">
+<h2>Appendix — 1,000 samples from the population of 100</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W08_live_files/figure-revealjs/thousand-samples-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<ul>
+<li class="fragment">Left: each blue line is one sample’s fit. Black: the population line.</li>
+<li class="fragment">Right: the 1,000 slopes pile up around the population slope, in a bell shape.</li>
+</ul>
+<div class="fragment">
+<p>The 1,000 slopes average 2.83, against a population slope of 2.84. Their standard deviation is 0.41: a typical sample slope misses by about that much.</p>
+</div>
+<div class="fragment">
+<p><a href="#/draw-samples-yourself">← Back to the sampler</a></p>
+</div>
 </section>
 <section id="appendix-three-years" class="slide level2 scrollable">
 <h2>Appendix — the question on the table</h2>
