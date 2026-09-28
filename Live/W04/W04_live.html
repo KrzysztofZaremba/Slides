@@ -260,28 +260,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 </section>
 <section id="where-we-are" class="slide level2">
 <h2>Where we are</h2>
-<p><span style="color:#888">Describing data</span> → <strong>Reasoning under uncertainty</strong> → <span style="color:#888">Regression</span> → <span style="color:#888">Time series forecasting</span></p>
-<p><strong>First week of reasoning under uncertainty.</strong> Your data is only a <em>sample</em>, so every number you computed so far is a <strong>guess</strong>. This week: how much those guesses move, and why they end up bell-shaped.</p>
+<p><span style="color:#888">Describing data</span> → Reasoning under uncertainty → <span style="color:#888">Regression</span> → <span style="color:#888">Time series forecasting</span></p>
+<p>First week of reasoning under uncertainty. Your data is only a <em>sample</em>, so every number you computed so far is a guess. This week: how much those guesses move, and why they end up bell-shaped.</p>
 <ul>
-<li class="fragment"><strong>This week (W4):</strong> <strong>population vs sample</strong> and <strong>parameter vs statistic</strong>, the <strong>random sample</strong>, the <strong>estimator</strong> and its properties (<strong>bias, variance, MSE</strong>), the <strong>sampling distribution</strong>, and the <strong>Central Limit Theorem</strong>.</li>
-<li class="fragment">Next week (W5) turns this into <strong>confidence intervals</strong>.</li>
+<li class="fragment">This week (W4): population vs sample and parameter vs statistic, the random sample, the estimator and its properties (bias, variance, MSE), the sampling distribution, and the Central Limit Theorem.</li>
+<li class="fragment">Next week (W5) turns this into confidence intervals.</li>
 </ul>
 </section>
 <section id="motivating-example" class="slide level2">
 <h2>Motivating example</h2>
-<p>You run a bunch of <strong>Airbnbs</strong> in Mexico City. Should you invest more in cleaning?</p>
+<p>You run a bunch of Airbnbs in Mexico City. Should you invest more in cleaning?</p>
 <ul>
-<li class="fragment">Concretely: can you charge a higher price if your cleanliness score exceeds <strong>4.5</strong>?</li>
+<li class="fragment">Concretely: can you charge a higher price if your cleanliness score exceeds 4.5?</li>
 <li class="fragment">Get a sample of listings and compare the price of
 <ul>
-<li class="fragment">those with cleanliness score below 4.5 (<strong>dirty</strong>)</li>
-<li class="fragment">and above 4.5 (<strong>clean</strong>)</li>
+<li class="fragment">those with cleanliness score below 4.5 (dirty)</li>
+<li class="fragment">and above 4.5 (clean)</li>
 </ul></li>
 </ul>
 </section>
 <section id="motivating-example-the-sample" class="slide level2">
 <h2>Motivating example: the sample</h2>
-<p>We have a sample of <strong>200 listings</strong> (<code>price</code>, cleanliness <code>clean</code>):</p>
+<p>We have a sample of 200 listings (<code>price</code>, cleanliness <code>clean</code>):</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table caption-top" style="font-size: 19px; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -362,10 +362,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 </div>
 </div>
 <div class="fragment">
-<p>In these 200 listings, clean apartments charge <strong>377 pesos more</strong> per night. Cleaning looks worth paying for.</p>
+<p>In these 200 listings, clean apartments charge 377 pesos more per night. Cleaning looks worth paying for.</p>
 </div>
 <div class="fragment">
-<p><strong>But can you spend money on that number?</strong></p>
+<p>But can you spend money on that number?</p>
 <ul>
 <li class="fragment">Would a <em>different</em> 200 listings have given 377 — or 200, or 600?</li>
 <li class="fragment">Is the gap across the <em>whole city</em> also 377, or could it be far smaller?</li>
@@ -384,22 +384,22 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <section id="stat-language" class="slide level2">
 <h2>Statistical language</h2>
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Population</strong></span>: the entire group you want to learn about. Usually too big to measure.
+<li class="fragment"><span style="color:#2980b9">Population</span>: the entire group you want to learn about. Usually too big to measure.
 <ul>
 <li class="fragment">Every Airbnb listing in Mexico City.</li>
 </ul></li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Parameter</strong></span>: one number describing the <strong>population</strong>. Fixed, unknown, never observed.
+<li class="fragment"><span style="color:#2980b9">Parameter</span>: one number describing the population. Fixed, unknown, never observed.
 <ul>
-<li class="fragment"><span class="math inline">\(\cssId{mt-muc}{\mu_c}\)</span> and <span class="math inline">\(\cssId{mt-mud}{\mu_d}\)</span> — the mean price of <strong>every</strong> clean and <strong>every</strong> dirty apartment in the city. What you actually want is the gap <span class="math inline">\(\cssId{mt-mugap}{\mu_c - \mu_d}\)</span>.</li>
+<li class="fragment"><span class="math inline">\(\cssId{mt-muc}{\mu_c}\)</span> and <span class="math inline">\(\cssId{mt-mud}{\mu_d}\)</span> — the mean price of every clean and every dirty apartment in the city. What you actually want is the gap <span class="math inline">\(\cssId{mt-mugap}{\mu_c - \mu_d}\)</span>.</li>
 </ul></li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Sample</strong></span>: the part of the population you actually have data on.
+<li class="fragment"><span style="color:#2980b9">Sample</span>: the part of the population you actually have data on.
 <ul>
 <li class="fragment">Your 200 listings — 100 clean, 100 dirty.</li>
 </ul></li>
@@ -407,7 +407,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Statistic</strong></span>: one number computed from the <strong>sample</strong>. You can always calculate it, and it lands somewhere different every sample.
+<li class="fragment"><span style="color:#2980b9">Statistic</span>: one number computed from the sample. You can always calculate it, and it lands somewhere different every sample.
 <ul>
 <li class="fragment"><span class="math inline">\(\cssId{mt-xbarc}{\bar{x}_c} = 1{,}245\)</span> and <span class="math inline">\(\cssId{mt-xbard}{\bar{x}_d} = 869\)</span>, so the gap you measured is <span class="math inline">\(\cssId{mt-xgap}{377}\)</span> pesos.</li>
 </ul></li>
@@ -415,12 +415,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 </div>
 <div class="fragment">
 <div class="small-note">
-<p><strong>Parameter belongs to the population, statistic belongs to the sample.</strong> Greek letters (<span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(\pi\)</span>) for parameters; Latin letters or hats (<span class="math inline">\(\bar{x}\)</span>, <span class="math inline">\(s\)</span>, <span class="math inline">\(\hat{\pi}\)</span>) for statistics.</p>
+<p>Parameter belongs to the population, statistic belongs to the sample. Greek letters (<span class="math inline">\(\mu\)</span>, <span class="math inline">\(\sigma\)</span>, <span class="math inline">\(\pi\)</span>) for parameters; Latin letters or hats (<span class="math inline">\(\bar{x}\)</span>, <span class="math inline">\(s\)</span>, <span class="math inline">\(\hat{\pi}\)</span>) for statistics.</p>
 </div>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">A parameter does not have to be a mean. To know how many people in Mexico have diabetes, the population is <strong>everyone in Mexico</strong> and the parameter is a <strong>proportion</strong>:</li>
+<li class="fragment">A parameter does not have to be a mean. To know how many people in Mexico have diabetes, the population is everyone in Mexico and the parameter is a proportion:</li>
 </ul>
 <div class="fragment">
 <p><span class="math display">\[\cssId{mt-pidiab}{\pi} = \frac{\cssId{mt-ndiab}{D}}{\cssId{mt-npop}{N}}\]</span></p>
@@ -447,8 +447,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <h2>A parameter you cannot see, a statistic you can</h2>
 
 <img data-src="Par_stat.png" class="quarto-figure quarto-figure-center r-stretch" width="648"><ul>
-<li class="fragment">The <strong>parameter</strong> <span class="math inline">\(\pi\)</span> belongs to the population on the left: fixed, unknown, never observed.</li>
-<li class="fragment">The <strong>statistic</strong> <span class="math inline">\(\hat{\pi}\)</span> — the share of diabetics among the people you actually surveyed — belongs to the sample on the right. It is a <strong>guess at the parameter, computed from the sample</strong>.</li>
+<li class="fragment">The parameter <span class="math inline">\(\pi\)</span> belongs to the population on the left: fixed, unknown, never observed.</li>
+<li class="fragment">The statistic <span class="math inline">\(\hat{\pi}\)</span> — the share of diabetics among the people you actually surveyed — belongs to the sample on the right. It is a guess at the parameter, computed from the sample.</li>
 <li class="fragment"><span class="math inline">\(\hat{\pi}\)</span> is what you can calculate; <span class="math inline">\(\pi\)</span> is what you wanted. Everything from here on is about the gap between the two.</li>
 </ul>
 </section>
@@ -456,7 +456,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <h2>The same picture for a continuous variable</h2>
 
 <img data-src="W04_live_files/figure-revealjs/samp_cont_w4-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><ul>
-<li class="fragment">Top: <strong>every</strong> diner who sat down over a month, and the population mean <span class="math inline">\(\mu\)</span> — the parameter.</li>
+<li class="fragment">Top: every diner who sat down over a month, and the population mean <span class="math inline">\(\mu\)</span> — the parameter.</li>
 <li class="fragment">Bottom: the 50 diners you actually timed, and the sample mean <span class="math inline">\(\bar{x}\)</span> — the statistic.</li>
 <li class="fragment">Same shape, ragged instead of smooth, and the two dashed lines do not land in the same place. Draw a different 50 and the red line moves; the green one never does.</li>
 </ul>
@@ -464,24 +464,24 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <section id="why-you-almost-never-have-the-whole-population" class="slide level2">
 <h2>Why you almost never have the whole population</h2>
 <ul>
-<li class="fragment"><strong>Checking everything costs more than the answer is worth.</strong> <em>Decision:</em> should we pay to rebuild the billing system? <em>Parameter:</em> <span class="math inline">\(\pi\)</span>, the share of <strong>all 200,000 invoices</strong> that contain an error. Checking all of them takes a team a month. Checking 300 takes an afternoon.</li>
+<li class="fragment">Checking everything costs more than the answer is worth. <em>Decision:</em> should we pay to rebuild the billing system? <em>Parameter:</em> <span class="math inline">\(\pi\)</span>, the share of all 200,000 invoices that contain an error. Checking all of them takes a team a month. Checking 300 takes an afternoon.</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Measuring destroys the product.</strong> <em>Decision:</em> how long a warranty can we offer? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, the mean lifetime in hours of <strong>every battery we make</strong>. You only learn a battery’s lifetime by running it until it dies.</li>
+<li class="fragment">Measuring destroys the product. <em>Decision:</em> how long a warranty can we offer? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, the mean lifetime in hours of every battery we make. You only learn a battery’s lifetime by running it until it dies.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Most people never answer.</strong> <em>Decision:</em> do we keep the new subscription plan? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, the mean satisfaction score of <strong>all 40,000 subscribers</strong>. You email all of them; 600 reply.</li>
+<li class="fragment">Most people never answer. <em>Decision:</em> do we keep the new subscription plan? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, the mean satisfaction score of all 40,000 subscribers. You email all of them; 600 reply.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>The group has not happened yet.</strong> <em>Decision:</em> how much stock do we order for next month? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, mean daily demand <strong>next month</strong>. Next month’s customers do not exist yet. All you have is the past.</li>
+<li class="fragment">The group has not happened yet. <em>Decision:</em> how much stock do we order for next month? <em>Parameter:</em> <span class="math inline">\(\mu\)</span>, mean daily demand next month. Next month’s customers do not exist yet. All you have is the past.</li>
 </ul>
 <div class="fragment">
-<p>Every one of these is a number about a group you cannot measure, decided from a group you can. The question is always the same: <strong>how far from the truth can that number be?</strong></p>
+<p>Every one of these is a number about a group you cannot measure, decided from a group you can. The question is always the same: how far from the truth can that number be?</p>
 </div>
 </div>
 </section>
@@ -489,13 +489,13 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <h2>This week we cheat</h2>
 <p>In real work the parameter is unknown, so you can never check your answer.</p>
 <div class="fragment">
-<p>Here we can. Those 200 listings were drawn from <strong>every Airbnb listing in Mexico City</strong> — and for this deck we have all of them:</p>
+<p>Here we can. Those 200 listings were drawn from every Airbnb listing in Mexico City — and for this deck we have all of them:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-hidden="true" tabindex="-1"></a>population <span class="ot">&lt;-</span> airbnb<span class="sc">$</span>price    <span class="co"># the nightly price of all 21,184 listings</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="fragment">
 <p>So the parameters are no mystery. Across the whole city:</p>
 <p><span class="math display">\[\mu_c = 1{,}195 \qquad \mu_d = 1{,}024 \qquad \mu_c - \mu_d = \mathbf{171}\text{ pesos}\]</span></p>
-<p>Your 200 listings said the gap was <strong>377</strong>. The truth is <strong>171</strong> — you would have valued cleaning at more than <strong>twice</strong> what it is worth. Nothing went wrong; that is simply what a sample of 200 does.</p>
+<p>Your 200 listings said the gap was 377. The truth is 171 — you would have valued cleaning at more than twice what it is worth. Nothing went wrong; that is simply what a sample of 200 does.</p>
 </div>
 <div class="fragment">
 <p><code>mean(sample(population, 200))</code> is one estimate from a fresh scrape of 200 listings — we vary the sample size all week. Before you run anything: which of those two numbers changes if you repeat it?</p>
@@ -505,7 +505,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4MSIsImV4MiIsImV4
 <h2>🖊️ Exercise 1 — The parameter and one estimate</h2>
 <ol type="1">
 <li class="fragment">Compute the parameter and one estimate from <code>n = 200</code>, and print them side by side.</li>
-<li class="fragment">Now produce <strong>five</strong> estimates, each from its own fresh sample of 200.</li>
+<li class="fragment">Now produce five estimates, each from its own fresh sample of 200.</li>
 <li class="fragment">Report the range they cover.</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="ex2">
@@ -529,14 +529,14 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <span id="cb2-5"><a href="" aria-hidden="true" tabindex="-1"></a>five <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">5</span>, <span class="fu">mean</span>(<span class="fu">sample</span>(population, <span class="dv">200</span>)))</span>
 <span id="cb2-6"><a href="" aria-hidden="true" tabindex="-1"></a>five</span>
 <span id="cb2-7"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(five)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The parameter printed the same number every time; the five estimates did not. They scatter around <strong>1,172</strong> by something like a hundred pesos — from the <em>same</em> market, with <em>nothing</em> changed except which 200 listings were drawn.</p>
+<p>The parameter printed the same number every time; the five estimates did not. They scatter around 1,172 by something like a hundred pesos — from the <em>same</em> market, with <em>nothing</em> changed except which 200 listings were drawn.</p>
 </div>
 </section>
 <section id="one-is-fixed-the-other-is-not" class="slide level2">
 <h2>One is fixed, the other is not</h2>
 <ul>
-<li class="fragment"><code>mean(population)</code> — the <strong>parameter</strong> — is a single fixed number. It never moves.</li>
-<li class="fragment"><code>mean(sample(population, 200))</code> — the <strong>estimate</strong> — is different on every draw.</li>
+<li class="fragment"><code>mean(population)</code> — the parameter — is a single fixed number. It never moves.</li>
+<li class="fragment"><code>mean(sample(population, 200))</code> — the estimate — is different on every draw.</li>
 </ul>
 <div class="fragment">
 <p>The next four weeks are about that second line: how far does the estimate wander, and what can we still say about the truth after seeing only one draw of it?</p>
@@ -545,17 +545,17 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section id="statistical-language-sample-goal" class="slide level2">
 <h2>Statistical language: sample &amp; goal</h2>
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Sample</strong></span>: the part of the population we have data for.
+<li class="fragment"><span style="color:#2980b9">Sample</span>: the part of the population we have data for.
 <ul>
 <li class="fragment">Our 200 listings.</li>
 </ul></li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment"><span style="color:#2980b9"><strong>Goal</strong></span>: what we want to learn about the population.
+<li class="fragment"><span style="color:#2980b9">Goal</span>: what we want to learn about the population.
 <ul>
 <li class="fragment">Is <span class="math inline">\(\mu_c &gt; \mu_d\)</span>? If so, by how much?</li>
-<li class="fragment">We don’t know <span class="math inline">\(\mu_c, \mu_d\)</span> — we <strong>guess</strong> them with an <strong>estimator</strong> and a random IID sample.</li>
+<li class="fragment">We don’t know <span class="math inline">\(\mu_c, \mu_d\)</span> — we guess them with an estimator and a random IID sample.</li>
 </ul></li>
 </ul>
 </div>
@@ -568,21 +568,21 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section id="what-is-a-random-sample" class="slide level2">
 <h2>What is a random sample?</h2>
 <ul>
-<li class="fragment"><strong>At random:</strong> each member of the population has an equal chance of being selected. Selecting is called <em>drawing</em> a sample.</li>
+<li class="fragment">At random: each member of the population has an equal chance of being selected. Selecting is called <em>drawing</em> a sample.</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Random variable <span class="math inline">\(P_i\)</span>:</strong> describes observation <span class="math inline">\(i\)</span> <em>before</em> drawing — it could be any price from the distribution.</li>
-</ul>
-</div>
-<div class="fragment">
-<ul>
-<li class="fragment"><strong>Random sample:</strong> a collection of random variables <span class="math inline">\(\{P_1, P_2, \dots, P_n\}\)</span>.</li>
+<li class="fragment">Random variable <span class="math inline">\(P_i\)</span>: describes observation <span class="math inline">\(i\)</span> <em>before</em> drawing — it could be any price from the distribution.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Observed value <span class="math inline">\(p_i\)</span>:</strong> once realized, it is a constant from our sample — no longer random.</li>
+<li class="fragment">Random sample: a collection of random variables <span class="math inline">\(\{P_1, P_2, \dots, P_n\}\)</span>.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li class="fragment">Observed value <span class="math inline">\(p_i\)</span>: once realized, it is a constant from our sample — no longer random.</li>
 </ul>
 </div>
 </section>
@@ -662,7 +662,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="random-sample-draw-2" class="slide level2">
 <h2>Random sample — Draw 2</h2>
-<p>A different draw from the <strong>same</strong> population gives <strong>different</strong> realized values:</p>
+<p>A different draw from the same population gives different realized values:</p>
 <div class="cell" data-layout-align="center">
 <table class="caption-top">
 <tbody>
@@ -696,21 +696,21 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </tbody>
 </table>
 </div>
-<p>The point estimate changes <strong>every</strong> time we draw.</p>
+<p>The point estimate changes every time we draw.</p>
 </section>
 <section id="iid-samples" class="slide level2">
 <h2>IID samples</h2>
 <ul>
-<li class="fragment"><strong>IID</strong> = Independent and Identically Distributed.</li>
+<li class="fragment">IID = Independent and Identically Distributed.</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Independent:</strong> selecting one unit <span class="math inline">\(P_i\)</span> doesn’t affect selecting another <span class="math inline">\(P_j\)</span>.</li>
+<li class="fragment">Independent: selecting one unit <span class="math inline">\(P_i\)</span> doesn’t affect selecting another <span class="math inline">\(P_j\)</span>.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Identically distributed:</strong> all units <span class="math inline">\(P_i\)</span> come from the same distribution.</li>
+<li class="fragment">Identically distributed: all units <span class="math inline">\(P_i\)</span> come from the same distribution.</li>
 </ul>
 </div>
 </section></section>
@@ -722,10 +722,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section id="estimators-intuition" class="slide level2">
 <h2>Estimators: intuition</h2>
 <ul>
-<li class="fragment">Our <strong>method of guessing</strong> the parameter from the data.</li>
+<li class="fragment">Our method of guessing the parameter from the data.</li>
 <li class="fragment">A function of the random variables in the sample: <span class="math inline">\(\hat\theta = f(P_1, \dots, P_n)\)</span>.</li>
 <li class="fragment">Because it is random, we can analyze its statistical properties.</li>
-<li class="fragment">It <strong>cannot</strong> contain unknown quantities (like <span class="math inline">\(\sigma\)</span> or <span class="math inline">\(\mu\)</span>).</li>
+<li class="fragment">It cannot contain unknown quantities (like <span class="math inline">\(\sigma\)</span> or <span class="math inline">\(\mu\)</span>).</li>
 </ul>
 </section>
 <section id="estimators-ones-weve-seen" class="slide level2">
@@ -739,7 +739,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section id="point-estimate" class="slide level2">
 <h2>Point estimate</h2>
 <ul>
-<li class="fragment">A single number computed from the <strong>realized</strong> data <span class="math inline">\(\{p_1, \dots, p_n\}\)</span>: <span class="math display">\[\cssId{mt-pbar}{\bar{p}} = f(p_1, \dots, p_n) = \frac{\cssId{mt-sumn}{\sum_n p_i}}{\cssId{mt-n}{n}}\]</span></li>
+<li class="fragment">A single number computed from the realized data <span class="math inline">\(\{p_1, \dots, p_n\}\)</span>: <span class="math display">\[\cssId{mt-pbar}{\bar{p}} = f(p_1, \dots, p_n) = \frac{\cssId{mt-sumn}{\sum_n p_i}}{\cssId{mt-n}{n}}\]</span></li>
 <li class="fragment">No longer random — it is one number from one sample.</li>
 </ul>
 <div class="mathtips">
@@ -752,7 +752,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="example-the-estimator-before-drawing" class="slide level2">
 <h2>Example: the estimator — before drawing</h2>
-<p>You want the average nightly price in Mexico City. You will draw <strong>8 listings</strong> at random and average them. Nothing has been drawn yet.</p>
+<p>You want the average nightly price in Mexico City. You will draw 8 listings at random and average them. Nothing has been drawn yet.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
 <table class="table caption-top" style="font-size: 17px; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -809,8 +809,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <p><span class="math display">\[\hat\mu = \frac{P_1 + P_2 + \dots + P_8}{8}\]</span></p>
 <ul>
-<li class="fragment">Each <span class="math inline">\(P_i\)</span> is the price of <strong>whichever listing turns up</strong> in slot <span class="math inline">\(i\)</span> — a random variable, because the draw has not happened.</li>
-<li class="fragment">So <span class="math inline">\(\hat\mu\)</span>, built out of them, is a <strong>random variable</strong> as well. It has a distribution, a mean and a variance, before you see any data.</li>
+<li class="fragment">Each <span class="math inline">\(P_i\)</span> is the price of whichever listing turns up in slot <span class="math inline">\(i\)</span> — a random variable, because the draw has not happened.</li>
+<li class="fragment">So <span class="math inline">\(\hat\mu\)</span>, built out of them, is a random variable as well. It has a distribution, a mean and a variance, before you see any data.</li>
 </ul>
 </section>
 <section id="example-the-estimator-sample-1" class="slide level2">
@@ -871,7 +871,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <p><span class="math display">\[\hat\mu = \frac{120 + 150 + 800 + 200 + 1400 + 110 + 1900 + 800}{8} = 685\]</span></p>
-<p>One number, no longer random: the <strong>point estimate</strong>.</p>
+<p>One number, no longer random: the point estimate.</p>
 </div>
 </section>
 <section id="example-the-estimator-sample-2" class="slide level2">
@@ -935,10 +935,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <p><span class="math display">\[\hat\mu = \frac{260 + 420 + 500 + 2120 + 800 + 1450 + 120 + 809}{8} = 809.875\]</span></p>
 </div>
 <div class="fragment">
-<p><strong>685 the first time, 809.9 the second.</strong> Nothing changed except which eight listings were drawn.</p>
+<p>685 the first time, 809.9 the second. Nothing changed except which eight listings were drawn.</p>
 <ul>
-<li class="fragment">The <strong>estimator</strong> <span class="math inline">\(\hat\mu\)</span> is the rule. It is random, and it has a distribution.</li>
-<li class="fragment">The <strong>point estimate</strong> is one number that rule produced on one sample.</li>
+<li class="fragment">The estimator <span class="math inline">\(\hat\mu\)</span> is the rule. It is random, and it has a distribution.</li>
+<li class="fragment">The point estimate is one number that rule produced on one sample.</li>
 <li class="fragment">Every question this week is about that distribution: where is it centred, and how wide is it?</li>
 </ul>
 </div>
@@ -950,8 +950,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment">We <strong>can’t</strong> say how close this one number is to the true mean without knowing the population.</li>
-<li class="fragment">But we <strong>can</strong> judge our <em>method</em> (the estimator) by looking at <strong>every estimate it could have produced</strong>.</li>
+<li class="fragment">We can’t say how close this one number is to the true mean without knowing the population.</li>
+<li class="fragment">But we can judge our <em>method</em> (the estimator) by looking at every estimate it could have produced.</li>
 </ul>
 </div>
 </section>
@@ -971,12 +971,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <p>The same parameter can be estimated in many different ways. For the average price you could take the sample mean, the median, the midpoint of the cheapest and dearest listing, or simply the first listing you happened to scrape. All of them are estimators.</p>
 <p><strong>So which ones are any good?</strong></p>
 <div class="fragment">
-<p>To judge a <strong>method</strong> rather than a single number, ask three things about its sampling distribution:</p>
+<p>To judge a method rather than a single number, ask three things about its sampling distribution:</p>
 </div>
 <ol type="1">
-<li class="fragment"><p><strong>Where is it centred?</strong> — its expectation <span class="math inline">\(\cssId{mt-expest}{E[\hat\theta]}\)</span>. If that sits on the parameter, the estimator is <strong>unbiased</strong>: it is right <em>on average</em>.</p></li>
-<li class="fragment"><p><strong>How wide is it?</strong> — its variance <span class="math inline">\(\cssId{mt-varest}{Var(\hat\theta)}\)</span>. How often does a single estimate land close to that centre?</p></li>
-<li class="fragment"><p><strong>What shape is it?</strong> — the whole distribution. Only the shape lets you attach <strong>confidence</strong> to a number: <em>“we are 95% confident the true mean is within 100 pesos of our estimate”</em>. That is next week’s business.</p></li>
+<li class="fragment"><p>Where is it centred? — its expectation <span class="math inline">\(\cssId{mt-expest}{E[\hat\theta]}\)</span>. If that sits on the parameter, the estimator is unbiased: it is right <em>on average</em>.</p></li>
+<li class="fragment"><p>How wide is it? — its variance <span class="math inline">\(\cssId{mt-varest}{Var(\hat\theta)}\)</span>. How often does a single estimate land close to that centre?</p></li>
+<li class="fragment"><p>What shape is it? — the whole distribution. Only the shape lets you attach confidence to a number: <em>“we are 95% confident the true mean is within 100 pesos of our estimate”</em>. That is next week’s business.</p></li>
 </ol>
 <div class="mathtips">
 <ul>
@@ -992,12 +992,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <h2>The expectation of an estimator</h2>
 <p>Three symbols that are easy to confuse.</p>
 <ul>
-<li class="fragment"><p><span class="math inline">\(\theta\)</span> — the <strong>parameter</strong>. One fixed, unknown number about the population: the average price of every listing in the city, or the clean-minus-dirty gap. It never moves, and you never see it.</p></li>
-<li class="fragment"><p><span class="math inline">\(\hat\theta\)</span> — the <strong>estimator</strong>. The rule you apply to a sample. It is random: draw a different sample and it hands you a different number.</p></li>
-<li class="fragment"><p><span class="math inline">\(E[\hat\theta]\)</span> — the <strong>expectation of the estimator</strong>. Take every sample you could have drawn, apply the rule to each, and average all those answers.</p></li>
+<li class="fragment"><p><span class="math inline">\(\theta\)</span> — the parameter. One fixed, unknown number about the population: the average price of every listing in the city, or the clean-minus-dirty gap. It never moves, and you never see it.</p></li>
+<li class="fragment"><p><span class="math inline">\(\hat\theta\)</span> — the estimator. The rule you apply to a sample. It is random: draw a different sample and it hands you a different number.</p></li>
+<li class="fragment"><p><span class="math inline">\(E[\hat\theta]\)</span> — the expectation of the estimator. Take every sample you could have drawn, apply the rule to each, and average all those answers.</p></li>
 </ul>
 <div class="fragment">
-<p><span class="math inline">\(E[\hat\theta]\)</span> is <strong>not</strong> the average of your data. It is the centre of the sampling distribution — the average of numbers you never computed, from samples you never drew.</p>
+<p><span class="math inline">\(E[\hat\theta]\)</span> is not the average of your data. It is the centre of the sampling distribution — the average of numbers you never computed, from samples you never drew.</p>
 </div>
 </section>
 <section id="bias-is-the-rule-right-on-average" class="slide level2">
@@ -1012,15 +1012,15 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">An estimator is <strong>unbiased</strong> when <span class="math inline">\(E[\hat\theta] = \theta\)</span> — for <em>any</em> value <span class="math inline">\(\theta\)</span> might take. Its sampling distribution is centred exactly on the parameter.</li>
-<li class="fragment">That is a statement about the <strong>rule</strong>, not about your sample. An unbiased rule can still hand you a number far from <span class="math inline">\(\theta\)</span>; bias is about the <strong>centre</strong>, not the <strong>width</strong>.</li>
+<li class="fragment">An estimator is unbiased when <span class="math inline">\(E[\hat\theta] = \theta\)</span> — for <em>any</em> value <span class="math inline">\(\theta\)</span> might take. Its sampling distribution is centred exactly on the parameter.</li>
+<li class="fragment">That is a statement about the rule, not about your sample. An unbiased rule can still hand you a number far from <span class="math inline">\(\theta\)</span>; bias is about the centre, not the width.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>To see it:</strong> take many samples, compute the estimator in each, and average those values — does that average land on the parameter?</li>
-<li class="fragment"><strong>In practice you have one sample</strong>, so you can never actually do that.</li>
-<li class="fragment">But you can usually <strong>derive</strong> <span class="math inline">\(E[\hat\theta]\)</span> on paper, with no data at all. That is what the next few slides do.</li>
+<li class="fragment">To see it: take many samples, compute the estimator in each, and average those values — does that average land on the parameter?</li>
+<li class="fragment">In practice you have one sample, so you can never actually do that.</li>
+<li class="fragment">But you can usually derive <span class="math inline">\(E[\hat\theta]\)</span> on paper, with no data at all. That is what the next few slides do.</li>
 </ul>
 </div>
 </section>
@@ -1030,10 +1030,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <ul>
 <li class="fragment"><span class="math inline">\(\hat\theta_1 = \frac{3X_1 + X_2}{4}\)</span> — leans almost entirely on the first observation.</li>
 <li class="fragment"><span class="math inline">\(\hat\theta_2 = \frac{3X_1 + X_2}{5}\)</span> — the same idea with different weights.</li>
-<li class="fragment"><span class="math inline">\(\hat\theta_3 = \bar X = \frac{\sum_{i=1}^{n} X_i}{n}\)</span> — the <strong>sample mean</strong>, whatever <span class="math inline">\(n\)</span> happens to be.</li>
+<li class="fragment"><span class="math inline">\(\hat\theta_3 = \bar X = \frac{\sum_{i=1}^{n} X_i}{n}\)</span> — the sample mean, whatever <span class="math inline">\(n\)</span> happens to be.</li>
 </ul>
 <div class="fragment">
-<p>Which of them are <strong>unbiased</strong>? And is unbiased the same as good?</p>
+<p>Which of them are unbiased? And is unbiased the same as good?</p>
 </div>
 </section>
 <section id="example-1-hattheta_1-frac3x_1-x_24" class="slide level2">
@@ -1048,7 +1048,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">Bias: <span class="math inline">\(\mu - \mu = 0\)</span> → <strong>unbiased</strong>. The weights add to 1, which is all that is needed.</li>
+<li class="fragment">Bias: <span class="math inline">\(\mu - \mu = 0\)</span> → unbiased. The weights add to 1, which is all that is needed.</li>
 <li class="fragment">But it throws away <span class="math inline">\(X_3\)</span> and <span class="math inline">\(X_4\)</span> entirely. Is it a <em>good</em> estimator? (We come back to this.)</li>
 </ul>
 </div>
@@ -1065,7 +1065,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">Bias: <span class="math inline">\(\tfrac{4}{5}\mu - \mu = -\tfrac{1}{5}\mu\)</span> → <strong>biased</strong> (weights don’t sum to 1).</li>
+<li class="fragment">Bias: <span class="math inline">\(\tfrac{4}{5}\mu - \mu = -\tfrac{1}{5}\mu\)</span> → biased (weights don’t sum to 1).</li>
 </ul>
 </div>
 </section>
@@ -1081,27 +1081,27 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">Bias: <span class="math inline">\(0\)</span> → <strong>unbiased</strong>. The sample mean is our workhorse estimator.</li>
+<li class="fragment">Bias: <span class="math inline">\(0\)</span> → unbiased. The sample mean is our workhorse estimator.</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">Look at what that proof needed: only that each <span class="math inline">\(E(X_i) = \mu\)</span>. <strong>We never had to know what <span class="math inline">\(\mu\)</span> is</strong> — and we never will.</li>
+<li class="fragment">Look at what that proof needed: only that each <span class="math inline">\(E(X_i) = \mu\)</span>. We never had to know what <span class="math inline">\(\mu\)</span> is — and we never will.</li>
 <li class="fragment">That is exactly why it is useful. Whatever the true average price turns out to be, the sample mean is aimed at it — so the number your one sample hands you is real information about <span class="math inline">\(\mu\)</span>.</li>
 </ul>
 </div>
 </section>
 <section id="two-unbiased-estimators-is-one-of-them-better" class="slide level2">
 <h2>Two unbiased estimators — is one of them better?</h2>
-<p>So we want an estimator that is <strong>unbiased</strong>. That rules out <span class="math inline">\(\hat\theta_2\)</span> — but it left <em>two</em> survivors, and it will often leave more than one. <strong>How do we choose between them?</strong></p>
+<p>So we want an estimator that is unbiased. That rules out <span class="math inline">\(\hat\theta_2\)</span> — but it left <em>two</em> survivors, and it will often leave more than one. How do we choose between them?</p>
 <div class="fragment">
-<p>The two survivors are <span class="math inline">\(\hat\theta_1\)</span> and <span class="math inline">\(\hat\theta_3\)</span>. To compare them concretely, take a sample of <strong>four</strong> observations, so the sample mean is <span class="math inline">\(\bar X = \frac{X_1+X_2+X_3+X_4}{4}\)</span>:</p>
+<p>The two survivors are <span class="math inline">\(\hat\theta_1\)</span> and <span class="math inline">\(\hat\theta_3\)</span>. To compare them concretely, take a sample of four observations, so the sample mean is <span class="math inline">\(\bar X = \frac{X_1+X_2+X_3+X_4}{4}\)</span>:</p>
 <ul>
 <li class="fragment"><span class="math inline">\(\hat\theta_1 = \frac{3X_1 + X_2}{4}\)</span> — three quarters of the weight on one observation.</li>
 <li class="fragment"><span class="math inline">\(\hat\theta_3 = \frac{X_1+X_2+X_3+X_4}{4}\)</span> — the weight spread evenly over all four.</li>
 </ul>
 <div class="fragment">
-<p>The weights sum to 1 in both, so both are <strong>unbiased</strong>. Bias cannot separate them.</p>
+<p>The weights sum to 1 in both, so both are unbiased. Bias cannot separate them.</p>
 </div>
 <div class="fragment">
 <p>Which one would you rather report — and what evidence would settle it?</p>
@@ -1115,11 +1115,11 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <img data-src="W04_live_files/figure-revealjs/var_eff-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><ul>
 <li class="fragment">Both histograms are centred on the true value — unbiased, exactly as the algebra said.</li>
 <li class="fragment">But <span class="math inline">\(\hat\theta_1\)</span>’s estimates are spread much wider. Plenty of them land 5 or more away from the truth; <span class="math inline">\(\hat\theta_3\)</span>’s almost never do.</li>
-<li class="fragment"><strong>You only ever draw one sample.</strong> A wide estimator is right <em>on average</em> and can still hand you an answer far from <span class="math inline">\(\mu\)</span> — and you would never know.</li>
-<li class="fragment">So among unbiased estimators, the one whose estimates cluster <strong>tightest</strong> is the one you want. It is called the more <strong>efficient</strong> estimator.</li>
+<li class="fragment">You only ever draw one sample. A wide estimator is right <em>on average</em> and can still hand you an answer far from <span class="math inline">\(\mu\)</span> — and you would never know.</li>
+<li class="fragment">So among unbiased estimators, the one whose estimates cluster tightest is the one you want. It is called the more efficient estimator.</li>
 </ul>
 <div class="fragment">
-<p>To rank them we need a number for that spread — the <strong>variance of the estimator</strong>.</p>
+<p>To rank them we need a number for that spread — the variance of the estimator.</p>
 </div>
 </section>
 <section id="variance-of-an-estimator-the-definition" class="slide level2">
@@ -1135,8 +1135,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <div class="fragment">
 <p>Two rules turn that definition into numbers:</p>
 <ul>
-<li class="fragment">a constant comes out <strong>squared</strong>: <span class="math inline">\(Var(aX) = a^2 Var(X)\)</span></li>
-<li class="fragment">for <strong>independent</strong> draws the variance of a sum is the sum of the variances.</li>
+<li class="fragment">a constant comes out squared: <span class="math inline">\(Var(aX) = a^2 Var(X)\)</span></li>
+<li class="fragment">for independent draws the variance of a sum is the sum of the variances.</li>
 </ul>
 <div class="fragment">
 <p>Apply them to each candidate and the numbers fall straight out.</p>
@@ -1145,7 +1145,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="variance-worked-examples" class="slide level2">
 <h2>Variance: worked examples</h2>
-<p>All three estimate the same <span class="math inline">\(\mu\)</span> from the same four draws. Only the <strong>weights</strong> differ.</p>
+<p>All three estimate the same <span class="math inline">\(\mu\)</span> from the same four draws. Only the weights differ.</p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 20%">
@@ -1193,7 +1193,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="relative-efficiency" class="slide level2">
 <h2>Relative efficiency</h2>
-<p>Among <strong>unbiased</strong> estimators, the smaller variance wins:</p>
+<p>Among unbiased estimators, the smaller variance wins:</p>
 <p><span class="math display">\[\cssId{mt-varA}{Var(\hat\theta_1)} = \tfrac{10\sigma^2}{16} \;&gt;\; \tfrac{4\sigma^2}{16} = \cssId{mt-varB}{Var(\hat\theta_3)}\]</span></p>
 <div class="mathtips">
 <ul>
@@ -1203,12 +1203,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <p><span class="math display">\[Eff(\hat\theta_3, \hat\theta_1) = \frac{Var(\hat\theta_1)}{Var(\hat\theta_3)} = \frac{10}{4} = 2.5\]</span></p>
-<p>The sample mean is <strong>2.5× as efficient</strong>.</p>
+<p>The sample mean is 2.5× as efficient.</p>
 </div>
 </section>
 <section id="side-note-what-if-variables-arent-independent" class="slide level2">
 <h2>Side note: what if variables aren’t independent?</h2>
-<p>So far we assumed independence. Suppose <span class="math inline">\(X_1, X_2\)</span> are <strong>not</strong> independent (e.g.&nbsp;daily sales of two products in one store).</p>
+<p>So far we assumed independence. Suppose <span class="math inline">\(X_1, X_2\)</span> are not independent (e.g.&nbsp;daily sales of two products in one store).</p>
 <div class="fragment">
 <ul>
 <li class="fragment"><span class="math inline">\(E(X_1 + X_2) = E(X_1) + E(X_2)\)</span> (always true).</li>
@@ -1227,7 +1227,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="mse-split" class="slide level2">
 <h2>Mean Squared Error (MSE)</h2>
-<p>One number for how good an estimator is — how far it lands from the <strong>truth</strong>, on average:</p>
+<p>One number for how good an estimator is — how far it lands from the truth, on average:</p>
 <p><span class="math display">\[\cssId{mt-mse}{MSE(\hat\theta)} = \cssId{mt-EavgM}{E}\big[\cssId{mt-errtrue}{(\hat\theta - \theta)}^2\big]\]</span></p>
 <div class="mathtips">
 <ul>
@@ -1248,8 +1248,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment"><strong>Variance</strong> — how much your answer moves when the sample changes.</li>
-<li class="fragment"><strong>Bias²</strong> — how far the method is off on average.</li>
+<li class="fragment">Variance — how much your answer moves when the sample changes.</li>
+<li class="fragment">Bias² — how far the method is off on average.</li>
 <li class="fragment">If the estimator is unbiased, the second term is zero and <span class="math inline">\(MSE(\hat\theta) = Var(\hat\theta)\)</span>.</li>
 </ul>
 <div class="fragment">
@@ -1262,8 +1262,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <p>Nothing says the winner on MSE has to be unbiased. A method that is slightly off but very steady can beat one that is right on average but jumps around.</p>
 <div class="fragment">
 <ul>
-<li class="fragment">MSE is <strong>one suggestion</strong> of which estimator is better — it weighs bias and variance against each other in a particular way.</li>
-<li class="fragment">It is not a law. Whether you would rather be <strong>unbiased</strong> or have <strong>low variance</strong> depends on what the number is for.</li>
+<li class="fragment">MSE is one suggestion of which estimator is better — it weighs bias and variance against each other in a particular way.</li>
+<li class="fragment">It is not a law. Whether you would rather be unbiased or have low variance depends on what the number is for.</li>
 </ul>
 </div>
 <div class="fragment">
@@ -1277,28 +1277,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section>
 <section id="the-central-limit-theorem" class="title-slide slide level1 center">
 <h1>5 · The Central Limit Theorem</h1>
-<p>Centre and spread are settled. What is the <strong>shape</strong>?</p>
+<p>Centre and spread are settled. What is the shape?</p>
 </section>
 <section id="from-sampling-distribution-to-the-clt" class="slide level2">
 <h2>From sampling distribution to the CLT</h2>
 <ul>
-<li class="fragment">We know the <strong>mean</strong> and <strong>variance</strong> of the sample mean. Can we say anything about its <strong>whole distribution</strong>?</li>
+<li class="fragment">We know the mean and variance of the sample mean. Can we say anything about its whole distribution?</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment">For the sample mean — <strong>yes!</strong></li>
+<li class="fragment">For the sample mean — yes!</li>
 </ul>
 </div>
 <div class="fragment">
 <ul>
-<li class="fragment">That’s the <strong>Central Limit Theorem</strong>, the most exciting theorem in statistics.</li>
+<li class="fragment">That’s the Central Limit Theorem, the most exciting theorem in statistics.</li>
 </ul>
 </div>
 </section>
 <section id="clt-the-setup" class="slide level2">
 <h2>CLT: the setup</h2>
-<p>Take <span class="math inline">\(X_1, \dots, X_n\)</span> <strong>i.i.d.</strong> with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>.</p>
-<p>The theorem talks about <strong>three quantities</strong>, and they are the same thing rescaled:</p>
+<p>Take <span class="math inline">\(X_1, \dots, X_n\)</span> i.i.d. with mean <span class="math inline">\(\mu\)</span> and standard deviation <span class="math inline">\(\sigma\)</span>.</p>
+<p>The theorem talks about three quantities, and they are the same thing rescaled:</p>
 <table class="caption-top" style="width:100%;">
 <colgroup>
 <col style="width: 21%">
@@ -1316,19 +1316,19 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Sum</strong></td>
+<td style="text-align: left;">Sum</td>
 <td style="text-align: left;"><span class="math inline">\(S_n = \sum_{i=1}^{n} X_i\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(n\mu\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(\sqrt{n}\,\sigma\)</span></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Mean</strong></td>
+<td style="text-align: left;">Mean</td>
 <td style="text-align: left;"><span class="math inline">\(\bar X_n = \dfrac{S_n}{n}\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(\mu\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(\dfrac{\sigma}{\sqrt{n}}\)</span></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Standardized</strong></td>
+<td style="text-align: left;">Standardized</td>
 <td style="text-align: left;"><span class="math inline">\(Z_n = \dfrac{\bar X_n - \mu}{\sigma/\sqrt{n}}\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(0\)</span></td>
 <td style="text-align: center;"><span class="math inline">\(1\)</span></td>
@@ -1337,21 +1337,21 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </table>
 <div class="fragment">
 <ul>
-<li class="fragment">Divide the <strong>sum</strong> by <span class="math inline">\(n\)</span> and you get the <strong>mean</strong>: the centre drops from <span class="math inline">\(n\mu\)</span> to <span class="math inline">\(\mu\)</span> and the spread from <span class="math inline">\(\sqrt{n}\sigma\)</span> to <span class="math inline">\(\sigma/\sqrt{n}\)</span>. Sums get <em>more</em> variable with <span class="math inline">\(n\)</span>; averages get <em>less</em>.</li>
+<li class="fragment">Divide the sum by <span class="math inline">\(n\)</span> and you get the mean: the centre drops from <span class="math inline">\(n\mu\)</span> to <span class="math inline">\(\mu\)</span> and the spread from <span class="math inline">\(\sqrt{n}\sigma\)</span> to <span class="math inline">\(\sigma/\sqrt{n}\)</span>. Sums get <em>more</em> variable with <span class="math inline">\(n\)</span>; averages get <em>less</em>.</li>
 <li class="fragment">Subtract the centre and divide by the spread and you get <span class="math inline">\(Z_n\)</span> — the same quantity with the units stripped off.</li>
 </ul>
 <div class="fragment">
-<p>That <span class="math inline">\(\dfrac{\sigma}{\sqrt{n}}\)</span> has a name: the <strong>standard error</strong> of the mean. It is the standard deviation of <span class="math inline">\(\bar X_n\)</span>, not of the data.</p>
+<p>That <span class="math inline">\(\dfrac{\sigma}{\sqrt{n}}\)</span> has a name: the standard error of the mean. It is the standard deviation of <span class="math inline">\(\bar X_n\)</span>, not of the data.</p>
 </div>
 </div>
 </section>
 <section id="clt-the-theorem" class="slide level2">
 <h2>CLT: the theorem</h2>
-<p>For <strong>large <span class="math inline">\(n\)</span></strong>:</p>
+<p>For large <span class="math inline">\(n\)</span>:</p>
 <p><span class="math display">\[\small \cssId{mt-Sn}{S_n} \mathrel{\cssId{mt-approx}{\dot\sim}} \mathcal{N}\!\left(n\mu,\,\sqrt{n}\,\sigma\right), \quad \cssId{mt-Xbarn}{\bar{X}_n} \mathrel{\dot\sim} \mathcal{N}\!\left(\cssId{mt-mu}{\mu},\,\cssId{mt-se}{\tfrac{\sigma}{\sqrt{n}}}\right), \quad \cssId{mt-Zn}{Z_n} \mathrel{\dot\sim} \cssId{mt-stdnorm}{\mathcal{N}(0,1)}\]</span></p>
 <ul>
-<li class="fragment">In large samples <span class="math inline">\(\bar{X}_n\)</span> is <strong>approximately normal</strong>, centered at <span class="math inline">\(\mu\)</span>, with st. dev. <span class="math inline">\(\frac{\sigma}{\sqrt{n}}\)</span>.</li>
-<li class="fragment">As <span class="math inline">\(n\)</span> grows, the approximation improves and the spread <strong>shrinks with <span class="math inline">\(\sqrt{n}\)</span></strong>.</li>
+<li class="fragment">In large samples <span class="math inline">\(\bar{X}_n\)</span> is approximately normal, centered at <span class="math inline">\(\mu\)</span>, with st. dev. <span class="math inline">\(\frac{\sigma}{\sqrt{n}}\)</span>.</li>
+<li class="fragment">As <span class="math inline">\(n\)</span> grows, the approximation improves and the spread shrinks with <span class="math inline">\(\sqrt{n}\)</span>.</li>
 </ul>
 <div class="mathtips">
 <ul>
@@ -1368,7 +1368,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 <section id="clt-what-drives-the-shape" class="slide level2">
 <h2>CLT: what drives the shape</h2>
 <ul>
-<li class="fragment">The <strong>original</strong> distribution of <span class="math inline">\(X_i\)</span> doesn’t matter (but outliers slow convergence).</li>
+<li class="fragment">The original distribution of <span class="math inline">\(X_i\)</span> doesn’t matter (but outliers slow convergence).</li>
 <li class="fragment">Larger <span class="math inline">\(n\)</span> → tighter distribution around the mean.</li>
 <li class="fragment">Smaller <span class="math inline">\(\sigma\)</span> → tighter distribution around the mean.</li>
 </ul>
@@ -1380,7 +1380,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="clt-simulate-it-even-for-discrete-data" class="slide level2">
 <h2>CLT: simulate it (even for discrete data)</h2>
-<p><span class="math inline">\(X_i \sim \text{Bernoulli}(0.5)\)</span>. Distribution of <span class="math inline">\(\bar{X}_n\)</span> for growing <span class="math inline">\(n\)</span> — it becomes normal and <strong>tighter</strong>:</p>
+<p><span class="math inline">\(X_i \sim \text{Bernoulli}(0.5)\)</span>. Distribution of <span class="math inline">\(\bar{X}_n\)</span> for growing <span class="math inline">\(n\)</span> — it becomes normal and tighter:</p>
 
 <img data-src="W04_live_files/figure-revealjs/clt_bern-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><ul>
 <li class="fragment">St.&nbsp;dev. of the mean: <span class="math inline">\(\sigma_{\bar X} = \frac{\sigma_X}{\sqrt n} = \frac{\sqrt{p(1-p)}}{\sqrt n} = \frac{0.5}{\sqrt n}\)</span>.</li>
@@ -1388,13 +1388,13 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="what-if-i-dont-know-sigma" class="slide level2">
 <h2>What if I don’t know <span class="math inline">\(\sigma\)</span>?</h2>
-<p>Store sales are normal with mean 200 and <strong>unknown</strong> variance. Take <span class="math inline">\(n = 80\)</span> stores: <span class="math inline">\(P\big(\bar{X} &gt; 220\big)\)</span>?</p>
+<p>Store sales are normal with mean 200 and unknown variance. Take <span class="math inline">\(n = 80\)</span> stores: <span class="math inline">\(P\big(\bar{X} &gt; 220\big)\)</span>?</p>
 <ul>
 <li class="fragment">By the CLT, <span class="math inline">\(\bar{X} \sim \mathcal{N}\!\left(200, \frac{\sigma}{\sqrt{80}}\right)\)</span> — but <span class="math inline">\(\sigma\)</span> is unknown.</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment">Use the <strong>sample</strong> standard deviation to estimate <span class="math inline">\(\sigma\)</span>.</li>
+<li class="fragment">Use the sample standard deviation to estimate <span class="math inline">\(\sigma\)</span>.</li>
 </ul>
 </div>
 <div class="fragment">
@@ -1406,7 +1406,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgyIiwicGVyc2lzdCI6
 </section>
 <section id="exam-spotlight" class="slide level2 scrollable">
 <h2>🖊️ Exercise 9 — A probability from the CLT</h2>
-<p>Monthly sales at your stores are normal with mean <strong>200</strong> (thousand pesos) and <strong>unknown</strong> variance. You have last month’s figures for <strong>80 stores</strong> in <code>store_sales</code>.</p>
+<p>Monthly sales at your stores are normal with mean 200 (thousand pesos) and unknown variance. You have last month’s figures for 80 stores in <code>store_sales</code>.</p>
 <p><strong>What is the probability that 80 stores average more than 220?</strong></p>
 <p>Four steps.</p>
 <div class="cell" data-layout-align="center" data-exercise="clt1">
@@ -1443,26 +1443,26 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 <tr class="odd">
 <td style="text-align: left;">Estimate <span class="math inline">\(\sigma\)</span></td>
 <td style="text-align: left;">$s = $ <code>sd(store_sales)</code></td>
-<td style="text-align: left;"><strong>87.55</strong></td>
+<td style="text-align: left;">87.55</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Standard error</td>
 <td style="text-align: left;"><span class="math inline">\(s/\sqrt{80}\)</span></td>
-<td style="text-align: left;"><strong>9.79</strong></td>
+<td style="text-align: left;">9.79</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Distance to 220</td>
 <td style="text-align: left;"><span class="math inline">\(z = \dfrac{220-200}{9.79}\)</span></td>
-<td style="text-align: left;"><strong>2.04</strong></td>
+<td style="text-align: left;">2.04</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Probability above</td>
 <td style="text-align: left;"><span class="math inline">\(1 - \Phi(2.04)\)</span></td>
-<td style="text-align: left;"><strong>0.021</strong></td>
+<td style="text-align: left;">0.021</td>
 </tr>
 </tbody>
 </table>
-<p>About a <strong>2% chance</strong>. 220 is only 20 above the claimed mean, but the <em>mean of 80 stores</em> barely moves — one standard error is under 10 — so 20 is a long way out.</p>
+<p>About a 2% chance. 220 is only 20 above the claimed mean, but the <em>mean of 80 stores</em> barely moves — one standard error is under 10 — so 20 is a long way out.</p>
 <p>Note what happened at step 1: <span class="math inline">\(\sigma\)</span> was unknown, so we used <span class="math inline">\(s\)</span> in its place. That adds a little extra uncertainty, which is invisible here and is exactly what Week 5 fixes.</p>
 </div>
 <p><a href="#/exam-practice">→ More exam practice at the end of this deck</a></p>
@@ -1470,15 +1470,15 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 <section id="what-you-must-be-able-to-do-this-week" class="slide level2">
 <h2>What you must be able to do this week</h2>
 <ul>
-<li class="fragment">Tell a <strong>parameter</strong> from a <strong>statistic</strong> — and, given a scenario in words, name the <strong>population</strong>, the <strong>sample</strong>, the parameter and the statistic. A parameter can be a mean, a proportion or a variance.</li>
-<li class="fragment">Tell a <strong>random variable <span class="math inline">\(P_i\)</span></strong> from a <strong>realized value <span class="math inline">\(p_i\)</span></strong>, and state what makes a sample <strong>IID</strong>.</li>
-<li class="fragment">Write an <strong>estimator</strong> as a function of the sample and compute a <strong>point estimate</strong>.</li>
-<li class="fragment">Check an estimator for <strong>bias</strong>, compare two by <strong>variance/efficiency</strong>, and combine both via <strong>MSE = Var + Bias²</strong>.</li>
-<li class="fragment">Describe the <strong>sampling distribution</strong> of the mean and <strong>simulate</strong> it in R.</li>
-<li class="fragment">State the <strong>CLT</strong>: <span class="math inline">\(\bar{X}_n \approx \mathcal{N}(\mu, \sigma/\sqrt{n})\)</span> — approximately normal, centered at <span class="math inline">\(\mu\)</span>, spread <strong>shrinking with <span class="math inline">\(\sqrt{n}\)</span></strong>.</li>
+<li class="fragment">Tell a parameter from a statistic — and, given a scenario in words, name the population, the sample, the parameter and the statistic. A parameter can be a mean, a proportion or a variance.</li>
+<li class="fragment">Tell a random variable <span class="math inline">\(P_i\)</span> from a realized value <span class="math inline">\(p_i\)</span>, and state what makes a sample IID.</li>
+<li class="fragment">Write an estimator as a function of the sample and compute a point estimate.</li>
+<li class="fragment">Check an estimator for bias, compare two by variance/efficiency, and combine both via MSE = Var + Bias².</li>
+<li class="fragment">Describe the sampling distribution of the mean and simulate it in R.</li>
+<li class="fragment">State the CLT: <span class="math inline">\(\bar{X}_n \approx \mathcal{N}(\mu, \sigma/\sqrt{n})\)</span> — approximately normal, centered at <span class="math inline">\(\mu\)</span>, spread shrinking with <span class="math inline">\(\sqrt{n}\)</span>.</li>
 </ul>
 <div class="fragment">
-<p><strong>Next week (W5):</strong> turn the sampling distribution into <strong>confidence intervals</strong>.</p>
+<p>Next week (W5): turn the sampling distribution into confidence intervals.</p>
 </div>
 </section></section>
 <section>
@@ -1486,13 +1486,15 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 <h1>Appendix — optional theory refresher</h1>
 
 </section>
-<section id="par-stat-practice" class="slide level2">
+<section id="par-stat-practice" class="slide level2 scrollable">
 <h2>Parameter or statistic?</h2>
-<p>For each one name <strong>all four</strong> — population, sample, parameter, statistic — and say which of them you actually have.</p>
-<p><strong>1.</strong> Spotify wants the share of songs listeners skip in the first 30 seconds. Its servers logged <strong>every</strong> play in Mexico last month: 24.1% were skipped.</p>
-<p><strong>2.</strong> A distillery must certify the mean alcohol content of a batch of 50,000 bottles. Testing opens the bottle, so 60 are tested and average 38.4%.</p>
-<p><strong>3.</strong> You want to know how long a DiDi takes to arrive in Polanco on a Friday night. You open the app at 20 random moments over a month; the average wait is 4.2 minutes.</p>
-<p><strong>4.</strong> A supplier wants to know how unevenly customers spend at Oxxo. From till records for 3,000 visits across 12 stores it computes a variance of 8,900 pesos².</p>
+<p>For each one name all four — population, sample, parameter, statistic — and say which of them you actually have.</p>
+<ol type="1">
+<li class="fragment"><p>Spotify wants the share of songs listeners skip in the first 30 seconds. Its servers logged every play in Mexico last month: 24.1% were skipped.</p></li>
+<li class="fragment"><p>A distillery must certify the mean alcohol content of a batch of 50,000 bottles. Testing opens the bottle, so 60 are tested and average 38.4%.</p></li>
+<li class="fragment"><p>You want to know how long a DiDi takes to arrive in Polanco on a Friday night. You open the app at 20 random moments over a month; the average wait is 4.2 minutes.</p></li>
+<li class="fragment"><p>A supplier wants to know how unevenly customers spend at Oxxo. From till records for 3,000 visits across 12 stores it computes a variance of 8,900 pesos².</p></li>
+</ol>
 </section>
 <section id="parameter-or-statistic-the-answers" class="slide level2 scrollable">
 <h2>Parameter or statistic? The answers</h2>
@@ -1515,28 +1517,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Spotify</strong></td>
+<td>Spotify</td>
 <td>every play in Mexico last month</td>
-<td><strong>none</strong> — the log covers all of them</td>
-<td><span class="math inline">\(\pi\)</span>, the share skipped — <strong>it is 24.1%</strong></td>
-<td><strong>none</strong>, nothing was estimated</td>
+<td>none — the log covers all of them</td>
+<td><span class="math inline">\(\pi\)</span>, the share skipped — it is 24.1%</td>
+<td>none, nothing was estimated</td>
 </tr>
 <tr class="even">
-<td><strong>Tequila</strong></td>
+<td>Tequila</td>
 <td>the 50,000 bottles in the batch</td>
 <td>the 60 bottles opened</td>
 <td><span class="math inline">\(\mu\)</span>, mean alcohol content of all 50,000</td>
 <td><span class="math inline">\(\bar{x} = 38.4\%\)</span></td>
 </tr>
 <tr class="odd">
-<td><strong>DiDi</strong></td>
+<td>DiDi</td>
 <td>every Friday-night ride request in Polanco</td>
 <td>the 20 moments you checked</td>
 <td><span class="math inline">\(\mu\)</span>, mean waiting time</td>
 <td><span class="math inline">\(\bar{x} = 4.2\)</span> min</td>
 </tr>
 <tr class="even">
-<td><strong>Oxxo</strong></td>
+<td>Oxxo</td>
 <td>every Oxxo visit</td>
 <td>the 3,000 recorded visits</td>
 <td><span class="math inline">\(\sigma^2\)</span>, variance of spending</td>
@@ -1545,10 +1547,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 </tbody>
 </table>
 <ul>
-<li class="fragment"><strong>Spotify:</strong> being computed by a machine from millions of rows does not make a number a statistic. Ask for <em>next</em> month’s rate instead and everything changes — that population has not happened, so it can only be estimated.</li>
-<li class="fragment"><strong>Tequila:</strong> <span class="math inline">\(\mu\)</span> exists and will never be measured. Measuring it means destroying everything you were going to sell.</li>
-<li class="fragment"><strong>DiDi:</strong> <span class="math inline">\(\bar{x}\)</span> estimates <span class="math inline">\(\mu\)</span> only if the 20 moments were spread across the night. Twenty checks all made at 9 pm estimate the 9 pm wait.</li>
-<li class="fragment"><strong>Oxxo:</strong> a spread is a parameter exactly as much as a mean is. What makes a number a statistic is <strong>where it was computed</strong>, never what kind of number it is.</li>
+<li class="fragment">Spotify: being computed by a machine from millions of rows does not make a number a statistic. Ask for <em>next</em> month’s rate instead and everything changes — that population has not happened, so it can only be estimated.</li>
+<li class="fragment">Tequila: <span class="math inline">\(\mu\)</span> exists and will never be measured. Measuring it means destroying everything you were going to sell.</li>
+<li class="fragment">DiDi: <span class="math inline">\(\bar{x}\)</span> estimates <span class="math inline">\(\mu\)</span> only if the 20 moments were spread across the night. Twenty checks all made at 9 pm estimate the 9 pm wait.</li>
+<li class="fragment">Oxxo: a spread is a parameter exactly as much as a mean is. What makes a number a statistic is where it was computed, never what kind of number it is.</li>
 </ul>
 <div class="fragment">
 <p><a href="#/name-the-four-pieces">→ Four more to work through</a> &nbsp;·&nbsp; <a href="#/stat-language">← Back to Statistical language</a></p>
@@ -1556,7 +1558,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 </section>
 <section id="name-the-four-pieces" class="slide level2">
 <h2>Name the four pieces</h2>
-<p>What is the <strong>population</strong>, the <strong>sample</strong>, the <strong>parameter</strong> and the <strong>statistic</strong> here?</p>
+<p>What is the population, the sample, the parameter and the statistic here?</p>
 <ul>
 <li class="fragment">You want to know the probability that a user who got a match on Tinder goes on a date with that person. You survey 1000 users and ask, for each match they got, whether they went on a date. You then calculate the share of matches that ended in a date for those users.</li>
 <li class="fragment">You want to know whether Starbucks baristas are faster than Cielito Querido baristas. You go to 10 Starbucks and 10 Cielito Querido and measure how long it takes to make a coffee. You then calculate the average time in each chain.</li>
@@ -1585,28 +1587,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Tinder</strong></td>
+<td>Tinder</td>
 <td>every match of every user</td>
 <td>the matches reported by the 1000 users surveyed</td>
 <td>true share of matches that end in a date</td>
 <td>share of dates among the reported matches</td>
 </tr>
 <tr class="even">
-<td><strong>Baristas</strong></td>
+<td>Baristas</td>
 <td>every coffee made in each chain</td>
 <td>the coffees timed in the 20 shops visited</td>
 <td>mean preparation time in each chain</td>
 <td>mean preparation time in the shops visited</td>
 </tr>
 <tr class="odd">
-<td><strong>Gym</strong></td>
+<td>Gym</td>
 <td>everyone who goes to the gym</td>
 <td>the 100 people asked</td>
 <td>mean age of all gym-goers</td>
 <td>mean age of the 100</td>
 </tr>
 <tr class="even">
-<td><strong>Internet</strong></td>
+<td>Internet</td>
 <td>all households in Mexico City</td>
 <td>the 500 households visited</td>
 <td>variance of speed across all households</td>
@@ -1616,7 +1618,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 </table>
 <ul>
 <li class="fragment">The parameter is always a number about the left-hand column; the statistic is the same recipe applied to the right-hand one.</li>
-<li class="fragment">Note the last row: a <strong>variance</strong> is a parameter too. Anything that describes the population qualifies — a mean, a proportion, a spread, a difference between two groups.</li>
+<li class="fragment">Note the last row: a variance is a parameter too. Anything that describes the population qualifies — a mean, a proportion, a spread, a difference between two groups.</li>
 </ul>
 <div class="fragment">
 <p><a href="#/stat-language">← Back to Statistical language</a></p>
@@ -1625,19 +1627,19 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiY2x0MSIsInBlcnNpc3Qi
 <section id="sampling-distribution-of-the-standard-deviation" class="slide level2">
 <h2>Sampling distribution of the standard deviation</h2>
 <ul>
-<li class="fragment">Sample <strong>means</strong> are normal in large samples. What about the sample <strong>standard deviation</strong>?</li>
+<li class="fragment">Sample means are normal in large samples. What about the sample standard deviation?</li>
 <li class="fragment">If we take many samples and compute each one’s SD, what does <em>that</em> distribution look like?</li>
 </ul>
 <div class="fragment">
 <ul>
-<li class="fragment">If <span class="math inline">\(X_i\)</span> is normal, the sample variance is related to the <strong>chi-squared</strong> distribution.</li>
+<li class="fragment">If <span class="math inline">\(X_i\)</span> is normal, the sample variance is related to the chi-squared distribution.</li>
 <li class="fragment">This is what we’ll use to build confidence intervals for the variance.</li>
 </ul>
 </div>
 </section>
 <section id="from-normal-to-chi-square" class="slide level2">
 <h2>From Normal to Chi-Square</h2>
-<p>Start with the standard normal <span class="math inline">\(Z \sim N(0,1)\)</span> and <strong>square it</strong>. The distribution of <span class="math inline">\(X = Z^2\)</span> is called <strong>chi-squared with one degree of freedom</strong>, <span class="math inline">\(\chi^2(1)\)</span>.</p>
+<p>Start with the standard normal <span class="math inline">\(Z \sim N(0,1)\)</span> and square it. The distribution of <span class="math inline">\(X = Z^2\)</span> is called chi-squared with one degree of freedom, <span class="math inline">\(\chi^2(1)\)</span>.</p>
 <p>That is the definition. The rest you can find out yourself:</p>
 <ul>
 <li class="fragment">What shape does it have, and what values can it take?</li>
@@ -1676,7 +1678,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxNCIsInBlcnNpc3Qi
 <span id="cb4-8"><a href="" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-9"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">mean =</span> <span class="fu">mean</span>(x), <span class="at">var =</span> <span class="fu">var</span>(x))</span>
 <span id="cb4-10"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">P_x_above_1 =</span> <span class="fu">mean</span>(x <span class="sc">&gt;</span> <span class="dv">1</span>), <span class="at">P_absz_above_1 =</span> <span class="fu">mean</span>(<span class="fu">abs</span>(z) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The mean comes out at about <strong>1</strong> and the variance at about <strong>2</strong>. <code>x</code> is never negative and is heavily right-skewed.</p>
+<p>The mean comes out at about 1 and the variance at about 2. <code>x</code> is never negative and is heavily right-skewed.</p>
 <p>The two probabilities are identical: <span class="math inline">\(Z^2 &gt; 1\)</span> happens exactly when <span class="math inline">\(|Z| &gt; 1\)</span>, so the one right tail of the <span class="math inline">\(\chi^2\)</span> is the <em>pair</em> of tails of the normal glued together.</p>
 </div>
 </section>
@@ -1706,24 +1708,24 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxNCIsInBlcnNpc3Qi
 </div>
 </div>
 <ul>
-<li class="fragment">Why does the shape approach normal for large <span class="math inline">\(n\)</span>? Because it’s a <strong>sum of random variables</strong> — the CLT again.</li>
+<li class="fragment">Why does the shape approach normal for large <span class="math inline">\(n\)</span>? Because it’s a sum of random variables — the CLT again.</li>
 </ul>
 </section>
 <section id="var-xbar-derivation" class="slide level2">
 <h2>Where <span class="math inline">\(Var(\bar X) = \sigma^2/n\)</span> comes from</h2>
-<p>Two rules do all the work: a constant comes out of a variance <strong>squared</strong>, and the variance of a sum is the sum of the variances <strong>plus every covariance</strong>.</p>
+<p>Two rules do all the work: a constant comes out of a variance squared, and the variance of a sum is the sum of the variances plus every covariance.</p>
 <p><span class="math display">\[Var(\bar X) = Var\!\left(\frac{1}{n}\sum_{i=1}^{n} X_i\right) = \frac{1}{n^2}\,Var\!\left(\sum_{i=1}^{n} X_i\right)\]</span></p>
 <div class="fragment">
 <p><span class="math display">\[Var\!\left(\sum_{i=1}^{n} X_i\right) = \sum_{i=1}^{n} Var(X_i) \; + \underbrace{\sum_{i \neq j} Cov(X_i, X_j)}_{\text{every pair, twice}}\]</span></p>
 </div>
 <div class="fragment">
-<p><strong>Now use independence.</strong> If the listings are drawn independently, every <span class="math inline">\(Cov(X_i, X_j)\)</span> with <span class="math inline">\(i \neq j\)</span> is <strong>zero</strong>, and the whole second term disappears:</p>
+<p>Now use independence. If the listings are drawn independently, every <span class="math inline">\(Cov(X_i, X_j)\)</span> with <span class="math inline">\(i \neq j\)</span> is zero, and the whole second term disappears:</p>
 <p><span class="math display">\[Var\!\left(\sum X_i\right) = \sum_{i=1}^{n} \sigma^2 = n\sigma^2\]</span></p>
 </div>
 <div class="fragment">
 <p><span class="math display">\[Var(\bar X) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}\]</span></p>
 <div class="fragment">
-<p>So the <span class="math inline">\(\sqrt{n}\)</span> law is <strong>not</strong> free. It is bought entirely with the independence assumption — <a href="#/var-not-independent">see what happens without it</a>.</p>
+<p>So the <span class="math inline">\(\sqrt{n}\)</span> law is not free. It is bought entirely with the independence assumption — <a href="#/var-not-independent">see what happens without it</a>.</p>
 </div>
 </div>
 </section>
@@ -1735,10 +1737,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxNCIsInBlcnNpc3Qi
 <p><span class="math display">\[= \frac{1}{16}\Big[\,9\,Var(X_1) + Var(X_2) + 2\cdot 3\cdot Cov(X_1, X_2)\,\Big]\]</span></p>
 </div>
 <div class="fragment">
-<p><strong>Independent draws</strong>, so the covariance is zero and each variance is <span class="math inline">\(\sigma^2\)</span>:</p>
+<p>Independent draws, so the covariance is zero and each variance is <span class="math inline">\(\sigma^2\)</span>:</p>
 <p><span class="math display">\[= \frac{9\sigma^2 + \sigma^2}{16} = \frac{10\sigma^2}{16}\]</span></p>
 <div class="fragment">
-<p>The <span class="math inline">\(9\)</span> is where the damage is done: tripling the weight on <span class="math inline">\(X_1\)</span> multiplies its contribution by <strong>nine</strong>, and nothing else is there to offset it.</p>
+<p>The <span class="math inline">\(9\)</span> is where the damage is done: tripling the weight on <span class="math inline">\(X_1\)</span> multiplies its contribution by nine, and nothing else is there to offset it.</p>
 <p><a href="#/variance-worked-examples">← Back to Variance: worked examples</a></p>
 </div>
 </div>
@@ -1766,17 +1768,17 @@ MSE(\hat{\theta}) &amp;= E[(\hat{\theta}-\theta)^2]
 </section>
 <section id="var-not-independent" class="slide level2">
 <h2>What if the draws are not independent?</h2>
-<p>Start with two. The variance of a sum is <strong>not</strong> just the sum of the variances:</p>
+<p>Start with two. The variance of a sum is not just the sum of the variances:</p>
 <p><span class="math display">\[Var(X_1 + X_2) = Var(X_1) + Var(X_2) + 2\,Cov(X_1, X_2)\]</span></p>
 <p><span class="math display">\[Var(X_1 - X_2) = Var(X_1) + Var(X_2) - 2\,Cov(X_1, X_2)\]</span></p>
 <div class="fragment">
-<p>With <span class="math inline">\(n\)</span> of them the same thing happens for <strong>every pair</strong>:</p>
+<p>With <span class="math inline">\(n\)</span> of them the same thing happens for every pair:</p>
 <p><span class="math display">\[Var\!\left(\sum_{i=1}^{n} X_i\right) = \sum_{i=1}^{n} Var(X_i) \;+\; \sum_{i \neq j} Cov(X_i, X_j)\]</span></p>
 </div>
 <div class="fragment">
 <p>so the sample mean picks them up too:</p>
 <p><span class="math display">\[Var(\bar X) = \frac{\sigma^2}{n} \;+\; \frac{1}{n^2}\sum_{i \neq j} Cov(X_i, X_j)\]</span></p>
-<p>Positive covariance makes it <strong>bigger</strong> than <span class="math inline">\(\sigma^2/n\)</span>; negative covariance makes it smaller. Independence sets every one of those terms to zero.</p>
+<p>Positive covariance makes it bigger than <span class="math inline">\(\sigma^2/n\)</span>; negative covariance makes it smaller. Independence sets every one of those terms to zero.</p>
 <p><a href="#/variance-worked-examples">← Back to Variance: worked examples</a></p>
 </div>
 </section>
@@ -1784,8 +1786,8 @@ MSE(\hat{\theta}) &amp;= E[(\hat{\theta}-\theta)^2]
 <h2>Trading bias for variance</h2>
 <p>Estimating customer income; the true value is <span class="math inline">\(\theta = 10\)</span>. Two candidates:</p>
 <ul>
-<li class="fragment"><strong>A</strong> — biased by <span class="math inline">\(-0.2\)</span>, but almost no noise (sd <span class="math inline">\(0.1\)</span>)</li>
-<li class="fragment"><strong>B</strong> — unbiased, but noisy (sd <span class="math inline">\(1\)</span>)</li>
+<li class="fragment">A — biased by <span class="math inline">\(-0.2\)</span>, but almost no noise (sd <span class="math inline">\(0.1\)</span>)</li>
+<li class="fragment">B — unbiased, but noisy (sd <span class="math inline">\(1\)</span>)</li>
 </ul>
 <div class="fragment">
 <p>Unbiasedness alone says take B. Which one would you actually report? Produce the numbers and the pictures before you decide.</p>
@@ -1795,7 +1797,7 @@ MSE(\hat{\theta}) &amp;= E[(\hat{\theta}-\theta)^2]
 <h2>🖊️ Exercise 13 — Put a number on the trade-off</h2>
 <p>Simulate 5,000 draws of each estimator. Then, for both:</p>
 <ol type="1">
-<li class="fragment">Compute the <strong>bias</strong>, the <strong>variance</strong>, and the <strong>MSE</strong> two ways — straight from the definition <code>mean((est - theta)^2)</code>, and from the decomposition <span class="math inline">\(Var + Bias^2\)</span>.</li>
+<li class="fragment">Compute the bias, the variance, and the MSE two ways — straight from the definition <code>mean((est - theta)^2)</code>, and from the decomposition <span class="math inline">\(Var + Bias^2\)</span>.</li>
 <li class="fragment">Draw the two sampling distributions side by side on a common x-axis, with the true value marked.</li>
 <li class="fragment">Say which one you report, and why.</li>
 </ol>
@@ -1832,15 +1834,15 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg5IiwicGVyc2lzdCI6
 <span id="cb5-17"><a href="" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"B: unbiased, high variance"</span>, <span class="at">xlab =</span> <span class="st">"Estimator value"</span>)</span>
 <span id="cb5-18"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> theta, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
 <span id="cb5-19"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Both routes to the MSE agree — that is the decomposition, checked numerically. <code>A</code> carries a bias of <span class="math inline">\(-0.2\)</span> but an MSE around <strong>0.05</strong>; <code>B</code> is unbiased with an MSE around <strong>1</strong>. On MSE the biased estimator wins by a factor of roughly 20: being unbiased is not the goal, being close to the truth is.</p>
+<p>Both routes to the MSE agree — that is the decomposition, checked numerically. <code>A</code> carries a bias of <span class="math inline">\(-0.2\)</span> but an MSE around 0.05; <code>B</code> is unbiased with an MSE around 1. On MSE the biased estimator wins by a factor of roughly 20: being unbiased is not the goal, being close to the truth is.</p>
 </div>
 </section>
 <section id="exercise-7-theory-vs.-simulation" class="slide level2 scrollable">
 <h2>🖊️ Exercise 7 — Theory vs.&nbsp;simulation</h2>
 <p>The CLT claims <span class="math inline">\(\bar X_{200} \mathrel{\dot\sim} \mathcal{N}(\mu, \sigma/\sqrt{30})\)</span>. Use it, then check it.</p>
 <ol type="1">
-<li class="fragment"><strong>Theory, no data:</strong> with <code>mu &lt;- mean(population)</code> and <code>se &lt;- sd(population)/sqrt(200)</code>, compute the probability that a sample of 200 returns a mean above <strong>1,250 pesos</strong>.</li>
-<li class="fragment"><strong>Simulation:</strong> build 5,000 sample means and compute the share of them above 1,250.</li>
+<li class="fragment">Theory, no data: with <code>mu &lt;- mean(population)</code> and <code>se &lt;- sd(population)/sqrt(200)</code>, compute the probability that a sample of 200 returns a mean above 1,250 pesos.</li>
+<li class="fragment">Simulation: build 5,000 sample means and compute the share of them above 1,250.</li>
 <li class="fragment">How close are the two answers?</li>
 </ol>
 <div class="cell" data-layout-align="center" data-exercise="ex5">
@@ -1878,7 +1880,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg1IiwicGVyc2lzdCI6
 <li class="fragment"><code>pop_binary</code> — a 0/1 variable: is the listing a superhost?</li>
 </ul>
 <div class="fragment">
-<p>Neither is remotely bell-shaped. Guess what the histogram of <strong>their</strong> sample means looks like.</p>
+<p>Neither is remotely bell-shaped. Guess what the histogram of their sample means looks like.</p>
 </div>
 </section>
 <section id="exercise-8-start-from-something-not-normal" class="slide level2 scrollable">
@@ -1923,13 +1925,13 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg2IiwicGVyc2lzdCI6
 <span id="cb7-15"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">replicate</span>(<span class="dv">2000</span>, <span class="fu">mean</span>(<span class="fu">sample</span>(pop_binary, <span class="dv">50</span>))), <span class="at">breaks =</span> <span class="dv">30</span>,</span>
 <span id="cb7-16"><a href="" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">main =</span> <span class="st">"Means, n = 50"</span>, <span class="at">xlab =</span> <span class="st">"Sample mean"</span>)</span>
 <span id="cb7-17"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>At <code>n = 5</code> the two clumps are still visible and the 0/1 population gives only six possible means. At <code>n = 50</code> both are bell-shaped. The population can be two-humped, discrete, or anything else — the <strong>mean</strong> still goes normal.</p>
+<p>At <code>n = 5</code> the two clumps are still visible and the 0/1 population gives only six possible means. At <code>n = 50</code> both are bell-shaped. The population can be two-humped, discrete, or anything else — the mean still goes normal.</p>
 </div>
 </section>
 <section id="exercise-9-break-it-more-replications" class="slide level2 scrollable">
 <h2>🖊️ Exercise 9 — Break it: more replications</h2>
 <p>A classmate says: <em>“my standard error is too big — I’ll just run more replications.”</em></p>
-<p>Test the claim. Hold <code>n = 200</code> fixed and build <code>means</code> with <strong>100</strong>, <strong>1,000</strong> and <strong>10,000</strong> replications. Report <code>sd(means)</code> each time, and say what <em>does</em> change.</p>
+<p>Test the claim. Hold <code>n = 200</code> fixed and build <code>means</code> with 100, 1,000 and 10,000 replications. Report <code>sd(means)</code> each time, and say what <em>does</em> change.</p>
 <div class="cell" data-layout-align="center" data-exercise="ex12">
 <div>
 <div id="webr-8" class="exercise-cell">
@@ -1955,7 +1957,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMiIsInBlcnNpc3Qi
 <span id="cb8-9"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">mean</span>(<span class="fu">sample</span>(population, <span class="dv">200</span>))), <span class="at">breaks =</span> <span class="dv">40</span>,</span>
 <span id="cb8-10"><a href="" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">main =</span> <span class="st">"10,000 replications"</span>, <span class="at">xlab =</span> <span class="st">"Sample mean"</span>)</span>
 <span id="cb8-11"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>All three standard deviations land on the same value. Replications are our <em>simulation device</em>: more of them only makes the picture smoother, never the estimate more precise. The standard error is fixed by <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(n\)</span>. Your classmate needs more <strong>data</strong>, not more loops.</p>
+<p>All three standard deviations land on the same value. Replications are our <em>simulation device</em>: more of them only makes the picture smoother, never the estimate more precise. The standard error is fixed by <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(n\)</span>. Your classmate needs more data, not more loops.</p>
 </div>
 </section>
 <section id="exercise-10-the-whole-week-one-question" class="slide level2 scrollable">
@@ -1964,7 +1966,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMiIsInBlcnNpc3Qi
 <blockquote>
 <p><em>“You surveyed 25 listings and got an average nightly price. How wrong could that number be?”</em></p>
 </blockquote>
-<p>Answer with a <strong>number</strong>, a <strong>picture</strong>, and <strong>one sentence</strong>.</p>
+<p>Answer with a number, a picture, and one sentence.</p>
 <div class="cell" data-layout-align="center" data-exercise="ex11">
 <div>
 <div id="webr-9" class="exercise-cell">
@@ -1994,13 +1996,13 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMSIsInBlcnNpc3Qi
 <span id="cb9-13"><a href="" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Sample mean price"</span>)</span>
 <span id="cb9-14"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> mu, <span class="at">col =</span> <span class="st">"red"</span>,    <span class="at">lwd =</span> <span class="dv">3</span>)</span>
 <span id="cb9-15"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> q,  <span class="at">col =</span> <span class="st">"orange"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>One sentence: <em>“The survey is unbiased — on average it hits the true price — but with only 25 listings it carries a standard error of about <strong>204 pesos</strong>, so nine times out of ten it lands within roughly <strong>336 pesos</strong> of the truth; halving that band needs 100 listings, not 50.”</em></p>
+<p>One sentence: <em>“The survey is unbiased — on average it hits the true price — but with only 25 listings it carries a standard error of about 204 pesos, so nine times out of ten it lands within roughly 336 pesos of the truth; halving that band needs 100 listings, not 50.”</em></p>
 </div>
 </section>
 <section id="normal-distribution-combining-variables" class="slide level2">
 <h2>Normal distribution: combining variables</h2>
-<p>A customer who opens the DiDi app may call a car. <span class="math inline">\(X\)</span> = calls in Cancún (Bernoulli 0.4), <span class="math inline">\(Y\)</span> = in Puerto Vallarta (Bernoulli 0.6). Sample: 100 from Cancún, 80 from PV. <strong>P(more than 100 people call a car)?</strong></p>
-<p><strong>Reminders</strong> (for normal <span class="math inline">\(X\)</span>): <span class="math display">\[X + c \sim \mathcal{N}(\cssId{mt-shift}{\mu + c}, \cssId{mt-shiftsd}{\sigma}), \qquad cX \sim \mathcal{N}(c\mu, \cssId{mt-scalesd}{|c|\sigma})\]</span> <span class="math display">\[X + Y \sim \mathcal{N}\!\left(\mu_1 + \mu_2, \cssId{mt-sumsd}{\sqrt{\sigma_1^2 + \sigma_2^2}}\right)\]</span></p>
+<p>A customer who opens the DiDi app may call a car. <span class="math inline">\(X\)</span> = calls in Cancún (Bernoulli 0.4), <span class="math inline">\(Y\)</span> = in Puerto Vallarta (Bernoulli 0.6). Sample: 100 from Cancún, 80 from PV. P(more than 100 people call a car)?</p>
+<p>Reminders (for normal <span class="math inline">\(X\)</span>): <span class="math display">\[X + c \sim \mathcal{N}(\cssId{mt-shift}{\mu + c}, \cssId{mt-shiftsd}{\sigma}), \qquad cX \sim \mathcal{N}(c\mu, \cssId{mt-scalesd}{|c|\sigma})\]</span> <span class="math display">\[X + Y \sim \mathcal{N}\!\left(\mu_1 + \mu_2, \cssId{mt-sumsd}{\sqrt{\sigma_1^2 + \sigma_2^2}}\right)\]</span></p>
 <div class="mathtips">
 <ul>
 <li>shift: Adding a constant slides the whole distribution along — the centre moves by exactly c.</li>
@@ -2062,12 +2064,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 <span id="cb11-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Sample mean (n = 200)"</span>, <span class="at">y =</span> <span class="st">"Frequency"</span>) <span class="sc">+</span> th</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 </div>
-<img data-src="W04_live_files/figure-revealjs/sim_sampdist-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><p>The means cluster around the <strong>true mean</strong> (red) — the estimator has a <em>distribution</em>.</p>
+<img data-src="W04_live_files/figure-revealjs/sim_sampdist-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"><p>The means cluster around the true mean (red) — the estimator has a <em>distribution</em>.</p>
 </section>
 <section id="how-wide-is-that-histogram" class="slide level2">
 <h2>How wide is that histogram?</h2>
-<p>Individual prices are spread out: <code>sd(population)</code> is about <strong>1,021 pesos</strong>.</p>
-<p>The sample means sat in a visibly narrower band. <strong>How much narrower?</strong></p>
+<p>Individual prices are spread out: <code>sd(population)</code> is about 1,021 pesos.</p>
+<p>The sample means sat in a visibly narrower band. How much narrower?</p>
 <p>Write down a guess for <code>sd(means)</code> at <code>n = 200</code> before you compute it.</p>
 </section>
 <section id="exercise-4-guess-the-spread-then-measure-it" class="slide level2 scrollable">
@@ -2102,12 +2104,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgzIiwicGVyc2lzdCI6
 <span id="cb12-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd_means      =</span> <span class="fu">sd</span>(means),</span>
 <span id="cb12-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratio         =</span> <span class="fu">sd</span>(population) <span class="sc">/</span> <span class="fu">sd</span>(means),</span>
 <span id="cb12-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">sqrt_n        =</span> <span class="fu">sqrt</span>(<span class="dv">200</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The ratio comes out around <strong>14.1</strong>, which is <span class="math inline">\(\sqrt{200}\)</span>. So the sample means are <span class="math inline">\(\sqrt{n}\)</span> times less spread out than the individual prices: <code>sd(means) ≈ sd(population) / sqrt(n)</code>. You just measured a formula.</p>
+<p>The ratio comes out around 14.1, which is <span class="math inline">\(\sqrt{200}\)</span>. So the sample means are <span class="math inline">\(\sqrt{n}\)</span> times less spread out than the individual prices: <code>sd(means) ≈ sd(population) / sqrt(n)</code>. You just measured a formula.</p>
 </div>
 </section>
 <section id="exercise-5-break-it-change-n" class="slide level2 scrollable">
 <h2>🖊️ Exercise 5 — Break it: change <code>n</code></h2>
-<p>Here is working code. Change <strong>one</strong> thing — the sample size — and report what happens to the <strong>centre</strong> and to the <strong>spread</strong>.</p>
+<p>Here is working code. Change one thing — the sample size — and report what happens to the centre and to the spread.</p>
 <div class="cell" data-layout-align="center" data-exercise="ex7">
 <div>
 <div id="webr-12" class="exercise-cell">
@@ -2129,7 +2131,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg3IiwicGVyc2lzdCI6
 <span id="cb13-5"><a href="" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-6"><a href="" aria-hidden="true" tabindex="-1"></a>spread[<span class="dv">1</span>] <span class="sc">/</span> spread[<span class="dv">4</span>]      <span class="co"># about 12.6</span></span>
 <span id="cb13-7"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="dv">800</span> <span class="sc">/</span> <span class="dv">5</span>)              <span class="co"># exactly 12.6</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The <strong>centre</strong> does not move: for every <code>n</code> it sits on the parameter. Only the <strong>spread</strong> changes, and it falls with <span class="math inline">\(\sqrt{n}\)</span> — 160 times the data buys about 12.6 times the precision, not 160 times. Doubling precision costs <strong>four times</strong> the sample.</p>
+<p>The centre does not move: for every <code>n</code> it sits on the parameter. Only the spread changes, and it falls with <span class="math inline">\(\sqrt{n}\)</span> — 160 times the data buys about 12.6 times the precision, not 160 times. Doubling precision costs four times the sample.</p>
 </div>
 </section>
 <section id="exercise-6-as-n-grows" class="slide level2 scrollable">
@@ -2142,7 +2144,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg3IiwicGVyc2lzdCI6
 <li class="fragment">shifted away from the true mean?</li>
 </ul>
 <div class="fragment">
-<p><strong>Narrower</strong> — and by a specific amount: the spread you measured is <span class="math inline">\(sd(\text{population})/\sqrt{n}\)</span>, which shrinks as <span class="math inline">\(n\)</span> grows while the centre stays on the parameter.</p>
+<p>Narrower — and by a specific amount: the spread you measured is <span class="math inline">\(sd(\text{population})/\sqrt{n}\)</span>, which shrinks as <span class="math inline">\(n\)</span> grows while the centre stays on the parameter.</p>
 </div>
 </section>
 <section id="the-spread-shrinks-with-sqrtn" class="slide level2">
@@ -2163,8 +2165,8 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg3IiwicGVyc2lzdCI6
 <img data-src="W04_live_files/figure-revealjs/se_shrink-1.png" class="quarto-figure quarto-figure-center r-stretch" style="width:100.0%"></section>
 <section id="exercise-11-which-ones-are-unbiased" class="slide level2 scrollable">
 <h2>🖊️ Exercise 11 — Which ones are unbiased?</h2>
-<p>The code is written for you: it draws 5,000 samples of <code>n = 10</code>, computes all three estimators in each one, and reports two rows — the <strong>bias</strong> of each estimator (its average minus the parameter) and how <strong>spread out</strong> each one is.</p>
-<p><strong>Press Run</strong>, then answer from the output:</p>
+<p>The code is written for you: it draws 5,000 samples of <code>n = 10</code>, computes all three estimators in each one, and reports two rows — the bias of each estimator (its average minus the parameter) and how spread out each one is.</p>
+<p>Press Run, then answer from the output:</p>
 <ol type="1">
 <li class="fragment">Which of the three are unbiased?</li>
 <li class="fragment">Among those, which one would you rather use — and why?</li>
@@ -2180,7 +2182,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg0IiwicGVyc2lzdCI6
 </div>
 </div>
 <div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex4">
-<p>Read the first row: a bias of 0 means the estimator lands on the parameter <strong>on average</strong>. Then read the second row for the ones that passed.</p>
+<p>Read the first row: a bias of 0 means the estimator lands on the parameter on average. Then read the second row for the ones that passed.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="" aria-hidden="true" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">mean</span>(population)</span>
@@ -2211,22 +2213,24 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg0IiwicGVyc2lzdCI6
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>bias</strong></td>
+<td>bias</td>
 <td>≈ 0</td>
-<td><strong>−229</strong></td>
+<td>−229</td>
 <td>≈ 0</td>
 </tr>
 <tr class="even">
-<td><strong>spread</strong></td>
+<td>spread</td>
 <td>1,032</td>
 <td>652</td>
-<td><strong>323</strong></td>
+<td>323</td>
 </tr>
 </tbody>
 </table>
-<p><strong>1.</strong> <span class="math inline">\(\hat\theta_1\)</span> and <span class="math inline">\(\hat\theta_3\)</span> are unbiased. <span class="math inline">\(\hat\theta_2\)</span> sits about <span class="math inline">\(-\mu/5 = -234\)</span> pesos below the truth every time, because its weights add to <span class="math inline">\(4/5\)</span> instead of 1 — it is systematically too low, and more data will not fix it.</p>
-<p><strong>2.</strong> <span class="math inline">\(\hat\theta_3\)</span>, the sample mean. Both are right on average, but <span class="math inline">\(\hat\theta_1\)</span> has a spread of 1,032 — the population’s own standard deviation, because it throws away 9 of the 10 listings. The sample mean’s spread is <span class="math inline">\(\sigma/\sqrt{10} = 323\)</span>, three times tighter.</p>
-<p><strong>Unbiased is not the same as good.</strong> <span class="math inline">\(\hat\theta_1\)</span> is unbiased and useless.</p>
+<ol type="1">
+<li class="fragment"><p><span class="math inline">\(\hat\theta_1\)</span> and <span class="math inline">\(\hat\theta_3\)</span> are unbiased. <span class="math inline">\(\hat\theta_2\)</span> sits about <span class="math inline">\(-\mu/5 = -234\)</span> pesos below the truth every time, because its weights add to <span class="math inline">\(4/5\)</span> instead of 1 — it is systematically too low, and more data will not fix it.</p></li>
+<li class="fragment"><p><span class="math inline">\(\hat\theta_3\)</span>, the sample mean. Both are right on average, but <span class="math inline">\(\hat\theta_1\)</span> has a spread of 1,032 — the population’s own standard deviation, because it throws away 9 of the 10 listings. The sample mean’s spread is <span class="math inline">\(\sigma/\sqrt{10} = 323\)</span>, three times tighter.</p></li>
+</ol>
+<p>Unbiased is not the same as good. <span class="math inline">\(\hat\theta_1\)</span> is unbiased and useless.</p>
 </div>
 </section>
 <section id="exercise-12-which-unbiased-estimator-wins" class="slide level2 scrollable">
@@ -2264,18 +2268,18 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMyIsInBlcnNpc3Qi
 <span id="cb16-16"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
 <span id="cb16-17"><a href="" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-18"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(A) <span class="sc">/</span> <span class="fu">var</span>(B)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Both averages land on 10 — unbiased, as promised. But B’s histogram is visibly tighter: its variance is about <strong>2.5 times</strong> smaller. Spreading the weight evenly over all four observations beats loading it onto one.</p>
+<p>Both averages land on 10 — unbiased, as promised. But B’s histogram is visibly tighter: its variance is about 2.5 times smaller. Spreading the weight evenly over all four observations beats loading it onto one.</p>
 </div>
 </section></section>
 <section>
 <section id="exam-practice" class="title-slide slide level1 center">
 <h1>Exam practice</h1>
-<p>These problems mirror the <strong>weekly exercise set</strong> and the style of the <strong>exam</strong> — work each one in the code cell, then press <strong>Solution</strong> to reveal the full worked answer.</p>
+<p>These problems mirror the weekly exercise set and the style of the exam — work each one in the code cell, then press Solution to reveal the full worked answer.</p>
 <p><a href="#/exam-spotlight">← Back to the exam spotlight</a></p>
 </section>
 <section id="exam-practice-1-liga-mx-winning-percentages" class="slide level2 scrollable">
 <h2>📝 Exam practice 1 — Liga MX winning percentages</h2>
-<p>Liga MX teams play <strong>34 games</strong> per season. A team’s final winning percentage is its number of wins divided by 34. Assume each match is an i.i.d. Bernoulli trial with the team’s “true” win probability. <span class="small-note">[I1]</span></p>
+<p>Liga MX teams play 34 games per season. A team’s final winning percentage is its number of wins divided by 34. Assume each match is an i.i.d. Bernoulli trial with the team’s “true” win probability. <span class="small-note">[I1]</span></p>
 <ol type="a">
 <li class="fragment">If Club América has win probability <span class="math inline">\(\pi_A = 0.58\)</span>, what is the asymptotic distribution of América’s winning percentage <span class="math inline">\(W_A\)</span>?</li>
 <li class="fragment">If América has <span class="math inline">\(\pi_A = 0.58\)</span> and Pumas has <span class="math inline">\(\pi_B = 0.52\)</span>, what is the asymptotic distribution of <span class="math inline">\(W_A - W_B\)</span>, assuming independence?</li>
@@ -2295,7 +2299,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTEiLCJwZXJzaXN0
 <p><code>pnorm(q, mean, sd)</code> returns <span class="math inline">\(P(X \le q)\)</span> for a normal. <code>sqrt()</code> turns a variance into a standard deviation — <code>pnorm()</code> wants the standard deviation, not the variance.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="exam1">
-<p><span class="math inline">\(W_A = \bar X\)</span> of 34 Bernoulli trials, so by the CLT <span class="math inline">\(W_A \mathrel{\dot\sim} N\!\left(\pi_A,\ \frac{\pi_A(1-\pi_A)}{34}\right)\)</span>; for the difference the variances <strong>add</strong> (independence); and <span class="math inline">\(P(W_B &gt; W_A) = P(W_A - W_B &lt; 0)\)</span>.</p>
+<p><span class="math inline">\(W_A = \bar X\)</span> of 34 Bernoulli trials, so by the CLT <span class="math inline">\(W_A \mathrel{\dot\sim} N\!\left(\pi_A,\ \frac{\pi_A(1-\pi_A)}{34}\right)\)</span>; for the difference the variances add (independence); and <span class="math inline">\(P(W_B &gt; W_A) = P(W_A - W_B &lt; 0)\)</span>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="" aria-hidden="true" tabindex="-1"></a>n   <span class="ot">&lt;-</span> <span class="dv">34</span></span>
 <span id="cb17-2"><a href="" aria-hidden="true" tabindex="-1"></a>piA <span class="ot">&lt;-</span> <span class="fl">0.58</span>; piB <span class="ot">&lt;-</span> <span class="fl">0.52</span></span>
 <span id="cb17-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
@@ -2310,12 +2314,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTEiLCJwZXJzaXN0
 <span id="cb17-12"><a href="" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-13"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># (c) P(W_B &gt; W_A) = P(W_A - W_B &lt; 0) = P(Z &lt; -0.498) = 0.3092</span></span>
 <span id="cb17-14"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">0</span>, <span class="at">mean =</span> piA <span class="sc">-</span> piB, <span class="at">sd =</span> <span class="fu">sqrt</span>(var_diff))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>There is about a <strong>31% chance</strong> that Pumas finishes with a better record than América, even though América has the higher true win probability.</p>
+<p>There is about a 31% chance that Pumas finishes with a better record than América, even though América has the higher true win probability.</p>
 </div>
 </section>
 <section id="exam-practice-2-factory-injuries-poisson" class="slide level2 scrollable">
 <h2>📝 Exam practice 2 — Factory injuries (Poisson)</h2>
-<p>In a factory in Monterrey, the number of workplace injuries is recorded weekly for <strong>240 weeks</strong>. The average number of injuries per week is <strong>0.6</strong>, with <span class="math inline">\(X_t \sim \text{Poisson}(\lambda)\)</span>. <span class="small-note">[I2]</span></p>
+<p>In a factory in Monterrey, the number of workplace injuries is recorded weekly for 240 weeks. The average number of injuries per week is 0.6, with <span class="math inline">\(X_t \sim \text{Poisson}(\lambda)\)</span>. <span class="small-note">[I2]</span></p>
 <ol type="a">
 <li class="fragment">Provide an asymptotic 90% confidence interval for <span class="math inline">\(\lambda\)</span>.</li>
 </ol>
@@ -2343,7 +2347,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTIiLCJwZXJzaXN0
 </section>
 <section id="exam-practice-3-unemployment-duration-concepts" class="slide level2 scrollable">
 <h2>📝 Exam practice 3 — Unemployment duration: concepts</h2>
-<p>A random sample of <strong>500</strong> unemployed workers in Guadalajara is surveyed about unemployment duration in weeks, <span class="math inline">\(X\)</span>. By the CLT, <span class="math inline">\(\bar{X}\)</span> is approximately normal. <span class="small-note">[I8]</span></p>
+<p>A random sample of 500 unemployed workers in Guadalajara is surveyed about unemployment duration in weeks, <span class="math inline">\(X\)</span>. By the CLT, <span class="math inline">\(\bar{X}\)</span> is approximately normal. <span class="small-note">[I8]</span></p>
 <ol type="a">
 <li class="fragment">If <span class="math inline">\(P(\bar{X} &gt; 20) = 0.5\)</span>, what is <span class="math inline">\(E(X)\)</span>?</li>
 <li class="fragment">If <span class="math inline">\(P(\bar{X} &gt; 20) = 0.4\)</span>, what can be said about <span class="math inline">\(E(X)\)</span>?</li>
@@ -2366,8 +2370,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTNhIiwicGVyc2lz
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fl">10.5</span> <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">500</span>)</span>
 <span id="cb19-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">a =</span> <span class="dv">20</span> <span class="sc">-</span> <span class="fu">qnorm</span>(<span class="fl">0.50</span>) <span class="sc">*</span> se,      <span class="co"># 20.00</span></span>
 <span id="cb19-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">b =</span> <span class="dv">20</span> <span class="sc">-</span> <span class="fu">qnorm</span>(<span class="fl">0.60</span>) <span class="sc">*</span> se)      <span class="co"># 19.88  -&gt; below 20</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><strong>(a)</strong> <span class="math inline">\(E(X) = 20\)</span> — if half the distribution of <span class="math inline">\(\bar X\)</span> lies above 20, then 20 is its <strong>median</strong>; the normal distribution is symmetric, so median <span class="math inline">\(=\)</span> mean.</p>
-<p><strong>(b)</strong> <span class="math inline">\(E(X) &lt; 20\)</span> — now <span class="math inline">\(P(\bar X \le 20) = 0.6 &gt; 0.5\)</span>, so more than half the distribution sits <strong>below</strong> 20, which means the mean is below 20. On the exam, the sign is the whole answer — no computation needed.</p>
+<ol type="a">
+<li class="fragment"><p><span class="math inline">\(E(X) = 20\)</span> — if half the distribution of <span class="math inline">\(\bar X\)</span> lies above 20, then 20 is its median; the normal distribution is symmetric, so median <span class="math inline">\(=\)</span> mean.</p></li>
+<li class="fragment"><p><span class="math inline">\(E(X) &lt; 20\)</span> — now <span class="math inline">\(P(\bar X \le 20) = 0.6 &gt; 0.5\)</span>, so more than half the distribution sits below 20, which means the mean is below 20. On the exam, the sign is the whole answer — no computation needed.</p></li>
+</ol>
 </div>
 </section>
 <section id="exam-practice-3-unemployment-duration-calculations" class="slide level2 scrollable">
@@ -2391,7 +2397,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTMiLCJwZXJzaXN0
 <p><code>pnorm(q, mean, sd)</code> gives <span class="math inline">\(P(X \le q)\)</span>, so <code>1 - pnorm(...)</code> gives the upper tail. The <code>sd</code> argument here describes <span class="math inline">\(\bar X\)</span>, not one worker.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="exam3">
-<p>Standardize with the <strong>standard error</strong> <span class="math inline">\(\sigma/\sqrt{n}\)</span>, not <span class="math inline">\(\sigma\)</span>:</p>
+<p>Standardize with the standard error <span class="math inline">\(\sigma/\sqrt{n}\)</span>, not <span class="math inline">\(\sigma\)</span>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="" aria-hidden="true" tabindex="-1"></a>mu    <span class="ot">&lt;-</span> <span class="fl">19.5</span></span>
 <span id="cb20-2"><a href="" aria-hidden="true" tabindex="-1"></a>sigma <span class="ot">&lt;-</span> <span class="fl">10.5</span></span>
 <span id="cb20-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
@@ -2402,12 +2408,12 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTMiLCJwZXJzaXN0
 <span id="cb20-8"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># (d) SE = 10.5/sqrt(1600) = 0.2625 -&gt; P(Z &gt; 1.905) = 0.028</span></span>
 <span id="cb20-9"><a href="" aria-hidden="true" tabindex="-1"></a>se_1600 <span class="ot">&lt;-</span> sigma <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="dv">1600</span>)</span>
 <span id="cb20-10"><a href="" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="dv">20</span>, <span class="at">mean =</span> mu, <span class="at">sd =</span> se_1600)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The probability <strong>decreases substantially</strong>: the larger sample shrinks the standard error, so the sample mean is less likely to deviate from the true mean.</p>
+<p>The probability decreases substantially: the larger sample shrinks the standard error, so the sample mean is less likely to deviate from the true mean.</p>
 </div>
 </section>
 <section id="exam-practice-4-cereal-box-weights" class="slide level2 scrollable">
 <h2>📝 Exam practice 4 — Cereal box weights</h2>
-<p>A cereal company in Guadalajara sells 500g boxes. Box weights follow <span class="math inline">\(X \sim N(500, 9)\)</span> (variance 9, so <span class="math inline">\(\sigma = 3\)</span>). Boxes weighing less than <strong>496g</strong> must be repackaged. <span class="small-note">[I9]</span></p>
+<p>A cereal company in Guadalajara sells 500g boxes. Box weights follow <span class="math inline">\(X \sim N(500, 9)\)</span> (variance 9, so <span class="math inline">\(\sigma = 3\)</span>). Boxes weighing less than 496g must be repackaged. <span class="small-note">[I9]</span></p>
 <ol type="a">
 <li class="fragment">What is the probability that a box is repackaged?</li>
 <li class="fragment">For 15,000 boxes, what is the approximate (normal) distribution of the number repackaged?</li>
@@ -2423,7 +2429,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTQiLCJwZXJzaXN0
 </div>
 </div>
 <div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="exam4">
-<p><code>pnorm(q, mean, sd)</code> gives <span class="math inline">\(P(X \le q)\)</span>. Part (a) is about a single box, so the <code>sd</code> argument is the one given in the problem. In (b), the count of repackaged boxes among 15,000 independent boxes is a <strong>Binomial</strong> — recall its mean and variance.</p>
+<p><code>pnorm(q, mean, sd)</code> gives <span class="math inline">\(P(X \le q)\)</span>. Part (a) is about a single box, so the <code>sd</code> argument is the one given in the problem. In (b), the count of repackaged boxes among 15,000 independent boxes is a Binomial — recall its mean and variance.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="exam4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># (a) P(X &lt; 496) = P(Z &lt; -1.333) = 0.0912</span></span>
@@ -2435,9 +2441,11 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTQiLCJwZXJzaXN0
 <span id="cb21-7"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">mean =</span> n <span class="sc">*</span> p,                       <span class="co"># 1368.2</span></span>
 <span id="cb21-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">var  =</span> n <span class="sc">*</span> p <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p),             <span class="co"># 1243.4</span></span>
 <span id="cb21-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd   =</span> <span class="fu">sqrt</span>(n <span class="sc">*</span> p <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p)))       <span class="co"># 35.3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>About <strong>9.1%</strong> of boxes need repackaging, and <span class="math inline">\(Y \mathrel{\dot\sim} N(1368,\ 1243)\)</span>, i.e.&nbsp;SD <span class="math inline">\(\approx 35.3\)</span>.</p>
+<p>About 9.1% of boxes need repackaging, and <span class="math inline">\(Y \mathrel{\dot\sim} N(1368,\ 1243)\)</span>, i.e.&nbsp;SD <span class="math inline">\(\approx 35.3\)</span>.</p>
 </div>
-<p><strong>(c)</strong> Profits per box are <span class="math inline">\(P_1\)</span> if at least 496g and <span class="math inline">\(P_2\)</span> if less. For 15,000 boxes, what is the approximate distribution of total profits?</p>
+<ol start="3" type="a">
+<li class="fragment">Profits per box are <span class="math inline">\(P_1\)</span> if at least 496g and <span class="math inline">\(P_2\)</span> if less. For 15,000 boxes, what is the approximate distribution of total profits?</li>
+</ol>
 <div class="fragment">
 <p>Total profit is <span class="math inline">\(\Pi = (15000 - Y)P_1 + Y P_2 = 15000\,P_1 - Y(P_1 - P_2)\)</span>. With <span class="math inline">\(a = P_1 - P_2\)</span>, a linear function of the (approximately normal) <span class="math inline">\(Y\)</span> is normal: <span class="math display">\[\cssId{mt-Pi}{\Pi} \mathrel{\dot\sim} N\!\left(\cssId{mt-profmean}{15000\,P_1 - 1368.2\,a},\ \ \cssId{mt-profvar}{1243.4\,a^2}\right)\]</span></p>
 <div class="mathtips">
@@ -2471,7 +2479,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTUiLCJwZXJzaXN0
 <p><code>qnorm(0.95)</code> is the two-sided 90% z-value; <code>sqrt()</code> converts variance to standard deviation. In (c), <code>ppois(k, lambda)</code> is <span class="math inline">\(P(X \le k)\)</span> — visitors are whole numbers, so round the endpoints inward before using it.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="exam5">
-<p>By the CLT for a <strong>sum</strong>: <span class="math inline">\(E[X] = 60 \times 2.5 = 150\)</span> and <span class="math inline">\(\text{Var}(X) = 60 \times 2.5 = 150\)</span>, so <span class="math inline">\(X \mathrel{\dot\sim} N(150, 150)\)</span> with SD <span class="math inline">\(= \sqrt{150} \approx 12.25\)</span>.</p>
+<p>By the CLT for a sum: <span class="math inline">\(E[X] = 60 \times 2.5 = 150\)</span> and <span class="math inline">\(\text{Var}(X) = 60 \times 2.5 = 150\)</span>, so <span class="math inline">\(X \mathrel{\dot\sim} N(150, 150)\)</span> with SD <span class="math inline">\(= \sqrt{150} \approx 12.25\)</span>.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">150</span></span>
 <span id="cb22-2"><a href="" aria-hidden="true" tabindex="-1"></a>sd_X   <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(lambda)                        <span class="co"># (a) X ~ N(150, 150), SD = 12.25</span></span>
 <span id="cb22-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
@@ -2480,16 +2488,16 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTUiLCJwZXJzaXN0
 <span id="cb22-6"><a href="" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-7"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># (c) exact Poisson probability of landing in (129.85, 170.15)</span></span>
 <span id="cb22-8"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">170</span>, <span class="dv">150</span>) <span class="sc">-</span> <span class="fu">ppois</span>(<span class="dv">129</span>, <span class="dv">150</span>)             <span class="co"># 0.9061</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The exact probability is <strong>0.906</strong>, very close to the nominal 90% — the normal approximation works well for <span class="math inline">\(\lambda = 150\)</span>.</p>
+<p>The exact probability is 0.906, very close to the nominal 90% — the normal approximation works well for <span class="math inline">\(\lambda = 150\)</span>.</p>
 </div>
-<p><strong>Bonus:</strong> why is <span class="math inline">\(S = \sum_{i=1}^n X_i\)</span> an unbiased estimator of <span class="math inline">\(n\mu_X\)</span>?</p>
+<p>Bonus: why is <span class="math inline">\(S = \sum_{i=1}^n X_i\)</span> an unbiased estimator of <span class="math inline">\(n\mu_X\)</span>?</p>
 <div class="fragment">
 <p><span class="math inline">\(E[S] = E\!\left[\sum_{i=1}^n X_i\right] = \sum_{i=1}^n E[X_i] = n\mu_X\)</span> — the expected value of <span class="math inline">\(S\)</span> equals the parameter, which is exactly the definition of unbiasedness.</p>
 </div>
 </section>
 <section id="exam-practice-6-franchise-revenues" class="slide level2 scrollable">
 <h2>📝 Exam practice 6 — Franchise revenues</h2>
-<p>You own <strong>60 taquería</strong> franchises and <strong>30 torta</strong> franchises. Monthly revenue (thousands of pesos) for each franchise is i.i.d. with: <span class="small-note">[I14]</span></p>
+<p>You own 60 taquería franchises and 30 torta franchises. Monthly revenue (thousands of pesos) for each franchise is i.i.d. with: <span class="small-note">[I14]</span></p>
 <ul>
 <li class="fragment">Taquerías: <span class="math inline">\(\mu = 22\)</span>, <span class="math inline">\(\sigma = 5\)</span></li>
 <li class="fragment">Tortas: <span class="math inline">\(\mu = 17\)</span>, <span class="math inline">\(\sigma = 4\)</span></li>
@@ -2511,10 +2519,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXhhbTYiLCJwZXJzaXN0
 </div>
 </div>
 <div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="exam6">
-<p>For (b), write the overall average as a <strong>weighted sum</strong> of the two group averages, <code>(60 * xbar_T + 30 * xbar_R) / 90</code>, and then apply the rules for the mean and the variance of a weighted sum of independent variables.</p>
+<p>For (b), write the overall average as a weighted sum of the two group averages, <code>(60 * xbar_T + 30 * xbar_R) / 90</code>, and then apply the rules for the mean and the variance of a weighted sum of independent variables.</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="exam6">
-<p>Part (a) is the plain CLT; part (b) is a <strong>weighted average</strong> of two independent sample means, so take the weighted mean and combine variances with squared weights.</p>
+<p>Part (a) is the plain CLT; part (b) is a weighted average of two independent sample means, so take the weighted mean and combine variances with squared weights.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="" aria-hidden="true" tabindex="-1"></a><span class="co"># (a) torta average: N(17, 16/30), SD = 0.730</span></span>
 <span id="cb23-2"><a href="" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">mean =</span> <span class="dv">17</span>, <span class="at">var =</span> <span class="dv">4</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="dv">30</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">4</span><span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="dv">30</span>))</span>
 <span id="cb23-3"><a href="" aria-hidden="true" tabindex="-1"></a></span>
