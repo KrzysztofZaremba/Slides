@@ -1470,15 +1470,11 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMyIsInBlcnNpc3Qi
 </div>
 </div>
 <div class="fragment">
-<p>One day near 22 °C had 10,941 trips; another had 37,721. Tomorrow could land anywhere in that range. That is why the second question is hard.</p>
+<p>One day near 22 °C had 10,941 trips; another had 37,721. Tomorrow could land anywhere in that range: the second question is hard.</p>
 </div>
 <div class="fragment">
-<p>Their average is pinned down far better. The 19 days have a standard deviation of 7,459 trips, so the standard error of their mean is <span class="math inline">\(7{,}459 / \sqrt{19} = 1{,}711\)</span> trips. With more days it would move even less. The regression uses all 781 days, not just these 19, so its average at 22 °C is pinned down more tightly still.</p>
+<p>Their average is pinned down far better: its standard error is <span class="math inline">\(7{,}459 / \sqrt{19} = 1{,}711\)</span> trips. The regression uses all 781 days, so its average at 22 °C is tighter still. Same point forecast, <span class="math inline">\(\hat{\beta}_0 + \hat{\beta}_1 \times 22\)</span>; different uncertainty. <a href="#/appendix-near-22">Compute these numbers yourself</a></p>
 </div>
-<div class="fragment">
-<p>Both questions start from the same point forecast, <span class="math inline">\(\hat{\beta}_0 + \hat{\beta}_1 \times 22\)</span>. They do not have the same uncertainty. Section 7 measures the first one, section 8 the second.</p>
-</div>
-<p><a href="#/appendix-near-22">Compute these numbers yourself</a></p>
 </section>
 <section id="why-the-average-is-easier" class="slide level2">
 <h2>Why the average is easier</h2>
