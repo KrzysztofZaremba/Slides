@@ -102,7 +102,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-66c90a61475d273759e8d649db848a57.css">
+  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-bb44ea644c81180cc365834409187dea.css">
   <link href="W08_live_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -3508,7 +3508,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 <div class="drow fragment" data-fragment-index="1">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = \text{Var}\Big( \sum_i \underbrace{{\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}}}_{\cssId{mt-dwi}{\color{#2471a3}{w_i}}} \, {\color{#e67e22}{y_i}} \Big)\)</span></p>
+<p><span class="math inline">\(\displaystyle = \text{Var}\Big( \sum_i {\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}} \, {\color{#e67e22}{y_i}} \Big)\)</span></p>
 </div>
 <div class="dwhy c-red">
 <p><span class="dlab">Why <span class="math inline">\(\bar{y}\)</span> drops out</span></p>
@@ -3519,7 +3519,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 <div class="drow fragment" data-fragment-index="2">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = \sum_i \text{Var}\big( {\color{#2471a3}{w_i}} \, {\color{#e67e22}{y_i}} \big)\)</span></p>
+<p><span class="math inline">\(\displaystyle = \sum_i \text{Var}\Big( {\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}} \, {\color{#e67e22}{y_i}} \Big)\)</span></p>
 </div>
 <div class="dwhy c-orange">
 <p><span class="dlab">Independence: the sum comes out</span></p>
@@ -3529,29 +3529,28 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 <div class="drow fragment" data-fragment-index="3">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = \sum_i {\color{#2471a3}{w_i^2}} \, \text{Var}({\color{#e67e22}{y_i}})\)</span></p>
+<p><span class="math inline">\(\displaystyle = \sum_i {\color{#2471a3}{\left( \frac{x_i - \bar{x}}{S_{xx}} \right)^2}} \text{Var}({\color{#e67e22}{y_i}})\)</span></p>
 </div>
 <div class="dwhy c-blue">
 <p><span class="dlab">Fixed numbers come out squared</span></p>
-<p><span class="math inline">\(\text{Var}(a\,Y) = a^2\, \text{Var}(Y)\)</span>, here with <span class="math inline">\(a = w_i\)</span>.</p>
+<p><span class="math inline">\(\text{Var}(a\,Y) = a^2\, \text{Var}(Y)\)</span>, here with the fixed number <span class="math inline">\(a = (x_i - \bar{x}) / S_{xx}\)</span>.</p>
 </div>
 </div>
 <div class="drow fragment" data-fragment-index="4">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = {\color{#1b7a3d}{\sigma^2}} \sum_i {\color{#2471a3}{w_i^2}}
+<p><span class="math inline">\(\displaystyle = {\color{#1b7a3d}{\sigma^2}} \, \frac{{\color{#2471a3}{\sum (x_i - \bar{x})^2}}}{{\color{#2471a3}{S_{xx}^2}}}
 = {\color{#1b7a3d}{\sigma^2}} \, \frac{{\color{#2471a3}{S_{xx}}}}{{\color{#2471a3}{S_{xx}^2}}}
 = \boxed{\frac{\cssId{mt-dsig}{\color{#1b7a3d}{\sigma^2}}}{{\color{#2471a3}{S_{xx}}}}}\)</span></p>
 </div>
 <div class="dwhy c-green">
 <p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
 <p><span class="math inline">\(\text{Var}(y_i) = \sigma^2\)</span> for every <span class="math inline">\(i\)</span>: one number for everyone, so it leaves the sum.</p>
-<p>And <span class="math inline">\(\sum w_i^2 = \sum (x_i - \bar{x})^2 / S_{xx}^2 = S_{xx} / S_{xx}^2\)</span>.</p>
+<p>And <span class="math inline">\(\sum (x_i - \bar{x})^2 = S_{xx}\)</span>, so one <span class="math inline">\(S_{xx}\)</span> cancels.</p>
 </div>
 </div>
 </div>
 <div class="mathtips">
 <ul>
-<li>dwi: The weight of day i. Fixed, because it uses only the x’s. Days far from the mean temperature get the biggest weights.</li>
 <li>dsig: The error variance. One number for every day — that is what homoskedasticity says.</li>
 </ul>
 </div>
