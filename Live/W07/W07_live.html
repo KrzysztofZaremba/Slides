@@ -1104,6 +1104,18 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg3IiwicGVyc2lzdCI6
 </div>
 </div></div>
 </section>
+<section id="r-squared" class="slide level2">
+<h2>R-squared</h2>
+<p><span class="math display">\[R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}\]</span></p>
+<ul>
+<li class="fragment">The share of the variation in <span class="math inline">\(y\)</span> that the line accounts for.</li>
+<li class="fragment">Always between 0 and 1.</li>
+<li class="fragment">With a single regressor, <span class="math inline">\(R^2 = \left[\text{Cor}(x,y)\right]^2\)</span>.</li>
+</ul>
+<div class="fragment">
+<p><code>anova(reg)</code> prints the pieces directly — that is what it is for.</p>
+</div>
+</section>
 <section id="watch-the-variation-split" class="slide level2">
 <h2>🎛️ Watch the variation split</h2>
 <p>Left: how far each point sits from the mean. Middle: how much of that the line accounts for. Right: what is left over. Dashed red line: the mean <span class="math inline">\(\bar{y}\)</span>. Blue line: the fitted line.</p>
@@ -1231,16 +1243,20 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg3IiwicGVyc2lzdCI6
 <li class="fragment">The left panel is the job. The other two always add up to it.</li>
 </ul>
 </section>
-<section id="r-squared" class="slide level2">
-<h2>R-squared</h2>
-<p><span class="math display">\[R^2 = \frac{SSR}{SST} = 1 - \frac{SSE}{SST}\]</span></p>
-<ul>
-<li class="fragment">The share of the variation in <span class="math inline">\(y\)</span> that the line accounts for.</li>
-<li class="fragment">Always between 0 and 1.</li>
-<li class="fragment">With a single regressor, <span class="math inline">\(R^2 = \left[\text{Cor}(x,y)\right]^2\)</span>.</li>
-</ul>
+<section id="what-different-r²-looks-like" class="slide level2">
+<h2>What different R² looks like</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W07_live_files/figure-revealjs/r2-panels-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>All three have the same slope. Only the scatter differs.</p>
 <div class="fragment">
-<p><code>anova(reg)</code> prints the pieces directly — that is what it is for.</p>
+<p>Back to the <a href="#/three-regressions">opening question</a>: regression B predicts best. Its points sit closest to its line, and its <span class="math inline">\(R^2\)</span> is the highest.</p>
 </div>
 </section>
 <section id="exercise-9-decompose-the-variation" class="slide level2 scrollable">
@@ -1306,29 +1322,13 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXg5IiwicGVyc2lzdCI6
 <p>A low <span class="math inline">\(R^2\)</span> does not mean the slope is wrong. It means the line is not the whole story. Those are different claims, and confusing them is a classic exam trap.</p>
 </div>
 </section>
-<section id="what-different-r²-looks-like" class="slide level2">
-<h2>What different R² looks like</h2>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure>
-<p><img data-src="W07_live_files/figure-revealjs/r2-panels-1.png" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>All three have the same slope. Only the scatter differs.</p>
-<div class="fragment">
-<p>Back to the <a href="#/three-regressions">opening question</a>: regression B predicts best. Its points sit closest to its line, and its <span class="math inline">\(R^2\)</span> is the highest.</p>
-</div>
-</section>
 <section id="exercise-11-how-much-of-the-rent-does-size-explain" class="slide level2 scrollable">
 <h2>🖊️ Exercise 11 — How much of the rent does size explain?</h2>
 <p>Back to the landlord and <code>rents</code> (<code>rents$size</code> in m², <code>rents$rent</code> in pesos a month). Before she trusts the extra 1,785 pesos, she wants to know how well size alone explains rent.</p>
 <ol type="1">
 <li>Find <span class="math inline">\(SSR\)</span>, <span class="math inline">\(SSE\)</span> and <span class="math inline">\(SST\)</span> for the regression of <code>rents$rent</code> on <code>rents$size</code>.</li>
 <li>Compute <span class="math inline">\(R^2\)</span>. What share of the variation in rents does size explain?</li>
-<li>Which of the three panels on the previous slide does this look most like? Compare it with the bikes regression, where <span class="math inline">\(R^2 = 0.088\)</span>.</li>
+<li>Which of regressions A, B and C does this look most like? Compare it with the bikes regression, where <span class="math inline">\(R^2 = 0.088\)</span>.</li>
 </ol>
 <div class="cell" data-exercise="ex10b">
 <div>
@@ -1357,7 +1357,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMGIiLCJwZXJzaXN0
 <ol type="1">
 <li class="fragment"><span class="math inline">\(SSR = 4.337 \times 10^{9}\)</span>, <span class="math inline">\(SSE = 1.086 \times 10^{9}\)</span>, <span class="math inline">\(SST = 5.423 \times 10^{9}\)</span>.</li>
 <li class="fragment"><span class="math inline">\(R^2 = 0.800\)</span>: size explains about 80% of the variation in monthly rents.</li>
-<li class="fragment">It looks like the tight panel. Size explains most of what rent does, so a prediction from size alone is a reasonable guide for her. For bikes, temperature explained under 9% of trips: most of what moves trips is something else.</li>
+<li class="fragment">It is closest to regression B, the tight one (<span class="math inline">\(R^2 = 0.95\)</span>). Size explains most of what rent does, so a prediction from size alone is a reasonable guide for her. For bikes, temperature explained under 9% of trips: most of what moves trips is something else.</li>
 </ol>
 </div>
 </section></section>
@@ -1632,6 +1632,18 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMWgiLCJwZXJzaXN0
 <p>Which makes sense: “a one-unit increase in <span class="math inline">\(x\)</span>” is the <em>only</em> move available — it means switching from the 0 group to the 1 group.</p>
 </div>
 </section>
+<section id="where-the-coefficients-sit" class="slide level2">
+<h2>Where the coefficients sit</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="W07_live_files/figure-revealjs/friday-annotated-1.png" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 <section id="exercise-14-fridays" class="slide level2 scrollable">
 <h2>🖊️ Exercise 14 — Fridays</h2>
 <p><code>bikes$friday</code> is 1 on Fridays and 0 on other weekdays.</p>
@@ -1686,14 +1698,9 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMiIsInBlcnNpc3Qi
 <p>An HR consultancy is checking pay in Mexico. The data frame <code>salaries</code> has 20,000 workers from the Mexican labour force survey (ENOE, 2022):</p>
 <ul>
 <li><code>salaries$income</code> — monthly income, in pesos</li>
-<li><code>salaries$hours_worked</code> — hours worked last week</li>
 <li><code>salaries$female</code> — 1 for women, 0 for men</li>
 </ul>
-<ol type="1">
-<li>Regress <code>salaries$income</code> on <code>salaries$female</code>. What is the mean monthly income of men? By how many pesos is the mean income of women lower?</li>
-<li>Regress <code>salaries$hours_worked</code> on <code>salaries$female</code>. What are the mean weekly hours of men? How many fewer hours do women work, on average?</li>
-<li>Suppose women earned the same pesos per hour as men, for their own mean hours. What would their mean monthly income be? How much of the monthly gap would be left? What does this tell the consultancy about where the gap comes from?</li>
-</ol>
+<p>Regress <code>salaries$income</code> on <code>salaries$female</code>. What is the mean monthly income of men? By how many pesos is the mean income of women lower?</p>
 <div class="cell" data-exercise="ex12b">
 <div>
 <div id="webr-22" class="exercise-cell">
@@ -1705,26 +1712,15 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMmIiLCJwZXJzaXN0
 </div>
 </div>
 <div class="hint webr-ojs-exercise exercise-hint d-none" data-exercise="ex12b">
-<p><code>lm(income ~ female, data = salaries)</code> fits the first model. The intercept is the mean of the 0 group (men). Intercept plus slope is the mean of the 1 group (women). For step 3, pesos per hour for men is their mean income divided by their mean hours.</p>
+<p><code>lm(income ~ female, data = salaries)</code> fits the model. The intercept is the mean of the 0 group (men). Intercept plus slope is the mean of the 1 group (women).</p>
 </div>
 <div class="webr-ojs-exercise exercise-solution d-none" data-exercise="ex12b">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="" aria-label="1"></a>reg_pay <span class="ot">&lt;-</span> <span class="fu">lm</span>(income <span class="sc">~</span> female, <span class="at">data =</span> salaries)</span>
 <span id="cb16-2"><a href="" aria-label="2"></a>reg_pay</span>
 <span id="cb16-3"><a href="" aria-label="3"></a></span>
-<span id="cb16-4"><a href="" aria-label="4"></a>reg_hours <span class="ot">&lt;-</span> <span class="fu">lm</span>(hours_worked <span class="sc">~</span> female, <span class="at">data =</span> salaries)</span>
-<span id="cb16-5"><a href="" aria-label="5"></a>reg_hours</span>
-<span id="cb16-6"><a href="" aria-label="6"></a></span>
-<span id="cb16-7"><a href="" aria-label="7"></a><span class="fl">9745.9</span> <span class="sc">-</span> <span class="fl">2344.5</span></span>
-<span id="cb16-8"><a href="" aria-label="8"></a><span class="fl">47.28</span> <span class="sc">-</span> <span class="fl">8.08</span></span>
-<span id="cb16-9"><a href="" aria-label="9"></a></span>
-<span id="cb16-10"><a href="" aria-label="10"></a><span class="fl">9745.9</span> <span class="sc">/</span> <span class="fl">47.28</span> <span class="sc">*</span> <span class="fl">39.20</span></span>
-<span id="cb16-11"><a href="" aria-label="11"></a><span class="dv">8081</span> <span class="sc">-</span> <span class="fl">7401.4</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<ol type="1">
-<li class="fragment">Men earn 9,745.9 pesos a month on average (the intercept). The mean for women is 2,344.5 pesos lower (the slope): 7,401.4 pesos, about 24% less.</li>
-<li class="fragment">Men work 47.3 hours a week on average. Women work 8.1 hours fewer: 39.2 hours.</li>
-<li class="fragment">At men’s pay per hour, women’s mean income would be 9,745.9 / 47.28 × 39.20 = 8,081 pesos. The gap left is 8,081 − 7,401 = 680 pesos a month. About 70% of the monthly gap comes from fewer paid hours. About 680 pesos a month remains at the same hours.</li>
-</ol>
-<p>The dummy gives the raw difference in means. It does not say why the two groups differ. Comparing workers with the same hours needs more than one regressor — that comes in W10.</p>
+<span id="cb16-4"><a href="" aria-label="4"></a><span class="fl">9745.9</span> <span class="sc">-</span> <span class="fl">2344.5</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Men earn 9,745.9 pesos a month on average (the intercept). The mean for women is 2,344.5 pesos lower (the slope): 7,401.4 pesos, about 24% less.</p>
+<p>The dummy gives the raw difference in means. It does not say why the two groups differ.</p>
 </div>
 </section></section>
 <section>
