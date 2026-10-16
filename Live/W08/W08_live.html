@@ -102,7 +102,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-26aac2f0be87879eb06b3be64b6d1a31.css">
+  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-66c90a61475d273759e8d649db848a57.css">
   <link href="W08_live_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -736,9 +736,10 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjpbImV4YW0yMCJdLCJwZXJz
 <li class="fragment">vb0x: The extra uncertainty from carrying the line from the centre of the data back to x = 0. Far from zero, a small error in the slope becomes a big error in the intercept.</li>
 </ul>
 </div>
+<p><a href="#/appendix-the-variance-of-the-intercept">See the algebra for the intercept</a>.</p>
 </div>
 <div class="fragment">
-<p>The standard error is the standard deviation of the estimator: <span class="math inline">\(SE(\hat{\beta}_1) = \sqrt{\text{Var}(\hat{\beta}_1)}\)</span>. <a href="#/appendix-the-variance-of-the-slope-and-the-intercept">See the algebra</a>.</p>
+<p>The standard error is the standard deviation of the estimator: <span class="math inline">\(SE(\hat{\beta}_1) = \sqrt{\text{Var}(\hat{\beta}_1)}\)</span>. <a href="#/appendix-the-variance-of-the-slope-and-the-intercept">See the algebra for the slope</a>.</p>
 </div>
 </section>
 <section id="one-unknown-left-σ²" class="slide level2">
@@ -3493,16 +3494,73 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 </section>
 <section id="appendix-the-variance-of-the-slope-and-the-intercept" class="slide level2">
-<h2>Appendix — the variance of the slope and the intercept</h2>
-<p>Treat the <span class="math inline">\(x_i\)</span> as fixed. Then <span class="math inline">\(\text{Var}(y_i) = \text{Var}(\beta_0 + \beta_1 x_i + u_i) = \text{Var}(u_i) = \sigma^2\)</span>, and</p>
-<p><span class="math display">\[\begin{aligned}
-\text{Var}(\hat{\beta}_1) &amp;= \text{Var}\left( \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2} \right)
-= \text{Var}\left( \sum_i \frac{(x_i - \bar{x})\, y_i}{S_{xx}} \right) \\
-&amp;= \sum_i \left( \frac{x_i - \bar{x}}{S_{xx}} \right)^2 \text{Var}(y_i)
-= \frac{\sigma^2}{S_{xx}}
-\end{aligned}\]</span></p>
-<p>The third step uses <span class="math inline">\(\text{Cov}(u_i, u_j) = 0\)</span>: the variance of a sum of uncorrelated terms is the sum of their variances.</p>
-<p>For the intercept:</p>
+<h2>Appendix — the variance of the slope</h2>
+<p>Treat the <span class="math inline">\({\color{#2471a3}{x_i}}\)</span> as fixed numbers. Only the errors are random, so the <span class="math inline">\({\color{#e67e22}{y_i}}\)</span> are random: <span class="math inline">\(\text{Var}({\color{#e67e22}{y_i}}) = \text{Var}(\beta_0 + \beta_1 x_i + u_i) = \text{Var}(u_i)\)</span>.</p>
+<div class="deriv">
+<div class="drow">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle \text{Var}(\hat{\beta}_1)
+= \text{Var}\left( \frac{\sum ({\color{#2471a3}{x_i - \bar{x}}})({\color{#e67e22}{y_i}} - {\color{#c0392b}{\bar{y}}})}{{\color{#2471a3}{S_{xx}}}} \right)\)</span></p>
+</div>
+<div class="dwhy">
+<p><span class="dlab">Start</span> The OLS slope, with <span class="math inline">\(S_{xx} = \sum (x_i - \bar{x})^2\)</span> — a fixed number.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="1">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}\Big( \sum_i \underbrace{{\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}}}_{\cssId{mt-dwi}{\color{#2471a3}{w_i}}} \, {\color{#e67e22}{y_i}} \Big)\)</span></p>
+</div>
+<div class="dwhy c-red">
+<p><span class="dlab">Why <span class="math inline">\(\bar{y}\)</span> drops out</span></p>
+<p><span class="math inline">\(\sum (x_i - \bar{x})(y_i - \bar{y})\)</span></p>
+<p><span class="math inline">\(\quad = \sum (x_i - \bar{x})\, y_i - {\color{#c0392b}{\bar{y} \sum (x_i - \bar{x})}}\)</span></p>
+<p>The red part is zero: <span class="math inline">\(\sum (x_i - \bar{x}) = n\bar{x} - n\bar{x} = 0\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="2">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \sum_i \text{Var}\big( {\color{#2471a3}{w_i}} \, {\color{#e67e22}{y_i}} \big)\)</span></p>
+</div>
+<div class="dwhy c-orange">
+<p><span class="dlab">Independence: the sum comes out</span></p>
+<p><span class="math inline">\(\text{Var}(A + B) = \text{Var}(A) + \text{Var}(B) + 2\,\text{Cov}(A, B)\)</span></p>
+<p>The <span class="math inline">\(y_i\)</span> are independent, so every covariance is zero.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="3">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \sum_i {\color{#2471a3}{w_i^2}} \, \text{Var}({\color{#e67e22}{y_i}})\)</span></p>
+</div>
+<div class="dwhy c-blue">
+<p><span class="dlab">Fixed numbers come out squared</span></p>
+<p><span class="math inline">\(\text{Var}(a\,Y) = a^2\, \text{Var}(Y)\)</span>, here with <span class="math inline">\(a = w_i\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="4">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = {\color{#1b7a3d}{\sigma^2}} \sum_i {\color{#2471a3}{w_i^2}}
+= {\color{#1b7a3d}{\sigma^2}} \, \frac{{\color{#2471a3}{S_{xx}}}}{{\color{#2471a3}{S_{xx}^2}}}
+= \boxed{\frac{\cssId{mt-dsig}{\color{#1b7a3d}{\sigma^2}}}{{\color{#2471a3}{S_{xx}}}}}\)</span></p>
+</div>
+<div class="dwhy c-green">
+<p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
+<p><span class="math inline">\(\text{Var}(y_i) = \sigma^2\)</span> for every <span class="math inline">\(i\)</span>: one number for everyone, so it leaves the sum.</p>
+<p>And <span class="math inline">\(\sum w_i^2 = \sum (x_i - \bar{x})^2 / S_{xx}^2 = S_{xx} / S_{xx}^2\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="mathtips">
+<ul>
+<li>dwi: The weight of day i. Fixed, because it uses only the x’s. Days far from the mean temperature get the biggest weights.</li>
+<li>dsig: The error variance. One number for every day — that is what homoskedasticity says.</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
+<p><a href="#/the-variance-of-the-slope">← Back to The variance of the slope</a></p>
+</div>
+</section>
+<section id="appendix-the-variance-of-the-intercept" class="slide level2">
+<h2>Appendix — the variance of the intercept</h2>
 <p><span class="math display">\[\begin{aligned}
 \text{Var}(\hat{\beta}_0) &amp;= \text{Var}(\bar{y} - \hat{\beta}_1 \bar{x})
 = \text{Var}(\bar{y}) + \bar{x}^2\, \text{Var}(\hat{\beta}_1) - 2 \bar{x}\, \underbrace{\text{Cov}(\bar{y}, \hat{\beta}_1)}_{0} \\
