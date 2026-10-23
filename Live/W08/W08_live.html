@@ -102,7 +102,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-bb44ea644c81180cc365834409187dea.css">
+  <link rel="stylesheet" href="W08_live_files/libs/revealjs/dist/theme/quarto-2b24d7626d3c4af1a8349b10509fb0e9.css">
   <link href="W08_live_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="W08_live_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -3495,7 +3495,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </section>
 <section id="appendix-the-variance-of-the-slope-and-the-intercept" class="slide level2">
 <h2>Appendix — the variance of the slope</h2>
-<p>Treat the <span class="math inline">\({\color{#2471a3}{x_i}}\)</span> as fixed numbers. Only the errors are random, so the <span class="math inline">\({\color{#e67e22}{y_i}}\)</span> are random: <span class="math inline">\(\text{Var}({\color{#e67e22}{y_i}}) = \text{Var}(\beta_0 + \beta_1 x_i + u_i) = \text{Var}(u_i)\)</span>.</p>
+<p>Treat the <span class="math inline">\({\color{#2471a3}{x_i}}\)</span> as fixed numbers. Only the errors <span class="math inline">\({\color{#e67e22}{u_i}}\)</span> are random.</p>
 <div class="deriv">
 <div class="drow">
 <div class="dmath">
@@ -3519,24 +3519,34 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 <div class="drow fragment" data-fragment-index="2">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = \sum_i \text{Var}\Big( {\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}} \, {\color{#e67e22}{y_i}} \Big)\)</span></p>
+<p><span class="math inline">\(\displaystyle = \text{Var}\Big( \sum_i {\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}} \, {\color{#e67e22}{u_i}} \Big)\)</span></p>
 </div>
-<div class="dwhy c-orange">
-<p><span class="dlab">Independence: the sum comes out</span></p>
-<p><span class="math inline">\(\text{Var}(A + B) = \text{Var}(A) + \text{Var}(B) + 2\,\text{Cov}(A, B)\)</span></p>
-<p>The <span class="math inline">\(y_i\)</span> are independent, so every covariance is zero.</p>
+<div class="dwhy c-red">
+<p><span class="dlab">Only the error is random</span></p>
+<p>Plug in <span class="math inline">\(y_i = {\color{#c0392b}{\beta_0 + \beta_1 x_i}} + {\color{#e67e22}{u_i}}\)</span>; the red part is fixed.</p>
+<p><span class="math inline">\(\text{Var}(c + Z) = \text{Var}(Z)\)</span> for a fixed number <span class="math inline">\(c\)</span>.</p>
 </div>
 </div>
 <div class="drow fragment" data-fragment-index="3">
 <div class="dmath">
-<p><span class="math inline">\(\displaystyle = \sum_i {\color{#2471a3}{\left( \frac{x_i - \bar{x}}{S_{xx}} \right)^2}} \text{Var}({\color{#e67e22}{y_i}})\)</span></p>
+<p><span class="math inline">\(\displaystyle = \sum_i \text{Var}\Big( {\color{#2471a3}{\frac{x_i - \bar{x}}{S_{xx}}}} \, {\color{#e67e22}{u_i}} \Big)\)</span></p>
+</div>
+<div class="dwhy c-orange">
+<p><span class="dlab">Independence: the sum comes out</span></p>
+<p><span class="math inline">\(\text{Var}(A + B) = \text{Var}(A) + \text{Var}(B) + 2\,\text{Cov}(A, B)\)</span></p>
+<p>The <span class="math inline">\(u_i\)</span> are independent, so every covariance is zero.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="4">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \sum_i {\color{#2471a3}{\left( \frac{x_i - \bar{x}}{S_{xx}} \right)^2}} \text{Var}({\color{#e67e22}{u_i}})\)</span></p>
 </div>
 <div class="dwhy c-blue">
 <p><span class="dlab">Fixed numbers come out squared</span></p>
 <p><span class="math inline">\(\text{Var}(a\,Y) = a^2\, \text{Var}(Y)\)</span>, here with the fixed number <span class="math inline">\(a = (x_i - \bar{x}) / S_{xx}\)</span>.</p>
 </div>
 </div>
-<div class="drow fragment" data-fragment-index="4">
+<div class="drow fragment" data-fragment-index="5">
 <div class="dmath">
 <p><span class="math inline">\(\displaystyle = {\color{#1b7a3d}{\sigma^2}} \, \frac{{\color{#2471a3}{\sum (x_i - \bar{x})^2}}}{{\color{#2471a3}{S_{xx}^2}}}
 = {\color{#1b7a3d}{\sigma^2}} \, \frac{{\color{#2471a3}{S_{xx}}}}{{\color{#2471a3}{S_{xx}^2}}}
@@ -3544,28 +3554,81 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxIiwicGVyc2lzdCI6
 </div>
 <div class="dwhy c-green">
 <p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
-<p><span class="math inline">\(\text{Var}(y_i) = \sigma^2\)</span> for every <span class="math inline">\(i\)</span>: one number for everyone, so it leaves the sum.</p>
+<p><span class="math inline">\(\text{Var}(u_i) = \sigma^2\)</span> for every <span class="math inline">\(i\)</span>: one number for everyone, so it leaves the sum.</p>
 <p>And <span class="math inline">\(\sum (x_i - \bar{x})^2 = S_{xx}\)</span>, so one <span class="math inline">\(S_{xx}\)</span> cancels.</p>
 </div>
 </div>
 </div>
 <div class="mathtips">
 <ul>
-<li>dsig: The error variance. One number for every day — that is what homoskedasticity says.</li>
+<li>dsig: The error variance: how far a day’s trips fall from the true line. It is not var(bikes$trips), which also counts the swings in trips that temperature explains. One number for every day — that is what homoskedasticity says.</li>
 </ul>
 </div>
-<div class="fragment" data-fragment-index="4">
+<div class="fragment" data-fragment-index="5">
 <p><a href="#/the-variance-of-the-slope">← Back to The variance of the slope</a></p>
 </div>
 </section>
 <section id="appendix-the-variance-of-the-intercept" class="slide level2">
 <h2>Appendix — the variance of the intercept</h2>
-<p><span class="math display">\[\begin{aligned}
-\text{Var}(\hat{\beta}_0) &amp;= \text{Var}(\bar{y} - \hat{\beta}_1 \bar{x})
-= \text{Var}(\bar{y}) + \bar{x}^2\, \text{Var}(\hat{\beta}_1) - 2 \bar{x}\, \underbrace{\text{Cov}(\bar{y}, \hat{\beta}_1)}_{0} \\
-&amp;= \frac{\sigma^2}{n} + \bar{x}^2 \frac{\sigma^2}{S_{xx}} = \sigma^2 \left( \frac{1}{n} + \frac{\bar{x}^2}{S_{xx}} \right)
-\end{aligned}\]</span></p>
+<p>Treat the <span class="math inline">\({\color{#2471a3}{x_i}}\)</span> as fixed numbers. Only the errors <span class="math inline">\({\color{#e67e22}{u_i}}\)</span> are random.</p>
+<div class="deriv">
+<div class="drow">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle \text{Var}(\hat{\beta}_0) = \text{Var}\left( {\color{#e67e22}{\bar{y}}} - \hat{\beta}_1 {\color{#2471a3}{\bar{x}}} \right)\)</span></p>
+</div>
+<div class="dwhy">
+<p><span class="dlab">Start</span> The OLS intercept. <span class="math inline">\(\bar{x}\)</span> is a fixed number.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="1">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}\left( {\color{#e67e22}{\bar{u}}} - \hat{\beta}_1 {\color{#2471a3}{\bar{x}}} \right)\)</span></p>
+</div>
+<div class="dwhy c-red">
+<p><span class="dlab">Only the error is random</span></p>
+<p>Average the model over the <span class="math inline">\(n\)</span> days: <span class="math inline">\(\bar{y} = {\color{#c0392b}{\beta_0 + \beta_1 \bar{x}}} + {\color{#e67e22}{\bar{u}}}\)</span>; the red part is fixed.</p>
+<p><span class="math inline">\(\text{Var}(c + Z) = \text{Var}(Z)\)</span> for a fixed number <span class="math inline">\(c\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="2">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}({\color{#e67e22}{\bar{u}}}) + {\color{#2471a3}{\bar{x}^2}} \, \text{Var}(\hat{\beta}_1) - 2 {\color{#2471a3}{\bar{x}}} \, {\color{#c0392b}{\text{Cov}(\bar{u}, \hat{\beta}_1)}}\)</span></p>
+</div>
+<div class="dwhy c-blue">
+<p><span class="dlab">Variance of a difference</span></p>
+<p><span class="math inline">\(\text{Var}(A - b\,B) = \text{Var}(A) + b^2\, \text{Var}(B) - 2b\, \text{Cov}(A, B)\)</span>, here with the fixed number <span class="math inline">\(b = \bar{x}\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="3">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}({\color{#e67e22}{\bar{u}}}) + {\color{#2471a3}{\bar{x}^2}} \, \text{Var}(\hat{\beta}_1)\)</span></p>
+</div>
+<div class="dwhy c-orange">
+<p><span class="dlab">Independence: the covariance is zero</span></p>
+<p>From the previous slide, <span class="math inline">\(\hat{\beta}_1\)</span> is a fixed number plus <span class="math inline">\(\sum_i \frac{x_i - \bar{x}}{S_{xx}} u_i\)</span>, and <span class="math inline">\(\bar{u} = \sum_i \frac{1}{n} u_i\)</span>.</p>
+<p>The <span class="math inline">\(u_i\)</span> are independent, so only same-day pairs count: <span class="math inline">\(\text{Cov}(\bar{u}, \hat{\beta}_1) = \frac{\sigma^2}{n S_{xx}} {\color{#c0392b}{\sum (x_i - \bar{x})}} = 0\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="4">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \cssId{mt-iubar}{\frac{{\color{#1b7a3d}{\sigma^2}}}{n}} + {\color{#2471a3}{\bar{x}^2}} \frac{{\color{#1b7a3d}{\sigma^2}}}{{\color{#2471a3}{S_{xx}}}}
+= \boxed{{\color{#1b7a3d}{\sigma^2}} \left( \frac{1}{n} + \frac{{\color{#2471a3}{\bar{x}^2}}}{{\color{#2471a3}{S_{xx}}}} \right)}\)</span></p>
+</div>
+<div class="dwhy c-green">
+<p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
+<p><span class="math inline">\(\text{Var}(\bar{u}) = \sigma^2 / n\)</span>: the average of <span class="math inline">\(n\)</span> independent errors, each with variance <span class="math inline">\(\sigma^2\)</span>.</p>
+<p><span class="math inline">\(\text{Var}(\hat{\beta}_1) = \sigma^2 / S_{xx}\)</span> from the previous slide.</p>
+</div>
+</div>
+</div>
+<div class="mathtips">
+<ul>
+<li>iubar: The variance of the average error. It is not var(bikes$trips) / n, which also counts the swings in trips that temperature explains.</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
 <p><a href="#/the-variance-of-the-slope">← Back to The variance of the slope</a></p>
+</div>
 </section>
 <section id="appendix-why-the-slope-is-normal-in-big-samples" class="slide level2">
 <h2>Appendix — why the slope is normal in big samples</h2>
