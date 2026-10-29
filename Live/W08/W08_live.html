@@ -1522,7 +1522,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMyIsInBlcnNpc3Qi
 <li class="fragment">mrx: Uncertainty about the tilt of the line. It grows with the distance between x0 and the mean of x: a small error in the slope matters more the further you go.</li>
 </ul>
 </div>
-<p>Why the daily error <span class="math inline">\(u\)</span> is not in this variance, and why it stays for one day: <a href="#/appendix-mean-vs-new">see the derivation</a>.</p>
+<p>Why the daily error <span class="math inline">\(u\)</span> is not in this variance, and why it stays for one day: <a href="#/appendix-mean-vs-new">see the derivation</a>. The formula step by step: <a href="#/appendix-the-variance-of-the-mean-response">see the algebra</a>.</p>
 </div>
 <div class="fragment">
 <p>With normal errors: <span class="math inline">\(\hat{y}(x_0) \sim N\left( \beta_0 + \beta_1 x_0,\ \sigma^2 \left( \frac{1}{n} + \frac{(x_0 - \bar{x})^2}{S_{xx}} \right) \right)\)</span> — the Average (mean) prediction line on your formula sheet.</p>
@@ -1671,6 +1671,7 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxNCIsInBlcnNpc3Qi
 <li class="fragment">pi1: The new day’s own error, u0, with variance σ². It does not shrink as n grows: more data pins down the line, not tomorrow’s surprise.</li>
 </ul>
 </div>
+<p><a href="#/appendix-the-variance-of-the-new-response">See the algebra</a>.</p>
 <div class="fragment">
 <p>So, the New observation line on your formula sheet: <span class="math inline">\(y(x_0) \sim N\left( \beta_0 + \beta_1 x_0,\ \sigma^2 \left( 1 + \frac{1}{n} + \frac{(x_0 - \bar{x})^2}{S_{xx}} \right) \right)\)</span></p>
 </div>
@@ -3774,6 +3775,132 @@ eyJhdHRyIjp7ImVkaXQiOnRydWUsImV2YWwiOnRydWUsImV4ZXJjaXNlIjoiZXgxMCIsInBlcnNpc3Qi
 <div class="fragment">
 <p>The extra <span class="math inline">\(\sigma^2\)</span> does not shrink with more data. A bigger sample pins down the line, not tomorrow’s surprise.</p>
 <p><a href="#/the-mean-response">← Back to The mean response</a></p>
+</div>
+</section>
+<section id="appendix-the-variance-of-the-mean-response" class="slide level2">
+<h2>Appendix — the variance of the mean response</h2>
+<p>Treat the <span class="math inline">\({\color{#2471a3}{x_i}}\)</span> and <span class="math inline">\({\color{#2471a3}{x_0}}\)</span> as fixed numbers. Only the errors <span class="math inline">\({\color{#e67e22}{u_i}}\)</span> are random.</p>
+<div class="deriv">
+<div class="drow">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle \text{Var}\left( \hat{y}(x_0) \right) = \text{Var}\left( \hat{\beta}_0 + \hat{\beta}_1 {\color{#2471a3}{x_0}} \right)\)</span></p>
+</div>
+<div class="dwhy">
+<p><span class="dlab">Start</span> The forecast at <span class="math inline">\({\color{#2471a3}{x_0}}\)</span>, a value we choose — a fixed number.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="1">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}\left( {\color{#e67e22}{\bar{y}}} + \hat{\beta}_1 ({\color{#2471a3}{x_0 - \bar{x}}}) \right)\)</span></p>
+</div>
+<div class="dwhy">
+<p><span class="dlab">Put in the intercept</span></p>
+<p><span class="math inline">\(\hat{\beta}_0 = \bar{y} - \hat{\beta}_1 \bar{x}\)</span>. The forecast is the height of the line at the centre, <span class="math inline">\(\bar{y}\)</span>, plus the slope times the distance from the centre.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="2">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}\left( {\color{#e67e22}{\bar{u}}} + \hat{\beta}_1 ({\color{#2471a3}{x_0 - \bar{x}}}) \right)\)</span></p>
+</div>
+<div class="dwhy c-red">
+<p><span class="dlab">Only the error is random</span></p>
+<p>Average the model over the <span class="math inline">\(n\)</span> days: <span class="math inline">\(\bar{y} = {\color{#c0392b}{\beta_0 + \beta_1 \bar{x}}} + {\color{#e67e22}{\bar{u}}}\)</span>; the red part is fixed.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="3">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle \begin{aligned} = {} &amp; \text{Var}({\color{#e67e22}{\bar{u}}}) + ({\color{#2471a3}{x_0 - \bar{x}}})^2 \, \text{Var}(\hat{\beta}_1) \\ &amp; + 2 ({\color{#2471a3}{x_0 - \bar{x}}}) \, {\color{#c0392b}{\text{Cov}(\bar{u}, \hat{\beta}_1)}} \end{aligned}\)</span></p>
+</div>
+<div class="dwhy c-blue">
+<p><span class="dlab">Variance of a sum</span></p>
+<p><span class="math inline">\(\text{Var}(A + b\,B) = \text{Var}(A) + b^2\, \text{Var}(B) + 2b\, \text{Cov}(A, B)\)</span>, here with the fixed number <span class="math inline">\(b = x_0 - \bar{x}\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="4">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}({\color{#e67e22}{\bar{u}}}) + ({\color{#2471a3}{x_0 - \bar{x}}})^2 \, \text{Var}(\hat{\beta}_1)\)</span></p>
+</div>
+<div class="dwhy c-orange">
+<p><span class="dlab">Independence: the covariance is zero</span></p>
+<p>As for the intercept: <span class="math inline">\(\text{Cov}(\bar{u}, \hat{\beta}_1) = \frac{\sigma^2}{n S_{xx}} {\color{#c0392b}{\sum (x_i - \bar{x})}} = 0\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="5">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \boxed{{\color{#1b7a3d}{\sigma^2}} \left( \frac{1}{n} + \frac{\cssId{mt-mrdist}{({\color{#2471a3}{x_0 - \bar{x}}})^2}}{{\color{#2471a3}{S_{xx}}}} \right)}\)</span></p>
+</div>
+<div class="dwhy c-green">
+<p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
+<p>Put in <span class="math inline">\(\text{Var}(\bar{u}) = \sigma^2 / n\)</span> and <span class="math inline">\(\text{Var}(\hat{\beta}_1) = \sigma^2 / S_{xx}\)</span>, as on the slides for the intercept and the slope.</p>
+</div>
+</div>
+</div>
+<div class="mathtips">
+<ul>
+<li>mrdist: How far the forecast point is from the centre of the data. At x0 = the mean of x this term is zero, the forecast is just the mean of y, and only σ²/n is left.</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="5">
+<p><a href="#/the-mean-response">← Back to The mean response</a></p>
+</div>
+</section>
+<section id="appendix-the-variance-of-the-new-response" class="slide level2">
+<h2>Appendix — the variance of the new response</h2>
+<p>Tomorrow’s error <span class="math inline">\({\color{#e67e22}{u_0}}\)</span> is random too. It belongs to tomorrow, not to the <span class="math inline">\(n\)</span> days used to fit the line.</p>
+<div class="deriv">
+<div class="drow">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle \text{Var}\left( {\color{#e67e22}{y_0}} - \hat{y}(x_0) \right)\)</span></p>
+</div>
+<div class="dwhy">
+<p><span class="dlab">Start</span> The forecast error for tomorrow: the trips we will see, <span class="math inline">\(y_0\)</span>, minus our forecast, <span class="math inline">\(\hat{y}(x_0) = \hat{\beta}_0 + \hat{\beta}_1 x_0\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="1">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}\left( {\color{#e67e22}{u_0}} - \hat{y}(x_0) \right)\)</span></p>
+</div>
+<div class="dwhy c-red">
+<p><span class="dlab">Only the errors are random</span></p>
+<p>Tomorrow is <span class="math inline">\(y_0 = {\color{#c0392b}{\beta_0 + \beta_1 x_0}} + {\color{#e67e22}{u_0}}\)</span>; the red part is fixed.</p>
+<p><span class="math inline">\(\text{Var}(c + Z) = \text{Var}(Z)\)</span> for a fixed number <span class="math inline">\(c\)</span>.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="2">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}({\color{#e67e22}{u_0}}) + \text{Var}\left( \hat{y}(x_0) \right) - 2\, {\color{#c0392b}{\text{Cov}\left( u_0, \hat{y}(x_0) \right)}}\)</span></p>
+</div>
+<div class="dwhy c-blue">
+<p><span class="dlab">Variance of a difference</span></p>
+<p><span class="math inline">\(\text{Var}(A - B) = \text{Var}(A) + \text{Var}(B) - 2\, \text{Cov}(A, B)\)</span></p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="3">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \text{Var}({\color{#e67e22}{u_0}}) + \text{Var}\left( \hat{y}(x_0) \right)\)</span></p>
+</div>
+<div class="dwhy c-orange">
+<p><span class="dlab">Independence: tomorrow is not in the sample</span></p>
+<p><span class="math inline">\(\hat{y}(x_0)\)</span> is built from <span class="math inline">\(u_1, \dots, u_n\)</span> only. <span class="math inline">\(u_0\)</span> is independent of all of them, so the covariance is zero.</p>
+</div>
+</div>
+<div class="drow fragment" data-fragment-index="4">
+<div class="dmath">
+<p><span class="math inline">\(\displaystyle = \boxed{{\color{#1b7a3d}{\sigma^2}} \left( \cssId{mt-pinew1}{1} + \frac{1}{n} + \frac{({\color{#2471a3}{x_0 - \bar{x}}})^2}{{\color{#2471a3}{S_{xx}}}} \right)}\)</span></p>
+</div>
+<div class="dwhy c-green">
+<p><span class="dlab">Homoskedasticity: σ² comes out</span></p>
+<p><span class="math inline">\(\text{Var}(u_0) = \sigma^2\)</span>, like any other day. <span class="math inline">\(\text{Var}\left( \hat{y}(x_0) \right) = \sigma^2 \left( \frac{1}{n} + \frac{(x_0 - \bar{x})^2}{S_{xx}} \right)\)</span> from the previous slide.</p>
+</div>
+</div>
+</div>
+<div class="mathtips">
+<ul>
+<li>pinew1: Tomorrow’s own error, u0. It does not shrink as n grows: more data pins down the line, not tomorrow’s surprise.</li>
+</ul>
+</div>
+<div class="fragment" data-fragment-index="4">
+<p><a href="#/the-prediction-interval">← Back to The prediction interval</a></p>
 </div>
 </section>
 <section id="appendix-near-22" class="slide level2 scrollable">
